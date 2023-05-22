@@ -1,0 +1,14 @@
+---
+- name: set sudo user
+  user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        groups: sudo
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+        expires: -1
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/id_rsa
+        state: present

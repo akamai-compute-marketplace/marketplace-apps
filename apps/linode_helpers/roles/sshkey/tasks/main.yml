@@ -1,0 +1,10 @@
+---
+# this helper will only function if a username is provided in the var file, typically as a UDF
+- name: assign ssh keys
+  lineinfile:
+    dest: '/home/{{ username }}/.ssh/authorized_keys'
+    line: "{{ pubkey }}"
+    create: Yes
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'

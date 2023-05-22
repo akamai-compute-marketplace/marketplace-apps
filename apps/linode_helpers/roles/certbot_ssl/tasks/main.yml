@@ -1,0 +1,13 @@
+---
+# apps/linode_helpers/roles/certbot_ssl/tasks/main.yml
+# import some DNS propagation task before getting cert
+- name: install apache certbot plugin
+  include_tasks:
+    file: apache-certbot.yml
+  when: webserver_stack == 'lamp'
+
+- name: install nginx certbot plugin
+  include_tasks:
+    file: nginx-certbot.yml
+  when: webserver_stack == 'lemp'
+
