@@ -1,0 +1,30 @@
+# apps/linode_helpers/hostname/tasks/main.yml
+
+# The _domain variable functions as a FQDN to handle deployments using a subdomain, top level domain and www subdomain, or default rDNS. 
+# This allows the linode_helper tasks to run in playbooks for multiple applications with minimal modifications.
+
+- name: set dns fact for subdomain
+  set_fact:
+    _domain: '{{ subdomain }}.{{ domain }}'
+    cacheable: yes
+  when:
+    - domain is defined
+    - subdomain != "www"
+    
+- name: set dns fact for domain
+  set_fact:
+    _domain: '{{ domain }}'
+    cacheable: yes
+  when: 
+    - domain is defined
+    - subdomain == "www"
+
+- name: set dns fact for default dns
+  set_fact:
+    _domain: '{{ default_dns }}'
+    cacheable: yes
+  when: default_dns is defined
+
+- name: setting system hostname
+  hostname:
+    name: "{{ _domain }}" 
