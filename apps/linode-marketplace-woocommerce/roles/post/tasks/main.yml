@@ -1,0 +1,25 @@
+---
+- name: restart Apache2
+  systemd:
+    name: apache2.service
+    state: restarted
+  when: webserver_stack == 'lamp'
+
+- name: configuring domain with certbot
+  import_role:
+    name: certbot_ssl
+
+- name: moving vhost_ssl template 
+  template: 
+    src: ../../lemp/templates/vhost_ssl.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
+    owner: root
+    group: root
+    mode: 0644 
+  when: webserver_stack == 'lemp'
+
+- name: restart Nginx
+  systemd:
+    name: nginx.service
+    state: restarted
+  when: webserver_stack == 'lemp'
