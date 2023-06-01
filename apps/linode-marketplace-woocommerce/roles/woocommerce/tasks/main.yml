@@ -1,0 +1,19 @@
+- name: install woocommerce plugin
+  command: wp plugin install --allow-root woocommerce
+  args:
+    chdir: "/var/www/{{ _domain }}/public_html"
+    executable: /usr/local/bin/wp
+
+- name: activate woocommerce plugin
+  command: wp plugin activate --allow-root woocommerce
+  args:
+    chdir: "/var/www/{{ _domain }}/public_html"
+    executable: /usr/local/bin/wp
+
+- name: updating document root ownership
+  file:
+    path: "/var/www/{{ _domain }}/public_html"
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
