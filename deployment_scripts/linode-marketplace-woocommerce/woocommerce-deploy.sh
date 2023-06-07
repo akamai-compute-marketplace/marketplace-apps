@@ -25,7 +25,7 @@ trap "cleanup $? $LINENO" EXIT
 # git repo
 export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
-export MARKETPLACE_APP="apps/linode-marketplace-wordpress"
+export MARKETPLACE_APP="apps/linode-marketplace-woocommerce"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
