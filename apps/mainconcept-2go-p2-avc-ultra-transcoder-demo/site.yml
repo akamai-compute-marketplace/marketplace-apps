@@ -1,0 +1,70 @@
+---
+- name: Install Docker and run container
+  hosts: localhost
+  become: true
+
+  tasks:
+    - name: Update apt package cache
+      become: true
+      apt:
+        upgrade: yes
+        update_cache: yes
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg2 
+          - pwgen 
+          - ufw
+          - python3 
+          - python3-pip
+          - python-is-python3
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker engine
+      apt:
+        name: docker-ce
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Docker Python package
+      pip:
+        name: docker
+        executable: pip3
+        state: present
+
+    - name: Pull Docker container image
+      docker_image:
+        name: mainconcept/mc_2go_p2_avc_ultra_transcoder:demo-2-3-621
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: mc2gop2avc
+        image: mainconcept/mc_2go_p2_avc_ultra_transcoder:demo-2-3-621
+        state: started
+        ports:
+          - "8080:8080"  # Example: mapping container port 8080 to host port 8080
+        env:
+          ACCEPT_EULA=y
+          AUTOSTART=true
+
