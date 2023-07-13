@@ -14,7 +14,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="SOA Email" example="user@domain.tld">
+#<UDF name="soa_email_address" label="SOA Email" example="user@domain.tld" default="">
 
 # git repo
 export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
@@ -97,7 +97,7 @@ function run {
 
 function installation_complete {
   echo "Installation Complete"
-
+}
 # main
 run && installation_complete
 cleanup
