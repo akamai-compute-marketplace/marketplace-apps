@@ -11,7 +11,7 @@ WordPress is a popular dynamic content management system focused on blogs. WordP
 | PHP       | 8.1       | General-purpose scripting language |
 | Fail2ban  | 0.11.2    | Provides protection against brute force and authentication attempts |
 | UFW       | 0.36      | Easy-to-use firewall wrapper used to allow HTTP/S and SSH ports |
-| Certbot   | 1.12      | Is used to obtain HTTPS/TLS/SSL certitifcate for the provided domain |
+| Certbot   | 1.12      | Is used to obtain HTTPS/TLS/SSL certificate for the provided domain |
 
 
 **Supported Distributions:**
