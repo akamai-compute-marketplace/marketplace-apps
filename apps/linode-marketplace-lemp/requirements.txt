@@ -3,7 +3,7 @@ PyMySQL==1.0.2
 #molecule==5.1.0
 #molecule-vagrant==2.0.0
 #python-vagrant==0.5.15
-yamllint==1.26.2
+yamllint==1.31.0
 ansible-lint==6.0.1
 flake8==3.9.2
 linode_api4==5.5.0
