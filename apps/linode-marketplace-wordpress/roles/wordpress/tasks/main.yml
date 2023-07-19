@@ -74,8 +74,8 @@
 
 - name: moving WP to document root
   ansible.builtin.copy:
-    src: /tmp/wordpress 
-    dest: "/var/www/{{ _domain }}/public_html/"
+    src: /tmp/wordpress/ 
+    dest: "/var/www/{{ _domain }}/public_html"
     remote_src: yes
     owner: root
     group: root
