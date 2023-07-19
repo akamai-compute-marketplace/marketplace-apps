@@ -51,10 +51,26 @@
     mode: 0755
   register: wpcli
 
-- name: downloading wordpress lastest
-  shell:
-    chdir: "/var/www/{{ _domain }}/public_html"
-    cmd: wp core download --allow-root
+#- name: downloading wordpress lastest
+#  shell:
+#    chdir: "/var/www/{{ _domain }}/public_html"
+#    cmd: wp core download --allow-root
+
+- name: downloading wordpress latest
+  get_url:
+    url: https://wordpress.org/latest.tar.gz
+    dest: /tmp/latest.tar.gz
+    group: root
+    owner: root
+    mode: 0755
+
+- name: unzip wp-latest
+  ansible.builtin.unarchive:
+    src: /tmp/latest.tar.gz
+    dest: "/var/www/{{ _domain }}/public_html"
+    owner: root
+    group: root
+    mode: 0755
 
 - name: configuring wordpress site
   shell:
