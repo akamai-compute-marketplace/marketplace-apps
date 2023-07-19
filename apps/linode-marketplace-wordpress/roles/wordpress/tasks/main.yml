@@ -76,7 +76,7 @@
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
-      wp core config --allow-root \
+      wp core config --allow-root --path="/var/www/{{ _domain }}/public_html" \
         --dbhost="localhost" \
         --dbname="{{ wp_db_name }}" \
         --dbuser="{{ wp_db_user }}" \
@@ -86,7 +86,7 @@
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
-      wp core install --allow-root \
+      wp core install --allow-root --path="/var/www/{{ _domain }}/public_html" \
           --url="{{ _domain }}" \
           --title="{{ site_title }}" \
           --admin_user="{{ wp_admin_user }}" \
