@@ -67,7 +67,16 @@
 - name: unzip wp-latest
   ansible.builtin.unarchive:
     src: /tmp/latest.tar.gz
-    dest: "/var/www/{{ _domain }}/public_html"
+    dest: "/tmp"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: moving WP to document root
+  ansible.builtin.copy:
+    src: /tmp/wordpress 
+    dest: "/var/www/{{ _domain }}/public_html/"
+    remote_src: yes
     owner: root
     group: root
     mode: 0755
@@ -76,7 +85,7 @@
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
-      wp core config --allow-root --path="/var/www/{{ _domain }}/public_html" \
+      wp core config --allow-root \
         --dbhost="localhost" \
         --dbname="{{ wp_db_name }}" \
         --dbuser="{{ wp_db_user }}" \
@@ -86,7 +95,7 @@
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
-      wp core install --allow-root --path="/var/www/{{ _domain }}/public_html" \
+      wp core install --allow-root \
           --url="{{ _domain }}" \
           --title="{{ site_title }}" \
           --admin_user="{{ wp_admin_user }}" \
