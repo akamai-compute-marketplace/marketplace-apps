@@ -1,6 +1,6 @@
 ansible==6.0.0
 PyMySQL==1.0.2
-molecule<3.3.4
+molecule==3.4.1
 molecule-vagrant==2.0.0
 python-vagrant==0.5.15
 yamllint==1.26.2
