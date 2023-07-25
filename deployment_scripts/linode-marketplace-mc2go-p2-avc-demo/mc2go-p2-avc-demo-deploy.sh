@@ -6,7 +6,8 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="mc2go_port" Label="MC2GO P2 AVC Ultra Transcoder Port" example="Default: 8080" default="8080" /> 
 
 # git repo
-export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+#export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+export GIT_REPO="https://github.com/jongov/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc2go-p2-avc-demo"
 
