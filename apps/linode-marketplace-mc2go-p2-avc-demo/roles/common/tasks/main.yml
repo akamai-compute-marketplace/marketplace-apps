@@ -1,0 +1,46 @@
+---
+  - name: Install Docker dependencies
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg2 
+        - pwgen 
+        - ufw
+        - python3 
+        - python3-pip
+        - python-is-python3
+      state: present
+
+  - name: Add Docker GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Docker engine
+    apt:
+      name: docker-ce
+      state: present
+
+  - name: Start and enable Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Install Docker Python package
+    pip:
+      name: docker
+      executable: pip3
+      state: present
