@@ -1,0 +1,44 @@
+---
+  - name: Set Download URL
+    set_fact:
+      mainconcept_url: "https://www.mainconcept.com/akamai-live-encoder"
+
+  - name: Download MainConcept Live Encoder
+    get_url:
+      url: "{{ mainconcept_url }}"
+      dest: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+
+  - name: Extract Installation
+    unarchive:
+      src: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+      dest: "/tmp/"
+
+  - name: Remove Archive File
+    file:
+      path: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+      state: absent
+
+  - name: Install MainConcept Live Encoder RPM
+    shell: |
+      cd /tmp/payload/
+      for file in *.rpm; do        
+        yum --nogpgcheck localinstall -y "$file"
+      done
+
+  - name: Configure Firewall Ports 8080
+    shell: |
+      firewall-cmd --zone=public --add-port=8080/tcp --permanent
+
+  - name: Configure Firewall Ports 6000-6100
+    shell: |
+      firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
+
+  - name: Configure Firewall Ports 6000-6100
+    shell: |
+      firewall-cmd --reload
+
+  - name: Start MainConcept Live Encoder
+    shell: /opt/McLiveEncoder/engine/run.sh &
+    args:
+      chdir: /opt/McLiveEncoder/engine/
+
