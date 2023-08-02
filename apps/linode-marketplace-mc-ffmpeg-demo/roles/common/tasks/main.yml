@@ -1,0 +1,15 @@
+---
+  - name: Update and upgrade packages
+    apt:
+      update_cache: yes
+      upgrade: dist
+
+  - name: Install dependencies
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - tar
+      - bzip2
+      - wget
+      - unzip

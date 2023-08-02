@@ -1,0 +1,68 @@
+---
+  - name: Download MainConcept FFMpeg Plugins
+    get_url:
+      url: "https://www.mainconcept.com/akamai-ffmpeg"
+      dest: "/tmp/FFmpeg_Plugins_Demo.zip"
+
+  - name: Extract zip package
+    unarchive:
+      src: "/tmp/FFmpeg_Plugins_Demo.zip"
+      dest: "/tmp/"
+
+  - name: Loop through .bz2 files
+    shell: |
+      cd /tmp/
+      for file in *.bz2; do
+        filename="${file%.*}"
+        tar -xvf "$file" -C /tmp/
+        if [ $? -eq 0 ]; then
+          rm "$file"
+        fi
+      done
+
+  - name: Loop through .run files
+    shell: |
+      cd /tmp/
+      for file in *.run; do
+        sed -i 's/PAGER=${PAGER:=more}/return $?/' "$file"
+        ./"$file"
+      done
+
+  - name: Install FFmpeg 
+    shell: |
+      cd /tmp/ffmpeg_omx/deb/
+      for file in *.deb; do
+        dpkg -i "$file"
+      done
+
+  - name: Install MainConcept SDK Conf 
+    shell: |
+      cd /tmp/mc_ffmpeg_plugins/deb/
+      for file in mc-sdk-conf*.deb; do
+        dpkg -i "$file"
+      done
+
+  - name: Install MainConcept OMX Core 
+    shell: |
+      cd /tmp/mc_ffmpeg_plugins/deb/
+      for file in mcomx-core*.deb; do
+        dpkg -i "$file"
+      done
+
+  - name: Install MainConcept FFmpeg Plugins 
+    shell: |
+      cd /tmp/mc_ffmpeg_plugins/deb/
+      for file in *.deb; do
+        dpkg -i "$file"
+      done
+
+  - name: Remove archive file
+    file:
+      path: "/tmp/FFmpeg_Plugins_Demo.zip"
+      state: absent
+
+  - name: Create symlink for ffmpeg
+    file:
+      src: "/opt/mainconcept/ffmpeg-omx/bin/ffmpeg"
+      dest: "/bin/ffmpeg"
+      state: link
