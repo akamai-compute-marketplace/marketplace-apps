@@ -14,7 +14,7 @@ MainConcept FFmpeg Plugins
 * [Documentation](https://www.mainconcept.com/ffmpeg)
 
 ### Operating Systems
-Debian 10, Debian 11
+Debian 11
 
 ### Documentation
 [Documentation](https://www.mainconcept.com/ffmpeg)
