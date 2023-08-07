@@ -1,8 +1,8 @@
 # Marketplace App Development Guidelines
 
-A Marketplace App leverages the Linode API and Ansible to deploy and configure a single node service. The end-user’s Linode API token must be scoped with appropriate permissions to add and remove the necessary platform resources, such as compute, DNS, storage, etc.In additon, please adhere to the following guidelines for Marketplace apps:
+A Marketplace App leverages the Linode API and Ansible to deploy and configure a single node service. The end-user’s Linode API token must be scoped with appropriate permissions to add and remove the necessary platform resources, such as compute, DNS, storage, etc. In additon, please adhere to the following guidelines for Marketplace apps:
 
-  - Marketplace applications should use fully supported Linode Ubuntu 22.02 images when possible. 
+  - We recommend Marketplace applications use fully Ubuntu 22.04 LTS images when possible. 
   - Required Linode plans for Marketplace applications should be no more than 16GB shared CPU or 8GB dedicated  CPU. This is the default instance size limit for new user accounts. Deployments designed for larger instance sizes can be accepted on a case-by-case basis where required. 
   - The deployment of the service should be “hands-off,” requiring no command-line intervention from the user before reaching its initial state. The end user should provide all necessary details via User Defined Variables (UDF) defined in the StackScript, so that Ansible can fully automate the deployment.
   - There is not currently password strength validation for StackSctript UDFs, therefore, whenever possible credentials should be generated and provided to the end-user.
