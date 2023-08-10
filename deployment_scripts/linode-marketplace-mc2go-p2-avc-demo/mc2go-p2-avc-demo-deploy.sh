@@ -5,9 +5,6 @@ trap "cleanup $? $LINENO" EXIT
 ## MainConcept MC2GO P2 AVC Ultra Transcoder Demo Settings
 #<UDF name="mc2go_port" Label="MC2GO P2 AVC Ultra Transcoder Port" example="Default: 8080" default="8080" /> 
 
-## Linode
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
 #<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
@@ -18,6 +15,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address for SOA record" default=””>
 
 # git repo
 #export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
