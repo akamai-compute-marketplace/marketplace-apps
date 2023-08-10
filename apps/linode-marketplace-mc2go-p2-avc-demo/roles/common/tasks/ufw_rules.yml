@@ -20,6 +20,7 @@
     port: '22'
     proto: tcp
 
+
 - name: Allow all access to the MC2GO tcp port
   community.general.ufw:
     rule: allow
