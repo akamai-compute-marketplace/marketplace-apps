@@ -36,8 +36,10 @@
 
   # apt_setup_update
   - name: update system packages
-    import_role:
-      name: update_pkgs
+    dnf:
+      name: '*'
+      state: latest        
+    become: yes
 
   # ufw_install
   - name: enabling ufw
