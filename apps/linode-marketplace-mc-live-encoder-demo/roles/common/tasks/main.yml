@@ -42,13 +42,13 @@
     become: yes
 
   # ufw_install
-  - name: enabling ufw
-    import_role:
-      name: ufw
+  #- name: enabling ufw
+  #  import_role:
+  #    name: ufw
 
   # ufw rules 
-  - name: apply ufw rules
-    import_tasks: ufw_rules.yml
+  #- name: apply ufw rules
+  #  import_tasks: ufw_rules.yml
 
   # fail2ban
   - name: enabling fail2ban
