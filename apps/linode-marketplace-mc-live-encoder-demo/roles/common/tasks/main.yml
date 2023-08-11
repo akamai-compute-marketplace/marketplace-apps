@@ -51,9 +51,9 @@
   #  import_tasks: ufw_rules.yml
 
   # fail2ban
-  - name: enabling fail2ban
-    import_role:
-      name: fail2ban_install
+  #- name: enabling fail2ban
+  #  import_role:
+  #    name: fail2ban_install
 
   # MainConcept  
   - name: Install packages
