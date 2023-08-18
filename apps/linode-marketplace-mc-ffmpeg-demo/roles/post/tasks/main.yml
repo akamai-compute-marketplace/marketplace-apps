@@ -1,0 +1,11 @@
+---
+  - name: Remove archive file
+    file:
+      path: "/tmp/FFmpeg_Plugins_Demo_Unencrypted.zip"
+      state: absent
+
+  - name: Create symlink for ffmpeg
+    file:
+      src: "/opt/mainconcept/ffmpeg-omx/bin/ffmpeg"
+      dest: "/bin/ffmpeg"
+      state: link
