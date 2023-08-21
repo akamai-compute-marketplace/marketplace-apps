@@ -23,7 +23,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 # git repo
-export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-keplerbuilder"
 
