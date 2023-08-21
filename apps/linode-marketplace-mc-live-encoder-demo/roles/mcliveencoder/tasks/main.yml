@@ -26,37 +26,17 @@
     args:
       chdir: /tmp/payload/
 
-#  - name: Configure Firewall Ports 8080
-#    shell: |
-#      firewall-cmd --zone=public --add-port=8080/tcp --permanent
-#
-#  - name: Configure Firewall Ports 6000-6100
-#    shell: |
-#      firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
-#
-#  - name: Configure Firewall Ports 6000-6100
-#    shell: |
-#      firewall-cmd --reload
-
-
   - name: Add port 8080/tcp to the public zone
-    ansible.builtin.firewalld:
-      port: 8080/tcp
-      permanent: yes
-      state: enabled
+    ansible.builtin.command: firewall-cmd --zone=public --add-port=8080/tcp --permanent
     become: yes
 
-  - name: Add ports 6000-6100/tcp to the public zone
-    ansible.builtin.firewalld:
-      port: 6000-6100/tcp
-      permanent: yes
-      state: enabled
+  - name: Add ports 6000-61000/tcp to the public zone
+    ansible.builtin.command: firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
     become: yes
 
   - name: Reload Firewall Configuration
     ansible.builtin.command: firewall-cmd --reload
     become: yes
-
 
   - name: Start MainConcept Live Encoder
     shell: /opt/McLiveEncoder/engine/run.sh &
