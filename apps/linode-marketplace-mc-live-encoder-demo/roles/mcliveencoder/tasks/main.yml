@@ -13,17 +13,26 @@
       src: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
       dest: "/tmp/"
 
-  - name: Remove Archive File
-    file:
-      path: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
-      state: absent
+  #- name: Install MainConcept Live Encoder RPM
+  #  shell: |
+  #    cd /tmp/payload/
+  #    for file in *.rpm; do        
+  #      yum --nogpgcheck localinstall -y "$file"
+  #    done
+
+
+  - name: Find .rpm files
+    find:
+      paths: /tmp/payload/
+      patterns: "*.rpm"
+    register: rpm_files  
 
   - name: Install MainConcept Live Encoder RPM
-    shell: |
-      cd /tmp/payload/
-      for file in *.rpm; do        
-        yum --nogpgcheck localinstall -y "$file"
-      done
+    command: "yum --nogpgcheck localinstall -y {{ item.path }}"
+    loop: "{{ rpm_files.files }}"
+    when: rpm_files.matched > 0
+    args:
+      chdir: /tmp/payload/
 
   - name: Configure Firewall Ports 8080
     shell: |
