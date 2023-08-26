@@ -11,6 +11,7 @@
     path: group_vars/linode/vars
     line: | 
       _domain: {{ _domain }}
+  when: _domain is defined #jcoto change
 
 # set customer supplied sudo user, password and SSH keys
 - name: set sudo user
