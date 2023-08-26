@@ -27,4 +27,5 @@
 
 - name: setting system hostname
   hostname:
-    name: "{{ _domain }}" 
+    name: "{{ _domain }}"
+  when: _domain is defined # jcoto Change to allow the Ansible playbook to go ahead without domain
