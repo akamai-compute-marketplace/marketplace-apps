@@ -1,7 +1,7 @@
 ---
 - name: Create Docker Volume
   docker_volume:
-    name: "{{ 'yacht_data' if compose_support == Yes else 'yacht' }}"
+    name: "{{ 'yacht_data' if compose_support == 'Yes' else 'yacht' }}"
 
  # docker
 - name: Run Yacht Docker Container
@@ -13,17 +13,17 @@
       - "8000:8000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "{{ 'yacht_data:/config' if compose_support == Yes else 'yacht:/config' }}"
+      - "{{ 'yacht_data:/config' if compose_support == 'Yes' else 'yacht:/config' }}"
       #- "yacht_data:/config"
     env:
       THEME: "{{ yacht_theme }}"
       ADMIN_EMAIL: "{{ yemail }}"
       ADMIN_PASSWORD: "{{ ypassword }}"
-      COMPOSE_DIR: "{{ '/compose/' if compose_support == Yes else '' }}"
+      COMPOSE_DIR: "{{ '/compose/' if compose_support == 'Yes' else '' }}"
 
 - name: Create Yacht Compose Directory and Motd Message
   shell: |
     mkdir -p /opt/Yacht/compose/example
     printf "\nThe default compose directory is /opt/Yacht/compose.\nAn example project has been added there." > /etc/update-motd.d/99-yacht
     curl -L https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml -o /opt/Yacht/compose/example/docker-compose.yml
-  when: compose_support == Yes
+  when: compose_support == 'Yes'
