@@ -35,7 +35,7 @@ function udf {
   fi
 
   if [[ -n ${COMPOSE_SUPPORT} ]]; then
-    echo "compose_support: '${COMPOSE_SUPPORT}'" >> ${group_vars};
+    echo "compose_support: ${COMPOSE_SUPPORT}" >> ${group_vars};
   fi
 
   if [[ -n ${YACHT_THEME} ]]; then

@@ -21,6 +21,11 @@
       ADMIN_PASSWORD: "{{ ypassword }}"
       COMPOSE_DIR: "{{ '/compose/' if compose_support == 'Yes' else '' }}"
 
+- name: Check compose_support value
+  assert:
+    that: compose_support == 'Yes'
+    msg: "compose_support is not 'Yes', it's {{ compose_support }}"
+
 - name: Create Yacht Compose Directory and Motd Message
   shell: |
     mkdir -p /opt/Yacht/compose/example
