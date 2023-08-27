@@ -22,8 +22,7 @@
 
 - name: Create Yacht Compose Directory and Motd Message
   shell: |
-    if [ "{{ compose_support }}" == "Yes" ]; then
-      mkdir -p /opt/Yacht/compose/example
-      printf "\nThe default compose directory is /opt/Yacht/compose.\nAn example project has been added there." > /etc/update-motd.d/99-yacht
-      curl -L https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml -o /opt/Yacht/compose/example/docker-compose.yml
-    fi
+    mkdir -p /opt/Yacht/compose/example
+    printf "\nThe default compose directory is /opt/Yacht/compose.\nAn example project has been added there." > /etc/update-motd.d/99-yacht
+    curl -L https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml -o /opt/Yacht/compose/example/docker-compose.yml
+  when: compose_support == 'Yes'
