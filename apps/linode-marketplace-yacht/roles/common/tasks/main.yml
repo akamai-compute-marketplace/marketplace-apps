@@ -44,15 +44,12 @@
 - name: enabling ufw
   import_role:
     name: ufw
-    #Is this required?
 
 # ufw rules 
 - name: apply ufw rules
   import_tasks: ufw_rules.yml
-    #Is this required?
 
 # fail2ban
 - name: enabling fail2ban
   import_role:
     name: fail2ban_install
-    #Is this required?

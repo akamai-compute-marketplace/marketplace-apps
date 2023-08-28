@@ -2,6 +2,12 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
+##Linode/SSH security settings
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
+#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
+
 ## Yacht Settings 
 #<UDF name="YEMAIL" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
 #<UDF name="YPASSWORD" Label="Yacht Password" example="Password" />
@@ -66,7 +72,7 @@ function run {
   udf
   # run playbooks
   for playbook in site.yml; do ansible-playbook -vvvv $playbook; done
-  #Remeber to ask what provision.yml in this case is doing?
+  
 }
 
 function installation_complete {
