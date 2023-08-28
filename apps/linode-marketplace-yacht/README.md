@@ -1,6 +1,6 @@
 # Linode Yacht Deployment One-Click APP
 
-Docker is a tool that enables you to create, deploy, and manage containers. Each container is a lightweight stand-alone package that containing the code, libraries, runtime, system settings, and dependencies that are required to run an application. Every container is deployed with its own CPU, memory, block I/O, and network resources, without having to depend upon an individual kernel and operating system. While it may be easiest to compare Docker to virtual machines, they differ in the way they share or dedicate resources.
+Docker is a web interface for managing docker containers with an emphasis on templating to provide one-click deployments of dockerized applications. Think of it like a decentralized app store for servers that anyone can make packages for.
 
 ## Software Included
 
@@ -8,11 +8,13 @@ Docker is a tool that enables you to create, deploy, and manage containers. Each
 | :---      | :----     | :---          |
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
+| selfhostedpro/yacht | Latest | web interface for managing docker containers |
 
 
 **Supported Distributions:**
 
 - Ubuntu 22.04 LTS
+- Debian 11
 
 ## Linode Helpers Included
 
@@ -29,14 +31,16 @@ Customers can choose to the deploy the LAMP stack through the Linode Marketplace
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
-- SOA_EMAIL_ADDRESS
 - ROOT_PASS
 
 SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
-export SOA_EMAIL_ADDRESS="myemail@domain.com"
 export ROOT_PASS="aComplexP@ssword"
+export YEMAIL="email@domain.com"
+export YPASSWORD="email@domain.com"
+export COMPOSE_SUPPORT="Yes|No"
+export YTHEME="Default|RED|OMV"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -47,7 +51,10 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "yemail": "${YEMAIL}",
+        "ypassword" : "${YPASSWORD}",
+        "compose_support" : "${COMPOSE_SUPPORT}",
+        "ytheme" : "${YTHEME}"
       },
       "authorized_users": [
         "myUser",
@@ -65,15 +72,18 @@ https://api.linode.com/v4/linode/instances
 CLI:
 ```
 export TOKEN="YOUR API TOKEN"
-export SOA_EMAIL_ADDRESS="myemail@domain.com"
 export ROOT_PASS="aComplexP@ssword"
+export YEMAIL="email@domain.com"
+export YPASSWORD="email@domain.com"
+export COMPOSE_SUPPORT="Yes|No"
+export YTHEME="Default|RED|OMV"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${YEMAIL}"}, {"ypassword" : "${YPASSWORD}"}, {"compose_support" : "${COMPOSE_SUPPORT}"}, {"ytheme" : "${YTHEME}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"

@@ -8,11 +8,12 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
+
 ## Yacht Settings 
-#<UDF name="YEMAIL" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
-#<UDF name="YPASSWORD" Label="Yacht Password" example="Password" />
-#<UDF name="COMPOSE_SUPPORT" Label="Yacht Compose Support" example="Yes" default="Yes" oneof="Yes,No" />
-#<UDF name="YACHT_THEME" Label="Yacht Theme" example="Default" default="Default" oneof="Default,RED,OMV" />
+#<UDF name="yemail" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
+#<UDF name="ypassword" Label="Yacht Password" example="Password" />
+#<UDF name="compose_support" Label="Yacht Compose Support" example="Yes" default="Yes" oneof="Yes,No" />
+#<UDF name="ytheme" Label="Yacht Theme" example="Default" default="Default" oneof="Default,RED,OMV" />
 
 # git repo
 export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
@@ -31,6 +32,27 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+
+  if [[ -n ${USER_NAME} ]]; then
+    echo "username: ${USER_NAME}" >> ${group_vars};
+  else echo "No username entered";
+  fi
+
+    if [[ -n ${disable_root} ]]; then
+    echo "disable_root: ${DISABLE_ROOT}" >> ${group_vars};
+  fi
+
+  if [[ -n ${PASSWORD} ]]; then
+    echo "password: ${PASSWORD}" >> ${group_vars};
+  else echo "No password entered";
+  fi
+
+  if [[ -n ${PUBKEY} ]]; then
+    echo "pubkey: ${PUBKEY}" >> ${group_vars};
+  else echo "No pubkey entered";
+  fi
+
+  #yacht vars
   
   if [[ -n ${YEMAIL} ]]; then
     echo "yemail: ${YEMAIL}" >> ${group_vars};
@@ -44,8 +66,8 @@ function udf {
     echo "compose_support: ${COMPOSE_SUPPORT}" >> ${group_vars};
   fi
 
-  if [[ -n ${YACHT_THEME} ]]; then
-    echo "yacht_theme: ${YACHT_THEME}" >> ${group_vars};
+  if [[ -n ${YTHEME} ]]; then
+    echo "yacht_theme: ${YTHEME}" >> ${group_vars};
   fi
 }
 

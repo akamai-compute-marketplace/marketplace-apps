@@ -14,7 +14,6 @@
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "{{ 'yacht_data:/config' if compose_support == True else 'yacht:/config' }}"
-      #- "yacht_data:/config"
     env:
       THEME: "{{ yacht_theme }}"
       ADMIN_EMAIL: "{{ yemail }}"
