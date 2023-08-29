@@ -1,0 +1,50 @@
+---
+- name: Peppermint Config and Start
+  block:
+  - name: Configure service file 
+    lineinfile:
+      path: "/etc/systemd/system/peppermint.service"
+      line: "{{item}}"
+    loop:
+    - "[Unit]"
+    - "Description=Docker Compose Peppermint Application Service"
+    - "Requires=peppermint.service"
+    - "After=peppermint.service"
+    - "[Service]"
+    - "Type=oneshot"
+    - "RemainAfterExit=yes"
+    - "ExecStart=/usr/local/bin/docker-compose up -d"
+    - "ExecStop=/usr/local/bin/docker-compose down"
+    - "ExecReload=/usr/local/bin/docker-compose up -d"
+    - "WorkingDirectory=/etc/docker/compose/peppermint/"
+    - "[Install]"
+    - "WantedBy=multi-user.target"
+  - name: Create Docker Compose Directory
+    file:
+      path: /etc/docker/compose/peppermint/
+      state: directory
+  - name: Get Docker Compose File
+    get_url:
+      url: "wget https://raw.githubusercontent.com/Peppermint-Lab/Peppermint/master/docker-compose.yml"
+      dest: "/etc/docker/compose/peppermint/docker-compose.yml"
+  - name: Get the value of the IP environment variable
+    shell:
+      cmd: echo $IP
+    register: ip_out
+  - name: Get Docker Compose File
+    replace:
+      path: /etc/docker/compose/peppermint/docker-compose.yml
+      regexp: 'localhost'
+      replace: '{{ ip_out }}'
+  - name: Reload systemd daemon
+    systemd:
+      name: peppermint.service
+      state: reloaded
+  - name: Enable Peppermint Service
+    systemd:
+      name: peppermint.service
+      enabled: yes
+  - name: Start Peppermint Service
+    systemd:
+      name: peppermint.service
+      state: started
