@@ -15,7 +15,7 @@
         
 - name: Disable root login
   lineinfile:
-    path: "{{ sshd_config_file }}"
+    path: "/etc/ssh/sshd_config"
     regexp: "^PermitRootLogin"
     line: "PermitRootLogin no"
     backup: yes
