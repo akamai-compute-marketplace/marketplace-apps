@@ -38,7 +38,7 @@ function udf {
   else echo "No username entered";
   fi
 
-    if [[ -n ${disable_root} ]]; then
+    if [[ -n ${DISABLE_ROOT} ]]; then
     echo "disable_root: ${DISABLE_ROOT}" >> ${group_vars};
   fi
 

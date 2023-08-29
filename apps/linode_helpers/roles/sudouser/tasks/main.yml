@@ -12,3 +12,12 @@
         ssh_key_bits: 4096
         ssh_key_file: .ssh/id_rsa
         state: present
+        
+- name: Disable root login
+  lineinfile:
+    path: "{{ sshd_config_file }}"
+    regexp: "^PermitRootLogin"
+    line: "PermitRootLogin no"
+    backup: yes
+  notify: restart sshd
+  when: disable_root == True
