@@ -34,15 +34,11 @@
     get_url:
       url: "https://raw.githubusercontent.com/Peppermint-Lab/Peppermint/master/docker-compose.yml"
       dest: "/etc/docker/compose/peppermint/docker-compose.yml"
-  - name: Get the value of the IP environment variable
-    shell:
-      cmd: echo $IP
-    register: ip_out
   - name: Get Docker Compose File
     replace:
       path: /etc/docker/compose/peppermint/docker-compose.yml
       regexp: 'localhost'
-      replace: '{{ ip_out.stdout }}'
+      replace: '{{ ansible_default_ipv4.address }}'
   - name: Reload systemd daemon
     systemd:
       name: peppermint.service
