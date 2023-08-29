@@ -20,6 +20,11 @@
     - "WorkingDirectory=/etc/docker/compose/peppermint/"
     - "[Install]"
     - "WantedBy=multi-user.target"
+  - name: Create a symbolic link for docker-compose
+    file:
+      src: /usr/local/bin/docker-compose
+      dest: /usr/bin/docker-compose
+      state: link
   - name: Create Docker Compose Directory
     file:
       path: /etc/docker/compose/peppermint/
@@ -36,7 +41,7 @@
     replace:
       path: /etc/docker/compose/peppermint/docker-compose.yml
       regexp: 'localhost'
-      replace: '{{ ip_out }}'
+      replace: '{{ ip_out.stdout }}'
   - name: Reload systemd daemon
     systemd:
       name: peppermint.service
