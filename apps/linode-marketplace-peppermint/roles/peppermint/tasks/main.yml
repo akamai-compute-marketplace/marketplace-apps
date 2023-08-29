@@ -25,6 +25,7 @@
       src: /usr/local/bin/docker-compose
       dest: /usr/bin/docker-compose
       state: link
+    become: true
   - name: Create Docker Compose Directory
     file:
       path: /etc/docker/compose/peppermint/
