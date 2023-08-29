@@ -26,7 +26,7 @@
       state: directory
   - name: Get Docker Compose File
     get_url:
-      url: "wget https://raw.githubusercontent.com/Peppermint-Lab/Peppermint/master/docker-compose.yml"
+      url: "https://raw.githubusercontent.com/Peppermint-Lab/Peppermint/master/docker-compose.yml"
       dest: "/etc/docker/compose/peppermint/docker-compose.yml"
   - name: Get the value of the IP environment variable
     shell:
