@@ -22,8 +22,8 @@
     - "WantedBy=multi-user.target"
   - name: Create a symbolic link for docker-compose
     file:
-      src: /usr/local/bin/docker-compose
-      dest: /usr/bin/docker-compose
+      src: /usr/bin/docker-compose
+      dest: /usr/local/bin/docker-compose
       state: link
     become: true
   - name: Create Docker Compose Directory
