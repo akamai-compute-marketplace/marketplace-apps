@@ -14,15 +14,15 @@
         state: present
         
 - name: Disable root login
-  lineinfile:
-    path: "/etc/ssh/sshd_config"
-    regexp: "^PermitRootLogin"
-    line: "PermitRootLogin no"
-    backup: yes
-  notify: Restart SSH
-  when: disable_root == True
-
-- name: Restart SSH
-  service:
+  block:
+  - name: Set PermitRootLogin
+    lineinfile:
+      path: "/etc/ssh/sshd_config"
+      regexp: "^PermitRootLogin"
+      line: "PermitRootLogin no"
+  - name: Restart SSH
+    service:
       name: sshd
       state: restarted
+  when: disable_root == True
+
