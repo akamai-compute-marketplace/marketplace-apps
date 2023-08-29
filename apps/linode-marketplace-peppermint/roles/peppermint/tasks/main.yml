@@ -4,6 +4,7 @@
   - name: Configure service file 
     lineinfile:
       path: "/etc/systemd/system/peppermint.service"
+      create: yes
       line: "{{item}}"
     loop:
     - "[Unit]"
