@@ -41,8 +41,7 @@
       replace: '{{ ansible_default_ipv4.address }}'
   - name: Reload systemd daemon
     systemd:
-      name: peppermint.service
-      state: reloaded
+      daemon_reload: yes
   - name: Enable Peppermint Service
     systemd:
       name: peppermint.service
