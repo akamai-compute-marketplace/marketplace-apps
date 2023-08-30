@@ -24,11 +24,41 @@
     file:
       path: /etc/docker/compose/peppermint/
       state: directory
-  - name: Get Docker Compose File
-    get_url:
-      url: "https://raw.githubusercontent.com/Peppermint-Lab/Peppermint/master/docker-compose.yml"
-      dest: "/etc/docker/compose/peppermint/docker-compose.yml"
-  - name: Get Docker Compose File
+  - name: Create Docker Compose File
+    lineinfile:
+      path: "/etc/docker/compose/peppermint/docker-compose.yml"
+      create: yes
+      line: "{{item}}"
+    loop:
+    - 'version: "3.1"'
+    - ''
+    - 'services:'
+    - '  postgres:'
+    - '    container_name: postgres'
+    - '    image: postgres:latest'
+    - '    restart: always'
+    - '    volumes:'
+    - '      - ./docker-data/db:/data/db'
+    - '    environment:'
+    - '      POSTGRES_USER: peppermint'
+    - '      POSTGRES_PASSWORD: 1234'
+    - '      POSTGRES_DB: peppermint'
+    - ''
+    - '  client:'
+    - '    container_name: peppermint'
+    - '    image: pepperlabs/peppermint:latest'
+    - '    ports:'
+    - '      - 5000:5000'
+    - '    restart: on-failure'
+    - '    depends_on:'
+    - '      - postgres'
+    - '    environment:'
+    - '      PORT: 5000'
+    - '      DB_USERNAME: peppermint'
+    - '      DB_PASSWORD: 1234'
+    - '      DB_HOST: "postgres"'
+    - '      BASE_URL: "http://localhost:5000"'
+  - name: Change Docker Compose localhost to ip
     replace:
       path: /etc/docker/compose/peppermint/docker-compose.yml
       regexp: 'localhost'
