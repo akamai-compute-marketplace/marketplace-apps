@@ -1,5 +1,12 @@
 ---
 
+#Install Unzip
+- name: installing unzip
+  apt:
+    pkg:
+    - unzip
+    state: present
+
 #getting the tears-of-steel-file
 - name: Preparing tearts-of-steel file
   block:
