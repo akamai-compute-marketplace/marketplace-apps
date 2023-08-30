@@ -27,7 +27,7 @@
     image: unifiedstreaming/origin:latest
     state: started
     ports:
-      - "{{ ui_port }}:8000"
+      - "{{ ui_port }}:80"
     volumes:
       - "/root/tears-of-steel/:/var/www/unified-origin"
     env:
