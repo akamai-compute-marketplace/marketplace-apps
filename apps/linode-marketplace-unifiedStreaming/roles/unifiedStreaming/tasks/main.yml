@@ -1,0 +1,21 @@
+---
+
+#getting the tears-of-steel-file
+- name: Preparing tearts-of-steel file
+  unarchive:
+    src: "http://repository.unified-streaming.com/tears-of-steel.zip"
+    dest: "/root/tears-of-steel/"
+    remote_src: yes
+
+ # docker
+- name: Run Origin Docker Container
+  docker_container:
+    name: uforigin
+    image: unifiedstreaming/origin:latest
+    state: started
+    ports:
+      - "{{ ui_port }}:8000"
+    volumes:
+      - "/root/tears-of-steel/:/var/www/unified-origin"
+    env:
+      USP_LICENSE_KEY: "{{ usp_license_password }}"
