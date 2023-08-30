@@ -29,6 +29,7 @@
       path: "/etc/docker/compose/peppermint/docker-compose.yml"
       create: yes
       line: "{{item}}"
+      insertbefore: EOF
     loop:
     - 'version: "3.1"'
     - ''
@@ -58,7 +59,7 @@
     - '      DB_PASSWORD: 1234'
     - '      DB_HOST: "postgres"'
     - '      BASE_URL: "http://localhost:5000"'
-  - name: Change Docker Compose localhost to ip
+  - name: Change Docker Compose localhost
     replace:
       path: /etc/docker/compose/peppermint/docker-compose.yml
       regexp: 'localhost'
