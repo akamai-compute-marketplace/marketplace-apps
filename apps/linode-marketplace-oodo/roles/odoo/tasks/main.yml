@@ -1,0 +1,105 @@
+---
+- name: Create Docker Volume
+  docker_volume:
+    name: "odoo-db"
+
+- name: Create Docker Volume
+  docker_volume:
+    name: "odoo-data"
+
+ # docker
+- name: Run Postgres Docker Container
+  docker_container:
+    name: db
+    image: postgres:13
+    restart_policy: always
+    state: started
+    volumes:
+      - "odoo-db:/var/lib/postgresql/data"
+    env:
+      POSTGRES_USER: "odoo"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "postgres"
+
+- name: Run ODOO Docker Container
+  docker_container:
+    name: odoo
+    image: odoo
+    restart_policy: always
+    state: started
+    links:
+    - "db:db"
+    ports:
+    - "8069:8069"
+    volumes:
+      - "odoo-data:/var/lib/odoo"
+    env:
+      POSTGRES_USER: "odoo"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "postgres"
+
+#Nginx setup
+
+- name: Nginx Reverse Setup
+  block:  
+  - name: Install nginx
+    apt:
+      pkg:
+      - nginx
+      state: present
+  - name: Config file Setup
+    lineinfile:
+      path: "/etc/nginx/sites-available/{{ ansible_env.FQDN }}"
+      create: yes
+      line: "{{ item }}"
+    loop:
+    - "server  {                                                       "
+    - "listen 80;                                                      "
+    - "server_name {{ ansible_env.FQDN }};                             "
+    - "error_log /var/log/nginx/{{ ansible_env.FQDN }}.error;          "
+    - "access_log /var/log/nginx/{{ ansible_env.FQDN }}.access;        "
+    - "location / {                                                    "
+    - "   proxy_pass         http://localhost:8069;                    "  
+    - "   proxy_http_version 1.1;                                      "
+    - "   proxy_set_header   Upgrade \$http_upgrade;                  "
+    - '   proxy_set_header   Connection "upgrade";                     '
+    - "   proxy_set_header   Host \$host;                             "
+    - "}                                                               "
+    - "}                                                               "
+  - name: Create a symbolic link for the Nginx configuration
+    file:
+      src: "/etc/nginx/sites-available/{{ ansible_env.FQDN }}"
+      dest: "/etc/nginx/sites-enabled/"
+      state: link
+    become: true
+  - name: Unlink the default Nginx configuration
+    file:
+      path: "/etc/nginx/sites-enabled/default"
+      state: absent
+    become: true
+  - name: Test Nginx configuration
+    command: nginx -t
+    become: true
+  - name: Reload Nginx service
+    systemd:
+      name: nginx
+      state: restarted
+    become: true
+
+#SSL lemp
+- name: SSL lemp
+  block:
+  - name: install packages
+    apt:
+      pkg:
+      - certbot
+      - python3-certbot-nginx 
+    state: present
+  - name: SSL cerbot setup 
+    community.crypto.certbot:
+      cert_domains:
+      - "{{ ansible_env.FQDN }}"
+      cert_email: "{{ soa_email_address }}"
+      nginx_vhost: yes
+    become: true
+
