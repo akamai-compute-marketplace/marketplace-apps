@@ -24,6 +24,10 @@
     file:
       path: /etc/docker/compose/peppermint
       state: directory
+  - name: Create peppermint compose file
+    file:
+      path: /etc/docker/compose/peppermint/docker-compose.yml
+      state: touch
   - name: Create Docker Compose file
     vars:
       docker_compose_content: |
