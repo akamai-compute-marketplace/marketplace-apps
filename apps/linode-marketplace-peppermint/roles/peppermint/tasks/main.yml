@@ -20,45 +20,45 @@
     - "WorkingDirectory=/etc/docker/compose/peppermint/"
     - "[Install]"
     - "WantedBy=multi-user.target"
-  - name: Create Docker Compose Directory
+  - name: Create peppermint compose folder
     file:
-      path: /etc/docker/compose/peppermint/
+      path: /etc/docker/compose/peppermint
       state: directory
-  - name: Create Docker Compose File
-    lineinfile:
-      path: "/etc/docker/compose/peppermint/docker-compose.yml"
-      create: yes
-      line: "{{item}}"
-      insertbefore: EOF
-    loop:
-    - 'version: "3.1"'
-    - ''
-    - 'services:'
-    - '  postgres:'
-    - '    container_name: postgres'
-    - '    image: postgres:latest'
-    - '    restart: always'
-    - '    volumes:'
-    - '      - ./docker-data/db:/data/db'
-    - '    environment:'
-    - '      POSTGRES_USER: peppermint'
-    - '      POSTGRES_PASSWORD: 1234'
-    - '      POSTGRES_DB: peppermint'
-    - ''
-    - '  client:'
-    - '    container_name: peppermint'
-    - '    image: pepperlabs/peppermint:latest'
-    - '    ports:'
-    - '      - 5000:5000'
-    - '    restart: on-failure'
-    - '    depends_on:'
-    - '      - postgres'
-    - '    environment:'
-    - '      PORT: 5000'
-    - '      DB_USERNAME: peppermint'
-    - '      DB_PASSWORD: 1234'
-    - '      DB_HOST: "postgres"'
-    - '      BASE_URL: "http://localhost:5000"'
+  - name: Create Docker Compose file using blockinfile
+    vars:
+      docker_compose_content: |
+      version: "3.1"
+
+      services:
+        postgres:
+          container_name: postgres
+          image: postgres:latest
+          restart: always
+          volumes:
+            - ./docker-data/db:/data/db
+          environment: 
+            POSTGRES_USER: peppermint
+            POSTGRES_PASSWORD: 1234
+            POSTGRES_DB: peppermint
+        client:
+          container_name: peppermint
+          image: pepperlabs/peppermint:latest
+          ports:
+            - 5000:5000
+          restart: on-failure
+          depends_on:
+            - postgres
+          environment:
+            PORT: 5000
+            DB_USERNAME: peppermint
+            DB_PASSWORD: 1234
+            DB_HOST: 'postgres'
+            BASE_URL: "http://localhost:5000"
+
+  - name: Create Docker Compose file
+    blockinfile:
+        path: /etc/docker/compose/peppermint/docker-compose.yml
+        block: "{{ docker_compose_content }}"
   - name: Change Docker Compose localhost
     replace:
       path: /etc/docker/compose/peppermint/docker-compose.yml
