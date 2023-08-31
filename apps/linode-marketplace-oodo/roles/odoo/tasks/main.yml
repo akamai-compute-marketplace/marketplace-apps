@@ -94,7 +94,7 @@
       pkg:
       - certbot
       - python3-certbot-nginx 
-    state: present
+      state: present
   - name: SSL cerbot setup 
     community.crypto.certbot:
       cert_domains:
