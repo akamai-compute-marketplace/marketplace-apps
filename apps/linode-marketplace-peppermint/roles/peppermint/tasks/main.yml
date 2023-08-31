@@ -24,7 +24,7 @@
     file:
       path: /etc/docker/compose/peppermint
       state: directory
-  - name: Create Docker Compose file using blockinfile
+  - name: Create Docker Compose file
     vars:
       docker_compose_content: |
       version: "3.1"
@@ -54,8 +54,6 @@
             DB_PASSWORD: 1234
             DB_HOST: 'postgres'
             BASE_URL: "http://localhost:5000"
-
-  - name: Create Docker Compose file
     blockinfile:
         path: /etc/docker/compose/peppermint/docker-compose.yml
         block: "{{ docker_compose_content }}"
