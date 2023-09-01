@@ -80,7 +80,7 @@
   - name: Create a symbolic link for the Nginx configuration
     file:
       src: "/etc/nginx/sites-available/{{ fqdn }}"
-      dest: "/etc/nginx/sites-enabled/"
+      dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
       state: link
     become: true
   - name: Unlink the default Nginx configuration
