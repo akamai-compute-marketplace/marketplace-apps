@@ -96,10 +96,6 @@
       - python3-certbot-nginx 
       state: present
   - name: SSL cerbot setup 
-    community.crypto.certbot:
-      cert_domains:
-      - "{{ ansible_env.FQDN }}"
-      cert_email: "{{ soa_email_address }}"
-      nginx_vhost: yes
+    shell:
+      cmd: certbot_ssl "{{ ansible_env.FQDN }}" "{{ soa_email_address }}" 'nginx'
     become: true
-
