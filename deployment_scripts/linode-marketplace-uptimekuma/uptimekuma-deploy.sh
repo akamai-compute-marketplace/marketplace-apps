@@ -65,7 +65,6 @@ function udf {
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  #else echo "No domain entered";
   else 
     echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
   fi
