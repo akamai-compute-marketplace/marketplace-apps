@@ -1,42 +1,19 @@
 ---
 - name: Create Docker Volume
   docker_volume:
-    name: "odoo-db"
-
-- name: Create Docker Volume
-  docker_volume:
-    name: "odoo-data"
+    name: "uptime-kuma"
 
  # docker
 - name: Run Postgres Docker Container
   docker_container:
-    name: db
-    image: postgres:13
+    name: uptime-kuma
+    image: louislam/uptime-kuma:1
     restart_policy: always
     state: started
     volumes:
-      - "odoo-db:/var/lib/postgresql/data"
-    env:
-      POSTGRES_USER: "odoo"
-      POSTGRES_PASSWORD: "{{ postgres_password }}"
-      POSTGRES_DB: "postgres"
-
-- name: Run ODOO Docker Container
-  docker_container:
-    name: odoo
-    image: odoo
-    restart_policy: always
-    state: started
-    links:
-    - "db:db"
+      - "uptime-kuma:/app/data"
     ports:
-    - "8069:8069"
-    volumes:
-      - "odoo-data:/var/lib/odoo"
-    env:
-      POSTGRES_USER: "odoo"
-      POSTGRES_PASSWORD: "{{ postgres_password }}"
-      POSTGRES_DB: "postgres"
+      - "3001:3001"
 
 #Nginx setup
 
