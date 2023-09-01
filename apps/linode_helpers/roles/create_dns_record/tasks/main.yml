@@ -16,7 +16,7 @@
   block:
     - name: lookup domain info
       linode.cloud.domain_info:
-        api_token: "{{ token_password }}"
+        #api_token: "{{ token_password }}"
         domain: "{{ domain }}"
       register: domain_output
 
