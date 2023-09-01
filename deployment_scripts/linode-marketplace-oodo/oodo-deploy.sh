@@ -86,6 +86,7 @@ function run {
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
+  
 
   # populate group_vars
   udf
