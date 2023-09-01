@@ -38,6 +38,8 @@ function udf {
 
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
+  echo "webserver_stack: lemp" >> ${group_vars};
+  
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
   else echo "No username entered";
@@ -66,6 +68,20 @@ function udf {
   if [[ -n ${POSTGRES_PASSWORD} ]]; then
     echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
   fi
+
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  #else echo "No domain entered";
+  else 
+    echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  fi
+
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else echo "subdomain: www" >> ${group_vars};
+  fi
+
+
 }
 
 function run {

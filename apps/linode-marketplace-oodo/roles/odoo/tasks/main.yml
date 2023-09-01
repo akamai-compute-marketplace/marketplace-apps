@@ -41,7 +41,17 @@
 #Nginx setup
 
 - name: Nginx Reverse Setup
-  block:  
+  block:
+  - name: setup fqnd as default_dns
+    set_fact:
+      fqdn: "{{ default_dns }}"
+    when: default_dns is defined
+
+  - name: setup fqnd as subdomain.domain
+    set_fact:
+      fqdn: "{{ subdomain }}.{{ domain }}"
+    when: subdomain is defined and domain is defined
+
   - name: Install nginx
     apt:
       pkg:
@@ -49,15 +59,15 @@
       state: present
   - name: Config file Setup
     lineinfile:
-      path: "/etc/nginx/sites-available/{{ ansible_env.FQDN }}"
+      path: "/etc/nginx/sites-available/{{ fqdn }}"
       create: yes
       line: "{{ item }}"
     loop:
     - "server  {                                                       "
     - "listen 80;                                                      "
-    - "server_name {{ ansible_env.FQDN }};                             "
-    - "error_log /var/log/nginx/{{ ansible_env.FQDN }}.error;          "
-    - "access_log /var/log/nginx/{{ ansible_env.FQDN }}.access;        "
+    - "server_name {{ fqdn }};                             "
+    - "error_log /var/log/nginx/{{ fqdn }}.error;          "
+    - "access_log /var/log/nginx/{{ fqdn }}.access;        "
     - "location / {                                                    "
     - "   proxy_pass         http://localhost:8069;                    "  
     - "   proxy_http_version 1.1;                                      "
@@ -66,9 +76,10 @@
     - "   proxy_set_header   Host \\$host;                             "
     - "}                                                               "
     - "}                                                               "
+
   - name: Create a symbolic link for the Nginx configuration
     file:
-      src: "/etc/nginx/sites-available/{{ ansible_env.FQDN }}"
+      src: "/etc/nginx/sites-available/{{ fqdn }}"
       dest: "/etc/nginx/sites-enabled/"
       state: link
     become: true
@@ -84,18 +95,4 @@
     systemd:
       name: nginx
       state: restarted
-    become: true
-
-#SSL lemp
-- name: SSL lemp
-  block:
-  - name: install packages
-    apt:
-      pkg:
-      - certbot
-      - python3-certbot-nginx 
-      state: present
-  - name: SSL cerbot setup 
-    shell:
-      cmd: certbot_ssl "{{ ansible_env.FQDN }}" "{{ soa_email_address }}" 'nginx'
     become: true
