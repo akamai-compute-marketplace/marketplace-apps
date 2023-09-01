@@ -58,25 +58,10 @@
       - nginx
       state: present
   - name: Config file Setup
-    lineinfile:
-      path: "/etc/nginx/sites-available/{{ fqdn }}"
-      create: yes
-      line: "{{ item }}"
-    loop:
-    - "server  {                                                       "
-    - "listen 80;                                                      "
-    - "server_name {{ fqdn }};                             "
-    - "error_log /var/log/nginx/{{ fqdn }}.error;          "
-    - "access_log /var/log/nginx/{{ fqdn }}.access;        "
-    - "location / {                                                    "
-    - "   proxy_pass         http://localhost:8069;                    "  
-    - "   proxy_http_version 1.1;                                      "
-    - "   proxy_set_header   Upgrade \\$http_upgrade;                  "
-    - '   proxy_set_header   Connection "upgrade";                     '
-    - "   proxy_set_header   Host \\$host;                             "
-    - "}                                                               "
-    - "}                                                               "
-
+    template:
+      src: nginxconf
+      dest: "/etc/nginx/sites-available/{{ fqdn }}"
+                                                   
   - name: Create a symbolic link for the Nginx configuration
     file:
       src: "/etc/nginx/sites-available/{{ fqdn }}"
