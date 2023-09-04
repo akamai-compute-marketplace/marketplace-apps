@@ -1,0 +1,75 @@
+---
+
+#FQDN
+- name: FQDN setup
+  block:
+  - name: setup fqnd as default_dns
+    set_fact:
+      fqdn: "{{ default_dns }}"
+    when: default_dns is defined
+
+  - name: setup fqnd as subdomain.domain
+    set_fact:
+      fqdn: "{{ subdomain }}.{{ domain }}"
+    when: subdomain is defined and domain is defined
+
+#Joplin service/docker setup    
+
+- name: Joplin Service, Docker
+  block:
+  - name: Config file Setup
+    template:
+      src: joplin.service
+      dest: "/etc/systemd/system/joplin.service"
+  - name: Create Docker Compose Directory
+    file:
+     path: /etc/docker/compose/joplin
+     state: directory
+  - name: Docker file setup
+    template:
+      src: docker-compose.yaml
+      dest: "/etc/docker/compose/joplin/docker-compose.yml"
+  - name: Reload systemd daemon
+    systemd:
+      daemon_reload: yes
+  - name: Enable joplin Service
+    systemd:
+      name: joplin.service
+      enabled: yes
+  - name: Start joplin Service
+    systemd:
+      name: joplin.service
+      state: started
+  
+#Nginx setup
+
+- name: Nginx Reverse Setup
+  block:
+  - name: Install nginx
+    apt:
+      pkg:
+      - nginx
+      state: present
+  - name: Config file Setup
+    template:
+      src: nginx.conf
+      dest: "/etc/nginx/sites-available/{{ fqdn }}"                 
+  - name: Create a symbolic link for the Nginx configuration
+    file:
+      src: "/etc/nginx/sites-available/{{ fqdn }}"
+      dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
+      state: link
+    become: true
+  - name: Unlink the default Nginx configuration
+    file:
+      path: "/etc/nginx/sites-enabled/default"
+      state: absent
+    become: true
+  - name: Test Nginx configuration
+    command: nginx -t
+    become: true
+  - name: Reload Nginx service
+    systemd:
+      name: nginx
+      state: restarted
+    become: true

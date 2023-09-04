@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: nirvashare deploy
+- name: Joplin deploy
   hosts: localhost
   connection: local
   gather_facts: true
@@ -11,4 +11,4 @@
   roles:
     - common
     - docker
-    - nirvashare
+    - joplin
