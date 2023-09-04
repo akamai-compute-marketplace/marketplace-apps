@@ -13,14 +13,14 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
-## KUMA Settings 
+#joplin setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-
+#<UDF name="postgres_password" label="Password for the postgres database" example="s3cure_p4ssw0rd">
 
 # git repo
 export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-uptimekuma"
+export MARKETPLACE_APP="apps/linode-marketplace-joplin"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -29,15 +29,12 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
-
+  
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
-  echo "webserver_stack: lemp" >> ${group_vars};
-  
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
   else echo "No username entered";
@@ -57,8 +54,11 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #Uptimekuma vars
-  
+  #Joplin vars
+  if [[ -n ${POSTGRES_PASSWORD} ]]; then
+    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
+  fi
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
@@ -73,8 +73,7 @@ function udf {
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
   fi
-
-
+  
 }
 
 function run {
@@ -95,7 +94,6 @@ function run {
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
-  
 
   # populate group_vars
   udf
