@@ -9,6 +9,6 @@
 - name: Allow all access to tcp port 8000
   community.general.ufw:
     rule: allow
-    port: '5001'
+    port: '8080'
     proto: tcp
 
