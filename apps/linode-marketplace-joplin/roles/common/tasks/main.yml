@@ -59,3 +59,8 @@
 - name: enabling fail2ban
   import_role:
     name: fail2ban_install
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl

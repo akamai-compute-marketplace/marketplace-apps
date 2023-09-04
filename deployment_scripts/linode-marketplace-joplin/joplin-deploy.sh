@@ -34,7 +34,6 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  
   echo "webserver_stack: lemp" >> ${group_vars};
 
   if [[ -n ${USER_NAME} ]]; then
