@@ -57,7 +57,7 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #ODOO vars
+  #Focalboard vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};

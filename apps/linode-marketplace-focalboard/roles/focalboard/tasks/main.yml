@@ -40,7 +40,7 @@
       state: present
   - name: Config file Setup
     template:
-      src: nginxconf
+      src: nginx.conf
       dest: "/etc/nginx/sites-available/{{ fqdn }}"                 
   - name: Create a symbolic link for the Nginx configuration
     file:
