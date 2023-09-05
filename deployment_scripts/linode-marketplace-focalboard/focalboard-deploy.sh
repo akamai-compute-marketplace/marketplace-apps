@@ -65,8 +65,9 @@ function udf {
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  else 
-    echo "default_dns: yes" >> ${group_vars};
+  else
+    dns=$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'}) 
+    echo "default_dns: $dns" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then

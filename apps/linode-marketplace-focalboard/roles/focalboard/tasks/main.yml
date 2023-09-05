@@ -2,7 +2,7 @@
 - name: Pull focalboard image
   docker_image:
     name: mattermost/focalboard
-    source: pull
+    source: present
 
 - name: Create Docker Volume
   docker_volume:
@@ -22,16 +22,11 @@
 
 #Nginx setup
 
-- name: setting RDNS
-  set_fact:
-    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}/PTR') }}"
-  when: default_dns == True
-
 - name: Nginx Reverse Setup
   block:
-  - name: setup fqnd as rdns
+  - name: setup fqnd as default_dns
     set_fact:
-      fqdn: "{{ rdns }}"
+      fqdn: "{{ default_dns }}"
     when: default_dns is defined
 
   - name: setup fqnd as subdomain.domain
