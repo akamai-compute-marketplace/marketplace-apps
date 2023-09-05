@@ -1,0 +1,130 @@
+# Configuration file of Harbor
+
+# The IP address or hostname to access admin UI and registry service.
+# DO NOT use localhost or 127.0.0.1, because Harbor needs to be accessed by external clients.
+hostname: {{ fqdn }}
+
+# http related config
+http:
+  # port for http, default is 80. If https enabled, this port will redirect to https port
+  port: 80
+
+# https related config
+https:
+  # https port for harbor, default is 443
+  port: 443
+  # The path of cert and key files for nginx
+  certificate: /etc/letsencrypt/live/{{ fqdn }}/fullchain.pem
+  private_key: /etc/letsencrypt/live/{{ fqdn }}/privkey.pem
+
+# # Uncomment following will enable tls communication between all harbor components
+# internal_tls:
+#   # set enabled to true means internal tls is enabled
+#   enabled: true
+#   # put your cert and key files on dir
+#   dir: /etc/harbor/tls/internal
+
+# Uncomment external_url if you want to enable external proxy
+# And when it enabled the hostname will no longer used
+# external_url: https://reg.mydomain.com:8433
+
+# The initial password of Harbor admin
+# It only works in first time to install harbor
+# Remember Change the admin password from UI after launching Harbor.
+harbor_admin_password: {{ harbor_password }}
+
+# Harbor DB configuration
+database:
+  # The password for the root user of Harbor DB. Change this before any production use.
+  password: {{ harbor_db_password }}
+  # The maximum number of connections in the idle connection pool. If it <=0, no idle connections are retained.
+  max_idle_conns: 100
+  # The maximum number of open connections to the database. If it <= 0, then there is no limit on the number of open connections.
+  # Note: the default number of connections is 1024 for postgres of harbor.
+  max_open_conns: 900
+  # The maximum amount of time a connection may be reused. Expired connections may be closed lazily before reuse. If it <= 0, connections are not closed due to a connection's age.
+  # The value is a duration string. A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  conn_max_lifetime: 5m
+  # The maximum amount of time a connection may be idle. Expired connections may be closed lazily before reuse. If it <= 0, connections are not closed due to a connection's idle time.
+  # The value is a duration string. A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  conn_max_idle_time: 0
+
+# The default data volume
+data_volume: /data
+
+trivy:
+  # ignoreUnfixed The flag to display only fixed vulnerabilities
+  ignore_unfixed: false
+  # skipUpdate The flag to enable or disable Trivy DB downloads from GitHub
+  #
+  # You might want to enable this flag in test or CI/CD environments to avoid GitHub rate limiting issues.
+  # If the flag is enabled you have to download the `trivy-offline.tar.gz` archive manually, extract `trivy.db` and
+  # `metadata.json` files and mount them in the `/home/scanner/.cache/trivy/db` path.
+  skip_update: false
+  #
+  # The offline_scan option prevents Trivy from sending API requests to identify dependencies.
+  # Scanning JAR files and pom.xml may require Internet access for better detection, but this option tries to avoid it.
+  # For example, the offline mode will not try to resolve transitive dependencies in pom.xml when the dependency doesn't
+  # exist in the local repositories. It means a number of detected vulnerabilities might be fewer in offline mode.
+  # It would work if all the dependencies are in local.
+  # This option doesn't affect DB download. You need to specify "skip-update" as well as "offline-scan" in an air-gapped environment.
+  offline_scan: false
+  #
+  # Comma-separated list of what security issues to detect. Possible values are `vuln`, `config` and `secret`. Defaults to `vuln`.
+  security_check: vuln
+  #
+  # insecure The flag to skip verifying registry certificate
+  insecure: false
+
+jobservice:
+  # Maximum number of job workers in job service
+  max_job_workers: 10
+  # The jobLogger sweeper duration (ignored if `jobLogger` is `stdout`)
+  logger_sweeper_duration: 1 #days
+
+notification:
+  # Maximum retry count for webhook job
+  webhook_job_max_retry: 3
+  # HTTP client timeout for webhook job
+  webhook_job_http_client_timeout: 3 #seconds
+
+# Log configurations
+log:
+  # options are debug, info, warning, error, fatal
+  level: info
+  # configs for logs in local storage
+  local:
+    # Log files are rotated log_rotate_count times before being removed. If count is 0, old versions are removed rather than rotated.
+    rotate_count: 50
+    # Log files are rotated only if they grow bigger than log_rotate_size bytes. If size is followed by k, the size is assumed to be in kilobytes.
+    # If the M is used, the size is in megabytes, and if G is used, the size is in gigabytes. So size 100, size 100k, size 100M and size 100G
+    # are all valid.
+    rotate_size: 200M
+    # The directory on your host that store log
+    location: /var/log/harbor
+
+#This attribute is for migrator to detect the version of the .cfg file, DO NOT MODIFY!
+_version: 2.8.0
+
+proxy:
+  http_proxy:
+  https_proxy:
+  no_proxy:
+  components:
+    - core
+    - jobservice
+    - trivy
+# Enable purge _upload directories
+upload_purging:
+  enabled: true
+  # remove files in _upload directories which exist for a period of time, default is one week.
+  age: 168h
+  # the interval of the purge operations
+  interval: 24h
+  dryrun: false
+
+cache:
+  # not enabled by default
+  enabled: false
+  # keep cache for one day by default
+  expire_hours: 24
