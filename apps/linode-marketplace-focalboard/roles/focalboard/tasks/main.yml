@@ -22,12 +22,16 @@
 
 #Nginx setup
 
+- name: setting RDNS
+  set_fact:
+    rdns: "{{ lookup('community.general.dig', '{{ nomad_data.server[0].instance.ip_pub1 }}/PTR') }}"
+
 - name: Nginx Reverse Setup
   block:
-  - name: setup fqnd as default_dns
+  - name: setup fqnd as rdns
     set_fact:
-      fqdn: "{{ default_dns }}"
-    when: default_dns is defined
+      fqdn: "{{ rdns }}"
+    when: rdns is defined
 
   - name: setup fqnd as subdomain.domain
     set_fact:
