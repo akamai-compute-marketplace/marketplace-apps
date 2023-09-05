@@ -22,6 +22,11 @@
 
 #Nginx setup
 
+- name: setting RDNS
+  set_fact:
+    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}/PTR') }}"
+  when: default_dns == True
+
 - name: Nginx Reverse Setup
   block:
   - name: setup fqnd as rdns

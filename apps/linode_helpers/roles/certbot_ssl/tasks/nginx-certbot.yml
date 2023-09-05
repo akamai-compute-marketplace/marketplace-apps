@@ -24,11 +24,6 @@
     - domain is defined
     - subdomain == 'www'
 
-- name: setting RDNS
-  set_fact:
-    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}/PTR') }}"
-  when: default_dns == 'yes'
-
 - name: installing let's encrypt certificate on default domain
   shell:
     cmd: "certbot -n --nginx --agree-tos --redirect -d {{ rdns }} -m {{ soa_email_address }}"

@@ -19,11 +19,16 @@
     - domain is defined
     - subdomain == "www"
 
+- name: setting RDNS
+  set_fact:
+    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}/PTR') }}"
+  when: default_dns == True
+
 - name: set dns fact for default dns
   set_fact:
-    _domain: '{{ default_dns }}'
+    _domain: '{{ rdns }}'
     cacheable: yes
-  when: default_dns is defined
+  when: default_dns == True
 
 - name: setting system hostname
   hostname:
