@@ -56,24 +56,17 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #Joplin vars
-  if [[ -n ${POSTGRES_PASSWORD} ]]; then
-    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
-  fi
-
+  #Harbor vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else 
-    echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  if [[ -n ${HARBOR_PASSWORD} ]]; then
+    echo "harbor_password: ${HARBOR_PASSWORD}" >> ${group_vars};
   fi
 
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
+  if [[ -n ${HARBOR_DB_PASSWORD} ]]; then
+    echo "harbor_db_password: ${HARBOR_DB_PASSWORD}" >> ${group_vars};
   fi
   
 }
