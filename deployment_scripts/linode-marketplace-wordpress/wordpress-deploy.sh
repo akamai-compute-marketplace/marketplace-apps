@@ -40,6 +40,7 @@ function cleanup {
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
+  local ip=$(hostname -I | awk '{print $1}')
   sed 's/  //g' <<EOF > ${group_vars}
 
   # deployment vars
@@ -74,7 +75,7 @@ EOF
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   #else echo "No domain entered";
-  else echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  else echo "default_dns: $(dig +short -x $ip | sed 's/\.$//')" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
