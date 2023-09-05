@@ -26,13 +26,9 @@
         return_content: yes
       register: github_response
 
-    - name: Extract Download URL
-      set_fact:
-        download_url: "{{ github_response.json | json_query('assets[].browser_download_url') | select('match', '\\.tgz$') | first }}"
-
     - name: Download Harbor Release
       get_url:
-        url: "{{ download_url }}"
+        url: "{{ github_response.json.assets[0].browser_download_url }}"
         dest: /root/
     
     - name: Find the Harbor Installer Archive
