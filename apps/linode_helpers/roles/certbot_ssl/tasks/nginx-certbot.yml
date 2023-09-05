@@ -26,7 +26,7 @@
 
 - name: setting RDNS
   set_fact:
-    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}') }}"
+    rdns: "{{ lookup('community.general.dig', '{{ ansible_default_ipv4.address }}/PTR') }}"
   when: default_dns == 'yes'
 
 - name: installing let's encrypt certificate on default domain
