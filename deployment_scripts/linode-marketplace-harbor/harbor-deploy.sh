@@ -57,6 +57,18 @@ function udf {
   fi
 
   #Harbor vars
+
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  else 
+     echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  fi
+
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else echo "subdomain: www" >> ${group_vars};
+  fi
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
