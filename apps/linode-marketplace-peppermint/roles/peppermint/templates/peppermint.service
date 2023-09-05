@@ -1,0 +1,13 @@
+[Unit]
+Description=Docker Compose Peppermint Application Service
+Requires=peppermint.service
+After=peppermint.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/docker-compose up -d
+ExecStop=/usr/local/bin/docker-compose down
+ExecReload=/usr/local/bin/docker-compose up -d
+WorkingDirectory=/etc/docker/compose/peppermint/
+[Install]
+WantedBy=multi-user.target
