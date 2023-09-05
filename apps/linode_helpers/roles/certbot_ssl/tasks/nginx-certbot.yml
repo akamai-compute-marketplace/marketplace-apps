@@ -24,7 +24,12 @@
     - domain is defined
     - subdomain == 'www'
 
+- name: setting RDNS
+  set_fact:
+    rdns: "{{ lookup('community.general.dig', '{{ nomad_data.server[0].instance.ip_pub1 }}/PTR') }}"
+  when: default_dns == 'yes'
+
 - name: installing let's encrypt certificate on default domain
   shell:
-    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ default_dns }} -m {{ soa_email_address }}"
-  when: default_dns is defined
+    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ rdns }} -m {{ soa_email_address }}"
+  when: default_dns == 'yes'
