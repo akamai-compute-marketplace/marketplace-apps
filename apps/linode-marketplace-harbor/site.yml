@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: Joplin deploy
+- name: Harbor deploy
   hosts: localhost
   connection: local
   gather_facts: true
@@ -11,4 +11,4 @@
   roles:
     - common
     - docker
-    - joplin
+    - harbor
