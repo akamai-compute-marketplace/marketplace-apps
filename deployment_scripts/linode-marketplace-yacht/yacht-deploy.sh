@@ -15,7 +15,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="ytheme" Label="Yacht Theme" example="Default" default="Default" oneof="Default,RED,OMV" />
 
 # git repo
-export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-yacht"
 
