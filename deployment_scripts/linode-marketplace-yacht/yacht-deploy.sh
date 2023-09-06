@@ -8,7 +8,6 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
-
 ## Yacht Settings 
 #<UDF name="yemail" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
 #<UDF name="ypassword" Label="Yacht Password" example="Password" />

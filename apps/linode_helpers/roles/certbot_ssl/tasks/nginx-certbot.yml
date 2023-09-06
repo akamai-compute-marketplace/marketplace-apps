@@ -26,5 +26,5 @@
 
 - name: installing let's encrypt certificate on default domain
   shell:
-    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ rdns }} -m {{ soa_email_address }}"
-  when: default_dns == 'yes'
+    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ default_dns }} -m {{ soa_email_address }}"
+  when: default_dns is defined

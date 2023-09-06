@@ -45,8 +45,6 @@ function udf {
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
   fi
-
-  
 }
 
 function run {

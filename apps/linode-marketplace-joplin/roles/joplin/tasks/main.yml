@@ -73,8 +73,3 @@
       name: nginx
       state: restarted
     become: true
-    
-# ssl_certbot
-- name: setting up ssl certificate
-  import_role:
-    name: certbot_ssl
