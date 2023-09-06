@@ -1,6 +1,6 @@
-# Linode Yacht Deployment One-Click APP
+# Linode Odoo Deployment One-Click APP
 
-Docker is a web interface for managing docker containers with an emphasis on templating to provide one-click deployments of dockerized applications. Think of it like a decentralized app store for servers that anyone can make packages for.
+Odoo is a free and comprehensive business app suite of tools that seamlessly integrate. Choose what you need to manage your business on a single platform, including a CRM, email marketing tools, essential project management functions, and more.
 
 ## Software Included
 
@@ -8,13 +8,12 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 | :---      | :----     | :---          |
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
-| selfhostedpro/yacht | Latest | web interface for managing docker containers |
-
+| odoo | Latest | all-in-one business app suite |
+| postgres:13 | 13 | Free and open-source relational database management system |
 
 **Supported Distributions:**
 
 - Ubuntu 22.04 LTS
-- Debian 11
 
 ## Linode Helpers Included
 
@@ -27,7 +26,7 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 
 ## Use our API
 
-Customers can choose to the deploy the LAMP stack through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Odoo app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -37,10 +36,8 @@ SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
+export SOA_EMAIL_ADDRESS="email@domain.com"
+export POSTGRES_PASSWORD="aComplexP@ssword"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -51,10 +48,8 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
-        "yemail": "${YEMAIL}",
-        "ypassword" : "${YPASSWORD}",
-        "compose_support" : "${COMPOSE_SUPPORT}",
-        "ytheme" : "${YTHEME}"
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
+        "postgres_password" : "${POSTGRES_PASSWORD}"
       },
       "authorized_users": [
         "myUser",
@@ -73,17 +68,15 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
+export SOA_EMAIL_ADDRESS="email@domain.com"
+export POSTGRES_PASSWORD="aComplexP@ssword"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${YEMAIL}"}, {"ypassword" : "${YPASSWORD}"}, {"compose_support" : "${COMPOSE_SUPPORT}"}, {"ytheme" : "${YTHEME}"}' \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${POSTGRES_PASSWORD}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"

@@ -1,6 +1,6 @@
 # Linode Yacht Deployment One-Click APP
 
-Docker is a web interface for managing docker containers with an emphasis on templating to provide one-click deployments of dockerized applications. Think of it like a decentralized app store for servers that anyone can make packages for.
+Simplify Docker deployments and make containerization easy for anyone to use. Please note: Yacht is still in alpha and is not recommended for production use.
 
 ## Software Included
 
@@ -14,7 +14,6 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 **Supported Distributions:**
 
 - Ubuntu 22.04 LTS
-- Debian 11
 
 ## Linode Helpers Included
 
@@ -27,7 +26,7 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 
 ## Use our API
 
-Customers can choose to the deploy the LAMP stack through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Yacht app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN

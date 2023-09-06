@@ -1,6 +1,6 @@
-# Linode Yacht Deployment One-Click APP
+# Linode Peppermint Deployment One-Click APP
 
-Docker is a web interface for managing docker containers with an emphasis on templating to provide one-click deployments of dockerized applications. Think of it like a decentralized app store for servers that anyone can make packages for.
+Open source alternative to paid ticket management solutions with essential features including a streamlined task list, project and client management, and ticket prioritization.
 
 ## Software Included
 
@@ -8,13 +8,13 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 | :---      | :----     | :---          |
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
-| selfhostedpro/yacht | Latest | web interface for managing docker containers |
+| pepperlabs/peppermint:latest | Latest | Simple yet scalable open source ticket management. |
+| postgres | latest | Free and open-source relational database management system |
 
 
 **Supported Distributions:**
 
 - Ubuntu 22.04 LTS
-- Debian 11
 
 ## Linode Helpers Included
 
@@ -27,7 +27,7 @@ Docker is a web interface for managing docker containers with an emphasis on tem
 
 ## Use our API
 
-Customers can choose to the deploy the LAMP stack through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Peppermint app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -37,10 +37,6 @@ SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -50,12 +46,6 @@ curl -H "Content-Type: application/json" \
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
-      "stackscript_data": {
-        "yemail": "${YEMAIL}",
-        "ypassword" : "${YPASSWORD}",
-        "compose_support" : "${COMPOSE_SUPPORT}",
-        "ytheme" : "${YTHEME}"
-      },
       "authorized_users": [
         "myUser",
         "secondaryUser"
@@ -73,17 +63,12 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${YEMAIL}"}, {"ypassword" : "${YPASSWORD}"}, {"compose_support" : "${COMPOSE_SUPPORT}"}, {"ytheme" : "${YTHEME}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
