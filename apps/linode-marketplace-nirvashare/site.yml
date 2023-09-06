@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: nirvashare deploy
+- name: nirvashare setup
   hosts: localhost
   connection: local
   gather_facts: true

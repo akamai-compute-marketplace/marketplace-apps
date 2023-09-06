@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: Harbor deploy
+- name: Harbor setup
   hosts: localhost
   connection: local
   gather_facts: true
