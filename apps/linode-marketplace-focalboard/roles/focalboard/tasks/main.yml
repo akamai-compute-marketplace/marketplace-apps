@@ -2,7 +2,7 @@
 - name: Pull focalboard image
   docker_image:
     name: mattermost/focalboard
-    source: present
+    source: pull
 
 - name: Create Docker Volume
   docker_volume:
