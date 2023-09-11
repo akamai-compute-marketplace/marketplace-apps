@@ -22,8 +22,8 @@ Ubuntu 20.04 LTS, Ubuntu 22.04 LTS, Debian 11
 ### Example MC2GO HTTP endpoints
 The REST API does not require authentication. The functions use the following syntax:
 http://[container-ip-addess]:[port]/rest/[api-version]/[function]/[parameters]
-The “api-version” part in the URL only contains the major version, and with a leading “v”. For 
-MainConcept 2GO v2.0 the API version is “v1”.
+The "api-version" part in the URL only contains the major version, and with a leading "v". For 
+MainConcept 2GO v2.0 the API version is "v1".
 
 1. Get service name:
 GET http://[ip-addess]:[port]/rest/v1/service
@@ -43,7 +43,7 @@ POST http://[ip-addess]:[port]/rest/v1/jobs
   "INPUT": "ftp://10.144.41.202:2121/test.mp4",
   "OUTPUT": "ftp://10.144.41.202:2121/test/xavc_intra.mxf",
   "PRESETNAME": "XAVC_Intra_HD_CBG_50",
-  “KEEP_CONTENT”: “TRUE”,
+  "KEEP_CONTENT": "TRUE",
   "VERBOSITY": "DEFAULT"
 }
 
