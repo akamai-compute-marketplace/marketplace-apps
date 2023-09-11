@@ -19,6 +19,18 @@ Linux CentOS 7.9, Linux CentOS 9, Microsoft Windows Server 2012, Microsoft Windo
 ### Documentation
 [Documentation](https://www.mainconcept.com/live-encoder)
 
+Documentation on Linode: /opt/McLiveEncoder/doc/
+
+### Accessing the MC Live Encoder Dashboard
+http://[LINODE_IP_ADDRESS]:8080/  
+
+Login credentials:
+
+User Name: admin  
+Password: admin 
+
+IMPORTANT: Please ensure that you change the admin password on first login!
+
 ### Brand color 1
 Color code - #041125
 
