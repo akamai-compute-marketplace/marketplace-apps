@@ -61,14 +61,14 @@ EOF
   else echo "No password entered";
   fi
 
-  if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
-  fi
-
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
+  fi
+
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
