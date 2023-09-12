@@ -34,6 +34,12 @@
     - pubkey is defined
     - username is defined
 
+# disable root login w/wo pubkey
+- name: secure ssh
+  import_role:
+      name: securessh
+  when: disable_root is defined    
+
 # apt_setup_update
 - name: update system packages
   import_role:
