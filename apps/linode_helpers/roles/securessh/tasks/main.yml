@@ -1,11 +1,27 @@
 ---
+# If root login is disabled and they provide an SSH KEY
 - name: secure ssh config
   lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "{{ item.search }}"
     line: "{{ item.replace }}"
   loop:
-    - { search: '^\#?PermitRootLogin (yes|no)', replace: 'PermitRootLogin without-password' }
+    - { search: '^\#?PermitRootLogin (yes|no)', replace: 'PermitRootLogin no' }
     - { search: '^\#?PasswordAuthentication (yes|no)', replace: 'PasswordAuthentication no' }
     - { search: '^\#?PubkeyAuthentication (yes|no)', replace: 'PubkeyAuthentication yes' }
   notify: restart ssh
+  when: 
+    - disable_root is defined
+    - pubkey is defined
+# If root login is disabled and they don't provide an SSH KEY
+- name: secure ssh config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.search }}"
+    line: "{{ item.replace }}"
+  loop:
+    - { search: '^\#?PermitRootLogin (yes|no)', replace: 'PermitRootLogin no' }
+  notify: restart ssh
+  when: 
+    - disable_root is defined
+    - pubkey is not defined
