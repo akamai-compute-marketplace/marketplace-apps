@@ -1,15 +1,15 @@
 ---
-- name: Pull focalboard image
+
+- name: pull focalboard image
   docker_image:
     name: mattermost/focalboard
     source: pull
 
-- name: Create Docker Volume
+- name: create Docker Volume
   docker_volume:
     name: "focalboard"
 
- # docker
-- name: Run focalboard Docker Container
+- name: run focalboard Docker Container
   docker_container:
     name: focalboard
     image: mattermost/focalboard
@@ -22,7 +22,7 @@
 
 #Nginx setup
 
-- name: Nginx Reverse Setup
+- name: nginx Reverse Setup
   block:
   - name: setup fqnd as default_dns
     set_fact:
@@ -39,26 +39,26 @@
       pkg:
       - nginx
       state: present
-  - name: Config file Setup
+
+  - name: config file Setup
     template:
       src: nginx.conf
-      dest: "/etc/nginx/sites-available/{{ fqdn }}"                 
-  - name: Create a symbolic link for the Nginx configuration
+      dest: "/etc/nginx/sites-available/{{ fqdn }}"
+
+  - name: create a symbolic link for the Nginx configuration
     file:
       src: "/etc/nginx/sites-available/{{ fqdn }}"
       dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
       state: link
-    become: true
-  - name: Unlink the default Nginx configuration
+
+  - name: unlink the default Nginx configuration
     file:
       path: "/etc/nginx/sites-enabled/default"
       state: absent
-    become: true
-  - name: Test Nginx configuration
+
+  - name: test Nginx configuration
     command: nginx -t
-    become: true
-  - name: Reload Nginx service
-    systemd:
-      name: nginx
-      state: restarted
-    become: true
+    notify:
+    - reload nginx service
+
+
