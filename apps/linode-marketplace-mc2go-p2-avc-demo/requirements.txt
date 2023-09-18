@@ -9,3 +9,7 @@ polling==0.3.2
 ansible-specdoc==0.0.14
 dnspython==2.2.1
 pyyaml==6.0.1
+## testing ##
+#molecule==5.1.0
+#molecule-vagrant==2.0.0
+#python-vagrant==0.5.15
