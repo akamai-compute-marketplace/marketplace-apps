@@ -1,7 +1,5 @@
 ---
-
-#FQDN
-- name: FQDN setup
+- name: fqdn setup
   block:
   - name: setup fqnd as default_dns
     set_fact:
@@ -12,67 +10,67 @@
     set_fact:
       fqdn: "{{ subdomain }}.{{ domain }}"
     when: subdomain is defined and domain is defined
+  
 
-#Joplin service/docker setup    
-
-- name: Joplin Service, Docker
+- name: joplin docker service
   block:
-  - name: Config file Setup
+  - name: config file setup
     template:
       src: joplin.service
       dest: "/etc/systemd/system/joplin.service"
-  - name: Create Docker Compose Directory
+
+  - name: create docker compose directory
     file:
      path: /etc/docker/compose/joplin
      state: directory
-  - name: Docker file setup
+
+  - name: docker file setup
     template:
       src: docker-compose.yaml
       dest: "/etc/docker/compose/joplin/docker-compose.yml"
-  - name: Reload systemd daemon
+
+  - name: reload systemd daemon
     systemd:
       daemon_reload: yes
-  - name: Enable joplin Service
+
+  - name: enable joplin service
     systemd:
       name: joplin.service
       enabled: yes
-  - name: Start joplin Service
+
+  - name: start joplin service
     systemd:
       name: joplin.service
       state: started
-  
-#Nginx setup
 
-- name: Nginx Reverse Setup
+- name: nginx reverse setup
   block:
   - name: Install nginx
     apt:
       pkg:
       - nginx
       state: present
-  - name: Config file Setup
+
+  - name: config file setup
     template:
       src: nginx.conf
-      dest: "/etc/nginx/sites-available/{{ fqdn }}"                 
-  - name: Create a symbolic link for the Nginx configuration
+      dest: "/etc/nginx/sites-available/{{ fqdn }}"  
+
+  - name: create a symbolic link for the nginx configuration
     file:
       src: "/etc/nginx/sites-available/{{ fqdn }}"
       dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
       state: link
-    become: true
-  - name: Unlink the default Nginx configuration
+
+  - name: unlink the default nginx configuration
     file:
       path: "/etc/nginx/sites-enabled/default"
       state: absent
-    become: true
-  - name: Test Nginx configuration
+
+  - name: test nginx configuration
     command: nginx -t
-    become: true
-  - name: Reload Nginx service
-    systemd:
-      name: nginx
-      state: restarted
-    become: true
+    notify:
+    - reload nginx service
     
 # ssl_certbot
 - name: setting up ssl certificate
