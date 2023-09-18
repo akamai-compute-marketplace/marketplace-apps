@@ -1,0 +1,31 @@
+---
+- name: nirvashare service and docker
+  block:
+  - name: Config file Setup
+    template:
+      src: nirvashare.service
+      dest: "/etc/systemd/system/nirvashare.service"
+
+  - name: create docker compose directory
+    file:
+     path: /var/nirvashare
+     state: directory
+
+  - name: docker file setup
+    template:
+      src: docker-compose.yaml
+      dest: "/var/nirvashare/docker-compose.yml"
+
+  - name: reload systemd daemon
+    systemd:
+      daemon_reload: yes
+
+  - name: enable nirvashare service
+    systemd:
+      name: nirvashare.service
+      enabled: yes
+      
+  - name: start nirvashare service
+    systemd:
+      name: nirvashare.service
+      state: started
