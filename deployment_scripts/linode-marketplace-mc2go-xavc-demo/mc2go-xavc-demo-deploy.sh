@@ -3,19 +3,13 @@ set -e
 trap "cleanup $? $LINENO" EXIT
 
 ## MainConcept MC2GO XAVC Transcoder Demo Settings
-#<UDF name="mc2go_port" Label="MC2GO XAVC Transcoder Port" example="Default: 8080" default="8080" /> 
+#<UDF name="mc2go_port" Label="MC2GO XAVC Transcoder API Port" example="Default: 8080" default="8080" /> 
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
 #<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
-
-## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
-#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for SOA record" default=””>
 
 # git repo
 #export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
@@ -59,22 +53,6 @@ EOF
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
-  fi
-
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  #else echo "No domain entered";
-  else echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
   fi
 }
 
