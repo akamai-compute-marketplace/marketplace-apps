@@ -75,3 +75,4 @@
     command: nginx -t
     notify:
     - reload nginx service
+    
