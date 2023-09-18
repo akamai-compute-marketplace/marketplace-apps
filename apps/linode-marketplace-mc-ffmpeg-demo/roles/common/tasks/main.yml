@@ -4,27 +4,11 @@
     import_role:
       name: hostname
 
-  # write _domain to vars.
-  - name: write _domain to vars
-    lineinfile: 
-      insertafter: EOF
-      path: group_vars/linode/vars
-      line: | 
-        _domain: {{ _domain }}
-
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
     import_role:
       name: sudouser
     when: username is defined
-
-  # dns creation
-  - name: create dns A record
-    import_role:
-      name: create_dns_record
-    when: 
-      - token_password is defined
-      - default_dns is not defined
 
   # sets customer supplied ssh pubkey to limited user
   - name: set ssh pubkey

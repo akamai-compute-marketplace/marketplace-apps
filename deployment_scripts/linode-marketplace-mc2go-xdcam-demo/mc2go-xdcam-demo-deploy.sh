@@ -12,7 +12,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 # git repo
-#export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+#export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 
 #test git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"

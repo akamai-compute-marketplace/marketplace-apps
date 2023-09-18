@@ -16,7 +16,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address for SOA record" default=””>
 
 # git repo
-#export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+#export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 
 #test git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
