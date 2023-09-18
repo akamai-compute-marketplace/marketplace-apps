@@ -1,0 +1,5 @@
+  - name: start peppermint service
+    systemd:
+      name: peppermint.service
+      state: started
+      enabled: yes
