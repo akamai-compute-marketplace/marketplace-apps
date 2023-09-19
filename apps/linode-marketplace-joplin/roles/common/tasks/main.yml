@@ -27,12 +27,6 @@
     name: sudouser
   when: username is defined
 
-# Disable root
-- name: set sudo user
-  import_role:
-    name: sudouser
-  when: username is defined
-
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
   import_role:
@@ -40,6 +34,12 @@
   when: 
     - pubkey is defined
     - username is defined
+
+# disable root login w/wo pubkey
+- name: secure ssh
+  import_role:
+      name: securessh
+  when: disable_root is defined
 
 # apt_setup_update
 - name: update system packages

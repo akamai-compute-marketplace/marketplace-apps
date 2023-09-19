@@ -20,7 +20,7 @@ services:
         restart: unless-stopped
         environment:
             - APP_PORT=22300
-            - APP_BASE_URL=https://{{ fqdn }}
+            - APP_BASE_URL=https://{{ _domain }}
             - DB_CLIENT=pg
             - POSTGRES_PASSWORD={{ postgres_password }}
             - POSTGRES_DATABASE=joplin

@@ -1,77 +1,57 @@
 ---
-- name: fqdn setup
-  block:
-  - name: setup fqnd as default_dns
-    set_fact:
-      fqdn: "{{ default_dns }}"
-    when: default_dns is defined
+# joplin
+- name: config file setup
+  template:
+    src: joplin.service
+    dest: "/etc/systemd/system/joplin.service"
 
-  - name: setup fqnd as subdomain.domain
-    set_fact:
-      fqdn: "{{ subdomain }}.{{ domain }}"
-    when: subdomain is defined and domain is defined
-  
+- name: create docker compose directory
+  file:
+    path: /etc/docker/compose/joplin
+    state: directory
 
-- name: joplin docker service
-  block:
-  - name: config file setup
-    template:
-      src: joplin.service
-      dest: "/etc/systemd/system/joplin.service"
+- name: docker file setup
+  template:
+    src: docker-compose.yaml
+    dest: "/etc/docker/compose/joplin/docker-compose.yml"
 
-  - name: create docker compose directory
-    file:
-     path: /etc/docker/compose/joplin
-     state: directory
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
 
-  - name: docker file setup
-    template:
-      src: docker-compose.yaml
-      dest: "/etc/docker/compose/joplin/docker-compose.yml"
+- name: enable joplin service
+  systemd:
+    name: joplin.service
+    enabled: yes
 
-  - name: reload systemd daemon
-    systemd:
-      daemon_reload: yes
+- name: start joplin service
+  systemd:
+    name: joplin.service
+    state: started
 
-  - name: enable joplin service
-    systemd:
-      name: joplin.service
-      enabled: yes
-
-  - name: start joplin service
-    systemd:
-      name: joplin.service
-      state: started
-
-- name: nginx reverse setup
-  block:
-  - name: Install nginx
-    apt:
-      pkg:
-      - nginx
+# nginx
+- name: Install nginx
+  apt:
+    pkg: nginx
       state: present
 
-  - name: config file setup
+- name: config file setup
     template:
       src: nginx.conf
-      dest: "/etc/nginx/sites-available/{{ fqdn }}"  
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
 
-  - name: create a symbolic link for the nginx configuration
-    file:
-      src: "/etc/nginx/sites-available/{{ fqdn }}"
-      dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
-      state: link
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
 
-  - name: unlink the default nginx configuration
-    file:
-      path: "/etc/nginx/sites-enabled/default"
-      state: absent
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
 
-  - name: test nginx configuration
-    command: nginx -t
-    notify:
-    - reload nginx service
-    
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:

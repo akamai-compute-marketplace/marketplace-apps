@@ -2,7 +2,7 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-##Linode/SSH security settings
+## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
 #<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
@@ -13,12 +13,12 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
-#joplin setup
+## Joplin setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 #<UDF name="postgres_password" label="Password for the postgres database" example="s3cure_p4ssw0rd">
 
 # git repo
-export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-joplin"
 
@@ -34,15 +34,15 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  echo "webserver_stack: lemp" >> ${group_vars};
 
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
   else echo "No username entered";
   fi
 
-    if [[ -n ${DISABLE_ROOT} ]]; then
-    echo "disable_root: ${DISABLE_ROOT}" >> ${group_vars};
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${PASSWORD} ]]; then
@@ -55,7 +55,7 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #Joplin vars
+  # Joplin vars
   if [[ -n ${POSTGRES_PASSWORD} ]]; then
     echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
   fi
@@ -83,10 +83,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone --depth 1 --filter=blob:none ${GIT_REPO} --branch joplin --sparse
-  cd ${WORK_DIR}
-  git sparse-checkout init --cone
-  git sparse-checkout set apps/linode-marketplace-joplin apps/linode_helpers
+  git -C /tmp clone ${GIT_REPO}
+  # for a single testing branch
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
