@@ -2,7 +2,7 @@
 # joplin
 - name: config file setup
   template:
-    src: joplin.service
+    src: templates/joplin.service
     dest: "/etc/systemd/system/joplin.service"
 
 - name: create docker compose directory
@@ -12,7 +12,7 @@
 
 - name: docker file setup
   template:
-    src: docker-compose.yaml
+    src: templates/docker-compose.yaml
     dest: "/etc/docker/compose/joplin/docker-compose.yml"
 
 - name: reload systemd daemon
@@ -36,8 +36,8 @@
     state: present
 
 - name: config file setup
-    template:
-      src: nginx.conf
+  template:
+      src: templates/nginx.conf.j2
       dest: "/etc/nginx/sites-available/{{ _domain }}"  
 
 - name: create a symbolic link for the nginx configuration
