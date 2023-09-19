@@ -30,10 +30,10 @@
     state: started
 
 # nginx
-- name: Install nginx
+- name: install nginx
   apt:
     pkg: nginx
-      state: present
+    state: present
 
 - name: config file setup
     template:
