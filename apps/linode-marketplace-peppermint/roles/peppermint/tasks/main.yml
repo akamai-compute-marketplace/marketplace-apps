@@ -14,16 +14,15 @@
     src: docker-compose.yaml
     dest: "/etc/docker/compose/peppermint/docker-compose.yml"
 
-  #- name: get docker compose file
-  #  replace:
-  #    path: /etc/docker/compose/peppermint/docker-compose.yml
-  #    regexp: 'localhost'
-  #    replace: '{{ ansible_default_ipv4.address }}'
-
 - name: Reload systemd daemon
   systemd:
     daemon_reload: yes
-  notify: start peppermint service
+
+- name: start peppermint service
+  systemd:
+    name: peppermint.service
+    state: started
+    enabled: yes
 
 # Nginx
 - name: install nginx
