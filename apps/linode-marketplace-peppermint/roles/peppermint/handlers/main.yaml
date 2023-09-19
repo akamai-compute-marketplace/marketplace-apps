@@ -1,5 +1,11 @@
-  - name: start peppermint service
-    systemd:
-      name: peppermint.service
-      state: started
-      enabled: yes
+- name: start peppermint service
+  systemd:
+    name: peppermint.service
+    state: started
+    enabled: yes
+
+- name: reload nginx service
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
