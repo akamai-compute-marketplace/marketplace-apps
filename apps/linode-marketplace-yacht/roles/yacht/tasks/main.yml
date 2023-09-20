@@ -3,6 +3,16 @@
   docker_volume:
     name: yacht_data
 
+- name: Create directory for Yacht environment file
+  file:
+    path: /opt/yacht
+    state: directory
+
+- name: Generate Yacht environment file
+  template:
+    src: yacht.env.j2
+    dest: /opt/yacht/yacht.env
+
 - name: create Docker container for Yacht (with Compose support)
   docker_container:
     name: yacht
@@ -15,11 +25,7 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "yacht_data:/config"
       - "/opt/Yacht/compose:/compose"
-    environment:
-      COMPOSE_DIR: "/opt/Yacht/compose/"
-      THEME: "{{ yacht_theme }}"
-      ADMIN_EMAIL: "{{ yemail }}"
-      ADMIN_PASSWORD: "{{ ypassword }}"
+    env_file: "/opt/yacht/yacht.env"
     when: compose_support == "Yes"
 
 - name: create default compose directory and example project
@@ -52,10 +58,7 @@
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "yacht_data:/config"
-    environment:
-      THEME: "{{ yacht_theme }}"
-      ADMIN_EMAIL: "{{ yemail }}"
-      ADMIN_PASSWORD: "{{ ypassword }}"
+    env_file: "/opt/yacht/yacht.env"
   when: compose_support == "No"
 
 # Nginx
