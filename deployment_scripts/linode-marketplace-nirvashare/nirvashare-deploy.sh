@@ -40,8 +40,9 @@ function udf {
   else echo "No username entered";
   fi
 
-    if [[ -n ${DISABLE_ROOT} ]]; then
-    echo "disable_root: ${DISABLE_ROOT}" >> ${group_vars};
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${PASSWORD} ]]; then
