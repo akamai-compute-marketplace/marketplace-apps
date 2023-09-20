@@ -18,3 +18,9 @@
     port: '443'
     proto: tcp
 
+- name: deny all access to tcp port 8080
+  community.general.ufw:
+    rule: deny
+    port: '8080'
+    proto: tcp
+
