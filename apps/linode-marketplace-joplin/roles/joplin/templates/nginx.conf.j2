@@ -1,15 +1,11 @@
     server  {                                                       
     listen 80;  
-    {% if subdomain != "www" %}
+    {% if subdomain != "www" or default_dns is defined %}
     server_name {{ _domain }};                             
     error_log /var/log/nginx/{{ _domain }}.error;          
     access_log /var/log/nginx/{{ _domain }}.access;  
    {% elif subdomain == "www" %}
     server_name {{ _domain }} www.{{ _domain }};                             
-    error_log /var/log/nginx/{{ _domain }}.error;          
-    access_log /var/log/nginx/{{ _domain }}.access;  
-   {% elif default_dns is defined %}
-    server_name {{ _domain }};                             
     error_log /var/log/nginx/{{ _domain }}.error;          
     access_log /var/log/nginx/{{ _domain }}.access;  
    {% endif %}                                                    
