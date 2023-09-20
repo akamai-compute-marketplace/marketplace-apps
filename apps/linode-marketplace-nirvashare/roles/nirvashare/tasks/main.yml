@@ -1,31 +1,59 @@
 ---
-- name: nirvashare service and docker
-  block:
-  - name: Config file Setup
-    template:
-      src: nirvashare.service
-      dest: "/etc/systemd/system/nirvashare.service"
+# Nirvashare
+- name: Config file Setup
+  template:
+    src: templates/nirvashare.service
+    dest: "/etc/systemd/system/nirvashare.service"
 
-  - name: create docker compose directory
-    file:
-     path: /var/nirvashare
-     state: directory
+- name: create docker compose directory
+  file:
+    path: /var/nirvashare
+    state: directory
 
-  - name: docker file setup
-    template:
-      src: docker-compose.yaml
-      dest: "/var/nirvashare/docker-compose.yml"
+- name: docker file setup
+  template:
+    src: templates/docker-compose.yaml
+    dest: "/var/nirvashare/docker-compose.yml"
 
-  - name: reload systemd daemon
-    systemd:
-      daemon_reload: yes
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
 
-  - name: enable nirvashare service
-    systemd:
-      name: nirvashare.service
-      enabled: yes
+- name: enable nirvashare service
+  systemd:
+    name: nirvashare.service
+    enabled: yes
       
-  - name: start nirvashare service
-    systemd:
-      name: nirvashare.service
-      state: started
+- name: start nirvashare service
+  systemd:
+    name: nirvashare.service
+    state: started
+
+# Nginx
+- name: install nginx
+  apt:
+    pkg:
+      - nginx
+    state: present
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"      
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl

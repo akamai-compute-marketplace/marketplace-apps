@@ -8,7 +8,13 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
-#Nirvashare setup
+## Domain Settings
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+
+## Nirvashare Settings 
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 #<UDF name="dbpassword" Label="Database Password" />
 
 # git repo
@@ -48,11 +54,30 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #Nirvashare vars
+  # Nirvashare 
   if [[ -n ${DBPASSWORD} ]]; then
     echo "dbpassword: ${DBPASSWORD}" >> ${group_vars};
   fi
   
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  fi
+
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  else
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+  fi
+
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else echo "subdomain: www" >> ${group_vars};
+  fi
+
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
 }
 
 function run {
@@ -61,10 +86,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone --depth 1 --filter=blob:none ${GIT_REPO} --branch nirvashare --sparse
-  cd ${WORK_DIR}
-  git sparse-checkout init --cone
-  git sparse-checkout set apps/linode-marketplace-nirvashare apps/linode_helpers
+  git -C /tmp clone ${GIT_REPO}
+  # for a single testing branch
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
