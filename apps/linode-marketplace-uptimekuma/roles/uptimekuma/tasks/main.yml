@@ -15,39 +15,41 @@
       - "3001:3001"
 
 # Nginx
+- name: setup fqnd as default_dns
+  set_fact:
+    fqdn: "{{ default_dns }}"
+  when: default_dns is defined
 
-- name: nginx reverse setup
-  block:
-  - name: setup fqnd as default_dns
-    set_fact:
-      fqdn: "{{ default_dns }}"
-    when: default_dns is defined
+- name: setup fqnd as subdomain.domain
+  set_fact:
+    fqdn: "{{ subdomain }}.{{ domain }}"
+  when: subdomain is defined and domain is defined
 
-  - name: setup fqnd as subdomain.domain
-    set_fact:
-      fqdn: "{{ subdomain }}.{{ domain }}"
-    when: subdomain is defined and domain is defined
-
-  - name: install nginx
-    apt:
-      pkg:
+- name: install nginx
+  apt:
+    pkg:
       - nginx
-      state: present
+    state: present
 
-  - name: config file setup
-    template:
-      src: nginx.conf
-      dest: "/etc/nginx/sites-available/{{ fqdn }}"    
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ fqdn }}"    
 
-  - name: create a symbolic link for the nginx configuration
-    file:
-      src: "/etc/nginx/sites-available/{{ fqdn }}"
-      dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
-      state: link
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ fqdn }}"
+    dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
+    state: link
 
-  - name: unlink the default nginx configuration
-    file:
-      path: "/etc/nginx/sites-enabled/default"
-      state: absent
-    notify: reload nginx service
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
 
