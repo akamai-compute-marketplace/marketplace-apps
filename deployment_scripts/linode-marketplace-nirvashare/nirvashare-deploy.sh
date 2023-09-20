@@ -15,7 +15,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Nirvashare Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="dbpassword" Label="Database Password" />
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -34,6 +33,7 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  echo "webserver_stack: lemp" >> ${group_vars};
 
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
@@ -56,10 +56,6 @@ function udf {
   fi
 
   # Nirvashare 
-  if [[ -n ${DBPASSWORD} ]]; then
-    echo "dbpassword: ${DBPASSWORD}" >> ${group_vars};
-  fi
-  
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
