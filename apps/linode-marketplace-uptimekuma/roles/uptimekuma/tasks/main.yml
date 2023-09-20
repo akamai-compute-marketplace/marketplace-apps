@@ -3,8 +3,7 @@
   docker_volume:
     name: "uptime-kuma"
 
- # docker
-- name: run postgres cocker container
+- name: run postgres docker container
   docker_container:
     name: uptime-kuma
     image: louislam/uptime-kuma:1
@@ -15,7 +14,7 @@
     ports:
       - "3001:3001"
 
-#Nginx setup
+# Nginx
 
 - name: nginx reverse setup
   block:
@@ -46,12 +45,9 @@
       dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
       state: link
 
-  - name: nnlink the default nginx configuration
+  - name: unlink the default nginx configuration
     file:
       path: "/etc/nginx/sites-enabled/default"
       state: absent
+    notify: reload nginx service
 
-  - name: test nginx configuration
-    command: nginx -t
-    notify:
-    - reload nginx service

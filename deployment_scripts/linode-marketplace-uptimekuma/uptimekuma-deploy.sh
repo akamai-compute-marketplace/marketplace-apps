@@ -18,7 +18,7 @@ trap "cleanup $? $LINENO" EXIT
 
 
 # git repo
-export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-uptimekuma"
 
@@ -43,8 +43,9 @@ function udf {
   else echo "No username entered";
   fi
 
-    if [[ -n ${DISABLE_ROOT} ]]; then
-    echo "disable_root: ${DISABLE_ROOT}" >> ${group_vars};
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${PASSWORD} ]]; then
@@ -57,7 +58,12 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #Uptimekuma vars
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
+
+  # Uptimekuma vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
@@ -83,10 +89,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone --depth 1 --filter=blob:none ${GIT_REPO} --branch uptimekuma --sparse
-  cd ${WORK_DIR}
-  git sparse-checkout init --cone
-  git sparse-checkout set apps/linode-marketplace-uptimekuma apps/linode_helpers
+  git -C /tmp clone ${GIT_REPO}
+  # for a single testing branch
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
