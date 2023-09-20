@@ -16,7 +16,7 @@
       - "yacht_data:/config"
       - "/opt/Yacht/compose:/compose"
     environment:
-      COMPOSE_DIR: "/compose/"
+      COMPOSE_DIR: "/opt/Yacht/compose/"
       THEME: "{{ yacht_theme }}"
       ADMIN_EMAIL: "{{ yemail }}"
       ADMIN_PASSWORD: "{{ ypassword }}"
