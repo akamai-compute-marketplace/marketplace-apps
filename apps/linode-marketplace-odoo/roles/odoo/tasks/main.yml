@@ -1,4 +1,15 @@
 ---
+- name: generating postgres_password
+  set_fact:
+    postgres_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+
+- name: writing postgres_password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      postgres_password: {{ postgres_password }}
+
 - name: create docker Volume
   docker_volume:
     name: "odoo-db"
@@ -60,5 +71,10 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
   notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
 
     

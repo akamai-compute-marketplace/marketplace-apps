@@ -15,7 +15,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## ODOO Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="postgres_password" label="Postgres Password for the ODOO user" example="s3cur3_9a55w04d">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -60,10 +59,6 @@ function udf {
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
-  fi
-
-  if [[ -n ${POSTGRES_PASSWORD} ]]; then
-    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
   fi
 
   if [[ -n ${DOMAIN} ]]; then
