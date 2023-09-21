@@ -80,6 +80,7 @@ function run {
   yum install dnf -y
   dnf update -y
   dnf upgrade -y
+  dnf install https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm -y
   dnf install -y git python3 python3-pip
 
   dnf makecache
