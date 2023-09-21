@@ -64,10 +64,10 @@
     dest: /etc/motd
 
 - name: writing joplin creds into file
-  lineinfile:
-    insertafter: EOF
-    path: /root/.credentials
-    line: | 
+  copy:
+    content: |
       Joplin Login: admin@localhost
       Joplin Password: admin
       *** Please ensure you change the default credentials immediately after login! ***
+    dest: /root/.credentials
+  mode: '0600'
