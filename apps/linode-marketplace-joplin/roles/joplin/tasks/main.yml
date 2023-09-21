@@ -57,13 +57,7 @@
   import_role:
     name: certbot_ssl
 
-- name: Set MOTD
-  lineinfile:
-    path: /etc/motd
-    line: |
-      *********************************************************
-      Akamai Connected Cloud Joplin Marketplace App
-      App URL: {{ _domain }}
-      Documentation: https://www.linode.com/marketplace/apps/linode/joplin/
-      *********************************************************
-  create: yes
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
