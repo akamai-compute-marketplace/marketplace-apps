@@ -26,7 +26,7 @@
       path: /opt/Yacht/compose/example
       state: directory
 
-  # templates/docker-compose.yml is grabbed from https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml
+# templates/docker-compose.yml is grabbed from https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml
 - name: add docker-compose.yml
   template:
     src: templates/docker-compose.yml
