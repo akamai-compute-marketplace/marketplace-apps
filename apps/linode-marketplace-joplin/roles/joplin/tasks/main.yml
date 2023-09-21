@@ -65,9 +65,11 @@
 
 - name: writing joplin creds into file
   copy:
+    dest: /root/.credentials
+    mode: '0600'
     content: |
       Joplin Login: admin@localhost
       Joplin Password: admin
       *** Please ensure you change the default credentials immediately after login! ***
-    dest: /root/.credentials
-  mode: '0600'
+    
+  
