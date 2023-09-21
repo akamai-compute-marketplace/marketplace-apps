@@ -57,7 +57,7 @@
   import_role:
     name: certbot_ssl
 
-- name: create MOTD for deployment
+- name: Set MOTD
   lineinfile:
     path: /etc/motd
     line: |
@@ -66,6 +66,4 @@
       App URL: {{ _domain }}
       Documentation: https://www.linode.com/marketplace/apps/linode/joplin/
       *********************************************************
-      To delete this message of the day: rm /etc/motd
-  insertbefore: BOF
-  state: present
+  create: yes
