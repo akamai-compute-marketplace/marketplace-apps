@@ -15,16 +15,6 @@
       - "3001:3001"
 
 # Nginx
-- name: setup fqnd as default_dns
-  set_fact:
-    fqdn: "{{ default_dns }}"
-  when: default_dns is defined
-
-- name: setup fqnd as subdomain.domain
-  set_fact:
-    fqdn: "{{ subdomain }}.{{ domain }}"
-  when: subdomain is defined and domain is defined
-
 - name: install nginx
   apt:
     pkg:
@@ -34,12 +24,12 @@
 - name: config file setup
   template:
     src: templates/nginx.conf.j2
-    dest: "/etc/nginx/sites-available/{{ fqdn }}"    
+    dest: "/etc/nginx/sites-available/{{ _domain }}"    
 
 - name: create a symbolic link for the nginx configuration
   file:
-    src: "/etc/nginx/sites-available/{{ fqdn }}"
-    dest: "/etc/nginx/sites-enabled/{{ fqdn }}"
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
 - name: unlink the default nginx configuration
