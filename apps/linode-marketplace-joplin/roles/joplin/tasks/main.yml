@@ -57,7 +57,17 @@
   import_role:
     name: certbot_ssl
 
+# motd and creds gen
 - name: copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
+
+- name: writing joplin creds into file
+  lineinfile:
+    insertafter: EOF
+    path: /root/.credentials
+    line: | 
+      Joplin Login: admin@localhost
+      Joplin Password: admin
+      *** Please ensure you change the default credentials immediately after login! ***
