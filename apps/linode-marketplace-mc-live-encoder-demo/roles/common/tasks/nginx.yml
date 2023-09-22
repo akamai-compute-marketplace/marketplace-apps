@@ -48,7 +48,7 @@
 # allow propagation
 - name: run certbot dry-run
   shell:
-    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ email_address }} -w /var/www/html"
+    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/www/html"
   run_once: true
   register: dry_run
   until: dry_run is not failed
@@ -66,5 +66,5 @@
 # issue cert
 - name: run certbot
   shell:
-    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ email_address }}"
+    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }}"
  
