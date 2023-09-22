@@ -1,0 +1,70 @@
+--- 
+- name: install nginx & certbot
+  dnf:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - nginx
+    - certbot
+    - python3-certbot-nginx
+  
+- name: enabling nginx on boot
+  service:
+    name: nginx
+    enabled: yes
+
+- name: create nginx site dirs
+  file:
+    path: /etc/nginx/sites-enabled/
+    state: directory
+    owner: root
+    group: root
+
+- name: create nginx site dirs
+  file:
+    path: /etc/nginx/sites-available/
+    state: directory
+    owner: root
+    group: root
+
+- name: moving vhost_default template
+  template:
+    src: templates/vhost.conf.j2
+    dest: "/etc/nginx/sites-available/reverse-proxy.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: symlinking our vhost
+  file:
+    src: "/etc/nginx/sites-available/reverse-proxy.conf"
+    dest: "/etc/nginx/sites-enabled/reverse-proxy.conf"
+    owner: root
+    group: root
+    mode: 0644
+    state: link
+  notify: reload nginx
+
+# allow propagation
+- name: run certbot dry-run
+  shell:
+    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ email_address }} -w /var/www/html"
+  run_once: true
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+
+- name: validate certbot dry-run
+  assert:
+    that: dry_run is not failed
+    fail_msg: "[Error] Certbot dry-run failed. Cannot continue..Check the domain provided"
+    success_msg: "[Info] Certbot dry-run successful!"
+  run_once: true
+
+# issue cert
+- name: run certbot
+  shell:
+    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ email_address }}"
+ 
