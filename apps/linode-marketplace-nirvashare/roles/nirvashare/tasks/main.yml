@@ -1,0 +1,85 @@
+---
+# Nirvashare
+- name: generating db password
+  set_fact:
+    dbpassword: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+
+- name: writing db password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      dbpassword: {{ dbpassword }}
+
+- name: Config file Setup
+  template:
+    src: templates/nirvashare.service
+    dest: "/etc/systemd/system/nirvashare.service"
+
+- name: create docker compose directory
+  file:
+    path: /var/nirvashare
+    state: directory
+
+- name: docker file setup
+  template:
+    src: templates/docker-compose.yaml
+    dest: "/var/nirvashare/docker-compose.yml"
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: enable nirvashare service
+  systemd:
+    name: nirvashare.service
+    enabled: yes
+      
+- name: start nirvashare service
+  systemd:
+    name: nirvashare.service
+    state: started
+
+# Nginx
+- name: install nginx
+  apt:
+    pkg:
+      - nginx
+    state: present
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"      
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing nirvashare creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Nirvashare Login: admin
+      Nirvashare Password: admin
+      *** Please ensure you change the default credentials immediately after login! ***
