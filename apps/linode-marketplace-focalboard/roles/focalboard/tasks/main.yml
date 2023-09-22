@@ -1,0 +1,55 @@
+---
+
+- name: pull focalboard image
+  docker_image:
+    name: mattermost/focalboard
+    source: pull
+
+- name: create Docker Volume
+  docker_volume:
+    name: "focalboard"
+
+- name: run focalboard Docker Container
+  docker_container:
+    name: focalboard
+    image: mattermost/focalboard
+    restart_policy: always
+    state: started
+    volumes:
+      - "focalboard:/app/data"
+    ports:
+      - "8000:8000"
+
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: templates/nginx.conf.j2
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+# motd
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
