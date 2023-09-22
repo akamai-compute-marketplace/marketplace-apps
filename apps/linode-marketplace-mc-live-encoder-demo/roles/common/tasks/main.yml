@@ -14,8 +14,18 @@
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
-    import_role:
-      name: sudouser
+    user:
+	      name: "{{ username }}"
+        shell: /bin/bash
+        groups: wheel
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+        expires: -1
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/id_rsa
+        state: present
     when: username is defined
 
   # dns creation
