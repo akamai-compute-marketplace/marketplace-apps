@@ -15,7 +15,7 @@
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
     user:
-	      name: "{{ username }}"
+        name: "{{ username }}"
         shell: /bin/bash
         groups: wheel
         password: "{{ password | password_hash('sha512') }}"
@@ -52,12 +52,10 @@
     become: yes
 
   - name: import firewall rules 
-    import_task:
-      name: firewalld.yml
+    include_tasks: firewalld.yml
 
   - name: install nginx
-    import_task:
-      nginx.yml
+    include_tasks: nginx.yml
   
   # ufw_install
   #- name: enabling ufw
