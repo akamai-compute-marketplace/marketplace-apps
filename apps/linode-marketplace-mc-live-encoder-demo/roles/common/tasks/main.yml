@@ -51,6 +51,14 @@
       state: latest        
     become: yes
 
+  - name: import firewall rules 
+    import_task:
+      name: firewalld.yml
+
+  - name: install nginx
+    import_task:
+      nginx.yml
+  
   # ufw_install
   #- name: enabling ufw
   #  import_role:

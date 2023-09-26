@@ -12,6 +12,7 @@
   service:
     name: nginx
     enabled: yes
+    state: started
 
 - name: create nginx site dirs
   file:
