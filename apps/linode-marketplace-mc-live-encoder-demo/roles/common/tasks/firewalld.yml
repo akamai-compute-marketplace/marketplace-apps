@@ -2,23 +2,23 @@
 - name: allow ssh
   ansible.posix.firewalld: 
     service: ssh
-    permenant: true
+    permanent: true
     state: enabled 
 
 - name: allow http
   ansible.posix.firewalld: 
     service: http
-    permenant: true
+    permanent: true
     state: enabled 
 
 - name: allow https
   ansible.posix.firewalld: 
     service: https
-    permenant: true
+    permanent: true
     state: enabled 
 
 - name: allow mc live port
   ansible.posix.firewalld: 
     port: 8080/tcp
-    permenant: true
+    permanent: true
     state: enabled 
