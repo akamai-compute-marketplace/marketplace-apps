@@ -91,14 +91,12 @@
     group: root
 
 - name: create self signed cert
-  shell: 
-    cmd: "openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt"
-  notify: restart nginx    
+  include_tasks: ssl.yml
 
 # allow propagation
 - name: run certbot dry-run
   shell:
-    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/www/certs"
+    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/lib/letsencrypt"
   run_once: true
   register: dry_run
   until: dry_run is not failed

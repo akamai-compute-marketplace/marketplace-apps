@@ -13,7 +13,7 @@
   community.crypto.openssl_csr_pipe:
     privatekey_content: '{{ ca_key.privatekey }}'
     privatekey_passphrase: '{{ ca_password }}'
-    country_name: 'USA'
+    country_name: 'US'
     state_or_province_name: 'MA'
     locality_name: 'Cambridge'
     organization_name: 'Akamai Technologies'
