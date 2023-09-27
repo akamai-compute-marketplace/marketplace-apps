@@ -56,6 +56,30 @@
     owner: root
     group: root
 
+- name: create nginx log directory file
+  file:
+    path: /var/log/nginx/{{ _domain }}
+    state: directory
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: create nginx access log file
+  file:
+    path: /var/log/nginx/{{ _domain }}/access.log
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: create nginx error log file
+  file:
+    path: /var/log/nginx/{{ _domain }}/error.log
+    state: touch
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: moving vhost_default template
   template:
     src: templates/reverse-proxy-ssl.conf.j2
@@ -90,8 +114,15 @@
     owner: root
     group: root
 
-- name: create self signed cert
-  include_tasks: ssl.yml
+- name: Create private key (RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: /etc/ssl/private/certificate.key
+
+- name: Create simple self-signed certificate
+  community.crypto.x509_certificate:
+    path: /etc/ssl/private/certificate.pem
+    privatekey_path: /etc/ssl/private/certificate.key
+    provider: selfsigned
 
 # allow propagation
 - name: run certbot dry-run
@@ -117,8 +148,8 @@
     cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }}"
 
 - name: move certbot cert snippet
-  copy: 
-    src: "../files/snippets/{{ item.src }}"
+  template: 
+    src: "../templates/ssl-lets-encrypt.conf.j2"
     dest: "/etc/nginx/snippets/{{ item.dest }}"
     owner: root
     group: root

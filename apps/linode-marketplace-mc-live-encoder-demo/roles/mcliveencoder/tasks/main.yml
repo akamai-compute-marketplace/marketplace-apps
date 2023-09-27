@@ -26,9 +26,9 @@
     args:
       chdir: /tmp/payload/
 
-  - name: Add port 8080/tcp to the public zone
-    ansible.builtin.command: firewall-cmd --zone=public --add-port=8080/tcp --permanent
-    become: yes
+ # - name: Add port 8080/tcp to the public zone
+ #   ansible.builtin.command: firewall-cmd --zone=public --add-port=8080/tcp --permanent
+ #   become: yes
 
   - name: Add ports 6000-61000/tcp to the public zone
     ansible.builtin.command: firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
