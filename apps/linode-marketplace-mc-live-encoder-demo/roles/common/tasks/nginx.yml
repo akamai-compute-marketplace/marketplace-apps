@@ -14,6 +14,34 @@
     enabled: yes
     state: started
 
+- name: create nginx snippets dir
+  file: 
+    path: /etc/nginx/snippets
+    state: directory
+    owner: root
+    group: root
+
+- name: move the snippets
+  file: 
+    src: "../files/snippets/{{ item.src }}"
+    dest: "/etc/nginx/snippets/{{ item.dest }}"
+    owner: root
+    group: root
+  loop: 
+    - { src: 'restrictions.conf', dest: 'restrictions.conf' }
+    - { src: 'ssl-params.conf', dest: 'ssl-params.conf' }
+    - { src: 'well-known', dest: 'well-known' }
+
+# there is probably a way to do this with one file and apply the template after certbot runs
+- name: move self-signed cert snippet
+  file: 
+    src: "../files/snippets/{{ item.src }}"
+    dest: "/etc/nginx/snippets/{{ item.dest }}"
+    owner: root
+    group: root
+  loop: 
+    - { src: 'ssl-self-signed.conf', dest: 'ssl.conf' }
+
 - name: create nginx site dirs
   file:
     path: /etc/nginx/sites-enabled/
@@ -30,26 +58,47 @@
 
 - name: moving vhost_default template
   template:
-    src: templates/vhost.conf.j2
-    dest: "/etc/nginx/sites-available/reverse-proxy.conf"
+    src: templates/reverse-proxy-ssl.conf.j2
+    dest: "/etc/nginx/sites-available/reverse-proxy-ssl.conf"
     owner: root
     group: root
     mode: 0644
 
 - name: symlinking our vhost
   file:
-    src: "/etc/nginx/sites-available/reverse-proxy.conf"
-    dest: "/etc/nginx/sites-enabled/reverse-proxy.conf"
+    src: "/etc/nginx/sites-available/reverse-proxy-ssl.conf"
+    dest: "/etc/nginx/sites-enabled/reverse-proxy-ssl.conf"
     owner: root
     group: root
     mode: 0644
     state: link
-  notify: reload nginx
+
+- name: include sites-enabled
+  lineinfile:
+    path: /etc/nginx/nginx.conf
+    insertbefore: 'include \/etc\/nginx\/conf\.d\/\*\.conf;'
+    line: include /etc/nginx/sites-enabled/*.conf;
+
+- name: set SELinux perms
+  shell: 
+    cmd: "setsebool -P httpd_can_network_connect 1"
+
+- name: make ssl dir
+  file: 
+    path: /etc/ssl/private
+    state: directory
+    owner: root
+    group: root
+
+- name: create self signed cert
+  shell: 
+    cmd: "openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt"
+  notify: restart nginx    
 
 # allow propagation
 - name: run certbot dry-run
   shell:
-    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/www/html"
+    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/www/certs"
   run_once: true
   register: dry_run
   until: dry_run is not failed
@@ -68,4 +117,15 @@
 - name: run certbot
   shell:
     cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }}"
+
+- name: move certbot cert snippet
+  file: 
+    src: "../files/snippets/{{ item.src }}"
+    dest: "/etc/nginx/snippets/{{ item.dest }}"
+    owner: root
+    group: root
+  loop: 
+    - { src: 'ssl-lets-encrypt.conf', dest: 'ssl.conf' }
+  notify: restart nginx
+    
  
