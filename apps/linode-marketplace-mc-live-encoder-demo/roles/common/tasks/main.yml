@@ -53,13 +53,20 @@
 
   #- name: import firewall rules 
   #  include_tasks: firewalld.yml
-  - name: kill firewalld
-    service: 
-      name: firewalld
-      state: stopped
-   
-  - name: install nginx
-    include_tasks: nginx.yml
+  #- name: kill firewalld
+  #  service: 
+  #    name: firewalld
+  #    state: stopped
+  - name: allow http
+    shell: 
+      cmd: firewall-cmd --zone=public --add-port=80/tcp --permanent
+
+  - name: allow https
+    shell: 
+      cmd: firewall-cmd --zone=public --add-port=80/tcp --permanent
+
+  #- name: install nginx
+  #  include_tasks: nginx.yml
   
   # ufw_install
   #- name: enabling ufw
