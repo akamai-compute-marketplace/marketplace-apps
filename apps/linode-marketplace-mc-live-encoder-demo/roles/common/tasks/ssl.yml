@@ -1,0 +1,51 @@
+--- 
+- name: generate ca passphrase
+  set_fact:
+    ca_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits,punctuation') }}"
+
+- name: generate ca key
+  community.crypto.openssl_privatekey_pipe:
+    passphrase: '{{ ca_password }}'
+    cipher: auto
+  register: ca_key
+
+- name: generate ca csr
+  community.crypto.openssl_csr_pipe:
+    privatekey_content: '{{ ca_key.privatekey }}'
+    privatekey_passphrase: '{{ ca_password }}'
+    country_name: 'USA'
+    state_or_province_name: 'MA'
+    locality_name: 'Cambridge'
+    organization_name: 'Akamai Technologies'
+    email_address: 'bunk@marketplace.apps'
+    common_name: 'Marketplace Apps CA'
+    use_common_name_for_san: false
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: yes
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
+  register: ca_csr
+  
+
+- name: generate ca crt
+  community.crypto.x509_certificate:
+    path: '/etc/ssl/private/selfsigned'
+    privatekey_content: '{{ ca_key.privatekey }}'
+    privatekey_passphrase: '{{ ca_password }}'
+    csr_content: '{{ ca_csr.csr }}'
+    selfsigned_not_after: +3650d
+    provider: selfsigned
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: clear varibles
+  set_fact:
+    ca_crt: ''
+    ca_csr: ''
+    ca_key: ''
+    server_crt: ''
+    server_csr: ''
+    server_key: ''
