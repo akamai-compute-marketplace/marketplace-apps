@@ -74,3 +74,8 @@
     yum:
       name: wget
       state: present
+
+  - name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
