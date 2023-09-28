@@ -124,6 +124,12 @@
     privatekey_path: /etc/ssl/private/certificate.key
     provider: selfsigned
 
+- name: bounce nginx 
+  service: 
+    name: nginx
+    enabled: yes
+    state: restarted
+
 # allow propagation
 - name: run certbot dry-run
   shell:
