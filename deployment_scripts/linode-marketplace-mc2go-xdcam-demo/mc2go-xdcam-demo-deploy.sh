@@ -12,11 +12,11 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 # git repo
-#export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 
 #test git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-export BRANCH="develop"
+# export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+# export BRANCH="develop"
 
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc2go-xdcam-demo"
@@ -62,9 +62,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  # git -C /tmp clone ${GIT_REPO}
+   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}

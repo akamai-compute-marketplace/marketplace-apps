@@ -57,9 +57,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  # git -C /tmp clone ${GIT_REPO}
+   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}

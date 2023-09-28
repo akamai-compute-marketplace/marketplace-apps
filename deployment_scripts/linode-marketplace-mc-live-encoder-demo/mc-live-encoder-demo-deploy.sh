@@ -16,11 +16,11 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address for SOA record" default=””>
 
 # git repo
-#export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 
 #test git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-export BRANCH="develop"
+# export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+# export BRANCH="develop"
 
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc-live-encoder-demo"
@@ -89,9 +89,9 @@ function run {
   dnf install ansible -y
 
   # clone repo and set up ansible environment
-  # git -C /tmp clone ${GIT_REPO}
+   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
