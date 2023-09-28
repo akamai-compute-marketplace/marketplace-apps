@@ -1,8 +1,8 @@
 ---
   # set_hostname
   - name: setting up hostname
-    import_role:
-      name: hostname
+    hostname:
+    name: mc2go-xdcam-demo
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
