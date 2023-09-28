@@ -127,7 +127,7 @@
 # allow propagation
 - name: run certbot dry-run
   shell:
-    cmd: "certbot certonly -n --webroot --dry-run --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }} -w /var/lib/letsencrypt"
+    cmd: "certbot certonly -n --webroot --dry-run --agree-tos -d {{ _domain }} -m {{ soa_email_address }} -w /var/lib/letsencrypt"
   run_once: true
   register: dry_run
   until: dry_run is not failed
@@ -145,7 +145,7 @@
 # issue cert
 - name: run certbot
   shell:
-    cmd: "certbot -n --nginx --agree-tos --redirect -d {{ _domain }} -m {{ soa_email_address }}"
+    cmd: "certbot -n --nginx --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
 
 - name: move certbot cert snippet
   template: 
