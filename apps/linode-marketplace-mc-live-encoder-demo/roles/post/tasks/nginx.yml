@@ -123,7 +123,12 @@
     path: /etc/ssl/private/certificate.pem
     privatekey_path: /etc/ssl/private/certificate.key
     provider: selfsigned
-  notify: restart nginx
+
+- name: restart nginx the hard way
+  service: 
+    name: nginx
+    enabled: yes
+    state: restarted
 
 # allow propagation
 - name: run certbot dry-run
