@@ -76,6 +76,15 @@
       state: present
 
   - name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd
+  
+  - name: writing mc live encoder creds into file
+    copy:
+      dest: /root/.credentials
+      mode: '0600'
+      content: |
+        MainConcept Live Encoder Login: admin
+        MainConcept Live Encoder Password: admin
+        *** Please ensure you change the default credentials immediately after login! ***

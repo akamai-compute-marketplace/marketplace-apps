@@ -13,15 +13,10 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for SOA record" default=””>
+#<UDF name="soa_email_address" label="Email address for SSL Generation" default=””>
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-
-#test git repo
-# export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-# export BRANCH="develop"
-
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc-live-encoder-demo"
 
