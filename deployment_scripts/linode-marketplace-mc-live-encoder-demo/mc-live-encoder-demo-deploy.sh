@@ -17,11 +17,6 @@ trap "cleanup $? $LINENO" EXIT
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-
-#test git repo
-# export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-# export BRANCH="develop"
-
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc-live-encoder-demo"
 
