@@ -2,7 +2,7 @@
   # set_hostname
   - name: setting up hostname
     hostname:
-    name: mc2go-xavc-demo
+      name: mc2go-xavc-demo
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user

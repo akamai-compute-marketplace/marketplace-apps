@@ -2,7 +2,7 @@
   # set_hostname
   - name: setting up hostname
     hostname:
-    name: mc-ffmpeg-demo
+      name: mc-ffmpeg-demo
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
@@ -55,5 +55,5 @@
 
   - name: copy MOTD template to /etc/motd
     template:
-    src: templates/motd.j2
-    dest: /etc/motd     
+      src: templates/motd.j2
+      dest: /etc/motd     
