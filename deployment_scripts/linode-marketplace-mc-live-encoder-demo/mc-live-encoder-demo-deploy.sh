@@ -103,8 +103,6 @@ function run {
 }
 
 function installation_complete {
-  # dumping credentials  
-  echo -e "username=admin\npassword=admin" > /root/.linode_credentials.txt
   cat << EOF
 #########################
 # INSTALLATION COMPLETE #
