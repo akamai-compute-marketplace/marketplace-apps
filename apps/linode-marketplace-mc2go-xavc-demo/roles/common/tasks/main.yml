@@ -1,8 +1,40 @@
 ---
   # set_hostname
+  - name: set dns fact for subdomain
+    set_fact:
+      _domain: '{{ subdomain }}.{{ domain }}'
+      cacheable: yes
+    when:
+      - domain is defined
+      - subdomain != "www"
+    
+  - name: set dns fact for domain
+    set_fact:
+      _domain: '{{ domain }}'
+      cacheable: yes
+    when: 
+      - domain is defined
+      - subdomain == "www"
+  
   - name: setting up hostname
     hostname:
       name: mc2go-xavc-demo
+    when: 
+      - domain is not defined
+      - subdomain is not defined
+
+  - name: 
+    hostname: 
+      name: '{{ _domain }}'
+    when: 
+      - _domain is defined
+  
+  - name: create dns A record
+    import_role:
+      name: create_dns_record
+    when: 
+      - token_password is defined
+      - domain is defined 
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
