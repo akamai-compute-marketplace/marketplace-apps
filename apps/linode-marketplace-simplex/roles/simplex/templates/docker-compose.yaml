@@ -1,0 +1,26 @@
+version: '3'
+services:
+    smp:
+        image: simplexchat/smp-server:latest
+        volumes:
+            - /etc/opt/simplex:/etc/opt/simplex
+            - /var/opt/simplex:/var/opt/simplex
+        ports:
+            - "5223:5223"
+        restart: unless-stopped
+        environment:
+            - ADDR={{ addr }}
+            - PASS={{ smp_password | default('') }}
+
+    xftp:
+        image: simplexchat/xftp-server:latest
+        volumes:
+            - /etc/opt/simplex-xftp:/etc/opt/simplex-xftp
+            - /var/opt/simplex-xftp:/var/opt/simplex-xftp
+            - /srv/xftp:/srv/xftp
+        ports:
+            - "443:443"
+        restart: unless-stopped
+        environment:
+            - ADDR={{ addr }}
+            - QUOTA={{ xftp_quota | default('10gb') }}

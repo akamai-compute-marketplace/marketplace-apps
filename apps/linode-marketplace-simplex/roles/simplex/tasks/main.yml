@@ -1,0 +1,39 @@
+---
+
+# Simplex service/docker setup    
+
+- name: Simplex setup
+  block:
+  - name: Setup systemd service
+    template:
+      src: simplex.service
+      dest: "/etc/systemd/system/simplex.service"
+  - name: Create docker compose directory
+    file:
+     path: /etc/docker/compose/simplex
+     state: directory
+  - name: Create persistent directories
+    file:
+     path: "{{ item }}"
+     state: directory
+    loop:
+     - /etc/opt/simplex
+     - /var/opt/simplex
+     - /etc/opt/simplex-xftp
+     - /var/opt/simplex-xftp
+     - /srv/xftp
+  - name: Setup docker compose
+    template:
+      src: docker-compose.yaml
+      dest: "/etc/docker/compose/simplex/docker-compose.yml"
+  - name: Reload systemd daemon
+    systemd:
+      daemon_reload: yes
+  - name: Enable Simplex Service
+    systemd:
+      name: simplex.service
+      enabled: yes
+  - name: Start Simplex Service
+    systemd:
+      name: simplex.service
+      state: started
