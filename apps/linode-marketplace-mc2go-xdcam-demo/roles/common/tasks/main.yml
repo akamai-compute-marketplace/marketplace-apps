@@ -1,6 +1,6 @@
 ---
   # set_hostname
-    - name: set dns fact for subdomain
+  - name: set dns fact for subdomain
     set_fact:
       _domain: '{{ subdomain }}.{{ domain }}'
       cacheable: yes
