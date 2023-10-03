@@ -23,7 +23,7 @@
       - domain is not defined
       - subdomain is not defined
 
-  - name: 
+  - name: set hostname for dns
     hostname: 
       name: '{{ _domain }}'
     when: 
