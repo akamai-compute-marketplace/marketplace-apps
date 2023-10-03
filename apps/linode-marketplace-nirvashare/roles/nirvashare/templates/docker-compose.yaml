@@ -1,0 +1,53 @@
+version: '3'
+services:
+  admin:
+    image: nirvato/nirvashare-admin:latest
+    container_name: nirvashare_admin
+    networks:
+    - nirvashare
+    restart: always
+    ports:
+    # Public HTTP Port:
+    - 8080:8080
+    environment:
+      ns_db_jdbc_url: 'jdbc:postgresql://nirvashare_database:5432/postgres'
+      ns_db_username: 'nirvashare'
+      ns_db_password: {{ dbpassword }}
+    volumes:
+    - /var/nirvashare:/var/nirvashare     
+    depends_on:
+    - db
+  userapp:
+    image: nirvato/nirvashare-userapp:latest
+    container_name: nirvashare_userapp
+    networks:
+    - nirvashare
+    restart: always
+    ports:
+    # Public HTTP Port:
+    - 8081:8080
+    environment:
+      ns_db_jdbc_url: 'jdbc:postgresql://nirvashare_database:5432/postgres'
+      ns_db_username: 'nirvashare'
+      ns_db_password: {{ dbpassword }}
+    volumes:
+    - /var/nirvashare:/var/nirvashare      
+    depends_on:
+    - admin
+  db:
+   image: postgres:13.2
+   networks:
+   - nirvashare
+   container_name: nirvashare_database
+   restart: always
+   ports:
+   - 5432:5432
+   environment: 
+     POSTGRES_PASSWORD: {{ dbpassword }}
+     POSTGRES_USER: 'nirvashare'
+   volumes:
+   - db_data:/var/lib/postgresql/data
+volumes:
+    db_data:
+networks:
+    nirvashare: {}

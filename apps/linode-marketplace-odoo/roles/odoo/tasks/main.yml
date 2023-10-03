@@ -1,0 +1,96 @@
+---
+- name: generating postgres_password
+  set_fact:
+    postgres_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+
+- name: writing postgres_password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      postgres_password: {{ postgres_password }}
+
+- name: create docker Volume
+  docker_volume:
+    name: "odoo-db"
+
+- name: create docker volume
+  docker_volume:
+    name: "odoo-data"
+
+- name: run postgres docker container
+  docker_container:
+    name: db
+    image: postgres:13
+    restart_policy: always
+    state: started
+    volumes:
+      - "odoo-db:/var/lib/postgresql/data"
+    env:
+      POSTGRES_USER: "odoo"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "postgres"
+
+- name: run odoo docker container
+  docker_container:
+    name: odoo
+    image: odoo
+    restart_policy: always
+    state: started
+    links:
+    - "db:db"
+    ports:
+    - "8069:8069"
+    volumes:
+      - "odoo-data:/var/lib/odoo"
+    env:
+      POSTGRES_USER: "odoo"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "postgres"
+
+# Nginx
+- name: install nginx
+  apt:
+    pkg:
+      - nginx
+    state: present
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"      
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing odoo creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Odoo Database name: odoo
+      Postgres Password: {{ postgres_password }}
+      
+       
+
+    

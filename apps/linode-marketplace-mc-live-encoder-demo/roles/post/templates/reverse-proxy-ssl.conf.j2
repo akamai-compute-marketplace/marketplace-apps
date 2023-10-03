@@ -1,0 +1,39 @@
+upstream mcencoder {
+        server localhost:8080;
+}
+
+server {
+    listen 80;
+    #listen [::]80;
+    server_name {{ _domain }};
+    include snippets/well-known;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2 default_server;
+    listen [::]:443 ssl http2 default_server;
+    server_name {{ _domain }};
+    include snippets/well-known;
+    include snippets/ssl.conf;
+    include snippets/ssl-params.conf;
+    root /opt/McLiveEncoder/server/webapps/ROOT;
+
+    location  ~ ^/.* {
+        proxy_pass            http://mcencoder;
+        proxy_redirect        off;
+        proxy_set_header      Host             $host;
+        proxy_set_header      X-Real-IP        $remote_addr;
+        proxy_set_header      X-Forwarded-For  $proxy_add_x_forwarded_for;
+        client_max_body_size  10m;
+    }
+    
+    access_log /var/log/nginx/{{ _domain }}/access.log;
+    error_log /var/log/nginx/{{ _domain }}/error.log;
+
+    # disable direcory indexing
+    autoindex off;
+
+    # locaton restrictions
+    include snippets/restrictions.conf;
+}

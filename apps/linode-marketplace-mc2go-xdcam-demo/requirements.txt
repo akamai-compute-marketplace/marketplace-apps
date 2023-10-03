@@ -1,0 +1,15 @@
+ansible==6.0.0
+PyMySQL==1.0.2
+yamllint==1.32.0
+ansible-lint==6.0.1
+flake8==3.9.2
+linode_api4==5.5.0
+dnspython==2.2.1
+polling==0.3.2
+ansible-specdoc==0.0.14
+dnspython==2.2.1
+pyyaml==6.0.1
+## testing ##
+#molecule==5.1.0
+#molecule-vagrant==2.0.0
+#python-vagrant==0.5.15

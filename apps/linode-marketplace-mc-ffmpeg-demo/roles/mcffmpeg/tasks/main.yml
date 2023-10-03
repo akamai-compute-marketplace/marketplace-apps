@@ -1,0 +1,529 @@
+---
+  - name: Download MainConcept FFMpeg Plugins
+    get_url:
+      url: "https://www.mainconcept.com/akamai-ffmpeg"
+      dest: "/tmp/FFmpeg_Plugins_Demo.zip"
+
+  - name: Extract zip package
+    unarchive:
+      src: "/tmp/FFmpeg_Plugins_Demo.zip"
+      dest: "/tmp/"
+    
+  - name: Find .bz2 files
+    find:
+      paths: /tmp/
+      patterns: "*.bz2"
+    register: bz2_files
+
+  - name: Extract .bz2 files
+    unarchive:
+      src: "{{ item.path }}"
+      dest: /tmp/
+      remote_src: yes
+    loop: "{{ bz2_files.files }}"
+    when: bz2_files.matched > 0
+
+  - name: Remove extracted .bz2 files
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    loop: "{{ bz2_files.files }}"
+    when: bz2_files.matched > 0
+  
+  - name: Find .run files
+    find:
+      paths: /tmp/
+      patterns: "*.run"
+    register: run_files
+
+  - name: Modify .run files
+    replace:
+      path: "{{ item.path }}"
+      regexp: "PAGER=\\${PAGER:=more}"
+      replace: "return $?"
+    loop: "{{ run_files.files }}"
+    when: run_files.matched > 0
+
+  - name: Execute .run files
+    command: "bash /{{ item.path }}"
+    loop: "{{ run_files.files }}"
+    when: run_files.matched > 0
+    args:
+      chdir: /tmp/
+
+
+  ### FFMPEG #########################################
+  - name: Find FFmpeg .deb files
+    find:
+      paths: /tmp/ffmpeg_omx/deb/
+      patterns: "*.deb"
+    register: deb_files
+
+  - name: Install FFmpeg .deb files
+    apt:
+      deb: "{{ item.path }}"
+      state: present
+    loop: "{{ deb_files.files }}"
+    when: deb_files.matched > 0
+
+
+  ### MC-OMX-CORE #########################################
+  - name: Find FFmpeg mcomx-core*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-core*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### MC-SDK-CONF #########################################
+  - name: Find FFmpeg mc-sdk-conf*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-sdk-conf*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### DEC AVC #########################################
+  - name: Find FFmpeg mc-dec-avc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-dec-avc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### DEC HEVC #########################################
+  - name: Find FFmpeg mc-dec-hevc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-dec-hevc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC AVC #########################################
+  - name: Find FFmpeg mc-enc-avc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-avc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC HEVC #########################################
+  - name: Find FFmpeg mc-enc-hevc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-hevc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC MP2V #########################################
+  - name: Find FFmpeg mc-enc-mp2v*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-mp2v*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC MPEG-H #########################################
+  - name: Find FFmpeg mc-enc-mpegh*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-mpegh*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC VVC #########################################
+  - name: Find FFmpeg mc-enc-vvc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-vvc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### ENC XHE-AAC #########################################
+  - name: Find FFmpeg mc-enc-xheaac*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-enc-xheaac*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### MUX MP2 #########################################
+  - name: Find FFmpeg mc-mux-mp2*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-mux-mp2*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### MUX MXF #########################################
+  - name: Find FFmpeg mc-mux-mxf*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mc-mux-mxf*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX DEC AVC #########################################
+  - name: Find FFmpeg mcomx-dec-avc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-dec-avc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX DEC HEVC #########################################
+  - name: Find FFmpeg mcomx-dec-hevc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-dec-hevc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC AVC #########################################
+  - name: Find FFmpeg mcomx-enc-avc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-avc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC HEVC #########################################
+  - name: Find FFmpeg mcomx-enc-hevc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-hevc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC MP2V #########################################
+  - name: Find FFmpeg mcomx-enc-mp2v*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-mp2v*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC MPEG-H #########################################
+  - name: Find FFmpeg mcomx-enc-mpegh*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-mpegh*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC VVC #########################################
+  - name: Find FFmpeg mcomx-enc-vvc*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-vvc*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX ENC XHE-AAC #########################################
+  - name: Find FFmpeg mcomx-enc-xheaac*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-enc-xheaac*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX MUX MP2 #########################################
+  - name: Find FFmpeg mcomx-mux-mp2*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-mux-mp2*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found
+
+
+  ### OMX MUX MXF #########################################
+  - name: Find FFmpeg mcomx-mux-mxf*.deb files
+    find:
+      paths: /tmp/mc_ffmpeg_plugins/deb/
+      patterns: "mcomx-mux-mxf*.deb"
+    register: deb_files
+
+  - name: Sort .deb files by version
+    set_fact:
+      sorted_deb_files: "{{ deb_files.files | sort(attribute='path', reverse=true) }}"
+
+  - name: Display sorted .deb file paths
+    debug:
+      var: sorted_deb_files|map(attribute='path')|list
+
+  - name: Install latest .deb file
+    apt:
+      deb: "{{ sorted_deb_files[0].path }}"  # Install the first (latest) .deb file in the sorted list
+    when: sorted_deb_files | length > 0  # Only install if there are .deb files found

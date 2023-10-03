@@ -1,0 +1,8 @@
+---  
+  - name: Remove Archive File
+    file:
+      path: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+      state: absent
+
+  - name: install nginx reverse proxy
+    include_tasks: nginx.yml
