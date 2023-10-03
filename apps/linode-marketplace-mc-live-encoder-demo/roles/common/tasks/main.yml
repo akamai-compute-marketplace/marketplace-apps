@@ -14,8 +14,18 @@
 
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
-    import_role:
-      name: sudouser
+    user:
+        name: "{{ username }}"
+        shell: /bin/bash
+        groups: wheel
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+        expires: -1
+        append: yes
+        generate_ssh_key: yes
+        ssh_key_bits: 4096
+        ssh_key_file: .ssh/id_rsa
+        state: present
     when: username is defined
 
   # dns creation
@@ -41,19 +51,13 @@
       state: latest        
     become: yes
 
-  # ufw_install
-  #- name: enabling ufw
-  #  import_role:
-  #    name: ufw
+  - name: allow http
+    shell: 
+      cmd: firewall-cmd --zone=public --add-port=80/tcp --permanent
 
-  # ufw rules 
-  #- name: apply ufw rules
-  #  import_tasks: ufw_rules.yml
-
-  # fail2ban
-  #- name: enabling fail2ban
-  #  import_role:
-  #    name: fail2ban_install
+  - name: allow https
+    shell: 
+      cmd: firewall-cmd --zone=public --add-port=443/tcp --permanent
 
   # MainConcept  
   - name: Install packages
@@ -70,3 +74,17 @@
     yum:
       name: wget
       state: present
+
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd
+  
+  - name: writing mc live encoder creds into file
+    copy:
+      dest: /root/.credentials
+      mode: '0600'
+      content: |
+        MainConcept Live Encoder Login: admin
+        MainConcept Live Encoder Password: admin
+        *** Please ensure you change the default credentials immediately after login! ***
