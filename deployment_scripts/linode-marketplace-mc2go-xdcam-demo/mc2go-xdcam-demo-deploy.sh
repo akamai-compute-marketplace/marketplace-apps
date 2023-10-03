@@ -49,8 +49,13 @@ EOF
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
   fi
-
- if [[ -n ${DOMAIN} ]]; then
+  
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
+  
+  if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   else echo "No domain entered";
   #else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
