@@ -19,7 +19,7 @@
 
 - name: download nats server 
   ansible.builtin.get_url:
-    url: https://github.com/nats-io/nats-server/releases/download/v$VERSION/nats-server-v{{ version }}-linux-amd64.zip
+    url: https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip
     dest: /tmp/nats-server.zip
 
 - name: unzip nats install file

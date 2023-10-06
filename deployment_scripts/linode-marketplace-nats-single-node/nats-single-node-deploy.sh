@@ -12,7 +12,6 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## nats Settings 
 # <UDF name="name" label="Name" default="Test" />
@@ -59,6 +58,13 @@ function udf {
   else echo "No pubkey entered";
   fi
 
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  else
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+  fi
+
+
   #nats vars
   
   if [[ -n ${NAME} ]]; then
@@ -70,7 +76,7 @@ function udf {
   fi
 
   if [[ -n ${SYSTEM_USER_PASSWORD} ]]; then
-    echo "system_user_password: ${system_user_password}" >> ${group_vars};
+    echo "system_user_password: ${SYSTEM_USER_PASSWORD}" >> ${group_vars};
   fi
 
   if [[ -n ${EXAMPLE_USER_PASSWORD} ]]; then
@@ -85,7 +91,7 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone -b nats-single-node ${GIT_REPO} #to test, change accord.
   # for a single testing branch
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
