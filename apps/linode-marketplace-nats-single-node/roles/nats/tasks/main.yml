@@ -17,16 +17,16 @@
         pkg: unzip
         state: present
 
-- name: download nats server 
-  ansible.builtin.get_url:
-    url: https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip
-    dest: /tmp/nats-server.zip
+- name: create nats-server dir
+  ansible.builtin.file:
+    path: /tmp/nats-server
+    state: directory
 
-- name: unzip nats install file
+- name: Download and unzip nats server bin
   ansible.builtin.unarchive:
-    src: /tmp/nats-server.zip
+    src: https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip
     dest: /tmp/nats-server
-    create: yes
+    remote_src: yes
 
 - name: Copy nats server bin to /bin
   ansible.builtin.copy:
