@@ -26,6 +26,7 @@
   ansible.builtin.unarchive:
     src: /tmp/nats-server.zip
     dest: /tmp/nats-server
+    create: yes
 
 - name: Copy nats server bin to /bin
   ansible.builtin.copy:
