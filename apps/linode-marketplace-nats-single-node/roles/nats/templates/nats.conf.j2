@@ -1,0 +1,33 @@
+port: 4222
+monitor_port: 8222
+server_name: {{ name }}
+jetstream {
+  store_dir: /data
+}
+accounts {
+  example: {
+    jetstream: enabled
+    users = [
+      {
+		user: example,
+		password: {{ example_user_password }}
+	  }
+    ]
+  }
+  system: {
+    users = [
+      {
+		user: system,
+		password: {{ system_user_password }}
+	  }
+    ]
+  }
+}
+mqtt {
+  port: 1883
+}
+websocket {
+  port: 8888
+  no_tls: true
+}
+system_account: system
