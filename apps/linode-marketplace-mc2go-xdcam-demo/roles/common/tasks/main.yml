@@ -1,30 +1,46 @@
 ---
   # set_hostname
+  - name: set dns fact for subdomain
+    set_fact:
+      _domain: '{{ subdomain }}.{{ domain }}'
+      cacheable: yes
+    when:
+      - domain is defined
+      - subdomain != "www"
+    
+  - name: set dns fact for domain
+    set_fact:
+      _domain: '{{ domain }}'
+      cacheable: yes
+    when: 
+      - domain is defined
+      - subdomain == "www"
+  
   - name: setting up hostname
-    import_role:
-      name: hostname
+    hostname:
+      name: mc2go-xdcam-demo
+    when: 
+      - domain is not defined
+      - subdomain is not defined
 
-  # write _domain to vars.
-  - name: write _domain to vars
-    lineinfile: 
-      insertafter: EOF
-      path: group_vars/linode/vars
-      line: | 
-        _domain: {{ _domain }}
-
-  # set customer supplied sudo user, password and SSH keys
-  - name: set sudo user
-    import_role:
-      name: sudouser
-    when: username is defined
-
-  # dns creation
+  - name: set hostname for dns
+    hostname: 
+      name: '{{ _domain }}'
+    when: 
+      - _domain is defined
+  
   - name: create dns A record
     import_role:
       name: create_dns_record
     when: 
       - token_password is defined
-      - default_dns is not defined
+      - domain is defined 
+  
+  # set customer supplied sudo user, password and SSH keys
+  - name: set sudo user
+    import_role:
+      name: sudouser
+    when: username is defined
 
   # sets customer supplied ssh pubkey to limited user
   - name: set ssh pubkey
@@ -99,3 +115,8 @@
       name: docker
       executable: pip3
       state: present
+
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd  

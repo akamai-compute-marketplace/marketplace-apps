@@ -23,7 +23,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 # git repo
-export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-keplerbuilder"
 
@@ -66,6 +66,11 @@ EOF
   else echo "No pubkey entered";
   fi
 
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
+  fi
+
   if [[ -n ${TOKEN_PASSWORD} ]]; then
     echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
   else echo "No API token entered";
@@ -74,7 +79,7 @@ EOF
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   #else echo "No domain entered";
-  else echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then

@@ -1,0 +1,41 @@
+version: '3'
+services:
+  proxy:
+    image: jlesage/nginx-proxy-manager
+    container_name: proxy
+    volumes:
+      - proxy_config:/config
+    ports:
+      - 80:8080/tcp
+      - 81:8181/tcp
+      - 443:4443/tcp
+    networks:
+      - default
+      - internal
+  yacht:
+    image: selfhostedpro/yacht:latest
+    container_name: yacht
+    environment:
+      - COMPOSE_DIR=/compose/
+      - THEME=RED
+    volumes:
+      - yacht_data:/config
+      - /root/compose:/compose
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - internal
+  filebrowser:
+    image: 80x86/filebrowser:latest
+    container_name: filebrowser
+    volumes:
+      - file_config:/config
+      - /root/compose:/myfiles
+
+volumes:
+  yacht_data:
+  file_config:
+  proxy_config:
+
+networks:
+  internal:
+    external: false

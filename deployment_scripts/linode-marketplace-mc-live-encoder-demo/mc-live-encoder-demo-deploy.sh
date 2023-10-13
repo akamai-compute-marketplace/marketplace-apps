@@ -13,15 +13,10 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for SOA record" default=””>
+#<UDF name="soa_email_address" label="Email address for SSL Generation" default=””>
 
 # git repo
-#export GIT_REPO="https://github.com/linode-solutions/marketplace-apps.git"
-
-#test git repo
-export GIT_REPO="https://github.com/jongov/marketplace-apps.git"
-export BRANCH="develop"
-
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc-live-encoder-demo"
 
@@ -88,9 +83,9 @@ function run {
   dnf install ansible -y
 
   # clone repo and set up ansible environment
-  # git -C /tmp clone ${GIT_REPO}
+   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -108,8 +103,6 @@ function run {
 }
 
 function installation_complete {
-  # dumping credentials  
-  echo -e "username=admin\npassword=admin" > /root/.linode_credentials.txt
   cat << EOF
 #########################
 # INSTALLATION COMPLETE #
