@@ -2,8 +2,8 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-## MainConcept MC2GO XDCAM Transcoder Demo Settings
-#<UDF name="mc2go_port" Label="MC2GO XDCAM Transcoder Port" example="Default: 8080" default="8080" /> 
+## MainConcept XDCAM Transcoder Demo Settings
+#<UDF name="mc_port" Label="MainConcept XDCAM Transcoder Port" example="Default: 8080" default="8080" /> 
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
@@ -43,7 +43,7 @@ function udf {
 
   # deployment vars
   soa_email_address: ${SOA_EMAIL_ADDRESS}
-  mc2go_port: ${MC2GO_PORT}
+  mc_port: ${MC_PORT}
 EOF
 
   if [[ -n ${USER_NAME} ]]; then

@@ -2,8 +2,8 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-## MainConcept MC2GO P2 AVC Ultra Transcoder Demo Settings
-#<UDF name="mc2go_port" Label="MC2GO P2 AVC Ultra Transcoder Port" example="Default: 8080" default="8080" /> 
+## MainConcept P2 AVC Ultra Transcoder Demo Settings
+#<UDF name="mc_port" Label="MainConcept P2 AVC Ultra Transcoder Port" example="Default: 8080" default="8080" /> 
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
@@ -44,7 +44,7 @@ function udf {
 
   # deployment vars
   soa_email_address: ${SOA_EMAIL_ADDRESS}
-  mc2go_port: ${MC2GO_PORT}
+  mc_port: ${MC_PORT}
 EOF
 
   if [[ -n ${USER_NAME} ]]; then

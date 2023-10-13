@@ -21,9 +21,9 @@
     proto: tcp
 
 
-- name: Allow all access to the MC2GO tcp port
+- name: Allow all access to the MC tcp port
   community.general.ufw:
     rule: allow
-    port: '{{mc2go_port}}'
+    port: '{{mc_port}}'
     proto: tcp
 
