@@ -45,12 +45,15 @@ Documentation on Linode: /opt/mainconcept/omx/share/doc/
 
 AVC/H.264 video encoding from YUV:
 
+```
 ffmpeg -r 25.000000 -pix_fmt yuv420p -s 1920x1080 -i "1920x1080p_25p_YV12.yuv" -vf scale=1280:720 -b:v 3500k -c:v omx_enc_avc -omx_core libomxil_core.so -omx_name OMX.MainConcept.enc_avc.video -omx_param "preset=main:perf_level=10:acc_type=sw:[AVC Settings]:bit_rate_mode=0:bit_rate=100000:time_scale=20000000:num_units_in_tick=1000000" "1920x1080p_25p_YV12_ffmpeg.mp4"
+```
 
 HEVC/H.265 video and xHE-AAC audio transcoding from encoded media file:
 
+```
 ffmpeg -i input.mp4 -c:v omx_enc_hevc -c:a omx_enc_xheaac -b:v 1000k -b:a 32000 -profile:a 28 -omx_name:v OMX.MainConcept.enc_hevc.video -omx_param:v "force_omx_param=1:preset=main:acc_type=sw" -omx_name:a OMX.MainConcept.enc_xheaac.audio -omx_core libomxil_core.so output.mp4
-
+```
 
 ### Brand color 1
 Color code - #041125

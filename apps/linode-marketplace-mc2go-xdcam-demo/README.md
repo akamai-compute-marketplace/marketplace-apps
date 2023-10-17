@@ -26,19 +26,20 @@ The "api-version" part in the URL only contains the major version, and with a le
 MainConcept XDCAM Transcoder v2.0 the API version is "v1".
 
 1. Get service name:
-GET http://[ip-addess]:[port]/rest/v1/service
+```GET http://[ip-addess]:[port]/rest/v1/service```
 
 2. Get transcoding jobs:
-GET http://[ip-addess]:[port]/rest/v1/jobs
+```GET http://[ip-addess]:[port]/rest/v1/jobs```
 
 3. Get details on a specific job:
-GET http://[ip-addess]:[port]/rest/v1/jobs/{JobID}
+```GET http://[ip-addess]:[port]/rest/v1/jobs/{JobID}```
 
 4. Start transcoding job:
-POST http://[ip-addess]:[port]/rest/v1/jobs
+```POST http://[ip-addess]:[port]/rest/v1/jobs```
 
 , with body
 
+```
 {
   "INPUT": "ftp://10.144.41.202:2121/test.mp4",
   "OUTPUT": "ftp://10.144.41.202:2121/test/xdcam_hd.mxf",
@@ -46,6 +47,7 @@ POST http://[ip-addess]:[port]/rest/v1/jobs
   "KEEP_CONTENT": "TRUE",
   "VERBOSITY": "DEFAULT"
 }
+```
 
 ### Brand color 1
 Color code - #041125

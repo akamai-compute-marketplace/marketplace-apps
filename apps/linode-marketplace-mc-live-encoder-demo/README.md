@@ -14,7 +14,7 @@ MainConcept Live Encoder
 * [Documentation](https://www.mainconcept.com/live-encoder)
 
 ### Operating Systems
-Linux CentOS 7.9, Linux CentOS 9, Microsoft Windows Server 2012, Microsoft Windows 10
+Linux CentOS 7.9, Linux CentOS 9
 
 ### Documentation
 [Documentation](https://www.mainconcept.com/live-encoder)
@@ -22,7 +22,7 @@ Linux CentOS 7.9, Linux CentOS 9, Microsoft Windows Server 2012, Microsoft Windo
 Documentation on Linode: /opt/McLiveEncoder/doc/
 
 ### Accessing the MC Live Encoder Dashboard
-http://[LINODE_IP_ADDRESS]:8080/  
+```http://[LINODE_IP_ADDRESS]:8080/```
 
 Login credentials:
 
