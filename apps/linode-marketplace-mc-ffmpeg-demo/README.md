@@ -55,11 +55,15 @@ HEVC/H.265 video and xHE-AAC audio transcoding from encoded media file:
 ffmpeg -i input.mp4 -c:v omx_enc_hevc -c:a omx_enc_xheaac -b:v 1000k -b:a 32000 -profile:a 28 -omx_name:v OMX.MainConcept.enc_hevc.video -omx_param:v "force_omx_param=1:preset=main:acc_type=sw" -omx_name:a OMX.MainConcept.enc_xheaac.audio -omx_core libomxil_core.so output.mp4
 ```
 
-### Brand color 1
+### Brand color 1 - highlight
+Color code - #2E8BC4
+
+### Brand color 2 - dark
+Color code - #12365A
+
+### Brand color 3 - dark
 Color code - #041125
 
-### Brand color 2
-Color code - #6DBA98
 
 ### Logo
 Light and dark logo included in assets folder.

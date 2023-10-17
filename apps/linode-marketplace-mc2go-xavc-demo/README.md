@@ -49,11 +49,16 @@ MainConcept XAVC Transcoder v2.0 the API version is "v1".
 }
 ```
 
-### Brand color 1
+
+### Brand color 1 - highlight
+Color code - #2E8BC4
+
+### Brand color 2 - dark
+Color code - #12365A
+
+### Brand color 3 - dark
 Color code - #041125
 
-### Brand color 2
-Color code - #6DBA98
 
 ### Logo
 Light and dark logo included in assets folder.
