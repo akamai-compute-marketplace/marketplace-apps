@@ -66,10 +66,16 @@ Color code - #041125
 
 
 ### Logo
-Light and dark logo included in assets folder.
+Light and dark logo included in assets folder, with solid and transparted background.
 
-Light:
-![light](assets/MCFFmpegPlugins_White.svg)
+Blue background:
+![Blue background](assets/MainConcept_BlueBG.svg)
 
-Dark:
-![dark](assets/MCFFmpegPlugins.svg)
+White background:
+![White background](assets/MainConcept_WhiteBG.svg)
+
+Blue with transparent background:
+![Blue with transparent background](assets/MainConcept_TransparentBG_Blue.svg)
+
+White with transparent background:
+![White with transparent background](assets/MainConcept_TransparentBG_White.svg)
