@@ -18,11 +18,11 @@
   
   - name: setting up hostname
     hostname:
-      name: mc2go-p2-avc-demo
+      name: mc-xdcam-demo
     when: 
       - domain is not defined
       - subdomain is not defined
-  
+
   - name: set hostname for dns
     hostname: 
       name: '{{ _domain }}'

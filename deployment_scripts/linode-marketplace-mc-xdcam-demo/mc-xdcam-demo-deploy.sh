@@ -2,8 +2,8 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-## MainConcept MC2GO XAVC Transcoder Demo Settings
-#<UDF name="mc2go_port" Label="MC2GO XAVC Transcoder API Port" example="Default: 8080" default="8080" /> 
+## MainConcept XDCAM Transcoder Demo Settings
+#<UDF name="mc_port" Label="MainConcept XDCAM Transcoder API Port" example="Default: 8080" default="8080" /> 
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
@@ -20,7 +20,7 @@ trap "cleanup $? $LINENO" EXIT
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps"
-export MARKETPLACE_APP="apps/linode-marketplace-mc2go-xavc-demo"
+export MARKETPLACE_APP="apps/linode-marketplace-mc-xdcam-demo"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -38,7 +38,7 @@ function udf {
 
   # deployment vars
   soa_email_address: ${SOA_EMAIL_ADDRESS}
-  mc2go_port: ${MC2GO_PORT}
+  mc_port: ${MC_PORT}
 EOF
 
   if [[ -n ${USER_NAME} ]]; then
@@ -56,11 +56,11 @@ EOF
   else echo "No pubkey entered";
   fi
   
-   if [[ -n ${TOKEN_PASSWORD} ]]; then
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
     echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
   else echo "No API token entered";
   fi
-
+  
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   else echo "No domain entered";

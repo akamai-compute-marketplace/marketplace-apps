@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: configuring MainConcept P2 AVC Ultra Transcoder
+- name: configuring MainConcept XAVC Transcoder
   hosts: localhost
   connection: local
   gather_facts: true
@@ -10,4 +10,5 @@
     - group_vars/linode/vars
   roles:
     - common
-    - mc2gop2avc
+    - mcxavc
+

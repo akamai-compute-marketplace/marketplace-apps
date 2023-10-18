@@ -18,11 +18,11 @@
   
   - name: setting up hostname
     hostname:
-      name: mc2go-xavc-demo
+      name: mc-p2-avc-demo
     when: 
       - domain is not defined
       - subdomain is not defined
-
+  
   - name: set hostname for dns
     hostname: 
       name: '{{ _domain }}'
@@ -35,7 +35,7 @@
     when: 
       - token_password is defined
       - domain is defined 
-
+  
   # set customer supplied sudo user, password and SSH keys
   - name: set sudo user
     import_role:
@@ -69,7 +69,7 @@
     import_role:
       name: fail2ban_install
 
-  # MainConcept  
+  # MainConcept
   - name: Install Docker dependencies
     apt:
       name:
