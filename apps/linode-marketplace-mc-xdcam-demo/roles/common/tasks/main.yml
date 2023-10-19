@@ -1,0 +1,122 @@
+---
+  # set_hostname
+  - name: set dns fact for subdomain
+    set_fact:
+      _domain: '{{ subdomain }}.{{ domain }}'
+      cacheable: yes
+    when:
+      - domain is defined
+      - subdomain != "www"
+    
+  - name: set dns fact for domain
+    set_fact:
+      _domain: '{{ domain }}'
+      cacheable: yes
+    when: 
+      - domain is defined
+      - subdomain == "www"
+  
+  - name: setting up hostname
+    hostname:
+      name: mc-xdcam-demo
+    when: 
+      - domain is not defined
+      - subdomain is not defined
+
+  - name: set hostname for dns
+    hostname: 
+      name: '{{ _domain }}'
+    when: 
+      - _domain is defined
+  
+  - name: create dns A record
+    import_role:
+      name: create_dns_record
+    when: 
+      - token_password is defined
+      - domain is defined 
+  
+  # set customer supplied sudo user, password and SSH keys
+  - name: set sudo user
+    import_role:
+      name: sudouser
+    when: username is defined
+
+  # sets customer supplied ssh pubkey to limited user
+  - name: set ssh pubkey
+    import_role:
+        name: sshkey
+    when: 
+      - pubkey is defined
+      - username is defined
+
+  # apt_setup_update
+  - name: update system packages
+    import_role:
+      name: update_pkgs
+
+  # ufw_install
+  - name: enabling ufw
+    import_role:
+      name: ufw
+
+  # ufw rules 
+  - name: apply ufw rules
+    import_tasks: ufw_rules.yml
+
+  # fail2ban
+  - name: enabling fail2ban
+    import_role:
+      name: fail2ban_install
+
+  # MainConcept
+  - name: Install Docker dependencies
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - gnupg2 
+        - pwgen 
+        - ufw
+        - python3 
+        - python3-pip
+        - python-is-python3
+      state: present
+
+  - name: Add Docker GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: Add Docker repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+      state: present
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Docker engine
+    apt:
+      name: docker-ce
+      state: present
+
+  - name: Start and enable Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Install Docker Python package
+    pip:
+      name: docker
+      executable: pip3
+      state: present
+
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd  
