@@ -6,7 +6,7 @@
 
   - name: Run Docker container
     docker_container:
-      name: mc2gop2avc
+      name: mcp2avc
       image: mainconcept/mc_2go_p2_avc_ultra_transcoder:demo-2-3-621
       state: started
       ports:

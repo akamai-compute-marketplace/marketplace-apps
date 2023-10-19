@@ -5,19 +5,19 @@ MainConcept P2 AVC Ultra Transcoder
 MainConcept P2 AVC Ultra Transcoder
 
 ### App description
-[MainConcept P2 AVC Ultra Transcoder](https://www.mainconcept.com/mc2go) is an optimized Docker container for file-based transcoding of media files into professional Panasonic camera formats like P2 AVC-Intra, P2 AVC LongG and AVC-intra RP2027.v1 and AAC High Efficiency v2 formats into an MP4 container.
+[MainConcept P2 AVC Ultra Transcoder](https://www.mainconcept.com/transcoders) is an optimized Docker container for file-based transcoding of media files into professional Panasonic camera formats like P2 AVC-Intra, P2 AVC LongG and AVC-intra RP2027.v1 and AAC High Efficiency v2 formats into an MP4 container.
 
 ### Version Number
 2.3
 
 ### Support
-* [Documentation](https://www.mainconcept.com/mc2go)
+* [Documentation](https://www.mainconcept.com/transcoders)
 
 ### Operating Systems
 Ubuntu 20.04 LTS, Ubuntu 22.04 LTS, Debian 11
 
 ### Documentation
-[Documentation](https://www.mainconcept.com/mc2go)
+[Documentation](https://www.mainconcept.com/transcoders)
 
 ### Example MainConcept P2 AVC Ultra Transcoder HTTP endpoints
 The REST API does not require authentication. The functions use the following syntax:

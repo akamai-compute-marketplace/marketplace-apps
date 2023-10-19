@@ -5,19 +5,19 @@ MainConcept XDCAM Transcoder
 MainConcept XDCAM Transcoder
 
 ### App description
-[MainConcept XDCAM Transcoder](https://www.mainconcept.com/mc2go) is an optimized Docker container for file-based transcoding of media files into professional Sony camera formats like XDCAM HD, XDCAM EX, XDCAM IMX and DVCAM (XDCAM DV).
+[MainConcept XDCAM Transcoder](https://www.mainconcept.com/transcoders) is an optimized Docker container for file-based transcoding of media files into professional Sony camera formats like XDCAM HD, XDCAM EX, XDCAM IMX and DVCAM (XDCAM DV).
 
 ### Version Number
 2.3
 
 ### Support
-* [Documentation](https://www.mainconcept.com/mc2go)
+* [Documentation](https://www.mainconcept.com/transcoders)
 
 ### Operating Systems
 Ubuntu 20.04 LTS, Ubuntu 22.04 LTS, Debian 11
 
 ### Documentation
-[Documentation](https://www.mainconcept.com/mc2go)
+[Documentation](https://www.mainconcept.com/transcoders)
 
 ### Example MainConcept XDCAM Transcoder HTTP endpoints
 The REST API does not require authentication. The functions use the following syntax:
