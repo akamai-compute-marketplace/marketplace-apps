@@ -3,7 +3,7 @@
     path: /data/harbor
     state: directory
 
-- name: download and extract offline harbor install
+- name: download and extract offline harbor installion files
   unarchive:
     src: https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-offline-installer-v2.9.0.tgz
     dest: /root/
@@ -14,7 +14,7 @@
     src: templates/harbor.yaml.j2
     dest: /root/harbor/harbor.yml
 
-- name: execute 
+- name: execute install script
   shell: bash /root/harbor/install.sh
 
 
