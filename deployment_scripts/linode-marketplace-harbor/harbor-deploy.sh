@@ -14,8 +14,8 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## harbor Settings 
-#<UDF name="harbor_admin_pass" label="The Harbor admin password">
-#<UDF name="harbor_db_pass" label="The Harbor database password ">
+#<UDF name="harbor_admin_password" label="The Harbor admin password">
+#<UDF name="harbor_db_password" label="The Harbor database password ">
 #<UDF name="soa_email_address" label="Admin Email for the Harbor server and Let's Encrypt SSL certificate">
 
 # git repo
@@ -79,12 +79,12 @@ function udf {
   else echo "No API token entered";
   fi
 
-  if [[ -n ${HARBOR_ADMIN_PASS} ]]; then
-    echo "harbor_admin_pass: ${HARBOR_ADMIN_PASS}" >> ${group_vars};
+  if [[ -n ${HARBOR_ADMIN_PASSWORD} ]]; then
+    echo "harbor_admin_pass: ${HARBOR_ADMIN_PASSWORD}" >> ${group_vars};
   fi
 
-  if [[ -n ${HARBOR_DB_PASS} ]]; then
-    echo "harbor_db_pass: ${HARBOR_DB_PASS}" >> ${group_vars};
+  if [[ -n ${HARBOR_DB_PASSWORD} ]]; then
+    echo "harbor_db_pass: ${HARBOR_DB_PASSWORD}" >> ${group_vars};
   fi
 
 }

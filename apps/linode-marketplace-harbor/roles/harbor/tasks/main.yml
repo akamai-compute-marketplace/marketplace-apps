@@ -3,7 +3,7 @@
     path: /data/harbor
     state: directory
 
-- name: download and unzip nats server bin
+- name: download and extract offline harbor install
   unarchive:
     src: https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-offline-installer-v2.9.0.tgz
     dest: /root/
@@ -12,7 +12,7 @@
 - name: copy harbor.yaml template
   template:
     src: templates/harbor.yaml.j2
-    dest: /root/harbor/
+    dest: /root/harbor/harbor.yml
 
 - name: execute 
   shell: bash /root/harbor/install.sh
@@ -21,6 +21,11 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
+
+- name: copy harbor.service template
+  template:
+    src: templates/harbor.service.j2
+    dest: /etc/systemd/system/harbor.service
 
 - name: Reload systemd daemon
   systemd:
