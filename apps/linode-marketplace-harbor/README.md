@@ -1,6 +1,6 @@
-# Linode Focalboard Deployment One-Click APP
+# Linode Harbor Deployment One-Click APP
 
-Focalboard is a free open source project management tool. Create boards, assign tasks, and keep projects moving with a free and robust alternative to tools like Trello and Asana.
+Harbor is an open source registry that secures artifacts with policies and role-based access control, ensures images are scanned and free from vulnerabilities, and signs images as trusted. 
 
 ## Software Included
 
@@ -8,7 +8,7 @@ Focalboard is a free open source project management tool. Create boards, assign 
 | :---      | :----     | :---          |
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
-| mattermost/focalboard | Latest | open source project management tool |
+| harbor | Latest | open source registry |
 
 
 **Supported Distributions:**
@@ -37,6 +37,9 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export HARBOR_PASSWORD="aComplexP@ssword"
+export HARBOR_DB_PASSWORD="aComplexP@ssword"
+
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -47,6 +50,9 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
+        "disable_root": "no/yes",
+        "harbor_password": "${HARBOR_PASSWORD}",
+        "harbor_db_password": "${HARBOR_DB_PASSWORD}",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
       },
       "authorized_users": [
@@ -67,13 +73,16 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export HARBOR_PASSWORD="aComplexP@ssword"
+export HARBOR_DB_PASSWORD="aComplexP@ssword"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "disable_root": "no/yes",
+  "harbor_password": "${HARBOR_PASSWORD}", "harbor_db_password": "${HARBOR_DB_PASSWORD}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
