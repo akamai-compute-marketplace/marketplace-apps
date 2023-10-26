@@ -6,7 +6,7 @@
     port: '22'
     proto: tcp
 
-- name: Allow all access to tcp port 4222
+- name: Allow all access to nats server port
   community.general.ufw:
     rule: allow
     port: '4222'
@@ -22,11 +22,4 @@
   community.general.ufw:
     rule: allow
     port: '1883'
-    proto: tcp
-
-
-- name: Allow all access to web port 
-  community.general.ufw:
-    rule: allow
-    port: '8888'
     proto: tcp
