@@ -9,17 +9,17 @@
 - name: Allow all access to nats server port
   community.general.ufw:
     rule: allow
-    port: '4222'
+    port: {{ nats_port }}
     proto: tcp
 
 - name: Allow all access to monitor port
   community.general.ufw:
     rule: allow
-    port: '8222'
+    port: {{ monitor_port }}
     proto: tcp
 
 - name: Allow all access to mqtt port
   community.general.ufw:
     rule: allow
-    port: '1883'
+    port: {{ mqtt_port }}
     proto: tcp

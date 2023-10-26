@@ -1,5 +1,5 @@
-port: 4222
-monitor_port: 8222
+port: {{ nats_port }}
+monitor_port: {{ monitor_port }}
 server_name: {{ name }}
 jetstream {
   store_dir: /data
@@ -24,7 +24,7 @@ accounts {
   }
 }
 mqtt {
-  port: 1883
+  port: {{ mqtt_port }}
 }
 websocket {
   port: 8888

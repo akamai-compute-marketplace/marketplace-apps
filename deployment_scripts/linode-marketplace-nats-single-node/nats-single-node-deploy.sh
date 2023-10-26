@@ -19,6 +19,10 @@ trap "cleanup $? $LINENO" EXIT
 # <UDF name="system_user_password" label="System User Password" default="correcthorsebatterystapler" />
 # <UDF name="example_user_password" label="Example User Password" default="correcthorsebatterystapler" />
 
+# <UDF name="nats_port" label="Nats Server Port" default="4222" />
+# <UDF name="monitor_port" label="Nats Server Port" default="8222" />
+# <UDF name="mqtt_port" label="Nats Server Port" default="1883" />
+
 
 # git repo
 export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
@@ -37,6 +41,7 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  echo "webserver_stack: lemp" >> ${group_vars};
   
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
@@ -81,6 +86,18 @@ function udf {
 
   if [[ -n ${EXAMPLE_USER_PASSWORD} ]]; then
     echo "example_user_password: ${EXAMPLE_USER_PASSWORD}" >> ${group_vars};
+  fi
+
+  if [[ -n ${NATS_PORT} ]]; then
+    echo "nats_port: ${NATS_PORT}" >> ${group_vars};
+  fi
+
+  if [[ -n ${MONITOR_PORT} ]]; then
+    echo "monitor_port: ${MONITOR_PORT}" >> ${group_vars};
+  fi
+
+  if [[ -n ${MQTT_PORT} ]]; then
+    echo "mqtt_port: ${MQTT_PORT}" >> ${group_vars};
   fi
 
 }
