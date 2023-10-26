@@ -1,3 +1,27 @@
+
+#Creds generation
+
+- name: generating harbor admin/db passwords
+  set_fact:
+    HARBOR_ADMIN_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+    HARBOR_DB_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+- name: writing harbor admin password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      harbor_admin_pass: {{ HARBOR_ADMIN_PASSWORD }}
+
+- name: writing harbor db password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      harbor_db_pass: {{ HARBOR_DB_PASSWORD }}
+
+#harbor setup
+
 - name: create harbor data directory
   file:
     path: /data/harbor
@@ -43,6 +67,7 @@
   notify: reload nginx service
 
 
+
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
@@ -70,5 +95,9 @@
     enabled: yes
       
        
-
-    
+#Writing creds to file
+- name: copy creds template
+  template:
+    mode: '0600'
+    src: templates/creds.j2
+    dest: /root/.credentials
