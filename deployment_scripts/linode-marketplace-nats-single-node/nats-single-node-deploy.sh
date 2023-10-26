@@ -16,12 +16,12 @@ trap "cleanup $? $LINENO" EXIT
 ## nats Settings 
 # <UDF name="name" label="Name" default="Test" />
 # <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />
-# <UDF name="system_user_password" label="System User Password" default="correcthorsebatterystapler" />
-# <UDF name="example_user_password" label="Example User Password" default="correcthorsebatterystapler" />
+# <UDF name="system_user_password" label="System User Password" />
+# <UDF name="example_user_password" label="Example User Password" />
 
 # <UDF name="nats_port" label="Nats Server Port" default="4222" />
-# <UDF name="monitor_port" label="Nats Server Port" default="8222" />
-# <UDF name="mqtt_port" label="Nats Server Port" default="1883" />
+# <UDF name="monitor_port" label="Nats Monitor Port" default="8222" />
+# <UDF name="mqtt_port" label="Nats MQTT Port" default="1883" />
 
 
 # git repo
