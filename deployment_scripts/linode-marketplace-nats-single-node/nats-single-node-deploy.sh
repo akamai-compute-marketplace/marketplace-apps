@@ -70,6 +70,13 @@ function udf {
   fi
 
 
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else 
+    echo "subdomain: www" >> ${group_vars};
+  fi
+
+
   #nats vars
   
   if [[ -n ${NAME} ]]; then
