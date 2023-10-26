@@ -6,19 +6,14 @@
     HARBOR_ADMIN_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
     HARBOR_DB_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
 
-- name: writing harbor admin password to vars
-  lineinfile:
+- name: writing harbor admin/db password to vars
+  blockinfile:
     insertafter: EOF
     path: group_vars/linode/vars
-    line: | 
+    block: | 
       harbor_admin_pass: {{ HARBOR_ADMIN_PASSWORD }}
-
-- name: writing harbor db password to vars
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: | 
       harbor_db_pass: {{ HARBOR_DB_PASSWORD }}
+
 
 #harbor setup
 
