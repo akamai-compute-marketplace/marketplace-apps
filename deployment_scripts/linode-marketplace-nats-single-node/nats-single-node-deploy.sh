@@ -20,7 +20,7 @@ trap "cleanup $? $LINENO" EXIT
 # <UDF name="example_user_password" label="Example User Password" />
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 # <UDF name="nats_port" label="Nats Server Port" default="4222" />
-# <UDF name="monitor_port" label="Nats Monitor Port" default="8222" />
+# <UDF name="websocket_port" label="Nats Websocket Port" default="8888" />
 # <UDF name="mqtt_port" label="Nats MQTT Port" default="1883" />
 
 
@@ -103,8 +103,8 @@ function udf {
     echo "nats_port: ${NATS_PORT}" >> ${group_vars};
   fi
 
-  if [[ -n ${MONITOR_PORT} ]]; then
-    echo "monitor_port: ${MONITOR_PORT}" >> ${group_vars};
+  if [[ -n ${WEBSOCKET_PORT} ]]; then
+    echo "websocket_port: ${WEBSOCKET_PORT}" >> ${group_vars};
   fi
 
   if [[ -n ${MQTT_PORT} ]]; then

@@ -1,5 +1,5 @@
 port: {{ nats_port }}
-monitor_port: {{ monitor_port }}
+monitor_port: 8000
 server_name: {{ name }}
 jetstream {
   store_dir: /data
@@ -27,7 +27,7 @@ mqtt {
   port: {{ mqtt_port }}
 }
 websocket {
-  port: 8888
+  port: {{ websocket_port }}
   no_tls: true
 }
 system_account: system
