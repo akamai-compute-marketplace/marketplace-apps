@@ -18,7 +18,7 @@ trap "cleanup $? $LINENO" EXIT
 # <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />
 # <UDF name="system_user_password" label="System User Password" />
 # <UDF name="example_user_password" label="Example User Password" />
-
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 # <UDF name="nats_port" label="Nats Server Port" default="4222" />
 # <UDF name="monitor_port" label="Nats Monitor Port" default="8222" />
 # <UDF name="mqtt_port" label="Nats MQTT Port" default="1883" />
@@ -61,6 +61,10 @@ function udf {
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
+  fi
+
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
   if [[ -n ${DOMAIN} ]]; then
