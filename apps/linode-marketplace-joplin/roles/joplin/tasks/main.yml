@@ -83,6 +83,7 @@
     content: |
       Joplin Login: admin@localhost
       Joplin Password: admin
+      Postgres Password: {{ postgres_password }}
       *** Please ensure you change the default credentials immediately after login! ***
     
   
