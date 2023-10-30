@@ -16,7 +16,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Yacht Settings 
 #<UDF name="yemail" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
-#<UDF name="ypassword" Label="Yacht Password" example="Password" />
 #<UDF name="compose_support" Label="Yacht Compose Support" example="Yes" default="Yes" oneof="Yes,No" />
 #<UDF name="ytheme" Label="Yacht Theme" example="Default" default="Default" oneof="Default,RED,OMV" />
 
@@ -59,14 +58,10 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  #yacht vars
+  # yacht vars
   
   if [[ -n ${YEMAIL} ]]; then
     echo "yemail: ${YEMAIL}" >> ${group_vars};
-  fi
-
-  if [[ -n ${YPASSWORD} ]]; then
-    echo "ypassword: ${YPASSWORD}" >> ${group_vars};
   fi
 
   if [[ -n ${COMPOSE_SUPPORT} ]]; then
