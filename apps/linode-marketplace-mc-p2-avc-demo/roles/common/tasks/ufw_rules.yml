@@ -10,6 +10,6 @@
 - name: Allow all access to the MC tcp port
   community.general.ufw:
     rule: allow
-    port: '{{mc_port}}'
+    port: '{{ mc_port }}'
     proto: tcp
 
