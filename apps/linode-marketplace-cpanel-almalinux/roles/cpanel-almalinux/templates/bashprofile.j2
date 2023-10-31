@@ -1,0 +1,35 @@
+# .bash_profile
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+fi
+# User specific environment and startup programs
+PATH=$PATH:$HOME/bin
+export PATH
+bash /etc/motd.sh
+if [ -t 0 ]; then
+    URL=`whmlogin --nowait 2> /dev/null`
+    WHMLOGIN_RETURN=$?
+    if [ $WHMLOGIN_RETURN == 1 ]; then
+        # whmlogin doesn't support --nowait.  Output a URL and hope it's accurate.
+        echo "To log in to WHM as the root user, visit the following address in your web browser:"
+        echo ""
+        whmlogin
+        echo ""
+        echo "Thank you for using cPanel & WHM!"
+    else
+        if [ $WHMLOGIN_RETURN == 2 ]; then
+            # whmlogin indicates that cpinit hasn't updated the IP/hostname yet.
+            echo "To log in to WHM as the root user, run the command 'whmlogin' to get a web address for your browser."
+            echo ""
+            echo "Thank you for using cPanel & WHM!"
+        else
+            # whmlogin returned a valid URL to use.
+            echo "To log in to WHM as the root user, visit the following address in your web browser:"
+            echo ""
+            echo "$URL"
+            echo ""
+            echo "Thank you for using cPanel & WHM!"
+        fi
+    fi
+fi
