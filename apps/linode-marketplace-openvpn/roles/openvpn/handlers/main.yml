@@ -1,9 +1,6 @@
 - name: reload nginx
   service:
-    name: nginx
+    name: openvpnas
     state: reloaded
 
-- name: reload apache2
-  service:
-    name: apache2
-    state: reloaded
+
