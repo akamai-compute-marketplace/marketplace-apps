@@ -1,4 +1,17 @@
 ---
+
+# Genenerate creds
+- name: generating yacht password
+  set_fact:
+    ypassword: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+- name: writing postgres_password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      ypassword: {{ ypassword }}
+
 - name: create docker volume
   docker_volume:
     name: "{{ 'yacht_data' if compose_support == True else 'yacht' }}"
