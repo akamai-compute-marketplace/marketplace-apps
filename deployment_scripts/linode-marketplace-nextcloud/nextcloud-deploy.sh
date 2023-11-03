@@ -14,12 +14,13 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## harbor Settings 
-#<UDF name="soa_email_address" label="Admin Email for the Harbor server and Let's Encrypt SSL certificate">
+#<UDF name="soa_email_address" label="Email for the Let's Encrypt SSL certificate">
 
 # git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+#export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+export GIT_REPO="https://github.com/jcotoBan/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-harbor"
+export MARKETPLACE_APP="apps/linode-marketplace-nextcloud"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -33,7 +34,6 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  echo "webserver_stack: lemp" >> ${group_vars};
   
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};
@@ -55,7 +55,7 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  # harbor vars
+  # nextcloud vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
@@ -85,7 +85,7 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone --branch nextcloud ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 

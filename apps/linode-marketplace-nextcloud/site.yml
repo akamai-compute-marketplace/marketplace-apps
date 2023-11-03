@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: focalboard setup
+- name: nextcloud setup
   hosts: localhost
   connection: local
   gather_facts: true
@@ -11,4 +11,4 @@
   roles:
     - common
     - docker
-    - harbor
+    - nextcloud
