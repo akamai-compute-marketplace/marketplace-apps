@@ -14,7 +14,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## harbor Settings 
-#<UDF name="soa_email_address" label="Email for the Let's Encrypt SSL certificate">
+#<UDF name="soa_email_address" label="email for SOA dns record" default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"

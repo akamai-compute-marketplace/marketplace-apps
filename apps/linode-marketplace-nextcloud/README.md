@@ -36,7 +36,6 @@ SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export SOA_EMAIL_ADDRESS="email@domain.com"
 
 
 curl -H "Content-Type: application/json" \
@@ -46,7 +45,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 632758,
       "stackscript_data": {
         "disable_root": "no/yes",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
@@ -68,13 +67,12 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export SOA_EMAIL_ADDRESS="email@domain.com"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
+  --stackscript_id 632758 \
   --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "disable_root": "no/yes"}' \
   --region us-east \
   --type g6-standard-2 \

@@ -28,10 +28,10 @@
   when: username is defined
 
 # Disable root
-- name: set sudo user
+- name: secure ssh
   import_role:
-    name: sudouser
-  when: username is defined
+      name: securessh
+  when: disable_root is defined
 
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
