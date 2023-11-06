@@ -16,4 +16,5 @@
     - wget 
     - net-tools 
     - gnupg
+    - certbot
   state: present

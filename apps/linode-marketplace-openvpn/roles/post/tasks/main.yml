@@ -1,4 +1,60 @@
 ---
-- name: configuring domain with certbot
-  import_role:
-    name: certbot_ssl
+#- name: configuring domain with certbot
+#  import_role:
+#    name: certbot_ssl
+####
+# generate csr, run cerbot, move ssl certs, run openvpn scripts
+
+- name: make ssl dir
+  file: 
+    path: /etc/ssl/private
+    state: directory
+    owner: root
+    group: root
+
+#- name: Create private key (RSA, 4096 bits)
+#  community.crypto.openssl_privatekey:
+#    path: /etc/ssl/private/certificate.key
+
+#- name: Create simple self-signed certificate
+#  community.crypto.x509_certificate:
+#    path: /etc/ssl/private/certificate.pem
+#    privatekey_path: /etc/ssl/private/certificate.key
+#    provider: selfsigned
+
+- name: run certbot dry-run
+  shell:
+    cmd: "certbot certonly -n --standalone --dry-run --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
+  run_once: true
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+
+- name: validate certbot dry-run
+  assert:
+    that: dry_run is not failed
+    fail_msg: "[Error] Certbot dry-run failed. Cannot continue..Check the domain provided"
+    success_msg: "[Info] Certbot dry-run successful!"
+  run_once: true
+
+# issue cert
+- name: run certbot
+  shell:
+    cmd: "certbot certonly -n --agree-tos -d {{ _domain }} -m {{ soa_email_address }} --cert-path /etc/ssl/private/crt.pem --key-path /etc/ssl/private/privatekey.pem"
+
+- name: use openvpn ssl key scripts
+  shell: 
+    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.priv_key" --value_file "/etc/ssl/private/privatekey.pem" ConfigPut"
+
+- name: use openvpn ssl cert scripts
+  shell: 
+    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.cert" --value_file "/etc/ssl/private/crt.pem" ConfigPut"
+
+- name: use openpvn intermediary scripts
+  shell: 
+    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.ca_bundle" --value_file "/etc/ssl/private/intermediary_bundle.pem" ConfigPut"
+
+
+- 

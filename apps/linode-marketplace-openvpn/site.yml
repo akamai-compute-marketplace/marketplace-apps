@@ -11,5 +11,5 @@
   roles:
     - common
     - openvpn
-    #- post
+    - post
     # needs ssl troubleshooting
