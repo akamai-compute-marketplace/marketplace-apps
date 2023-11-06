@@ -42,19 +42,12 @@
 # issue cert
 - name: run certbot
   shell:
-    cmd: "certbot certonly -n --agree-tos -d {{ _domain }} -m {{ soa_email_address }} --cert-path /etc/ssl/private/crt.pem --key-path /etc/ssl/private/privatekey.pem"
+    cmd: "certbot certonly -n --standalone --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
 
 - name: use openvpn ssl key scripts
-  shell: 
-    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.priv_key" --value_file "/etc/ssl/private/privatekey.pem" ConfigPut"
+  shell:
+    cmd: "/usr/local/openvpn_as/scripts/sacli --key cs.priv_key --value_file /etc/letsencrypt/live/{{ _domain }}/privkey.pem ConfigPut"
 
 - name: use openvpn ssl cert scripts
-  shell: 
-    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.cert" --value_file "/etc/ssl/private/crt.pem" ConfigPut"
-
-- name: use openpvn intermediary scripts
-  shell: 
-    cmd: "/usr/local/openvpn_as/scripts/sacli --key "cs.ca_bundle" --value_file "/etc/ssl/private/intermediary_bundle.pem" ConfigPut"
-
-
-- 
+  shell:
+    cmd: "/usr/local/openvpn_as/scripts/sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"
