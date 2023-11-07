@@ -96,7 +96,7 @@ function run {
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -110,7 +110,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -vvvv $playbook; done
+  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
 }
 
 function installation_complete {
