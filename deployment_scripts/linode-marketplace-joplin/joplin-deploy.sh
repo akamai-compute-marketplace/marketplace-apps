@@ -15,7 +15,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Joplin setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="postgres_password" label="Password for the postgres database" example="s3cure_p4ssw0rd">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -58,10 +57,6 @@ function udf {
   fi
 
   # Joplin vars
-  if [[ -n ${POSTGRES_PASSWORD} ]]; then
-    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
-  fi
-
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
