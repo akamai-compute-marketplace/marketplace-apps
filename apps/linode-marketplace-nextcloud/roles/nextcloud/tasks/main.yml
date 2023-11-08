@@ -26,7 +26,7 @@
     env:
       NEXTCLOUD_MOUNT: /mnt/
       NEXTCLOUD_DATADIR: /mnt/ncdata
-      SKIP_DOMAIN_VALIDATION: true
+      SKIP_DOMAIN_VALIDATION: "true"
   
 - name: Install unattended-upgrades package
   apt:
