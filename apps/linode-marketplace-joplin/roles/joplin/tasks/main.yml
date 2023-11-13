@@ -1,18 +1,6 @@
 ---
 # joplin
 
-# Genenerate creds
-- name: generating postgres password
-  set_fact:
-    postgres_password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-
-- name: writing postgres_password to vars
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: | 
-      postgres_password: {{ postgres_password }}
-
 - name: config file setup
   template:
     src: templates/joplin.service
