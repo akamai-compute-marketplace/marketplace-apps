@@ -1,11 +1,13 @@
 ## App Information
-MainConcept P2 AVC Ultra Transcoder
+MainConcept P2 AVC Ultra Transcoder Demo
 
 ### App Name
-MainConcept P2 AVC Ultra Transcoder
+MainConcept P2 AVC Ultra Transcoder Demo
 
 ### App description
 [MainConcept P2 AVC Ultra Transcoder](https://www.mainconcept.com/mc2go) is an optimized Docker container for file-based transcoding of media files into professional Panasonic camera formats like P2 AVC-Intra, P2 AVC LongG and AVC-intra RP2027.v1 and AAC High Efficiency v2 formats into an MP4 container.
+
+Please note: Since these apps deploy software for proprietary applications, a license is required. The MainConcept Marketplace apps automatically deploy a demo version designed for research, testing, and/or proof of concept. To upgrade your version, contact [MainConcept](https://www.mainconcept.com/akamai-linode).
 
 ### Version Number
 2.3
