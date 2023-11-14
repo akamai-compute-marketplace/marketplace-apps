@@ -24,7 +24,7 @@
     port: "{{ nats_port }}"
     proto: tcp
 
-- name: Allow all access to monitor port
+- name: Allow all access to websocket port
   community.general.ufw:
     rule: allow
     port: "{{ websocket_port }}"
