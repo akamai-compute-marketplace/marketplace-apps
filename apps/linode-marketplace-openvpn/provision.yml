@@ -9,12 +9,10 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
-
-- name: install depend packages for openvpn
-  apt:
-    - ca-certificates 
-    - wget 
-    - net-tools 
-    - gnupg
-    - certbot
-  state: present
+    - name: install depend packages for openvpn
+      apt:
+        pkg:
+        - ca-certificates
+        - wget
+        - net-tools
+        - gnupg

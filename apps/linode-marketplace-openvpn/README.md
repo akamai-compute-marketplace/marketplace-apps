@@ -1,12 +1,12 @@
 # Linode OpenVPN Deployment One-Click APP
 
-OpenVPN is a popular VPN
+OpenVPN is a widely trusted, free, and open-source VPN (virtual private network) application that creates encrypted tunnels for secure data transfer between computers that are not on the same local network.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-
+| Openvpn Access Server | latest |  Front-end GUI for OpenVPN |
 
 **Supported Distributions:**
 
@@ -19,8 +19,7 @@ OpenVPN is a popular VPN
 || Hostname   | Assigns a hostname to the Linode based on domains provided via UDF or uses default rDNS. | The Hostname module accepts a UDF to assign a FQDN and write to the `/etc/hosts` file. If no domain is provided the default `ip.linodeusercontent.com` rDNS will be used. For consistency, DNS and SSL configurations should use the Hostname generated `_domain` var when possible. |
 | Update Packages   | The Update Packages module performs apt update and upgrade actions as root.  |
 | UFW   | Add UFW firewalls to the Linode  | The UFW module will import a `ufw_rules.yml` provided in `roles/$APP/tasks` and enables the service.  |
-| Fail2Ban   | The Fail2Ban module installs, activates and enables the Fail2Ban service.  |
-| Secure MySQL   | The Secure MySQL module will use `passgen.yml` to generate a secure root password and write to `group_vars/linode/vars`. It will then update MySQL to be accessible by local socket or root password, and remove anonymous users, test databases and remote access.  |
+
 
 ## Use our API
 
@@ -48,13 +47,8 @@ curl -H "Content-Type: application/json" \
     "stackscript_data": {
         "disable_root": "No",
         "soa_email_address": "email@domain.tld",
-        "webserver_stack": "LAMP",
-        "site_title": "Example Site",
-        "wp_admin_user": "admin",
-        "wp_db_user": "wordpress",
-        "wp_db_name": "wordpress",
         "user_name": "sudo_user",
-        "password": "AReallyGreatPassword",
+        "password": "sudo_user_password",
         "pubkey": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer",
         "token_password": "A_Valid_API_Token",
         "subdomain": "examplesubdomain",
@@ -76,7 +70,7 @@ linode-cli linodes create \
   --backups_enabled false \
   --private_ip false \
   --stackscript_id 000000 \
-  --stackscript_data '{"disable_root": "No","soa_email_address":"email@domain.tld","webserver_stack":"LAMP","site_title":"Example Site","wp_admin_user":"ad,om","wp_db_user":"wordpress","wp_db_name":"wordpress","user_name":"sudo_user","password":"AReallyGreatPassword","pubkey":"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer","token_password":"A_Valid_API_Token","subdomain":"examplesubdomain","domain":"domain.tld"}'
+  --stackscript_data '{"disable_root": "No","soa_email_address":"email@domain.tld","user_name":"sudo_user","password":"sudo_user_password","pubkey":"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer","token_password":"A_Valid_API_Token","subdomain":"examplesubdomain","domain":"domain.tld"}'
 ```
 
 ## Resources
