@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: Peppermint setup
+- name: basic server hardening
   hosts: localhost
   connection: local
   gather_facts: true
