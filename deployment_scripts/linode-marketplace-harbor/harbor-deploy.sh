@@ -9,7 +9,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your Harbor server's DNS records" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
@@ -87,7 +87,7 @@ function run {
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -102,7 +102,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in site.yml; do ansible-playbook -vvvv $playbook; done
+  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
   
 }
 
