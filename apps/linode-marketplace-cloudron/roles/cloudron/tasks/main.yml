@@ -1,0 +1,13 @@
+---
+ # docker
+- ansible.builtin.get_url: 
+    src: https://cloudron.io/cloudron-setup 
+    dest: /tmp/cloudron-setup 
+
+- ansible.builtin.file: 
+    path: /tmp/cloudron-setup
+    mode: u+rw,g-wx,o-rwx
+
+- ansible.builtin.command: 
+    chdir: /tmp
+    cmd: ./cloudron-setup --provider linode-mp
