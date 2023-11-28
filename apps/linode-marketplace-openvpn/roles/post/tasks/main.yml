@@ -22,6 +22,11 @@
 #    privatekey_path: /etc/ssl/private/certificate.key
 #    provider: selfsigned
 
+- name: install certbot
+  apt: 
+    name: python3-certbot
+    state: present
+
 - name: run certbot dry-run
   shell:
     cmd: "certbot certonly -n --standalone --dry-run --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
