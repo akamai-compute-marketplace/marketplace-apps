@@ -1,27 +1,4 @@
 ---
-#- name: configuring domain with certbot
-#  import_role:
-#    name: certbot_ssl
-####
-# generate csr, run cerbot, move ssl certs, run openvpn scripts
-
-#- name: make ssl dir
-#  file: 
-#    path: /etc/ssl/private
-#    state: directory
-#    owner: root
-#    group: root
-
-#- name: Create private key (RSA, 4096 bits)
-#  community.crypto.openssl_privatekey:
-#    path: /etc/ssl/private/certificate.key
-
-#- name: Create simple self-signed certificate
-#  community.crypto.x509_certificate:
-#    path: /etc/ssl/private/certificate.pem
-#    privatekey_path: /etc/ssl/private/certificate.key
-#    provider: selfsigned
-
 - name: Create a symbolic link for cerbot python lib
   ansible.builtin.file:
     src: /tmp/marketplace-apps/apps/linode-marketplace-openvpn/env/bin/certbot
