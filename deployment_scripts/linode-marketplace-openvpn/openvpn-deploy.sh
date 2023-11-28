@@ -94,7 +94,7 @@ function run {
   pip3 install virtualenv
   python3 -m python3 -m virtualenv env --system-site-packages
   source env/bin/activate
-  pip install pip --upgrade
+  pip install pip -I --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   

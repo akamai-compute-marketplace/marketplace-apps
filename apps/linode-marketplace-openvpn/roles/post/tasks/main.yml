@@ -63,3 +63,4 @@
     executable: /bin/bash
     chdir: /usr/local/openvpn_as/scripts
     cmd: "./sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"
+  notify: restart openvpn

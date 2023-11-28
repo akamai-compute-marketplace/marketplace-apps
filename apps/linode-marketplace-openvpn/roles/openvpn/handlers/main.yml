@@ -1,6 +1,6 @@
-- name: reload nginx
+- name: restart openvpn
   service:
     name: openvpnas
-    state: reloaded
+    state: restarted
 
 
