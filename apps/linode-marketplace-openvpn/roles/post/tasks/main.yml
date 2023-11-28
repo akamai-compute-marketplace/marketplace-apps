@@ -22,10 +22,13 @@
 #    privatekey_path: /etc/ssl/private/certificate.key
 #    provider: selfsigned
 
-- name: install certbot
-  apt: 
-    name: python3-certbot
-    state: present
+- name: Create a symbolic link for cerbot python lib
+  ansible.builtin.file:
+    src: /tmp/marketplace-apps/apps/linode-marketplace-openvpn/env/bin/certbot
+    dest: /usr/bin/certbot
+    owner: root
+    group: root
+    state: link
 
 - name: run certbot dry-run
   shell:
@@ -51,14 +54,12 @@
 
 - name: use openvpn ssl key scripts
   ansible.builtin.shell:
-    args:
-      executable: /bin/bash
-      chdir: /usr/local/openvpn_as/scripts
-      cmd: "./sacli --key cs.priv_key --value_file /etc/letsencrypt/live/{{ _domain }}/privkey.pem ConfigPut"
+    executable: /bin/bash
+    chdir: /usr/local/openvpn_as/scripts
+    cmd: "./sacli --key cs.priv_key --value_file /etc/letsencrypt/live/{{ _domain }}/privkey.pem ConfigPut"
 
 - name: use openvpn ssl cert scripts
   shell:
-    args:
-      executable: /bin/bash
-      chdir: /usr/local/openvpn_as/scripts
-      cmd: "./sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"
+    executable: /bin/bash
+    chdir: /usr/local/openvpn_as/scripts
+    cmd: "./sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"

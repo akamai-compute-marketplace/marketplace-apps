@@ -92,7 +92,7 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  python3 -m python3 -m --system-site-packages virtualenv env
+  python3 -m python3 -m virtualenv env --system-site-packages
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
