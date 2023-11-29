@@ -7,13 +7,13 @@
     proto: tcp
 
 - name: allow http 
-  communit.general.ufw:
+  community.general.ufw:
     rule: allow
     port: 80
     proto: tcp
 
 - name: allow https
-  communit.general.ufw:
+  community.general.ufw:
     rule: allow
     port: 443
     proto: tcp
