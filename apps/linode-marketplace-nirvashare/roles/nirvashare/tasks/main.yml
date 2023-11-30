@@ -1,16 +1,5 @@
 ---
 # Nirvashare
-- name: generating db password
-  set_fact:
-    dbpassword: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
-
-- name: writing db password to vars
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: | 
-      dbpassword: {{ dbpassword }}
-
 - name: Config file Setup
   template:
     src: templates/nirvashare.service
