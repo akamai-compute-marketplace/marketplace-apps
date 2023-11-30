@@ -55,7 +55,7 @@ function udf {
   else echo "No pubkey entered";
   fi
 
-  # ODOO vars
+  # domain vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
@@ -94,8 +94,8 @@ function run {
   pip3 install virtualenv
   python3 -m python3 -m virtualenv env --system-site-packages
   source env/bin/activate
-  pip install pip -I --upgrade
-  pip install -r requirements.txt
+  pip install pip --upgrade
+  pip install -I -r requirements.txt
   ansible-galaxy install -r collections.yml
   
 
