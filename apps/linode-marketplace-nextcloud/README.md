@@ -8,7 +8,7 @@ Nextcloud AIO stands for Nextcloud All In One, and provides easy deployment and 
 | :---      | :----     | :---          |
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
-| Nextcloud All-in-One | Latest | provides easy deployment and maintenance with most features included in this one Nextcloud instance. |
+| Nextcloud All-in-One | Latest | Provides easy deployment and maintenance with most features included in this one Nextcloud instance. |
 
 
 **Supported Distributions:**
