@@ -19,7 +19,7 @@
       register: result
     rescue: 
     - name: capture creds and restart the linode
-      when: '"After reboot, visit one of the following URLs and accept the self-signed certificate to finish setup." in result.stderr'
+      when: '"After reboot" in result.stdout'
       debug: 
-        msg: '{{ $result.stderr }}'
+        msg: '{{ result.stdout }}'
 
