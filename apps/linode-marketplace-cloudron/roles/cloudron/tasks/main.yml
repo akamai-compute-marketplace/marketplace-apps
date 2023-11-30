@@ -16,9 +16,13 @@
       ansible.builtin.command: 
         chdir: /tmp
         cmd: ./cloudron-setup --provider linode-mp
-    register: result
+      register: result
     rescue: 
     - name: capture creds and restart the linode
-      when: '"complete" in result.msg'
+      when: '"After reboot, visit one of the following URLs and accept the self-signed certificate to finish setup." in result.msg'
       debug: 
-        msg: 'all done' 
+        msg: '{{ $result.msg }}'
+
+    - name: reboot
+      ansible.builtin.reboot: 
+        reboot_timeout: 
