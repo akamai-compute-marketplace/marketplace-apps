@@ -1,4 +1,12 @@
 ---
+  - name: install depend packages for openvpn
+    apt:
+      pkg:
+      - ca-certificates
+      - wget
+      - net-tools
+      - gnupg
+  
   - name: Add OpenVPN GPG key
     ansible.builtin.get_url:
       url: https://as-repository.openvpn.net/as-repo-public.gpg
