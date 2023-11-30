@@ -19,10 +19,7 @@
       register: result
     rescue: 
     - name: capture creds and restart the linode
-      when: '"After reboot, visit one of the following URLs and accept the self-signed certificate to finish setup." in result.msg'
+      when: '"After reboot, visit one of the following URLs and accept the self-signed certificate to finish setup." in result.stderr'
       debug: 
-        msg: '{{ $result.msg }}'
+        msg: '{{ $result.stderr }}'
 
-    - name: reboot
-      ansible.builtin.reboot: 
-        reboot_timeout: 
