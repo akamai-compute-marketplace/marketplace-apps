@@ -2,7 +2,7 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-##Linode/SSH security settings
+## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
 #<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
