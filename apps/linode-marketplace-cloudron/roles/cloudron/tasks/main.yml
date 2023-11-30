@@ -1,22 +1,21 @@
 ---
  # cloudron tasks as block
-tasks:
-   - name: Install Cloudron, handle status 1, restart the Linode
-     block:
-      - ansible.builtin.get_url: 
+  - name: Install Cloudron, handle status 1, restart the Linode
+    block:
+      ansible.builtin.get_url: 
         url: https://cloudron.io/cloudron-setup 
         dest: /tmp/cloudron-setup 
      
-      - ansible.builtin.file: 
-        path: /tmp/cloudron-setup
-        mode: 754
+        ansible.builtin.file: 
+          path: /tmp/cloudron-setup
+          mode: 754
      
-      - ansible.builtin.command: 
-        chdir: /tmp
-        cmd: ./cloudron-setup --provider linode-mp
-  - register: result
-rescue: 
+        ansible.builtin.command: 
+          chdir: /tmp
+          cmd: ./cloudron-setup --provider linode-mp
+        register: result
+  rescue: 
    - name: capture creds and restart the linode
      when: '"complete" in result.msg'
      debug: 
-      msg: 'it's done 
+      msg: 'all done' 
