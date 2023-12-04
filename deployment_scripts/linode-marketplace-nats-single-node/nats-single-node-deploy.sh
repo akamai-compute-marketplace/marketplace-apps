@@ -135,7 +135,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in site.yml; do ansible-playbook -vvvv $playbook; done
+  for playbook in site.yml; do ansible-playbook -v $playbook; done
   
 }
 

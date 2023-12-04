@@ -1,14 +1,12 @@
-# Linode Focalboard Deployment One-Click APP
+# Linode NATS Deployment One-Click APP
 
-Focalboard is a free open source project management tool. Create boards, assign tasks, and keep projects moving with a free and robust alternative to tools like Trello and Asana.
+NATS is a connective technology built for the hyper-connected world. It is a single technology that enables applications to securely communicate across any combination of cloud vendors, on-premise, edge, web and mobile, and devices. NATS consists of a family of open-source products that are tightly integrated but can be deployed easily and independently. NATS is being used globally by thousands of companies, spanning use-cases including microservices, edge computing, mobile, and IoT.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
-| mattermost/focalboard | Latest | open source project management tool |
+| nats-server | According to specified version | Highly performant, open-source messaging system |
 
 
 **Supported Distributions:**
