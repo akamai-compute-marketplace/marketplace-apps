@@ -1,0 +1,5 @@
+collections:
+ - name: linode.cloud
+   version: 0.16.1
+ - name: community.docker
+   version: 3.4.7
