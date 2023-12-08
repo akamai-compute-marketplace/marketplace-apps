@@ -1,34 +1,39 @@
 ---
  # cyberpanel tasks as block
+ # cyberpanel scripts want to be ran in /root/
   - name: Install Cyberpanel
     block:
     - name: download Cyberpanel
       ansible.builtin.get_url: 
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/cybersetup.sh  
-        dest: /tmp/cyberpanel/cybersetup.sh 
+        dest: /root/cybersetup.sh 
         mode: 754
     
     - name: run Cyberpanel installer
       ansible.builtin.command: 
-        chdir: /tmp/cyberpanel
+        chdir: /root
         cmd: ./cybersetup.sh
 
     - name: download Cyberpanel init script
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
-        dest: /tmp/cyberpanel/per-instance.sh
+        dest: /root/per-instance.sh
         mode: 754
 
     - name: run Cyberpanel init script
       ansible.builtin.command:
-        chdir: /tmp/cyberpanel
+        chdir: /root
         cmd: ./per-instance.sh  
-      register: result
-    rescue: 
-    - name: print Cyberpanel msg
-      when: result.stdout != 0
-      debug: 
-        msg: '{{ result.stdout }}'
+
+    - name: remove temporary httpd dir
+      ansible.builtin.file:
+        path: /tmp/lshttpd/
+        state: absent
+    
+    - name: add marketplace stub to MOTD
+      ansible.builtin.template: 
+        src: templates/motd.j2
+        dest: /etc/motd
 
 # need to find format of cyberpanel msg
 # capture creds -> vars file
