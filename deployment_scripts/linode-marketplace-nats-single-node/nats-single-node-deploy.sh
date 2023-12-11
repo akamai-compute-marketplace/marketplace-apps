@@ -14,14 +14,14 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## nats Settings 
-# <UDF name="name" label="Nats Server Name" default="Test" />
+# <UDF name="name" label="NATS Server Name" default="Test" />
 # <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />
 # <UDF name="system_user_password" label="System User Password" />
 # <UDF name="example_user_password" label="Example User Password" />
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-# <UDF name="nats_port" label="Nats Server Port" default="4222" />
-# <UDF name="websocket_port" label="Nats Websocket Port" default="8888" />
-# <UDF name="mqtt_port" label="Nats MQTT Port" default="1883" />
+# <UDF name="nats_port" label="NATS Server Port" default="4222" />
+# <UDF name="websocket_port" label="NATS Websocket Port" default="8888" />
+# <UDF name="mqtt_port" label="NATS MQTT Port" default="1883" />
 
 
 # git repo
