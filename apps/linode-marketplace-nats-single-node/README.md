@@ -35,6 +35,13 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export NAME="nats_server_name"
+export VERSION="nats_server_name"
+export SYSTEM_USER_PASSWORD="nats_system_user_pass"
+export EXAMPLE_USER_PASSWORD="example_system_user_pass"
+export NATS_PORT="nats port" //default is 4222
+export WEBSOCKET_PORT="websocket port" //default is 8888
+export MQTT_PORT="mqtt port" //default is 1883
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -45,7 +52,14 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
+        "name": "${NAME}",
+        "version": "${VERSION}",
+        "system_user_password": "${SYSTEM_USER_PASSWORD}",
+        "example_user_password": "${EXAMPLE_USER_PASSWORD}",
+        "nats_port": "${NATS_PORT}",
+        "websocket_port": "${WEBSOCKET_PORT}",
+        "mqtt_port": "${MQTT_PORT}",
       },
       "authorized_users": [
         "myUser",
@@ -65,13 +79,27 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export NAME="nats_server_name"
+export VERSION="nats_server_name"
+export SYSTEM_USER_PASSWORD="nats_system_user_pass"
+export EXAMPLE_USER_PASSWORD="example_system_user_pass"
+export NATS_PORT="nats port" //default is 4222
+export WEBSOCKET_PORT="websocket port" //default is 8888
+export MQTT_PORT="mqtt port" //default is 1883
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}', \
+ '{"name": "${NAME}"}', \
+ '{"version": "${VERSION}"}', \
+ '{"system_user_password": "${SYSTEM_USER_PASSWORD}"}', \
+ '{"example_user_password": "${EXAMPLE_USER_PASSWORD}"}', \
+ '{"nats_port": "${NATS_PORT}"}', \
+ '{"websocket_port": "${WEBSOCKET_PORT}"}', \
+ '{"mqtt_port": "${MQTT_PORT}"} \ 
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"

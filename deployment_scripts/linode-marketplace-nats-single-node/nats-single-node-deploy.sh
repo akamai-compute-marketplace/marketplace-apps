@@ -14,7 +14,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## nats Settings 
-# <UDF name="name" label="Name" default="Test" />
+# <UDF name="name" label="Nats Server Name" default="Test" />
 # <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />
 # <UDF name="system_user_password" label="System User Password" />
 # <UDF name="example_user_password" label="Example User Password" />
