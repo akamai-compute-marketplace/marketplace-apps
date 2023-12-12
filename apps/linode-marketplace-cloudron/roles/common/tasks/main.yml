@@ -58,3 +58,8 @@
 - name: enabling fail2ban
   import_role:
     name: fail2ban_install
+
+- name: write motd 
+  ansible.builtin.template: 
+    src: templates/motd.j2
+    dest: /etc/motd  
