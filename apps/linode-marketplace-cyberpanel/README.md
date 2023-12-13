@@ -1,13 +1,12 @@
-# Linode Docker Deployment One-Click APP
+# Linode Cyberpanel Deployment One-Click APP
 
-Docker is a tool that enables you to create, deploy, and manage containers. Each container is a lightweight stand-alone package that containing the code, libraries, runtime, system settings, and dependencies that are required to run an application. Every container is deployed with its own CPU, memory, block I/O, and network resources, without having to depend upon an individual kernel and operating system. While it may be easiest to compare Docker to virtual machines, they differ in the way they share or dedicate resources.
+CyberPanel is a next-generation hosting control panel, which provides a friendly user interface. The CyberPanel app provides a One-Click installer for OpenLiteSpeed, LSCache, WordPress, Prestashop, Joomla, Magento, and Git. It also automates the initial setup for components like mail service and DNS to reduce the time it takes to get set up.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
+| Cyberpanel    | latest    | Hosting Control Panel |
 
 
 **Supported Distributions:**
@@ -25,7 +24,7 @@ Docker is a tool that enables you to create, deploy, and manage containers. Each
 
 ## Use our API
 
-Customers can choose to the deploy the LAMP stack through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy Cyberpanel through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -45,9 +44,16 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 741206,
       "stackscript_data": {
+        "disable_root": "No",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "user_name": "sudo_user",
+        "password": "sudo_user_password",
+        "pubkey": "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer",
+        "token_password": "A_Valid_API_Token",
+        "subdomain": "examplesubdomain",
+        "domain": "domain.tld"
       },
       "authorized_users": [
         "myUser",
@@ -72,8 +78,8 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
+  --stackscript_id 741206 \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}" "disable_root": "No","user_name":"sudo_user","password":"sudo_user_password","pubkey":"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer","token_password":"A_Valid_API_Token","subdomain":"examplesubdomain","domain":"domain.tld"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
