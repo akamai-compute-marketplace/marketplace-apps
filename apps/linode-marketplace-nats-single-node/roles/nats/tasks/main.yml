@@ -98,3 +98,11 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+
+- name: writing NATS creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      system user password : {{ SYSTEM_USER_PASSWORD }}
+      example user password: {{ EXAMPLE_USER_PASSWORD }}
