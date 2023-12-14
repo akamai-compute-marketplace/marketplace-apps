@@ -2,7 +2,7 @@ port: {{ nats_port }}
 monitor_port: 8000
 server_name: '{{ name }}'
 jetstream {
-  store_dir: /data
+  store_dir: /nats/data
 }
 accounts {
   example: {

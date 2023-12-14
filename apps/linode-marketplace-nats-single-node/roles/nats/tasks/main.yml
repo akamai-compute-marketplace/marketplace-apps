@@ -21,6 +21,12 @@
       - unzip
     state: latest
 
+- name: create nats-server jetstream dir
+  ansible.builtin.file:
+    path: /nats
+    state: directory
+    owner: nats
+
 - name: create nats-server dir
   ansible.builtin.file:
     path: /tmp/nats-server
