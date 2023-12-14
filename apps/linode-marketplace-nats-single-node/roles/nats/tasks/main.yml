@@ -1,11 +1,11 @@
 ---
 
-- name: Create system group
+- name: create system group
   group:
     name: nats
     state: present
 
-- name: Create system user
+- name: create system user
   user:
     name: nats
     group: nats
