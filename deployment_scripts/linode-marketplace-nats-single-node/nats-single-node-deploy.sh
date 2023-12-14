@@ -15,9 +15,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## nats Settings 
 # <UDF name="name" label="NATS Server Name" default="Test" />
-# <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />
-# <UDF name="system_user_password" label="System User Password" />
-# <UDF name="example_user_password" label="Example User Password" />
+# <UDF name="version" label="Version" oneOf="2.10.1,2.10.0,2.9.22,2.9.21,2.9.20" default="2.10.1" />s
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 # <UDF name="nats_port" label="NATS Server Port" default="4222" />
 # <UDF name="websocket_port" label="NATS Websocket Port" default="8888" />
@@ -91,14 +89,6 @@ function udf {
     echo "version: ${VERSION}" >> ${group_vars};
   fi
 
-  if [[ -n ${SYSTEM_USER_PASSWORD} ]]; then
-    echo "system_user_password: ${SYSTEM_USER_PASSWORD}" >> ${group_vars};
-  fi
-
-  if [[ -n ${EXAMPLE_USER_PASSWORD} ]]; then
-    echo "example_user_password: ${EXAMPLE_USER_PASSWORD}" >> ${group_vars};
-  fi
-
   if [[ -n ${NATS_PORT} ]]; then
     echo "nats_port: ${NATS_PORT}" >> ${group_vars};
   fi
@@ -135,7 +125,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in site.yml; do ansible-playbook -v $playbook; done
+  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
   
 }
 
