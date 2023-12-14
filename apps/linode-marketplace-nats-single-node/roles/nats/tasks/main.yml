@@ -23,6 +23,7 @@
   ansible.builtin.copy:
     src: /tmp/nats-server/nats-server-v{{ version }}-linux-amd64/nats-server 
     dest: /usr/local/bin
+    owner: nats
     mode: '700'
 
 
