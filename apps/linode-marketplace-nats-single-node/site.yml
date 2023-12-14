@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: focalboard setup
+- name: nats setup
   hosts: localhost
   connection: local
   gather_facts: true

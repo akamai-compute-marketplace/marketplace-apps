@@ -1,21 +1,12 @@
 ---
 
 - name: install required packages
-  block:
-    - name: netools install
-      apt:
-        pkg: net-tools
-        state: present
-
-    - name: curl install
-      apt:
-        pkg: curl 
-        state: present
-
-    - name: unzip install
-      apt:
-        pkg: unzip
-        state: present
+  apt:
+    pkg:
+      - net-tools
+      - curl
+      - unzip
+    state: latest
 
 - name: create nats-server dir
   ansible.builtin.file:
