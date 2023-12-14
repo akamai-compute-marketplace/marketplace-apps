@@ -25,6 +25,15 @@
     dest: /usr/local/bin
     mode: '700'
 
+
+- name: Create system user
+  user:
+    name: nats
+    system: yes
+    group: yes
+    shell: /bin/false
+    createhome: no
+
 - name: Add nats service file 
   template:
     src: nats.service.j2

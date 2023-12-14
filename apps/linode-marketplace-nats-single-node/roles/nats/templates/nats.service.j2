@@ -10,7 +10,6 @@ ExecStop=/bin/kill -s SIGINT $MAINPID
 Restart=on-failure
 RestartSec=5s
 KillMode=process
-User=root
-Group=root
+User=nats
 [Install]
 WantedBy=multi-user.target
