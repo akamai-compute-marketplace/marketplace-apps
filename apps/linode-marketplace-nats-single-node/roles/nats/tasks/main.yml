@@ -1,5 +1,18 @@
 ---
 
+- name: Create system group
+  group:
+    name: nats
+    state: present
+
+- name: Create system user
+  user:
+    name: nats
+    group: nats
+    system: true
+    shell: /bin/false
+    createhome: no
+
 - name: install required packages
   apt:
     pkg:
@@ -25,20 +38,6 @@
     dest: /usr/local/bin
     owner: nats
     mode: '700'
-
-
-- name: Create system group
-  group:
-    name: nats
-    state: present
-
-- name: Create system user
-  user:
-    name: nats
-    group: nats
-    system: true
-    shell: /bin/false
-    createhome: no
 
 - name: Add nats service file 
   template:
