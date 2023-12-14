@@ -104,5 +104,5 @@
     dest: /root/.credentials
     mode: '0600'
     content: |
-      system user password : {{ SYSTEM_USER_PASSWORD }}
-      example user password: {{ EXAMPLE_USER_PASSWORD }}
+      system user password : {{ system_user_password }}
+      example user password: {{ example_user_password }}
