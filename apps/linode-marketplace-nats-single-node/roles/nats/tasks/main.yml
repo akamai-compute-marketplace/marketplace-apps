@@ -26,11 +26,16 @@
     mode: '700'
 
 
+- name: Create system group
+  group:
+    name: nats
+    state: present
+
 - name: Create system user
   user:
     name: nats
-    system: yes
-    group: yes
+    group: nats
+    system: true
     shell: /bin/false
     createhome: no
 
