@@ -3,12 +3,11 @@
 
 - name: create nextcloud data directory
   file:
-    path: /mnt/data
+    path: /mnt/ncdata
     state: directory
     owner: 33
     group: 0
     recurse: yes
-
 
 - name: run nexcloud aio container
   docker_container:
