@@ -1,11 +1,6 @@
 ---
 # jupyter
 
-- name: pull jupyter image
-  docker_image:
-    name: jupyter/minimal-notebook
-    source: pull
-
 - name: config file setup
   template:
     src: templates/jupyter.service
