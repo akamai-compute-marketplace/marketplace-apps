@@ -6,8 +6,3 @@
     - docker
     - docker-compose
     state: present
-
-- name: pull jupyter image
-  docker_image:
-    name: jupyter/minimal-notebook
-    source: pull

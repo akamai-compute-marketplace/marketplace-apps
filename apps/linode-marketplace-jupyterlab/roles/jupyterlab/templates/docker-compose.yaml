@@ -1,11 +1,10 @@
 version: '3'
+
 services:
-    app:
-        image: jupyter/minimal-notebook
-        depends_on:
-        ports:
-            - "8888:8888"
-        restart: unless-stopped
-        environment:
-            - APP_PORT=8888
-            - APP_BASE_URL=http://127.0.0.1
+  jupyter:
+    image: jupyter/minimal-notebook
+    ports:
+      - "127.0.0.1:8888:8888"
+    volumes:
+      - /opt/notebooks:/home/jovyan/work
+    restart: always
