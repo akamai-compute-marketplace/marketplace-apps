@@ -1,4 +1,4 @@
-# Linode JupyterLab Deployment One-Click APP
+# Linode JupyterLab Deployment One-Click App
 
 JupyterLab is a web-based interactive development environment for notebooks, code, and data. Its flexible interface allows users to configure and arrange workflows in data science, scientific computing, computational journalism, and machine learning.
 
@@ -8,9 +8,9 @@ JupyterLab is a web-based interactive development environment for notebooks, cod
 | :---      | :----     | :---          |
 | Nginx    | 1.18    | HTTP server used to serve web applications |
 | Fail2ban  | 0.11.2   | Provides protection against brute force and authentication attempts |
-| UFW | 0.36 | Easy-to-use firewall wrapper used to allow HTTP/S and SSH ports |
-| Certbot | 1.12.0 | Is used to obtain HTTPS/TLS/SSL certitifcate for the provided domain |
-| JupyterLab | 4.0.x | Web-based interactive development environment for notebooks, code, and data |
+| UFW | 0.36 | Easy-to-use firewall wrapper used to allow HTTP/S, SSH and reverse proxy ports |
+| Certbot | 1.12.0 | Is used to obtain HTTPS/TLS/SSL certitifcate for the default or provided domain |
+| JupyterLab | 4.0.X | The web-based interactive development environment for notebooks, code, and data |
 
 
 **Supported Distributions:**
@@ -80,4 +80,4 @@ linode-cli linodes create \
 ## Resources
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
-- [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
+- [Stackscript Referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
