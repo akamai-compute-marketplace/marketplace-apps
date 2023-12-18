@@ -20,6 +20,30 @@
   systemd:
     daemon_reload: yes
 
+- name: Generate Jupyter Lab config
+  command: jupyter-lab --generate-config creates=/root/.jupyter/jupyter_lab_config.py
+
+- name: Create notebooks directory
+  file:
+    path: /opt/notebooks
+    state: directory
+
+- name: Hash the notebook password
+  command: >
+    python3 -c "from jupyter_server.auth import passwd; print(passwd('{{ _notebook_password }}'))"
+  register: hashed_password
+
+- name: Update Jupyter Lab config
+  blockinfile:
+    path: /root/.jupyter/jupyter_lab_config.py
+    block: |
+      c.ServerApp.root_dir = '/opt/notebooks'
+      c.ServerApp.open_browser = False
+      c.ServerApp.password = u'{{ hashed_password.stdout }}'
+      c.ServerApp.allow_origin = '*'
+      c.ServerApp.allow_root = True
+      c.ServerApp.trust_xheaders = True
+
 - name: enable jupyter service
   systemd:
     name: jupyter.service
@@ -63,15 +87,3 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
-
-- name: writing jupyter config into file
-  copy:
-    dest: /root/.jupyter/jupyter_lab_config.py
-    mode: '0600'
-    content: |
-      c.ServerApp.root_dir = '/opt/notebooks'
-      c.ServerApp.open_browser = False
-      c.ServerApp.password = u'$HASHED_PASSWORD'
-      c.ServerApp.allow_origin = '*'
-      c.ServerApp.allow_root = True
-      c.ServerApp.trust_xheaders = True
