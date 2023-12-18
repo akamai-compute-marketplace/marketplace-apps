@@ -2,9 +2,16 @@ version: '3'
 
 services:
   jupyter:
-    image: jupyter/minimal-notebook
+    build:
+      context: .
+      dockerfile: Dockerfile.custom
     ports:
       - "127.0.0.1:8888:8888"
     volumes:
       - /opt/notebooks:/home/jovyan/work
     restart: always
+    command: start-notebook.sh --NotebookApp.token=''
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    cap_drop:
+      - all
