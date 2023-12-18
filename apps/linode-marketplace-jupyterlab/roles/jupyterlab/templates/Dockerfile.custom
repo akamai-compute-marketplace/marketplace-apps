@@ -1,9 +1,0 @@
-FROM jupyter/minimal-notebook
-
-# Copy custom Jupyter configuration file
-COPY jupyter_notebook_config.py /home/jovyan/.jupyter/
-
-# Fix permissions
-USER root
-RUN chown -R jovyan:users /home/jovyan/.jupyter/
-USER jovyan
