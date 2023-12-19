@@ -6,11 +6,10 @@ JupyterLab is a web-based interactive development environment for notebooks, cod
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
+| Docker    | 20.10    | Container Management tool |
+| Docker Compose    | 1.29    | Container Management tool |
 | Nginx    | 1.18    | HTTP server used to serve web applications |
-| Fail2ban  | 0.11.2   | Provides protection against brute force and authentication attempts |
-| UFW | 0.36 | Easy-to-use firewall wrapper used to allow HTTP/S, SSH and reverse proxy ports |
-| Certbot | 1.12.0 | Is used to obtain HTTPS/TLS/SSL certitifcate for the default or provided domain |
-| JupyterLab | 4.0.X | The web-based interactive development environment for notebooks, code, and data |
+| JupyterLab | 4.0.x | Web-based interactive development environment for notebooks, code, and data |
 
 
 **Supported Distributions:**
