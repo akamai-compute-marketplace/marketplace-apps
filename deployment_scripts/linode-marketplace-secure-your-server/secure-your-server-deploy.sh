@@ -43,7 +43,7 @@ function udf {
   fi
 
   if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
+    echo "password: \"${PASSWORD}\"" >> ${group_vars};
   else echo "No password entered";
   fi
 
