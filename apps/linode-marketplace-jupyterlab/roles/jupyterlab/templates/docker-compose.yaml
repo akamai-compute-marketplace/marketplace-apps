@@ -1,10 +1,12 @@
 version: '3'
-
 services:
-  jupyter:
-    image: jupyter/minimal-notebook
+  jupyterlab:
+    image: linode-marketplace-jupyterlab
     ports:
-      - "127.0.0.1:8888:8888"
+      - 127.0.0.1:8888:8888
     volumes:
-      - /opt/notebooks:/home/jovyan/work
-    restart: always
+      - ./notebooks:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=''
+      - JUPYTER_NOTEBOOK_PASSWORD=${notebook_password}
