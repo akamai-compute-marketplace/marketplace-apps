@@ -1,7 +1,7 @@
 version: '3'
 services:
   jupyterlab:
-    image: linode-marketplace-jupyterlab
+    image: jupyter/datascience-notebook:latest
     ports:
       - 127.0.0.1:8888:8888
     volumes:
