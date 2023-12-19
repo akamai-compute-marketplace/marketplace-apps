@@ -3,7 +3,6 @@ set -e
 trap "cleanup $? $LINENO" EXIT
 
 ## JupyterLab Settings
-#<UDF name="notebook_password" label="JupyterLab Password" example="s3cure_p4ssw0rd">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
@@ -78,13 +77,11 @@ function udf {
   else echo "No API token entered";
   fi
 
-  # jupyter vars
+}
 
-  if [[ -n ${NOTEBOOK_PASSWORD} ]]; then
-    echo "notebook_password: ${NOTEBOOK_PASSWORD}" >> ${group_vars};
-  else echo "No notebook password entered";
-  fi
-
+function create_jupyter_token_script {
+  echo -e "#!/bin/bash\n\nTOKEN=\$(docker logs jupyter_jupyterlab_1 2>&1 | grep -oP '(?<=token=)[^ ]+' | head -n 1)\n\nif [ -n \"\$TOKEN\" ]; then\n  echo \"Your JupyterLab token is: \$TOKEN\"\n  exit 0\nelse\n  echo \"Unable to retrieve the JupyterLab token. Check the container logs.\"\n  exit 1\nfi" > /root/get_jupyter_token.sh
+  chmod +x /root/get_jupyter_token.sh
 }
 
 function run {
@@ -108,6 +105,7 @@ function run {
 
   # populate group_vars
   udf
+  create_jupyter_token_script
   # run playbooks
   for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
   
