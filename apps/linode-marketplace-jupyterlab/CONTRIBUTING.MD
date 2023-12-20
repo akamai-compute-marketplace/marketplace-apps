@@ -8,7 +8,7 @@ App Description
 JupyterLab stands as a web-based interactive development environment tailored for computational notebooks, code, and data. Offering a flexible interface, users can effortlessly configure workflows in data science, scientific computing, computational journalism, and machine learning. The modular design also encourages extensions, providing the flexibility to enhance and expand functionality as needed. 
 
 Version Number
-4.0.9
+4.0.7
 
 Support URL
 https://docs.jupyter.org/en/latest/

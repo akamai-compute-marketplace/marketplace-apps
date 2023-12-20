@@ -50,15 +50,15 @@ By default, JupyterLab issues a token for authentication. The Jupyter server acc
 ```
 ./get_jupyter_token.sh
 ```
-Doing so will print the JupyterLab access token to the working terminal session. Copy-paste this token into the **Password or token:** field on the Jupyter Server login page. 
+Executing this action will display the JupyterLab access token in your current terminal session. Copy and paste this token into the **Password or token:** field on the Jupyter Server login page.
 
-If you prefer to enable password authentication, use the token to set a password in the **Setup a Password** field on the login page. After doing so, you may use both the token and password to access JupyterLab. 
+Alternatively, if you favor password authentication, utilize the token to establish a password in the **Setup a Password** field on the login page. Once this is done, you can employ both the token and the password for accessing JupyterLab.
 
 ### More Information
 
 You may wish to consult the following resources for additional information on this topic. While these are provided in the hope that they will be useful, please note that we cannot vouch for the accuracy or timeliness of externally hosted materials.
 
 - [Project Jupyter](https://jupyter.org/)
-- [Project Jupyter Documentation](https://docs.jupyter.org/en/latest/)
+- [JupyterLab Documentation](https://jupyterlab.readthedocs.io/en/latest/)
 
 {{< content "marketplace-update-note-shortguide">}}

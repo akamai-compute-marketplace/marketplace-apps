@@ -6,10 +6,10 @@ JupyterLab is a web-based interactive development environment for notebooks, cod
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker Compose    | 1.29    | Container Management tool |
-| Nginx    | 1.18    | HTTP server used to serve web applications |
-| JupyterLab | 4.0.x | Web-based interactive development environment for notebooks, code, and data |
+| Docker    | 24.0.5    | Container Management tool |
+| Docker Compose    | 1.29.2    | Container Management tool |
+| Nginx    | 1.18.0    | HTTP server used to serve web applications |
+| JupyterLab | 4.0.7 | Web-based interactive development environment for notebooks, code, and data |
 
 
 **Supported Distributions:**
