@@ -1,0 +1,28 @@
+---
+  - name: Download install_ant-media-server.sh script
+    get_url:
+      url: "{{ ant_media_install_script_url }}"
+      dest: "/tmp/install_ant-media-server.sh"
+      mode: '0755'
+
+  - name: Download ams.zip file from a remote location
+    get_url:
+      url: "{{ ant_media_zip_remote_url }}"
+      dest: "{{ ant_media_zip_local_path }}"
+
+  - name: Install Ant Media Server
+    shell: |
+      sudo /tmp/install_ant-media-server.sh -i {{ ant_media_zip_local_path }}
+    args:
+      executable: /bin/bash
+    become: true
+
+
+  - name: Gather Facts
+    setup:  # ansible.builtin.setup modülünü kullanarak bilgileri topla
+  
+
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd

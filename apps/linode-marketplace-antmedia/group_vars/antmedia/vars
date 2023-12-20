@@ -1,0 +1,3 @@
+ant_media_install_script_url: 'https://raw.githubusercontent.com/ant-media/Scripts/master/install_ant-media-server.sh'
+ant_media_zip_remote_url: 'https://antmedia.io/download/latest.zip'
+ant_media_zip_local_path: '/tmp/ams.zip'

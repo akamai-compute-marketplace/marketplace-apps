@@ -1,0 +1,12 @@
+# linode ansible playbook
+
+- name: antmedia setup
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  any_errors_fatal: true
+  user: root
+  roles:
+    - antmedia
+  vars_files:
+    - group_vars/antmedia/vars
