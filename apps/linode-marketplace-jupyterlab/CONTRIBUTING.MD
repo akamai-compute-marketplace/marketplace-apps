@@ -19,3 +19,6 @@ Ubuntu 22.04 LTS
 
 Documentation
 DOCUMENTATION.md
+
+BRAND ASSETS
+https://github.com/jupyter/design/blob/main/brandguide/
