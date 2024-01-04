@@ -1,11 +1,13 @@
 ## App Information
-MainConcept Live Encoder
+MainConcept Live Encoder Demo
 
 ### App Name
-MainConcept Live Encoder
+MainConcept Live Encoder Demo
 
 ### App description
 [MainConcept Live Encoder](https://www.mainconcept.com/live-encoder) is a powerful all-in-one encoding engine designed to simplify common broadcast and OTT video workflows. With renowned MainConcept HEVC and AVC codecs built in, our intuitive user-interface allows you to package content for multiscreen delivery, using common input sources, in real time.
+
+Please note: Since these apps deploy software for proprietary applications, a license is required. The MainConcept Marketplace apps automatically deploy a demo version designed for research, testing, and/or proof of concept. To upgrade your version, contact [MainConcept](https://www.mainconcept.com/akamai-linode).
 
 ### Version Number
 3.2

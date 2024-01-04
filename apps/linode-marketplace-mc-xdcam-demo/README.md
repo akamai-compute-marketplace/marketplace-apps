@@ -1,11 +1,13 @@
 ## App Information
-MainConcept XDCAM Transcoder
+MainConcept XDCAM Transcoder Demo
 
 ### App Name
-MainConcept XDCAM Transcoder
+MainConcept XDCAM Transcoder Demo
 
 ### App description
 [MainConcept XDCAM Transcoder](https://www.mainconcept.com/mc2go) is an optimized Docker container for file-based transcoding of media files into professional Sony camera formats like XDCAM HD, XDCAM EX, XDCAM IMX and DVCAM (XDCAM DV).
+
+Please note: Since these apps deploy software for proprietary applications, a license is required. The MainConcept Marketplace apps automatically deploy a demo version designed for research, testing, and/or proof of concept. To upgrade your version, contact [MainConcept](https://www.mainconcept.com/akamai-linode).
 
 ### Version Number
 2.3

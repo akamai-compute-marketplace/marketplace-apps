@@ -1,11 +1,14 @@
 ## App Information
-MainConcept FFmpeg Plugins
+MainConcept FFmpeg Plugins Demo
 
 ### App Name
-MainConcept FFmpeg Plugins
+MainConcept FFmpeg Plugins Demo
 
 ### App description
 [MainConcept FFmpeg Plugins](https://www.mainconcept.com/ffmpeg) make improving visual quality and performance quick and simple with advanced features that are not available with open source, such as Hybrid GPU acceleration and xHE-AAC audio format. Perfectly suited for both VOD and live production workflows, our FFmpeg plugins give you the best of both worlds.
+
+Please note: Since these apps deploy software for proprietary applications, a license is required. The MainConcept Marketplace apps automatically deploy a demo version designed for research, testing, and/or proof of concept. To upgrade your version, contact [MainConcept](https://www.mainconcept.com/akamai-linode).
+
 
 ### Version Number
 2.3
