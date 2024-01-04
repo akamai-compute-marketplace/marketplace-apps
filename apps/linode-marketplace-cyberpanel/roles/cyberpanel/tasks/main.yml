@@ -29,12 +29,3 @@
       ansible.builtin.file:
         path: /tmp/lshttpd/
         state: absent
-    
-    - name: add marketplace stub to MOTD
-      ansible.builtin.template: 
-        src: templates/motd.j2
-        dest: /etc/motd
-
-# need to find format of cyberpanel msg
-# capture creds -> vars file
-# clean up /tmp/lshttpd ??

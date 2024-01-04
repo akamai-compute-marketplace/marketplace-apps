@@ -5,8 +5,7 @@ trap "cleanup $? $LINENO" EXIT
 ## Cyberpanel Settings
 
 ## Linode/SSH Security Settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
@@ -33,19 +32,15 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+   sed 's/  //g' <<EOF > ${group_vars}
+
+  # sudo username
+  username: ${USER_NAME}
+EOF
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   else echo "No email entered";
-  fi
-
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
-
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
   fi
 
   if [[ -n ${PUBKEY} ]]; then
@@ -97,7 +92,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in site.yml; do ansible-playbook -v $playbook; done
+  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
 }
 
 function installation_complete {
