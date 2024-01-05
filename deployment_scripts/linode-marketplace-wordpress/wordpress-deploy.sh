@@ -48,12 +48,9 @@ function udf {
   wp_admin_user: ${WP_ADMIN_USER}
   wp_db_user: ${WP_DB_USER}
   wp_db_name: ${WP_DB_NAME}
+  # sudo username
+  username: ${USER_NAME}
 EOF
-
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};

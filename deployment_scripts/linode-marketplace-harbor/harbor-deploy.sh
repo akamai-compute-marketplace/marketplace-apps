@@ -32,7 +32,12 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  echo "webserver_stack: lemp" >> ${group_vars};
+  sed 's/  //g' <<EOF > ${group_vars}
+
+  # sudo username
+  username: ${USER_NAME}
+  webserver_stack: lemp
+EOF
   
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars};

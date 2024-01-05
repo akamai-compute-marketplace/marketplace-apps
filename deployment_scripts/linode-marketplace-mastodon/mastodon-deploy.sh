@@ -36,6 +36,8 @@ function udf {
   
    # write udf vars
   cat <<END > ${group_vars}
+# sudo username
+username: ${USER_NAME}
 webserver_stack: lemp
 domain: ${DOMAIN}
 subdomain: ${SUBDOMAIN}
@@ -45,11 +47,6 @@ owner_email: ${OWNER_EMAIL}
 single_user_mode: ${SINGLE_USER_MODE}
 token_password: ${TOKEN_PASSWORD}
 END
-  
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};

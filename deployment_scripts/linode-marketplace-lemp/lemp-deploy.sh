@@ -36,14 +36,11 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
 
   # deployment vars
+  # sudo username
+  username: ${USER_NAME}
   webserver_stack: lemp
   soa_email_address: ${SOA_EMAIL_ADDRESS}
 EOF
-
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
