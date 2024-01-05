@@ -2,6 +2,11 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
+## Linode/SSH Security Settings
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
+#<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
+
 ## Mastodon Settings
 #<UDF name="domain" label="Domain name for your Mastodon instance." example="domain.tld" />
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
@@ -40,6 +45,21 @@ owner_email: ${OWNER_EMAIL}
 single_user_mode: ${SINGLE_USER_MODE}
 token_password: ${TOKEN_PASSWORD}
 END
+  
+  if [[ -n ${USER_NAME} ]]; then
+    echo "username: ${USER_NAME}" >> ${group_vars};
+  else echo "No username entered";
+  fi
+
+  if [[ -n ${PUBKEY} ]]; then
+    echo "pubkey: ${PUBKEY}" >> ${group_vars};
+  else echo "No pubkey entered";
+  fi
+
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
+  fi
   
 }
 

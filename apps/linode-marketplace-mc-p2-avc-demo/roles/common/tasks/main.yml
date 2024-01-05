@@ -35,12 +35,6 @@
     when: 
       - token_password is defined
       - domain is defined 
-  
-  # set customer supplied sudo user, password and SSH keys
-  - name: set sudo user
-    import_role:
-      name: sudouser
-    when: username is defined
 
   # sets customer supplied ssh pubkey to limited user
   - name: set ssh pubkey
@@ -48,7 +42,6 @@
         name: sshkey
     when: 
       - pubkey is defined
-      - username is defined
 
   # apt_setup_update
   - name: update system packages

@@ -8,6 +8,9 @@
     - group_vars/linode/vars
   tasks:
   # generate creds
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
     - name: generating db password
       set_fact:
         dbpassword: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"

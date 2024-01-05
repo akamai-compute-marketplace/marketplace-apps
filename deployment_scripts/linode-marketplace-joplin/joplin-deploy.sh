@@ -3,8 +3,7 @@ set -e
 trap "cleanup $? $LINENO" EXIT
 
 ## Linode/SSH security settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
@@ -44,11 +43,6 @@ function udf {
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
   fi
 
   if [[ -n ${PUBKEY} ]]; then
