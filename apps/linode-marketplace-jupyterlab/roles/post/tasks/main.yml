@@ -1,21 +1,27 @@
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+- name: std out docker logs
+  ansible.builtin.shell: docker logs jupyter_jupyterlab_1
+  register: result
+ # until handles docker catching up with ansible. something like this is preferable to ignore_errors true
+  until: "result is not failed"
+  retries: 3
+  delay: 3
 
-- name: writing docker creds into file
+- name: set jupyter token fact 
+  ansible.builtin.set_fact: 
+    jupyter_token: "{{ result.stdout | regex_search('(?<=token=)[^ ]+') }}"
+    cacheable: yes
+
+- name: writing creds into file
   copy:
     dest: /root/.credentials
     mode: '0600'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Jupyter Token: {{ jupyter_token }}
 
-# Retrieving and storing Jupyter token
-- name: Retrieve and store Jupyter token
-  command: "{{ item }}"
-  loop:
-    - "docker logs jupyter_jupyterlab_1 2>&1 | grep -oP '(?<=token=)[^ ]+' | head -n 1 >> /root/.credentials"
-    - "chmod 0600 /root/.credentials"
-  ignore_errors: true
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd

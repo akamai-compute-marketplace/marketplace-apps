@@ -6,7 +6,8 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
-#<UDF name="username" label="The limited sudo user to be created for the Linode">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode">
+#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
@@ -32,11 +33,15 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  echo "webserver_stack: lemp" >> ${group_vars};
-  
-  if [[ -n ${USERNAME} ]]; then
-    echo "username: ${USERNAME}" >> ${group_vars};
-  else echo "No username entered";
+    sed 's/  //g' <<EOF > ${group_vars}
+  # sudo username
+  username: ${USER_NAME}
+  webserver_stack: lemp
+  EOF
+
+  if [[ -n ${PASSWORD} ]]; then
+    echo "password: ${PASSWORD}" >> ${group_vars};
+  else echo "No password entered";
   fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
