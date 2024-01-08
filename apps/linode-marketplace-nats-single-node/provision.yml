@@ -6,7 +6,11 @@
   user: root
   vars_files:
     - group_vars/linode/vars
+    
   tasks:
+
+   - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: generating NATS example user password
       set_fact:

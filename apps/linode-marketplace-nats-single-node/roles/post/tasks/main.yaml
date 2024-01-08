@@ -1,0 +1,7 @@
+- name: writing docker creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
