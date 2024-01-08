@@ -21,12 +21,6 @@
     - token_password is defined
     - default_dns is not defined
 
-# set customer supplied sudo user, password and SSH keys
-- name: set sudo user
-  import_role:
-    name: sudouser
-  when: username is defined
-
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
   import_role:

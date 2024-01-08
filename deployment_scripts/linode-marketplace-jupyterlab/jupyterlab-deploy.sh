@@ -6,8 +6,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
-#<UDF name="username" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="username" label="The limited sudo user to be created for the Linode">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
@@ -17,7 +16,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 # git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+export GIT_REPO="https://github.com/ericruzanski/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-jupyterlab"
 
@@ -43,11 +42,6 @@ function udf {
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
   fi
 
   if [[ -n ${PUBKEY} ]]; then
@@ -79,11 +73,6 @@ function udf {
 
 }
 
-function create_jupyter_token_script {
-  echo -e "#!/bin/bash\n\nTOKEN=\$(docker logs jupyter_jupyterlab_1 2>&1 | grep -oP '(?<=token=)[^ ]+' | head -n 1)\n\nif [ -n \"\$TOKEN\" ]; then\n  echo \"Your JupyterLab token is: \$TOKEN\"\n  exit 0\nelse\n  echo \"Unable to retrieve the JupyterLab token. Check the container logs.\"\n  exit 1\nfi" > /root/get_jupyter_token.sh
-  chmod +x /root/get_jupyter_token.sh
-}
-
 function run {
   # install dependancies
   apt-get update
@@ -105,7 +94,6 @@ function run {
 
   # populate group_vars
   udf
-  create_jupyter_token_script
   # run playbooks
   for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
   

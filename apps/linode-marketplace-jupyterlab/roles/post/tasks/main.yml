@@ -1,0 +1,21 @@
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing docker creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+# Retrieving and storing Jupyter token
+- name: Retrieve and store Jupyter token
+  command: "{{ item }}"
+  loop:
+    - "docker logs jupyter_jupyterlab_1 2>&1 | grep -oP '(?<=token=)[^ ]+' | head -n 1 >> /root/.credentials"
+    - "chmod 0600 /root/.credentials"
+  ignore_errors: true
