@@ -9,7 +9,7 @@
     
   tasks:
 
-   - name: generating sudo user and password 
+    - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: generating NATS example user password
