@@ -7,7 +7,9 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
-  # generate creds
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+  
     - name: generating yacht password
       set_fact:
         ypassword: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"

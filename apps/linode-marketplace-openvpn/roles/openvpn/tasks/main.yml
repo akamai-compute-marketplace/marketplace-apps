@@ -33,17 +33,3 @@
     ansible.builtin.set_fact: 
       openvpn_login: "{{ result.stdout | regex_search('To login') }}"
       cacheable: yes
-
-# motd and creds gen
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: templates/motd.j2
-      dest: /etc/motd
-
-  - name: writing openvpn creds into file
-    copy:
-      dest: /root/.credentials
-      mode: '0600'
-      content: |
-        {{ openvpn_login }}
-        *** Please ensure you change the default credentials immediately after login! ***  

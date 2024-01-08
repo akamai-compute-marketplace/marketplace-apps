@@ -9,3 +9,16 @@
       src: "/opt/mainconcept/ffmpeg-omx/bin/ffmpeg"
       dest: "/bin/ffmpeg"
       state: link
+
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd
+
+  - name: writing creds into file
+    copy:
+      dest: /root/.credentials
+      mode: '0600'
+      content: |
+        Sudo Username: {{ username }}
+        Sudo Password: {{ password }}
