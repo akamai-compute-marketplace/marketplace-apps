@@ -32,11 +32,16 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
   sed 's/  //g' <<EOF > ${group_vars}
 
+  # deployment vars
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: lemp
+  soa_email_address: ${SOA_EMAIL_ADDRESS}
 EOF
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   else echo "No email entered";
