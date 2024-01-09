@@ -38,12 +38,13 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  echo "webserver_stack: lemp" >> ${group_vars};
 
 sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
 EOF
+
+echo "webserver_stack: lemp" >> ${group_vars};
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
