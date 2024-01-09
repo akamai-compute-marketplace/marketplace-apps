@@ -1,15 +1,9 @@
-- name: std out docker logs
-  ansible.builtin.shell: docker logs jupyter_jupyterlab_1
-  register: result
- # until handles docker catching up with ansible. something like this is preferable to ignore_errors true
-  until: "result is not failed"
-  retries: 3
-  delay: 3
-
-- name: set jupyter token fact 
-  ansible.builtin.set_fact: 
-    jupyter_token: "{{ result.stdout | regex_search('(?<=token=)[^ ]+') }}"
-    cacheable: yes
+---
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
 
 - name: writing creds into file
   copy:
@@ -18,10 +12,14 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Jupyter Token: {{ jupyter_token }}
+      Jupyter Token: {{ jupyter_token | default('Token not found') }}
 
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+- name: Retrieve and store Jupyter token
+  docker_container_info:
+    name: jupyter_jupyterlab_1
+  register: jupyter_container_info
+
+- name: Extract Jupyter token from logs
+  set_fact:
+    jupyter_token: "{{ jupyter_container_info.LogPath | regex_search('(token=)([^ ]+)') }}"
+  when: "'token=' in jupyter_container_info.LogPath"

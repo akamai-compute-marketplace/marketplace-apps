@@ -1,4 +1,6 @@
-# jupyterlab
+# linode ansible playbook
+
+# linodes
 - name: setting up environment 
   hosts: localhost
   connection: local
@@ -7,5 +9,5 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
-    - name: generating sudo user and password
+    - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
