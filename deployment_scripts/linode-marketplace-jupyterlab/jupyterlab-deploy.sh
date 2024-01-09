@@ -6,10 +6,9 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
@@ -28,24 +27,46 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
+
 }
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  sed 's/  //g' <<EOF > ${group_vars}
 
-  sed 's/  //g' <<EOF > "${group_vars}"
-username: ${USER_NAME}
-webserver_stack: lemp
-disable_root: ${DISABLE_ROOT}
-password: ${PASSWORD}
-pubkey: ${PUBKEY}
-soa_email_address: ${SOA_EMAIL_ADDRESS}
-domain: ${DOMAIN}
-subdomain: ${SUBDOMAIN}
-token_password: ${TOKEN_PASSWORD}
+  # sudo username
+  username: ${USER_NAME}
 EOF
-}
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No email entered";
+  fi
 
+  if [[ -n ${PUBKEY} ]]; then
+    echo "pubkey: ${PUBKEY}" >> ${group_vars};
+  else echo "No pubkey entered";
+  fi
+
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
+  fi
+
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
+
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+  fi
+
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else echo "subdomain: www" >> ${group_vars};
+  fi
+}
 
 function run {
   # install dependancies
