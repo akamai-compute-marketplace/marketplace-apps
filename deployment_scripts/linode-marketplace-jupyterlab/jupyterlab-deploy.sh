@@ -28,55 +28,24 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-    sed 's/  //g' <<EOF > ${group_vars}
-  # sudo username
-  username: ${USER_NAME}
-  webserver_stack: lemp
-  EOF
 
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
-  fi
-
-  if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
-
-  # domain vars
-  
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
-  fi
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
-  fi
- 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
-
+  sed 's/  //g' <<EOF > "${group_vars}"
+username: ${USER_NAME}
+webserver_stack: lemp
+disable_root: ${DISABLE_ROOT}
+password: ${PASSWORD}
+pubkey: ${PUBKEY}
+soa_email_address: ${SOA_EMAIL_ADDRESS}
+domain: ${DOMAIN}
+subdomain: ${SUBDOMAIN}
+token_password: ${TOKEN_PASSWORD}
+EOF
 }
+
 
 function run {
   # install dependancies

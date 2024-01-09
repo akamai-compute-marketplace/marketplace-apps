@@ -12,6 +12,6 @@
 
 # set sudo user, password
 - name: set sudo user
-  import_role:
+  import_task:
     name: sudouser
   when: username is defined
