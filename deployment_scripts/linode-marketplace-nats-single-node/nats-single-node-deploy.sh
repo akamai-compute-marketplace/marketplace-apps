@@ -33,7 +33,6 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
@@ -42,9 +41,8 @@ function udf {
 sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: lemp
 EOF
-
-echo "webserver_stack: lemp" >> ${group_vars};
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
@@ -66,13 +64,11 @@ echo "webserver_stack: lemp" >> ${group_vars};
     echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
-
   if [[ -n ${SUBDOMAIN} ]]; then
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else 
     echo "subdomain: www" >> ${group_vars};
   fi
-
 
   #nats vars
   
@@ -121,7 +117,6 @@ function run {
   udf
   # run playbooks
   for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
-  
 }
 
 function installation_complete {

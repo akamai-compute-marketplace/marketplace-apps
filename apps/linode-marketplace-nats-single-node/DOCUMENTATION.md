@@ -38,7 +38,7 @@ authors: ["Linode"]
 - **NATS Websocket Port**: To setup the NATS server Websocket port. Default is 8888.
 - **NATS MQTT Port**: To setup the NATS server MQTT port. Default is 1883.
 
-{{< content "marketplace-limited-user-fields-shortguide">}}
+{{< content "marketplace-required-limited-user-fields-shortguide">}}
 
 {{< content "marketplace-custom-domain-fields-shortguide">}}
 
@@ -56,7 +56,7 @@ Open your web browser and go to the custom domain you specified during deploymen
 
 By default, this NATS deployment creates 2 users, one named "example" and another system user named "system". The passwords for these users are generated during the initial install process. To obtain these password, log in to your Compute Instance either through the [LISH Console](https://www.linode.com/docs/products/compute/compute-instances/guides/lish/#through-the-cloud-manager-weblish) or via SSH, then just read the /root/.credentials file, ie: 
 ```
-vi /root/.credentials
+cat /root/.credentials
 ```
 This file will contain the 2 credentials needed for those users.
 
