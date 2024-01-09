@@ -4,7 +4,7 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing docker creds into file
+- name: writing NATS and sudo creds into file
   copy:
     dest: /root/.credentials
     mode: '0600'
