@@ -1,19 +1,26 @@
 ---
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+# post deploy book
+- name: post deployment tasks
+  hosts: localhost
+  connection: local
+  vars:
+    username: "{{ username }}"
+    password: "{{ password }}"
+  tasks:
+    - name: copy MOTD template to /etc/motd
+      template:
+        src: templates/motd.j2
+        dest: /etc/motd
 
-- name: writing creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      Sudo Username: {{ username }}
-      Sudo Password: {{ password }}
+    - name: writing creds into file
+      copy:
+        dest: /root/.credentials
+        mode: '0600'
+        content: |
+          Sudo Username: {{ username }}
+          Sudo Password: {{ password }}
       
-- name: restart Nginx
-  systemd:
-    name: nginx.service
-    state: restarted
+    - name: restart Nginx
+      systemd:
+        name: nginx.service
+        state: restarted

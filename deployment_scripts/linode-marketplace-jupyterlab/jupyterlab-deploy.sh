@@ -6,7 +6,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
-#<UDF name="username" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
@@ -37,7 +37,7 @@ function udf {
 
   # deployment vars
   # sudo username
-  username: ${USERNAME}
+  username: ${USER_NAME}
   webserver_stack: lemp
 EOF
 
