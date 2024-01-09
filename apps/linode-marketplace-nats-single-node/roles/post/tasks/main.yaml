@@ -1,3 +1,9 @@
+# motd
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
 - name: writing docker creds into file
   copy:
     dest: /root/.credentials
@@ -5,3 +11,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      NATS system user password : {{ system_user_password }}
+      NATSexample user password: {{ example_user_password }}

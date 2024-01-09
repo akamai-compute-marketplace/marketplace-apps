@@ -92,17 +92,3 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
-
-# motd
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
-
-- name: writing NATS creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      system user password : {{ system_user_password }}
-      example user password: {{ example_user_password }}
