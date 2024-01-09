@@ -9,9 +9,3 @@
   tasks:
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
-# set sudo user, password
-- name: set sudo user
-  import_task:
-    name: sudouser
-  when: username is defined

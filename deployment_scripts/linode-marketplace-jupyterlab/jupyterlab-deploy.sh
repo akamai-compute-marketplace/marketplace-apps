@@ -39,7 +39,6 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
-  soa_email_address: ${SOA_EMAIL_ADDRESS}
 EOF
 
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
