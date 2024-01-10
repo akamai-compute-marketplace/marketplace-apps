@@ -47,13 +47,7 @@
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
-    name: certbot_ssl
-  
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+    name: certbot_ssl 
 
 - name: copy harbor.service template
   template:
@@ -69,10 +63,3 @@
     name: harbor.service
     state: started
     enabled: yes
-       
-# writing creds to file
-- name: copy creds template
-  template:
-    mode: '0600'
-    src: templates/creds.j2
-    dest: /root/.credentials

@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: focalboard setup
+- name: harbor setup
   hosts: localhost
   connection: local
   gather_facts: true
@@ -12,3 +12,4 @@
     - common
     - docker
     - harbor
+    - post

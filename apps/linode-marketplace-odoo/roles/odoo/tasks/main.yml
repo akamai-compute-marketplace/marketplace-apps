@@ -65,21 +65,5 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
-  
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
-
-- name: writing odoo creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      Odoo Database name: odoo
-      Postgres Password: {{ postgres_password }}
-      
-       
 
     

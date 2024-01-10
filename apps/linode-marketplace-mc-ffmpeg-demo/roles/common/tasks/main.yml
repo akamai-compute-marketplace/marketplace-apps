@@ -4,19 +4,12 @@
     hostname:
       name: mc-ffmpeg-demo
 
-  # set customer supplied sudo user, password and SSH keys
-  - name: set sudo user
-    import_role:
-      name: sudouser
-    when: username is defined
-
   # sets customer supplied ssh pubkey to limited user
   - name: set ssh pubkey
     import_role:
         name: sshkey
     when: 
       - pubkey is defined
-      - username is defined
 
   # apt_setup_update
   - name: update system packages
@@ -52,8 +45,4 @@
       - bzip2
       - wget
       - unzip
-
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: templates/motd.j2
-      dest: /etc/motd     
+ 

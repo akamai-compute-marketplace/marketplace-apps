@@ -1,6 +1,4 @@
-
-#nextcloud setup
-
+# nextcloud
 - name: create nextcloud data directory
   file:
     path: /mnt/ncdata
@@ -32,8 +30,3 @@
     name: unattended-upgrades
     state: present
   
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
