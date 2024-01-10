@@ -1,26 +1,25 @@
----
-# post deploy book
-- name: post deployment tasks
-  hosts: localhost
-  connection: local
-  vars:
-    username: "{{ username }}"
-    password: "{{ password }}"
-  tasks:
-    - name: copy MOTD template to /etc/motd
-      template:
-        src: templates/motd.j2
-        dest: /etc/motd
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
 
-    - name: writing creds into file
-      copy:
-        dest: /root/.credentials
-        mode: '0600'
-        content: |
-          Sudo Username: {{ username }}
-          Sudo Password: {{ password }}
-      
-    - name: restart Nginx
-      systemd:
-        name: nginx.service
-        state: restarted
+- name: Retrieve and store Jupyter token
+  docker_container_info:
+    name: jupyter_jupyterlab_1
+  register: jupyter_container_info
+
+- name: Extract Jupyter token from logs
+  set_fact:
+    jupyter_token: "{{ jupyter_container_info.LogPath | regex_search('(token=)([^ ]+)') }}"
+  when: "'token=' in jupyter_container_info.LogPath"
+
+- name: writing creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Jupyter Token: {{ jupyter_token | default('Token not found') }}
