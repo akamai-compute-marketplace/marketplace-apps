@@ -8,7 +8,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your WordPress server's DNS records" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
@@ -86,7 +86,7 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  python3 -m python3 -m virtualenv env --system-site-packages
+  python3 -m virtualenv env --system-site-packages
   source env/bin/activate
   pip install pip --upgrade
   pip install -I -r requirements.txt
