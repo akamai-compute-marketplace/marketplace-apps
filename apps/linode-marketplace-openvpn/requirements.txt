@@ -13,4 +13,3 @@ polling==0.3.2
 ansible-specdoc==0.0.14
 dnspython==2.2.1
 cryptography==41.0.5
-certbot==2.7.4
