@@ -23,3 +23,21 @@
     name: nginx.service
     state: restarted
   when: webserver_stack == 'lemp'
+
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Wordpress DB User: {{ wp_db_user }}
+      Wordpress DB Password: {{ wp_db_pass }}
+      Wordpress Admin User: {{ wp_admin_user }}
+      Wordpress Admin Password: {{ wp_admin_pass }}

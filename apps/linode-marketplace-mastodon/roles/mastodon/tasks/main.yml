@@ -65,29 +65,22 @@
     DOCKER_PULL: "true"
 
 - name: get secret_key_base
-  shell: "docker-compose run --rm web bundle exec rake secret"
+  shell: docker-compose run --rm web bundle exec rake secret
   args:
     chdir: /home/mastodon/live
   register: secret_key_base
 
 - name: get otp_secret
-  shell: "docker-compose run --rm web bundle exec rake secret"
+  shell: docker-compose run --rm web bundle exec rake secret
   args:
     chdir: /home/mastodon/live
   register: otp_secret
 
 - name: generate vapid keys
-  shell: "docker-compose run --rm web bundle exec rake webpush:generate_keys"
+  shell: docker-compose run --rm web bundle exec rake webpush:generate_keys
   args:
     chdir: /home/mastodon/live
   register: vapid_keys
-
-- name: get valid public key
-  debug:
-    msg: "the return is {{ item }}"
-  loop:
-    - "{{ vapid_keys.stdout_lines[1] | split('Public  -> ') | last }}"
-    - "{{ vapid_keys.stdout_lines[2] | split('Private -> ') | last }}"
 
 - name: updating production env
   lineinfile:
@@ -101,7 +94,7 @@
     - { search: '^\#?#OTP_SECRET=', replace: "OTP_SECRET={{ otp_secret.stdout }}" }
 
 - name: recreating the database
-  shell: "docker-compose run --rm web bundle exec rake db:reset"
+  shell: docker-compose run --rm web bundle exec rake db:reset
   args:
     chdir: /home/mastodon/live
 
@@ -121,7 +114,7 @@
     DOCKER_BUILD: "false"
 
 - name: assign Owner user and password
-  shell: "docker exec live_web_1 tootctl accounts create {{ owner_username }} --email {{ owner_email }} --confirmed --role Owner"
+  shell: docker exec live_web_1 tootctl accounts create {{ owner_username }} --email {{ owner_email }} --confirmed --role Owner
   register: OWNER_PASSWORD
 
 - name: writing owner_password to vars
@@ -164,21 +157,6 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
   notify: reload nginx service
-
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
-
-- name: writing mastodon creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      Owner Username: {{ owner_username }}
-      Owner Password: {{ owner_password }}
-      PSQL Password: {{ psql_password }}
 
 # postfix
 - name: install postfix MTA

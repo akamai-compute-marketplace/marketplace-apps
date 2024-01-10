@@ -1,14 +1,11 @@
-
-#nextcloud setup
-
+# nextcloud
 - name: create nextcloud data directory
   file:
-    path: /mnt/data
+    path: /mnt/ncdata
     state: directory
     owner: 33
     group: 0
     recurse: yes
-
 
 - name: run nexcloud aio container
   docker_container:
@@ -33,8 +30,3 @@
     name: unattended-upgrades
     state: present
   
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
