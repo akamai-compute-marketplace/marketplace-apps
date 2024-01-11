@@ -9,9 +9,13 @@
   command: docker logs jupyter_jupyterlab_1
   register: jupyter_logs
 
-- name: Wait for 10 seconds
+- name: Print Jupyter logs
+  debug:
+    var: jupyter_logs.stdout_lines
+
+- name: Wait for 60 seconds
   pause:
-    seconds: 10
+    seconds: 60
 
 - name: extract Jupyter token from logs
   set_fact:
