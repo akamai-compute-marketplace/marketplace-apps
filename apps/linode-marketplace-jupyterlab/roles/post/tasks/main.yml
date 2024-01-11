@@ -5,6 +5,10 @@
     src: templates/motd.j2
     dest: /etc/motd
 
+- name: Wait for Jupyter server to start up
+  pause:
+    seconds: 60
+
 - name: Retrieve Jupyter logs
   command: docker logs jupyter_jupyterlab_1
   register: jupyter_logs
