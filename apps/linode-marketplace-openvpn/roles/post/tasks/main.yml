@@ -1,7 +1,7 @@
 ---
 - name: install certbot on system python
   ansible.builtin.pip:
-    name: certbot==2.7.4
+    name: certbot==2.8.0
 
 #- name: Create a symbolic link for cerbot python lib
 #  ansible.builtin.file:

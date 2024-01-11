@@ -36,7 +36,6 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -86,10 +85,10 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  python3 -m virtualenv env --system-site-packages
+  python3 -m virtualenv env
   source env/bin/activate
   pip install pip --upgrade
-  pip install -I -r requirements.txt
+  pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   
 
