@@ -17,7 +17,7 @@
   set_fact:
     jupyter_token: "{{ item.split('token=')[1].split()[0] }}"
   loop: "{{ jupyter_logs.stdout.split('\n') }}"
-  when: "'token=' in jupyter_logs.stdout"
+  when: "'token=' in item"
 
 - name: writing creds into file
   copy:
