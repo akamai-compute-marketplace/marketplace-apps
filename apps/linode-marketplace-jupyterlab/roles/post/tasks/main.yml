@@ -15,7 +15,7 @@
 
 - name: extract Jupyter token from combined logs
   set_fact:
-    jupyter_token: "{{ jupyter_logs_combined | regex_search('(?<=token=)[^& ]*', multiline=False) }}"
+    jupyter_token: "{{ jupyter_logs_combined | regex_search('(?<=\\?token=)[^"]*', multiline=False) }}"
 
 - name: writing creds into file
   copy:
