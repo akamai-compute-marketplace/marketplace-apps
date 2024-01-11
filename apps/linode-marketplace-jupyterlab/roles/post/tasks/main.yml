@@ -15,7 +15,7 @@
 
 - name: extract Jupyter token from logs
   set_fact:
-    jupyter_token: "{{ jupyter_logs.stdout | regex_search('(?<=token=)([a-z0-9]+)', '\\1') }}"
+    jupyter_token: "{{ jupyter_logs.stdout | regex_search('token=([a-z0-9]+)', '\\1') }}"
   when: "'token=' in jupyter_logs.stdout"
 
 - name: writing creds into file
