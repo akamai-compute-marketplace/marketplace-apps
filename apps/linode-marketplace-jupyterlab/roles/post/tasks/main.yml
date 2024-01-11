@@ -9,11 +9,15 @@
   command: docker logs jupyter_jupyterlab_1
   register: jupyter_logs
 
+- name: Wait for 10 seconds
+  pause:
+    seconds: 10
+
 - name: extract Jupyter token from logs
   set_fact:
     jupyter_token: "{{ item.split('token=')[1].split()[0] }}"
   loop: "{{ jupyter_logs.stdout.split('\n') }}"
-  when: "'token=' in item"
+  when: "'token=' in jupyter_logs.stdout"
 
 - name: writing creds into file
   copy:
