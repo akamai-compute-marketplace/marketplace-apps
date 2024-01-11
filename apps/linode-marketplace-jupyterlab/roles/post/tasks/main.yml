@@ -5,15 +5,15 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: Retrieve and store Jupyter token
-  docker_container_info:
+- name: Retrieve Jupyter logs
+  docker_container_logs:
     name: jupyter_jupyterlab_1
-  register: jupyter_container_info
+  register: jupyter_logs
 
 - name: Extract Jupyter token from logs
   set_fact:
-    jupyter_token: "{{ jupyter_container_info.LogPath | regex_search('(token=)([^ ]+)') }}"
-  when: "'token=' in jupyter_container_info.LogPath"
+    jupyter_token: "{{ jupyter_logs.log | regex_search('(token=)([^ ]+)', '\\2') }}"
+  when: "'token=' in jupyter_logs.log"
 
 - name: writing creds into file
   copy:
