@@ -5,18 +5,15 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: wait for Jupyter server to start up
-  pause:
-    seconds: 60
-
 - name: retrieve Jupyter logs
   command: docker logs jupyter_jupyterlab_1
   register: jupyter_logs
 
 - name: extract Jupyter token from logs
   set_fact:
-    jupyter_token: "{{ jupyter_logs.stdout | regex_search('token=([a-z0-9]+)', '\\1') }}"
-  when: "'token=' in jupyter_logs.stdout"
+    jupyter_token: "{{ item.split('token=')[1].split()[0] }}"
+  loop: "{{ jupyter_logs.stdout.split('\n') }}"
+  when: "'token=' in item"
 
 - name: writing creds into file
   copy:
