@@ -6,14 +6,13 @@
     dest: /etc/motd
 
 - name: Retrieve Jupyter logs
-  docker_container_logs:
-    name: jupyter_jupyterlab_1
+  command: docker logs jupyter_jupyterlab_1
   register: jupyter_logs
 
 - name: Extract Jupyter token from logs
   set_fact:
-    jupyter_token: "{{ jupyter_logs.log | regex_search('(token=)([^ ]+)', '\\2') }}"
-  when: "'token=' in jupyter_logs.log"
+    jupyter_token: "{{ jupyter_logs.stdout | regex_search('(token=)([^ ]+)', '\\2') }}"
+  when: "'token=' in jupyter_logs.stdout"
 
 - name: writing creds into file
   copy:
