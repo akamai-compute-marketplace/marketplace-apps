@@ -1,15 +1,5 @@
 ---
-#- name: install certbot on system python
-#  ansible.builtin.pip:
-#    name: certbot==2.8.0
-
-#- name: Create a symbolic link for cerbot python lib
-#  ansible.builtin.file:
-#    src: /tmp/marketplace-apps/apps/linode-marketplace-openvpn/env/bin/certbot
-#    dest: /usr/bin/certbot
-#    owner: root
-#    group: root
-#    state: link
+# certbot is installed to venv w/ pip in deploy.sh
 
 - name: run certbot dry-run
   shell:
