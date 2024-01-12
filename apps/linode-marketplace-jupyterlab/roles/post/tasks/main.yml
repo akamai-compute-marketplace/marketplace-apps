@@ -5,17 +5,13 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: retrieve Jupyter logs
-  command: docker logs jupyter_jupyterlab_1
-  register: jupyter_logs
+- name: retrieve Jupyter token
+  command: docker exec -it jupyter_jupyterlab_1 bash -c "jupyter server list | grep -oP '(?<=token=)[^ ]*'"
+  register: jupyter_token_output
 
-- name: join all logs into a single string
+- name: extract Jupyter token from output
   set_fact:
-    jupyter_logs_combined: "{{ jupyter_logs.stdout.split('\n') | join(' ') }}"
-
-- name: extract Jupyter token from combined logs
-  set_fact:
-    jupyter_token: "{{ jupyter_logs_combined | regex_search('(?<=\\?token=)[^"]*', multiline=False) }}"
+    jupyter_token: "{{ jupyter_token_output.stdout }}"
 
 - name: writing creds into file
   copy:
