@@ -49,7 +49,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 1298017,
       "authorized_users": [
         "myUser",
         "secondaryUser"
@@ -72,7 +72,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
+  --stackscript_id 1298017 \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
