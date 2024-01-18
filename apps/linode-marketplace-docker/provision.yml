@@ -9,6 +9,8 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
-    - name: generating mysql root password
-      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+
 
