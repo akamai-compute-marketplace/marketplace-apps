@@ -1,0 +1,3 @@
+collections:
+ - name: linode.cloud
+   version: 0.16.1

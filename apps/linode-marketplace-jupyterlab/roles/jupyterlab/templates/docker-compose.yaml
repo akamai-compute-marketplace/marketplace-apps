@@ -1,0 +1,8 @@
+version: '3'
+services:
+  jupyterlab:
+    image: jupyter/minimal-notebook
+    ports:
+      - 127.0.0.1:8888:8888
+    volumes:
+      - /opt/notebooks:/home/jovyan/work
