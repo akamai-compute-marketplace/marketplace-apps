@@ -2,7 +2,7 @@
 # splunk
 
 - name: set facts for splunk
-  set_facts:
+  set_fact:
     splunk_version: 9.1.2
 
 - name: installing splunk {{ splunk_version }}
