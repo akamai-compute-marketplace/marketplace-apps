@@ -14,4 +14,4 @@
 - name: install certbot standalone plugin
   include_tasks:
     file: standalone-certbot.yml
-    when: webserver_stack == 'standalone'
+  when: webserver_stack == 'standalone'

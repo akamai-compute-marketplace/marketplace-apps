@@ -5,7 +5,6 @@ trap "cleanup $? $LINENO" EXIT
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="add_ssh_keys" label="Add Account SSH Keys to All Nodes?" oneof="yes,no" default="yes" />
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
@@ -13,7 +12,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Let's Encrypt Settings 
-#<UDF name="soa_email_address" label="Admin Email for the Splunk server and Let's Encrypt SSL certificate">
+#<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
 ## Splunk Settings
 #<UDF name="splunk_user" Label="Splunk Admin User" />
@@ -119,4 +118,4 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup
+#cleanup
