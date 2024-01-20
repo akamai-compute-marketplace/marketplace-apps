@@ -33,13 +33,13 @@
     owner: splunk
     group: splunk
 
-- name: symlinking let's encrypt certificates
-  file:
+- name: copy let's encrypt certificates
+  copy:
     src: "/etc/letsencrypt/live/{{ _domain }}/{{ item.src }}"
     dest: "/opt/splunk/etc/auth/mycerts/{{ item.dest }}"
     owner: splunk
     group: splunk
-    state: link
+    mode: 0644
   loop:
     - { src: 'fullchain.pem', dest: 'mySplunkWebCertificate.pem'  }
     - { src: 'privkey.pem', dest: 'mySplunkWebPrivateKey.key'  }
