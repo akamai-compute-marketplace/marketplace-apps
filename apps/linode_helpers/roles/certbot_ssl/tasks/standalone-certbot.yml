@@ -13,7 +13,7 @@
 # certbot dry-runs
 - name: run dry-run for subdomain
   shell:
-    cmd: "certbot -n --standalone --agree-tos --redirect certonly -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+    cmd: "certbot -n --standalone --agree-tos --dry-run --redirect certonly -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
   register: dry_run
   until: dry_run is not failed
   retries: 3
@@ -25,7 +25,7 @@
 
 - name: run dry-run for tld and default subdomain
   shell:
-    cmd: "certbot -n --standalone --agree-tos --redirect certonly -d {{ domain }} -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+    cmd: "certbot -n --standalone --agree-tos --dry-run --redirect certonly -d {{ domain }} -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
   register: dry_run
   until: dry_run is not failed
   retries: 3
@@ -37,7 +37,7 @@
 
 - name: run dry-run for default domain
   shell:
-    cmd: "certbot -n --standalone --agree-tos --redirect certonly -d {{ default_dns }} -m {{ soa_email_address }}"
+    cmd: "certbot -n --standalone --agree-tos --dry-run --redirect certonly -d {{ default_dns }} -m {{ soa_email_address }}"
   register: dry_run
   until: dry_run is not failed
   retries: 3
