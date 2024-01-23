@@ -142,7 +142,7 @@
     mode: a+x
 
 - name: backup existing crontab
-  shell: "crontab -l > /tmp/cron_backup"
+  shell: "crontab -l > /tmp/cron_backup || true"
   args:
     creates: /tmp/cron_backup
 
