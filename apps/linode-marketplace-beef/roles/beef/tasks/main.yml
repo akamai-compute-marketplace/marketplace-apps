@@ -117,13 +117,13 @@
 - name: adding startup script
   template:
     src: beef_startup.j2
-    dest: "/home/beef/beef_startup"
+    dest: "/home/beef/start_beef"
     mode: a+x
 
 - name: adding service file
   template:
     src: beef_service.j2
-    dest: "/etc/systemd/system/start_beef"
+    dest: "/etc/systemd/system/beef.service"
 
 - name: reload systemd daemon
   systemd:
