@@ -17,3 +17,9 @@
     rule: allow
     port: '443'
     proto: tcp
+
+- name: Allow all access to tcp port 3000
+  community.general.ufw:
+    rule: allow
+    port: '3000'
+    proto: tcp

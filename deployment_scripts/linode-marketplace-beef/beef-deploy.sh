@@ -14,7 +14,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Beef setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="beefpassword" Label="BEEF Password" />
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -73,7 +72,6 @@ EOF
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
-    echo "beefpassword: ${BEEFPASSWORD}" >> ${group_vars};
 
 }
 

@@ -11,6 +11,6 @@
       content: |
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
-        Peppermint Login: admin@admin.com
-        Peppermint Password: 1234
+        BeEF Login: beef
+        BeEF Password: {{ beefpassword }}
         *** Please ensure you change the default credentials immediately after login! ***
