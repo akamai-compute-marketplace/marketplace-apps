@@ -112,8 +112,7 @@
 - name: install xmlrpc gem
   community.general.gem:
     name: xmlrpc
-    version: latest
-    state: present 
+    state: latest 
 
 - name: adding startup script
   template:
