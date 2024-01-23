@@ -69,6 +69,11 @@
     src: beef_config.yaml.j2
     dest: /home/beef/config.yaml
 
+- name: install local beef
+  command: ./install
+  args:
+    stdin: "yes\n"
+
 - name: adding startup script
   template:
     src: beef_startup.j2
