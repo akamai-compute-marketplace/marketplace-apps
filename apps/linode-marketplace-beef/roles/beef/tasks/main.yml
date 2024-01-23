@@ -1,10 +1,35 @@
 ---
-# Nginx
-- name: install nginx
+- name: install required packages
   apt:
-    pkg: nginx
-    state: present
+    pkg:
+      - nginx
+      - curl
+      - git
+      - build-essential
+      - openssl
+      - libreadline6-dev
+      - zlib1g
+      - zlib1g-dev
+      - libssl-dev
+      - libyaml-dev
+      - libsqlite3-0
+      - libsqlite3-dev
+      - sqlite3
+      - libxml2-dev 
+      - libxslt1-dev
+      - autoconf
+      - libc6-dev
+      - libncurses5-dev
+      - automake
+      - libtool
+      - bison
+      - nodejs
+      - libcurl4-openssl-dev
+      - ruby-dev
+    state: latest
+    update_cache: true
 
+# Nginx
 - name: config file setup
   template:
       src: templates/nginx.conf.j2
@@ -69,11 +94,25 @@
     src: beef_config.yaml.j2
     dest: /home/beef/config.yaml
 
-- name: install local beef
-  expect:
-    command: ./install
-    responses:
-      ".*": "yes\n"
+- name: bundle config setup
+  become_user: beef
+  shell:
+    cmd: "bundle3.0 config set --local path /home/beef/.gem"
+  args:
+    executable: /bin/bash
+
+- name: Install dependencies using bundle
+  become_user: beef
+  shell:
+    cmd: "bundle3.0 install"
+  args:
+    executable: /bin/bash   
+
+- name: install xmlrpc gem
+  community.general.gem:
+    name: xmlrpc
+    version: latest
+    state: present 
 
 - name: adding startup script
   template:
@@ -89,18 +128,6 @@
 - name: reload systemd daemon
   systemd:
     daemon_reload: yes
-
-- name: install xmlrpc gem
-  community.general.gem:
-    name: xmlrpc
-    version: latest
-    state: present
-
-- name: install beef
-  expect:
-    command: ./install
-    responses:
-      ".*": "yes\n"
 
 - name: start beef service
   systemd:
