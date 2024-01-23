@@ -70,7 +70,7 @@
     dest: /home/beef/config.yaml
 
 - name: install local beef
-  command: ./home/beef/install
+  command: /home/beef/install
   args:
     stdin: "yes\n"
 
@@ -96,7 +96,7 @@
     state: present
 
 - name: install beef
-  command: ./home/beef/install
+  command: /home/beef/install
   args:
     stdin: "yes\n"
 
