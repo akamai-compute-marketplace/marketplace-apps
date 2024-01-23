@@ -17,6 +17,13 @@ trap "cleanup $? $LINENO" EXIT
 ## Splunk Settings
 #<UDF name="splunk_user" Label="Splunk Admin User" />
 
+## Akamai SIEM Settings
+#<UDF name="access_token_password" Label="Akamai Access Token" />
+#<UDF name="client_secret_password" Label="Akamai Client Secret" />
+#<UDF name="client_token_password" Label="Akamai Client Token" />
+#<UDF name="hostname" Label="Akamai LUNA hostname" />
+#<UDF name="security_config_id" Label="Configuration ID" />
+
 # git repo
 export GIT_REPO="https://github.com/n0vabyte/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -35,13 +42,63 @@ function cleanup {
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   sed 's/  //g' <<EOF > ${group_vars}
-
-  # sudo username
-  username: ${USER_NAME}
   splunk_user: ${SPLUNK_USER}
   webserver_stack: standalone
 EOF
   
+  # START akamai SIEM settings
+
+  if [[ -n ${ACCESS_TOKEN_PASSWORD} ]]; then
+    echo "siem_access_token: ${ACCESS_TOKEN_PASSWORD}" >> ${group_vars}
+  else 
+    echo "Akamai access token not found"
+  fi  
+
+  if [[ -n ${CLIENT_SECRET_PASSWORD} ]]; then
+    echo "siem_client_secret: ${CLIENT_SECRET_PASSWORD}" >> ${group_vars}
+  else 
+    echo "Akamai secret token not found"
+  fi
+
+  if [[ -n ${CLIENT_TOKEN_PASSWORD} ]]; then
+    echo "siem_client_token: ${CLIENT_TOKEN_PASSWORD}" >> ${group_vars}
+  else 
+    echo "Akamai client token not found"
+  fi  
+
+  if [[ -n ${HOSTNAME} ]]; then
+    echo "siem_hostname: ${HOSTNAME}" >> ${group_vars}
+  else 
+    echo "Akamai LUNA hostname not found"
+  fi
+
+  if [[ -n ${SECURITY_CONFIG_ID} ]]; then
+    echo "security_config_id: ${SECURITY_CONFIG_ID}" >> ${group_vars}
+  else 
+    echo "Akamai configuration ID not found"
+  fi 
+
+# if vars are empty, that's okay - we don't configure the plugin. However if one of the variables
+# is filled in, all must not be empty. If so, configuration will not work which will default to not
+# installing the akamai-siem.
+
+  if [[ -z "$ACCESS_TOKEN_PASSWORD" && -z "$CLIENT_SECRET_PASSWORD" && -z "$CLIENT_TOKEN_PASSWORD" \
+    && -z "$HOSTNAME" && -z "$SECURITY_CONFIG_ID" ]]; then
+    echo "Akamai SIEM not configured.."
+    echo "install_akamai_siem: NO" >> ${group_vars}
+  else
+    if [[ -n "$ACCESS_TOKEN_PASSWORD" && -n "$CLIENT_SECRET_PASSWORD" && -n "$CLIENT_TOKEN_PASSWORD" \
+      && -n "$HOSTNAME" && -n "$SECURITY_CONFIG_ID" ]]; then
+      echo "Configuring Akamai SIEM.."
+      echo "install_akamai_siem: YES" >> ${group_vars}
+    else
+      echo "[error] Akamai SIEM cannot be installed. We are missing one of the variables for configuration.."
+      echo "install_akamai_siem: NO" >> ${group_vars}
+    fi
+  fi 
+
+  # END akamai SIEM settings
+
   if [[ -n ${USER_NAME} ]]; then
     echo "username: ${USER_NAME}" >> ${group_vars}
   else 
