@@ -123,7 +123,7 @@
 - name: adding service file
   template:
     src: beef_service.j2
-    dest: "/etc/systemd/system/beef.service"
+    dest: "/etc/systemd/system/start_beef"
 
 - name: reload systemd daemon
   systemd:
@@ -142,9 +142,9 @@
     mode: a+x
 
 - name: backup existing crontab
-  command: crontab -l > /tmp/cron_backup
+  shell: "crontab -l > /tmp/cron_backup"
   args:
-    creates: /tmp/cron_backup 
+    creates: /tmp/cron_backup
 
 - name: Add new cron job
   cron:
