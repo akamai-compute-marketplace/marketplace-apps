@@ -95,18 +95,12 @@
     dest: /home/beef/config.yaml
 
 - name: bundle config setup
+  command: bundle3.0 config set --local path /home/beef/.gem
   become_user: beef
-  shell:
-    cmd: "bundle3.0 config set --local path /home/beef/.gem"
-  args:
-    executable: /bin/bash
 
 - name: Install dependencies using bundle
+  command: bundle3.0 install
   become_user: beef
-  shell:
-    cmd: "bundle3.0 install"
-  args:
-    executable: /bin/bash   
 
 - name: install xmlrpc gem
   community.general.gem:
