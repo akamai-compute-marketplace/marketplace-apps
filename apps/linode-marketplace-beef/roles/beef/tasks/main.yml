@@ -35,6 +35,20 @@
       src: templates/nginx.conf.j2
       dest: "/etc/nginx/sites-available/{{ _domain }}"  
 
+- name: create certs dir
+  file:
+    path: /var/www/certs/.well-known
+    state: directory
+    recurse: yes
+
+- name: changing owner on certs dir
+  file:
+    path: /var/www/certs/
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data
+
 - name: create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
@@ -55,12 +69,12 @@
 # beef setup    
 
 - name: create beef group
-  ansible.builtin.group:
+  group:
     name: beef
     state: present
 
 - name: create beef user
-  ansible.builtin.user:
+  user:
     name: beef
     shell: /sbin/nologin
     groups: beef
@@ -68,19 +82,19 @@
     create_home: false
 
 - name: clone beef repo
-  ansible.builtin.git:
+  git:
     repo: https://github.com/beefproject/beef.git
     dest: /home/beef
 
 - name: changing beef dir owner
-  ansible.builtin.file:
+  file:
     path: /home/beef
     owner: beef
     group: beef
     recurse: true
 
 - name: copying lets encrypt certs to beef dir
-  ansible.builtin.copy:
+  copy:
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}"
   loop:
