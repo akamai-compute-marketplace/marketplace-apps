@@ -12,12 +12,6 @@
     line: | 
       _domain: {{ _domain }}
 
-# set customer supplied sudo user, password and SSH keys
-- name: set sudo user
-  import_role:
-    name: sudouser
-  when: username is defined
-
 # dns creation
 - name: create dns A record
   import_role:
@@ -32,7 +26,6 @@
       name: sshkey
   when: 
     - pubkey is defined
-    - username is defined
 
 # disable root login w/wo pubkey
 - name: secure ssh

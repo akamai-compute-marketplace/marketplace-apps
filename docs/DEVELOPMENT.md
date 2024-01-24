@@ -66,6 +66,8 @@ linode-marketplace-$APP/
         main.yml
       tasks/ 
         main.yml
+      templates/
+        MOTD.j2  
    
 ```
 As general guidelines: 
@@ -73,7 +75,7 @@ As general guidelines:
   - The `roles` should general conform to the following standards:
     - `common` - including preliminary configurations and Linux best practices.
     - `$app` - including all necessary plays for service/app deployment and configuration.
-    - `post` - any post installation tasks such as clean up operations and generating additonal user credentials.
+    - `post` - any post installation tasks such as clean up operations and generating additonal user credentials. This should include the creation of a credentials file in `/root/.credentials` and a MOTD (Message of the Day) file to display after login to provide some additional direction after the deployment. 
 
 ## Helper Functions
 
@@ -113,8 +115,7 @@ Below are examples of UDFs your deployment can use in the [deployment StackScrip
 
 ## Linode/SSH Security Settings
 #<UDF name="security_header" label="Security Settings" default="Yes" header="yes">
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 

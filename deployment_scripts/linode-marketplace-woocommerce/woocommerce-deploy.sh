@@ -12,8 +12,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="wp_db_name" label="Wordpress database name" example="wordpress">
 
 ## Linode/SSH Security Settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
@@ -49,17 +48,9 @@ function udf {
   wp_admin_user: ${WP_ADMIN_USER}
   wp_db_user: ${WP_DB_USER}
   wp_db_name: ${WP_DB_NAME}
+  # sudo username
+  username: ${USER_NAME}
 EOF
-
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
-
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
-  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
@@ -114,18 +105,7 @@ function run {
 }
 
 function installation_complete {
-  # dumping credentials
-  egrep "(*^wp_|*mysql)" ${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars | awk {'print $1 $2'}  > /root/.linode_credentials.txt
-  cat << EOF
-#########################
-# INSTALLATION COMPLETE #
-############################################
-# The Mysql root password can be found at: #
-# - /root/.linode_credentials.txt          #
-#                                          #
-# * Hugs are worth more than handshakes *  #
-############################################
-EOF
+  echo "Installation Complete"
 }
 # main
 run && installation_complete
