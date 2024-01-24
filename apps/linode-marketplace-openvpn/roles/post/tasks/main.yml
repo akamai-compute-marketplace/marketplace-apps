@@ -44,7 +44,7 @@
 - name: regex for generated password
   ansible.builtin.debug:
     msg: "{{ openvpn_log.content | b64decode | regex_search('Auto-generated pass = \"([^\"]+)\"', multiline=True) | regex_search('\"([^\"]+)\"') | regex_replace('[\"\\\\]', '') }}"
-  register: opevpn_pass
+  register: openvpn_pass
 
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
