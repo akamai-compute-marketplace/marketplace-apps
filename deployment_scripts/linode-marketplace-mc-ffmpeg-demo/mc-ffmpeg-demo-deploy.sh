@@ -3,14 +3,12 @@ set -e
 trap "cleanup $? $LINENO" EXIT
 
 ## Linode/SSH Security Settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mc-ffmpeg-demo"
 
@@ -28,22 +26,18 @@ function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   sed 's/  //g' <<EOF > ${group_vars}
 
-  # deployment vars
+  # sudo username
+  username: ${USER_NAME}
 EOF
-
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
-
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
-  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
+  fi
+  
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 }
 
@@ -73,14 +67,8 @@ function run {
 }
 
 function installation_complete {
-  cat << EOF
-#########################
-# INSTALLATION COMPLETE #
-############################################
-# * Hugs are worth more than handshakes *  #
-############################################
-EOF
+  echo "Installation Complete"
 }
 # main
 run && installation_complete
-cleanup
+cleanup 

@@ -6,3 +6,20 @@
 
   - name: install nginx reverse proxy
     include_tasks: nginx.yml
+
+  # motd and creds gen
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: templates/motd.j2
+      dest: /etc/motd
+
+  - name: writing creds into file
+    copy:
+      dest: /root/.credentials
+      mode: '0600'
+      content: |
+        Sudo Username: {{ username }}
+        Sudo Password: {{ password }}
+        MainConcept Live Encoder Login: admin
+        MainConcept Live Encoder Password: admin
+        *** Please ensure you change the default credentials immediately after login! ***

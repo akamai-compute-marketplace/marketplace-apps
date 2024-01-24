@@ -21,12 +21,6 @@
     - token_password is defined
     - default_dns is not defined
 
-# set customer supplied sudo user, password and SSH keys
-- name: set sudo user
-  import_role:
-    name: sudouser
-  when: username is defined
-
 # Disable root
 - name: secure ssh
   import_role:
@@ -39,7 +33,6 @@
       name: sshkey
   when: 
     - pubkey is defined
-    - username is defined
 
 # apt_setup_update
 - name: update system packages
