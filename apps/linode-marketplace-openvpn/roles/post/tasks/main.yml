@@ -49,5 +49,6 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      OpenVPN Login: {{ openvpn_login }}
+      OpenVPN Username: openvpn
+      OpenVPN Password: {{ openvpn_pass }}
       

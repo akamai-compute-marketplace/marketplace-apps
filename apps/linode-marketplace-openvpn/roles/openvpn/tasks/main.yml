@@ -27,9 +27,13 @@
     apt: 
       name: openvpn-as
       state: present 
-    register: result
 
   - name: capture OpenVPN creds
-    ansible.builtin.set_fact: 
-      openvpn_login: "{{ result.stdout | regex_search('To login') }}"
-      cacheable: yes
+    ansible.builtin.slurp: 
+       src: /usr/local/openvpn_as/init.log
+    register: openvpn_log
+
+  - name: regex for generated password
+    ansible.builtin.debug:
+      msg: "{{ openvpn_log.content | b64decode | regex_search('Auto-generated pass = \"([^\"]+)\"', multiline=True) | regex_search('\"([^\"]+)\"') | regex_replace('[\"\\\\]', '') }}"
+    register: opevpn_pass
