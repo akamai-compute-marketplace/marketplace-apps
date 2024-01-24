@@ -152,7 +152,7 @@ function run {
   # clone repo and set up ansible environment
   #git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone -b splunk-dev ${GIT_REPO}
+  git -C /tmp clone -b akamai-siem ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
