@@ -158,21 +158,6 @@
     state: absent
   notify: reload nginx service
 
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
-
-- name: writing mastodon creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      Owner Username: {{ owner_username }}
-      Owner Password: {{ owner_password }}
-      PSQL Password: {{ psql_password }}
-
 # postfix
 - name: install postfix MTA
   apt:
