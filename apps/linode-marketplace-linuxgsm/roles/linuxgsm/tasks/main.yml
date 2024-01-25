@@ -13,25 +13,29 @@
         append: yes
         generate_ssh_key: no
         state: present
-      
-    - name: chown homedir
-      ansible.builtin.file:
-        path: /home/linuxgsm
-        owner: linuxgsm
-        recurse: yes
+ 
 
   - name: Install LinuxGSM server
     block:
     - name: download linuxgsm script
       ansible.builtin.get_url:
-        url: https://linuxgsm.sh 
+        url: https://linuxgsm.sh
         dest: /home/linuxgsm/linuxgsm.sh
-        mode: 754
+        mode: -rwxr-xr-x
+
+    - name: chown homedir
+      ansible.builtin.file:
+        path: /home/linuxgsm
+        owner: linuxgsm
+        recurse: yes
+      tags: shell
 
     - name: run linuxgsm scripts
-      ansible.builtin.command:
-        chdr: /home/linuxgsm
-        cmd: ./linuxgsm.sh 
-        become: yes
-        become_user: linuxgsm
-      register: gsm_out 
+      become: true
+      become_user: linuxgsm
+      ansible.builtin.shell:
+        chdir: /home/linuxgsm
+        cmd: ./linuxgsm.sh
+      register: gsm_out
+      tags: shell
+
