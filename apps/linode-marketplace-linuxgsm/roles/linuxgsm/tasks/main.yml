@@ -1,3 +1,37 @@
 --- 
 
-#- name: download linuxgsm script
+  - name: setup linuxgsm user dir
+    block: 
+    - name: create user 
+      ansible.builtin.user: 
+        name: linuxgsm
+        shell: /bin/bash
+        groups: sudo
+        password: "{{ password | password_hash('sha512') }}"
+        update_password: on_create
+        expires: -1
+        append: yes
+        generate_ssh_key: no
+        state: present
+      
+    - name: chown homedir
+      ansible.builtin.file:
+        path: /home/linuxgsm
+        owner: linuxgsm
+        recurse: yes
+
+  - name: Install LinuxGSM server
+    block:
+    - name: download linuxgsm script
+      ansible.builtin.get_url:
+        url: https://linuxgsm.sh 
+        dest: /home/linuxgsm/linuxgsm.sh
+        mode: 754
+
+    - name: run linuxgsm scripts
+      ansible.builtin.command:
+        chdr: /home/linuxgsm
+        cmd: ./linuxgsm.sh 
+        become: yes
+        become_user: linuxgsm
+      register: gsm_out 

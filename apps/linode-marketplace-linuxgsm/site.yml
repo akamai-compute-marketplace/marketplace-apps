@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: configuring lemp
+- name: configuring linuxgsm
   hosts: localhost
   connection: local
   gather_facts: true
@@ -10,5 +10,5 @@
     - group_vars/linode/vars
   roles:
     - common
-    - lemp 
+    - linuxgsm 
     - post

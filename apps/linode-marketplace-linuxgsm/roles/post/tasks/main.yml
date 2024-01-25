@@ -5,7 +5,7 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing lemp creds into file
+- name: writing sudo creds into file
   copy:
     dest: /root/.credentials
     mode: '0600'
