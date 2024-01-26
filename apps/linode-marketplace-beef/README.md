@@ -1,15 +1,13 @@
-# Linode Peppermint Deployment One-Click APP
+# Linode BeEF Deployment One-Click APP
 
-Open source alternative to paid ticket management solutions with essential features including a streamlined task list, project and client management, and ticket prioritization.
+Amid growing concerns about web-borne attacks against clients, including mobile clients, BeEF allows the professional penetration tester to assess the actual security posture of a target environment by using client-side attack vectors.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
-| pepperlabs/peppermint:latest | Latest | Simple yet scalable open source ticket management. |
-| postgres | latest | Free and open-source relational database management system |
+| BeEF    | Latest    | penetration testing tool that focuses on the web browser |
+| Ruby    | Latest    | A dynamic, open source programming language with a focus on simplicity and productivity |
 
 
 **Supported Distributions:**
@@ -27,7 +25,7 @@ Open source alternative to paid ticket management solutions with essential featu
 
 ## Use our API
 
-Customers can choose to the deploy the Peppermint app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the BeEF app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -47,10 +45,9 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 804143,
+      "stackscript_id": 913277,
       "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-        "username" : "${USERNAME}"
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
       },
       "authorized_users": [
         "myUser",
@@ -76,8 +73,8 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 804143 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"username": "${USERNAME}"}' \
+  --stackscript_id 913277 \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"} \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
