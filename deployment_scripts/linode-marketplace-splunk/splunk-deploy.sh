@@ -15,14 +15,14 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
 ## Splunk Settings
-#<UDF name="splunk_user" Label="Splunk Admin User" />
+#<UDF name="splunk_user" Label="Splunk Admin User">
 
 ## Akamai SIEM Settings
-#<UDF name="access_token_password" Label="Akamai Access Token" />
-#<UDF name="client_secret_password" Label="Akamai Client Secret" />
-#<UDF name="client_token_password" Label="Akamai Client Token" />
-#<UDF name="hostname" Label="Akamai LUNA hostname" />
-#<UDF name="security_config_id" Label="Configuration ID" />
+#<UDF name="access_token_password" Label="Akamai Access Token" default="">
+#<UDF name="client_secret_password" Label="Akamai Client Secret" default="">
+#<UDF name="client_token_password" Label="Akamai Client Token" default="">
+#<UDF name="hostname" Label="Akamai LUNA hostname" default="">
+#<UDF name="security_config_id" Label="Configuration ID" default="">
 
 # git repo
 export GIT_REPO="https://github.com/n0vabyte/marketplace-apps.git"

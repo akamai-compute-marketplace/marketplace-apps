@@ -52,7 +52,7 @@
     group: splunk  
 
 - name: dropping inputs and password templates
-  templates:
+  template:
     src: "templates/{{ item.src }}"
     dest: "/opt/splunk/etc/apps/TA-Akamai_SIEM/local/{{ item.dest }}"
     owner: splunk
@@ -74,6 +74,6 @@
       state = enabled
 
 - name: restart Splunkd service
-  systemd_service:
+  systemd:
     name: Splunkd.service
     state: restarted
