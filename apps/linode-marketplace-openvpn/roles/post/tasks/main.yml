@@ -1,0 +1,59 @@
+---
+- name: Create a symbolic link for cerbot python lib
+  ansible.builtin.file:
+    src: /tmp/marketplace-apps/apps/linode-marketplace-openvpn/env/bin/certbot
+    dest: /usr/bin/certbot
+    owner: root
+    group: root
+    state: link
+
+- name: run certbot dry-run
+  shell:
+    cmd: "certbot certonly -n --standalone --dry-run --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
+  run_once: true
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+
+- name: validate certbot dry-run
+  assert:
+    that: dry_run is not failed
+    fail_msg: "[Error] Certbot dry-run failed. Cannot continue..Check the domain provided"
+    success_msg: "[Info] Certbot dry-run successful!"
+  run_once: true
+
+# issue cert
+- name: run certbot
+  shell:
+    cmd: "certbot certonly -n --standalone --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
+
+- name: use openvpn ssl key scripts
+  ansible.builtin.shell:
+    executable: /bin/bash
+    chdir: /usr/local/openvpn_as/scripts
+    cmd: "./sacli --key cs.priv_key --value_file /etc/letsencrypt/live/{{ _domain }}/privkey.pem ConfigPut"
+
+- name: use openvpn ssl cert scripts
+  shell:
+    executable: /bin/bash
+    chdir: /usr/local/openvpn_as/scripts
+    cmd: "./sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"
+  notify: restart openvpn
+
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      OpenVPN Login: {{ openvpn_login }}
+      

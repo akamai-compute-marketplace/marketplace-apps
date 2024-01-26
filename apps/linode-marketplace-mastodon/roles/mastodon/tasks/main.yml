@@ -1,0 +1,180 @@
+---
+# mastodon
+- name: create mastodon user
+  user:
+    name: "mastodon"
+    createhome: true
+    shell: /bin/bash
+    home: /home/mastodon/
+
+- name: clone mastodon
+  ansible.builtin.git:
+    repo: https://github.com/mastodon/mastodon.git
+    dest: /home/mastodon/live
+    clone: yes
+
+- name: grab mastodon latest json
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/mastodon/mastodon/releases/latest
+    return_content: yes
+  register: json_response
+
+- name: get mastodon latest version
+  set_fact:
+    mastodonlatest: "{{ json_response.content | from_json | json_query('tag_name') }}"
+
+- name: git checkout
+  ansible.builtin.git:
+    repo: 'https://github.com/mastodon/mastodon.git'
+    dest: /home/mastodon/live
+    version: "{{ mastodonlatest }}"
+
+- name: insert docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/mastodon/live/docker-compose.yml
+
+- name: change owner of live
+  file:
+    path: "/home/mastodon/live"
+    state: directory
+    owner: "mastodon"
+    group: "mastodon"
+    recurse: true
+
+- name: setting env secrets
+  template:
+    src: env.production.j2
+    dest: /home/mastodon/live/.env.production
+
+# secret gen
+## can't use docker compose community module as it requires an old version of pyyaml
+- name: starting postgresql and redis container
+  shell: docker-compose -f /home/mastodon/live/docker-compose.yml up -d db redis
+  args:
+    chdir: "/home/mastodon/live"
+  environment:
+    DOCKER_BUILD: "false"
+
+- name: pulling new container images
+  shell: docker-compose -f /home/mastodon/live/docker-compose.yml up -d web streaming sidekiq
+  args:
+    chdir: "/home/mastodon/live"
+  environment:
+    DOCKER_BUILD: "false"
+    DOCKER_PULL: "true"
+
+- name: get secret_key_base
+  shell: docker-compose run --rm web bundle exec rake secret
+  args:
+    chdir: /home/mastodon/live
+  register: secret_key_base
+
+- name: get otp_secret
+  shell: docker-compose run --rm web bundle exec rake secret
+  args:
+    chdir: /home/mastodon/live
+  register: otp_secret
+
+- name: generate vapid keys
+  shell: docker-compose run --rm web bundle exec rake webpush:generate_keys
+  args:
+    chdir: /home/mastodon/live
+  register: vapid_keys
+
+- name: updating production env
+  lineinfile:
+    path: /home/mastodon/live/.env.production
+    regexp: "{{ item.search }}"
+    line: "{{ item.replace }}"
+  loop:
+    - { search: '^\#?#VAPID_PUBLIC_KEY=', replace: "VAPID_PUBLIC_KEY={{ vapid_keys.stdout_lines[1] | split('Public  -> ') | last }}" }
+    - { search: '^\#?#VAPID_PRIVATE_KEY=', replace: "VAPID_PRIVATE_KEY={{ vapid_keys.stdout_lines[2] | split('Private -> ') | last }}" }
+    - { search: '^\#?#SECRET_KEY_BASE=', replace: "SECRET_KEY_BASE={{ secret_key_base.stdout }}" }
+    - { search: '^\#?#OTP_SECRET=', replace: "OTP_SECRET={{ otp_secret.stdout }}" }
+
+- name: recreating the database
+  shell: docker-compose run --rm web bundle exec rake db:reset
+  args:
+    chdir: /home/mastodon/live
+
+- name: change owner of public
+  file:
+    path: "/home/mastodon/live/public"
+    state: directory
+    owner: "991"
+    group: "991"
+    recurse: true
+
+- name: bringing up mastodon containers
+  shell: docker-compose -f /home/mastodon/live/docker-compose.yml up -d
+  args:
+    chdir: "/home/mastodon/live"
+  environment:
+    DOCKER_BUILD: "false"
+
+- name: assign Owner user and password
+  shell: docker exec live_web_1 tootctl accounts create {{ owner_username }} --email {{ owner_email }} --confirmed --role Owner
+  register: OWNER_PASSWORD
+
+- name: writing owner_password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      owner_password: {{ OWNER_PASSWORD.stdout | split('New password: ') | last }}
+
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present 
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+# back to nginx because mastodon as ships a custom nginx config and it will fail the ssl generation
+- name: config file setup
+  template:
+      src: templates/nginx.conf.j2
+      dest: "/etc/nginx/nginx.conf" 
+      
+- name: vhost file setup
+  template:
+      src: templates/vhost.j2
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# postfix
+- name: install postfix MTA
+  apt:
+    pkg:
+    - postfix
+    state: present
+
+- name: updating postfix inet_interfaces
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces ='
+    line: inet_interfaces = 172.17.0.1
+
+- name: updating postfix mynetwork
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^mynetworks ='
+    line: mynetworks = 192.168.0.0/16, 172.16.0.0/12
+    
+  

@@ -1,0 +1,65 @@
+---
+# harbor
+
+- name: create harbor data directory
+  file:
+    path: /data/harbor
+    state: directory
+
+- name: download and extract offline harbor installion files
+  unarchive:
+    src: https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-offline-installer-v2.9.0.tgz
+    dest: /root/
+    remote_src: yes
+
+- name: copy harbor.yaml template
+  template:
+    src: templates/harbor.yaml.j2
+    dest: /root/harbor/harbor.yml
+
+- name: execute install script
+  shell: bash /root/harbor/install.sh
+
+# nginx
+- name: install nginx
+  apt:
+    pkg:
+      - nginx
+    state: present
+ 
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"   
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl 
+
+- name: copy harbor.service template
+  template:
+    src: templates/harbor.service.j2
+    dest: /etc/systemd/system/harbor.service
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: start harbor service
+  systemd:
+    name: harbor.service
+    state: started
+    enabled: yes

@@ -1,0 +1,16 @@
+# linode ansible playbook
+
+- name: Mastodon deploy
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  roles:
+    - common
+    - docker
+    - mastodon
+    - post
+    
