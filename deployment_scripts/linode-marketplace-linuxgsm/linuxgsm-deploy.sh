@@ -4,6 +4,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## LinuxGSM Settings
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="gameservername" Label="gameservername for LinuxGSM server to install. See https://github.com/GameServerManagers/LinuxGSM/blob/master/lgsm/data/serverlist.csv" default="">
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -64,6 +65,12 @@ EOF
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
   fi
+
+  if [[ -n ${GAMESERVERNAME} ]]; then
+    echo "gameservername: ${GAMESERVERNAME}" >> ${group_vars};
+  else echo "No game server entered";
+  fi
+
 }
 
 function run {

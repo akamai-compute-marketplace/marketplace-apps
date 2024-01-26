@@ -1,8 +1,5 @@
---- 
-
-  - name: setup linuxgsm user dir
-    block: 
-    - name: create user 
+---  
+    - name: create linuxgsm user 
       ansible.builtin.user: 
         name: linuxgsm
         shell: /bin/bash
@@ -14,21 +11,18 @@
         generate_ssh_key: no
         state: present
  
-
-  - name: Install LinuxGSM server
-    block:
     - name: download linuxgsm script
       ansible.builtin.get_url:
         url: https://linuxgsm.sh
         dest: /home/linuxgsm/linuxgsm.sh
-        mode: -rwxr-xr-x
+        mode: 0755
 
     - name: chown homedir
       ansible.builtin.file:
         path: /home/linuxgsm
         owner: linuxgsm
+        group: linuxgsm
         recurse: yes
-      tags: shell
 
     - name: run linuxgsm scripts
       become: true
@@ -36,6 +30,12 @@
       ansible.builtin.shell:
         chdir: /home/linuxgsm
         cmd: ./linuxgsm.sh
-      register: gsm_out
-      tags: shell
-
+        
+    - name: pass server udf to linuxgsm
+      become: true 
+      become_user: linuxgsm
+      ansible.builtin.shell:
+        chdir: /home/linuxgsm
+        cmd: ./linuxgsm.sh install {{ gameservername }}  
+      when: 
+        - gameservername is defined
