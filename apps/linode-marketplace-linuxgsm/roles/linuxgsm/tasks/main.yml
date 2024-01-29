@@ -36,6 +36,6 @@
       become_user: linuxgsm
       ansible.builtin.shell:
         chdir: /home/linuxgsm
-        cmd: ./linuxgsm.sh install {{ gameservername }}  
+        cmd: ./linuxgsm.sh {{ gameservername }}  
       when: 
         - gameservername is defined
