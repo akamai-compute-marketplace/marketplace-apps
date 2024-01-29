@@ -1,0 +1,40 @@
+---
+# passbolt
+
+- name: Download Passbolt repository setup script
+  get_url:
+    url: "https://download.passbolt.com/ce/installer/passbolt-repo-setup.ce.sh"
+    dest: "/tmp/passbolt-repo-setup.ce.sh"
+
+- name: Download Passbolt SHA512 checksum file
+  get_url:
+    url: "https://github.com/passbolt/passbolt-dep-scripts/releases/latest/download/passbolt-ce-SHA512SUM.txt"
+    dest: "/tmp/passbolt-ce-SHA512SUM.txt"
+
+- name: Verify checksum and run Passbolt repository setup script
+  shell: |
+    sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt && sudo bash /tmp/passbolt-repo-setup.ce.sh || echo "Bad checksum. Aborting" && rm -f /tmp/passbolt-repo-setup.ce.sh
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: root
+
+- name: Configure Passbolt parameters in non-interactive mode
+  shell: |
+    echo "passbolt-ce-server passbolt/mysql-configuration boolean true" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/mysql-passbolt-username string {{ mysql_root_password }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/mysql-passbolt-password password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/mysql-passbolt-password-repeat password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-configuration boolean true" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-configuration-three-choices select auto" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-domain string {{ domain }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ domain }}/fullchain.pem" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ domain }}/privkey.pem" | sudo debconf-set-selections
+  become: yes
+
+- name: Install Passbolt CE server in non-interactive mode
+  apt:
+    name: passbolt-ce-server
+    state: present
+  become: yes
