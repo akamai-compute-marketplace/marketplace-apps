@@ -22,7 +22,7 @@ Latest version - https://github.com/nats-io/nats-server
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | nats-server | According to specified version | Highly performant, open-source messaging system |
-
+| Nginx | 1.18 | Open Source web server |
 
 **Supported Distributions:**
 
