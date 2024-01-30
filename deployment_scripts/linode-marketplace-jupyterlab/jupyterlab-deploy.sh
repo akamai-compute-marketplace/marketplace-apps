@@ -1,7 +1,9 @@
 #!/bin/bash
-
 set -e
 trap "cleanup $? $LINENO" EXIT
+
+## JupyterLab Settings
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -9,14 +11,14 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for SSL Generation">
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
-export WORK_DIR="/tmp/marketplace-apps"
-export MARKETPLACE_APP="apps/linode-marketplace-mc-live-encoder-demo"
+export WORK_DIR="/tmp/marketplace-apps" 
+export MARKETPLACE_APP="apps/linode-marketplace-jupyterlab"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -30,18 +32,28 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
   sed 's/  //g' <<EOF > ${group_vars}
 
   # deployment vars
-  soa_email_address: ${SOA_EMAIL_ADDRESS}
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: lemp
 EOF
 
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No email entered";
+  fi
 
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
   else echo "No pubkey entered";
+  fi
+
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
@@ -51,7 +63,7 @@ EOF
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  else echo "default_dns: $(dnsdomainname -A | awk '{print $1}')" >> ${group_vars};
+  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
@@ -62,18 +74,11 @@ EOF
 
 function run {
   # install dependancies
-  yum install dnf -y
-  dnf update -y
-  dnf upgrade -y
-  dnf install -y git python3 python3-pip
-
-  dnf makecache
-  dnf install epel-release -y
-  dnf makecache
-  dnf install ansible -y
+  apt-get update
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-   git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
@@ -90,6 +95,7 @@ function run {
   udf
   # run playbooks
   for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  
 }
 
 function installation_complete {
@@ -97,4 +103,4 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup 
+cleanup

@@ -1,0 +1,59 @@
+---
+# jupyter
+
+- name: config file setup
+  template:
+    src: templates/jupyter.service
+    dest: "/etc/systemd/system/jupyter.service"
+
+- name: create docker compose directory
+  file:
+    path: /etc/docker/compose/jupyter
+    state: directory
+
+- name: docker file setup
+  template:
+    src: templates/docker-compose.yaml
+    dest: "/etc/docker/compose/jupyter/docker-compose.yml"
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: enable jupyter service
+  systemd:
+    name: jupyter.service
+    enabled: yes
+
+- name: start jupyter service
+  systemd:
+    name: jupyter.service
+    state: started
+
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: templates/nginx.conf.j2
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
