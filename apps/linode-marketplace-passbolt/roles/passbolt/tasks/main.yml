@@ -28,9 +28,9 @@
     echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
     echo "passbolt-ce-server passbolt/nginx-configuration boolean true" | sudo debconf-set-selections
     echo "passbolt-ce-server passbolt/nginx-configuration-three-choices select auto" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-domain string {{ domain }}" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ domain }}/fullchain.pem" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ domain }}/privkey.pem" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-domain string {{ _domain }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ _domain }}/fullchain.pem" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ _domain }}/privkey.pem" | sudo debconf-set-selections
   become: yes
 
 - name: Install Passbolt CE server in non-interactive mode
