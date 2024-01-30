@@ -6,16 +6,44 @@
     url: "https://download.passbolt.com/ce/installer/passbolt-repo-setup.ce.sh"
     dest: "/tmp/passbolt-repo-setup.ce.sh"
 
+- name: Make Passbolt repository setup script executable
+  become: yes
+  become_user: root
+  file:
+    path: /tmp/passbolt-repo-setup.ce.sh
+    mode: "+x"
+
 - name: Download Passbolt SHA512 checksum file
   get_url:
     url: "https://github.com/passbolt/passbolt-dep-scripts/releases/latest/download/passbolt-ce-SHA512SUM.txt"
     dest: "/tmp/passbolt-ce-SHA512SUM.txt"
 
-- name: Verify checksum and run Passbolt repository setup script
-  shell: |
-    sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt && sudo bash /tmp/passbolt-repo-setup.ce.sh || echo "Bad checksum. Aborting" && rm -f /tmp/passbolt-repo-setup.ce.sh
+- name: Verify SHA-512 checksum
+  command: sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt
   args:
-    executable: /bin/bash
+    chdir: /tmp
+  register: checksum_result
+
+- name: Display checksum result
+  debug:
+    var: checksum_result.stdout_lines
+
+- name: Check if checksum is OK
+  fail:
+    msg: "Bad Checksum. Aborting."
+  when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+
+- name: Remove setup script if checksum is not OK
+  command: rm -f /tmp/passbolt-repo-setup.ce.sh
+  when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+
+- name: Run passbolt-repo-setup.ce.sh script with expect
+  expect:
+    chdir: /tmp
+    command: "./passbolt-repo-setup.ce.sh"
+    responses:
+      ".*OK.*": [""]
+    timeout: 30
   become: yes
   become_user: root
 
