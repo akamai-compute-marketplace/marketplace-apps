@@ -33,6 +33,13 @@
         line: | 
           passbolt_db_admin_password: {{ passbolt_db_admin_password }}
 
+    - name: writing passbolt_mysql_user to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          passbolt_mysql_user: passboltadmin
+
     - name: generating mysql root password
       import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
 

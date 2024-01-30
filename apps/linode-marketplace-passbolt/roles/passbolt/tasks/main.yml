@@ -43,14 +43,14 @@
     command: "./passbolt-repo-setup.ce.sh"
     responses:
       ".*OK.*": [""]
-    timeout: 30
+    #timeout: 30
   become: yes
   become_user: root
 
 - name: Configure Passbolt parameters in non-interactive mode
   shell: |
     echo "passbolt-ce-server passbolt/mysql-configuration boolean true" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/mysql-passbolt-username string {{ mysql_root_password }}" | sudo debconf-set-selections
+    echo "passbolt-ce-server passbolt/mysql-passbolt-username string passboltadmin" | sudo debconf-set-selections
     echo "passbolt-ce-server passbolt/mysql-passbolt-password password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
     echo "passbolt-ce-server passbolt/mysql-passbolt-password-repeat password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
     echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
