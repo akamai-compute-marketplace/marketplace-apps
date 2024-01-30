@@ -1,11 +1,5 @@
 ---
-- name: Create a symbolic link for cerbot python lib
-  ansible.builtin.file:
-    src: /tmp/marketplace-apps/apps/linode-marketplace-openvpn/env/bin/certbot
-    dest: /usr/bin/certbot
-    owner: root
-    group: root
-    state: link
+# certbot is installed to venv w/ pip in deploy.sh
 
 - name: run certbot dry-run
   shell:
@@ -40,7 +34,17 @@
     executable: /bin/bash
     chdir: /usr/local/openvpn_as/scripts
     cmd: "./sacli --key cs.cert --value_file /etc/letsencrypt/live/{{ _domain }}/fullchain.pem ConfigPut"
-  notify: restart openvpn
+  notify: restart openvpn  
+
+- name: capture OpenVPN creds
+  ansible.builtin.slurp: 
+    src: /usr/local/openvpn_as/init.log
+  register: openvpn_log
+
+- name: regex for generated password
+  ansible.builtin.debug:
+    msg: "{{ openvpn_log.content | b64decode | regex_search('Auto-generated pass = \"([^\"]+)\"', multiline=True) | regex_search('\"([^\"]+)\"') | regex_replace('[\"\\\\]', '') }}"
+  register: openvpn_pass
 
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
@@ -55,5 +59,6 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      OpenVPN Login: {{ openvpn_login }}
+      OpenVPN Username: openvpn
+      OpenVPN Password: {{ openvpn_pass.msg }}
       
