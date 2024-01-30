@@ -37,7 +37,6 @@
 - name: unarchiving akamai-siem tarball
   unarchive:
     src: 'files/akamai-siem-integration-1_4_19.tgz'
-    #dest: '/opt/splunk/etc/apps/TA-Akamai_SIEM'
     dest: '/opt/splunk/etc/apps'
     owner: splunk
     group: splunk
@@ -72,6 +71,14 @@
     line: |
       [install]
       state = enabled
+
+- name: updating akamai-siem directory permissions
+  file:
+    path: '/opt/splunk/etc/apps/TA-Akamai_SIEM'
+    state: directory
+    recurse: yes
+    owner: splunk
+    group: splunk
 
 - name: restart Splunkd service
   systemd:
