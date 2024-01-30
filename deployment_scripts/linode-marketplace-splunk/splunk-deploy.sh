@@ -85,15 +85,15 @@ EOF
   if [[ -z "$ACCESS_TOKEN_PASSWORD" && -z "$CLIENT_SECRET_PASSWORD" && -z "$CLIENT_TOKEN_PASSWORD" \
     && -z "$HOSTNAME" && -z "$SECURITY_CONFIG_ID" ]]; then
     echo "Akamai SIEM not configured.."
-    echo "install_akamai_siem: NO" >> ${group_vars}
+    echo "install_akamai_siem: 'NO'" >> ${group_vars}
   else
     if [[ -n "$ACCESS_TOKEN_PASSWORD" && -n "$CLIENT_SECRET_PASSWORD" && -n "$CLIENT_TOKEN_PASSWORD" \
       && -n "$HOSTNAME" && -n "$SECURITY_CONFIG_ID" ]]; then
       echo "Configuring Akamai SIEM.."
-      echo "install_akamai_siem: YES" >> ${group_vars}
+      echo "install_akamai_siem: 'YES'" >> ${group_vars}
     else
       echo "[error] Akamai SIEM cannot be installed. We are missing one of the variables for configuration.."
-      echo "install_akamai_siem: NO" >> ${group_vars}
+      echo "install_akamai_siem: 'NO'" >> ${group_vars}
     fi
   fi 
 
