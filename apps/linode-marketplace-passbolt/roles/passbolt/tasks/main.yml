@@ -43,7 +43,7 @@
     command: "./passbolt-repo-setup.ce.sh"
     responses:
       ".*OK.*": [""]
-    timeout: 120
+    timeout: 300
   become: yes
   become_user: root
 
@@ -87,4 +87,3 @@
     line: mynetworks = 192.168.0.0/16, 172.16.0.0/12
   notify: restart postfix
 
-  
