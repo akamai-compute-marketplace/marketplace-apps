@@ -12,5 +12,9 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Passbolt Admin Database User: passboltadmin
+      Passbolt Database: passboltdb
+      Passbolt Database Password: {{ passbolt_db_admin_password }}
+      Mysql Root Password: {{ mysql_root_password }}
       passbolt Login: admin
       passbolt Password: {{ passbolt_password }}
