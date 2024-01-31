@@ -1,1 +1,5 @@
 # passbolt handlers
+  - name: restart postfix
+    systemd:
+      name: postfix
+      state: restarted

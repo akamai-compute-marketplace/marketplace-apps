@@ -41,9 +41,9 @@
   expect:
     chdir: /tmp
     command: "./passbolt-repo-setup.ce.sh"
-    # responses:
-    #   ".*OK.*": [""]
-    # timeout: 30
+    responses:
+      ".*OK.*": [""]
+    timeout: 120
   become: yes
   become_user: root
 
@@ -66,3 +66,25 @@
     name: passbolt-ce-server
     state: present
   become: yes
+
+# Postfix
+- name: install postfix MTA
+  apt:
+    pkg:
+    - postfix
+    state: present
+
+- name: updating postfix inet_interfaces
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces ='
+    line: inet_interfaces = 172.17.0.1
+
+- name: updating postfix mynetwork
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^mynetworks ='
+    line: mynetworks = 192.168.0.0/16, 172.16.0.0/12
+  notify: restart postfix
+
+  
