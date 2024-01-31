@@ -17,7 +17,7 @@ trap "cleanup $? $LINENO" EXIT
 # git repo
 export GIT_REPO="https://github.com/n0vabyte/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-splunk"
+export MARKETPLACE_APP="apps/linode-marketplace-jitsi"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1

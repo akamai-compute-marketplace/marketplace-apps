@@ -30,7 +30,7 @@
   debconf:
     name: jitsi-videobridge
     question: jitsi-videobridge/jvb-hostname
-    value: "{{ domain }}"
+    value: "{{ _domain }}"
     vtype: string
 
 - name: set jitsi web config
