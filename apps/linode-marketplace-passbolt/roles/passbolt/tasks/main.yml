@@ -41,9 +41,9 @@
   expect:
     chdir: /tmp
     command: "./passbolt-repo-setup.ce.sh"
-    responses:
-      ".*OK.*": [""]
-    #timeout: 30
+    # responses:
+    #   ".*OK.*": [""]
+    # timeout: 30
   become: yes
   become_user: root
 
