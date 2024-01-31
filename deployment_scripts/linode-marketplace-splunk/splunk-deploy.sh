@@ -25,7 +25,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="security_config_id" Label="Configuration ID" default="">
 
 # git repo
-export GIT_REPO="https://github.com/n0vabyte/marketplace-apps.git"
+export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-splunk"
 
