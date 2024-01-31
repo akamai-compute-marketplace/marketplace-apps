@@ -5,12 +5,10 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing splunk creds into file
+- name: writing creds into file
   copy:
     dest: /root/.credentials
     mode: '0600'
     content: |
       sudo username: {{ username }}
       sudo password: {{ password }}
-      splunk user: {{ splunk_user }}
-      splunk admin password: {{ splunk_admin_password }}
