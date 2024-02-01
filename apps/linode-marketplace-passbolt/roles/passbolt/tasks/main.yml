@@ -46,6 +46,10 @@
     timeout: 300
   become: yes
   become_user: root
+  register: result
+
+- debug:
+    var: result
 
 - name: Configure Passbolt parameters in non-interactive mode
   shell: |
