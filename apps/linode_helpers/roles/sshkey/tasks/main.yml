@@ -1,5 +1,6 @@
 ---
-# this helper will only function if a username is provided in the var file, typically as a UDF
+# this helper will only function if a username is provided in the var file, typically as a UDF.
+# compatible with legacy pubkey UDF
 - name: assign ssh keys
   lineinfile:
     dest: '/home/{{ username }}/.ssh/authorized_keys'
@@ -8,3 +9,21 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0600'
+  when: pubkey is defined
+
+# add keys when deployed with account keys
+- name: checking account keys
+  stat:
+    path: '/root/.ssh/authorized_keys'
+  register: authorized_keys_file
+
+- name: adding account keys to sudo user
+  copy:
+    src: '/root/.ssh/authorized_keys'
+    dest: '/home/{{ username }}/.ssh/authorized_keys'
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  when:
+    - authorized_keys_file.stat.exists
+    - authorized_keys_file.stat.size > 0
