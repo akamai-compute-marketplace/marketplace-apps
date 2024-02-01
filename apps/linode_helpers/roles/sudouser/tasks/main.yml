@@ -2,6 +2,7 @@
 - name: generating sudo user password
   set_fact:
     password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+  no_log: true
 
 - name: writing sudo user password to vars
   lineinfile:

@@ -11,3 +11,7 @@
     file: nginx-certbot.yml
   when: webserver_stack == 'lemp'
 
+- name: install certbot standalone plugin
+  include_tasks:
+    file: standalone-certbot.yml
+  when: webserver_stack == 'standalone'
