@@ -37,19 +37,12 @@
   command: rm -f /tmp/passbolt-repo-setup.ce.sh
   when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
 
-- name: Run passbolt-repo-setup.ce.sh script with expect
-  expect:
+- name: Run passbolt-repo-setup.ce.sh script as root
+  command: "bash ./passbolt-repo-setup.ce.sh"
+  args:
     chdir: /tmp
-    command: "./passbolt-repo-setup.ce.sh"
-    responses:
-      ".*OK.*": [""]
-    timeout: 300
   become: yes
   become_user: root
-  register: result
-
-- debug:
-    var: result
 
 - name: Configure Passbolt parameters in non-interactive mode
   shell: |
