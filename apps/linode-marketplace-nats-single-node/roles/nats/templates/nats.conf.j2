@@ -1,0 +1,33 @@
+port: {{ nats_port }}
+monitor_port: 8000
+server_name: '{{ name }}'
+jetstream {
+  store_dir: /nats/data
+}
+accounts {
+  example: {
+    jetstream: enabled
+    users = [
+      {
+		user: example,
+		password: '{{ example_user_password }}'
+	  }
+    ]
+  }
+  system: {
+    users = [
+      {
+		user: system,
+		password: '{{ system_user_password }}'
+	  }
+    ]
+  }
+}
+mqtt {
+  port: {{ mqtt_port }}
+}
+websocket {
+  port: {{ websocket_port }}
+  no_tls: true
+}
+system_account: system
