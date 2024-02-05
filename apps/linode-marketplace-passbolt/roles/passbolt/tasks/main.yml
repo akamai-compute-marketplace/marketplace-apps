@@ -24,10 +24,6 @@
     chdir: /tmp
   register: checksum_result
 
-- name: Display checksum result
-  debug:
-    var: checksum_result.stdout_lines
-
 - name: Check if checksum is OK
   fail:
     msg: "Bad Checksum. Aborting."
