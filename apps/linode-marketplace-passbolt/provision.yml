@@ -42,10 +42,3 @@
 
     - name: generating mysql root password
       import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
-
-    # - name: writing mysql root password to vars
-    #   lineinfile:
-    #     insertafter: EOF
-    #     path: group_vars/linode/vars
-    #     line: | 
-    #       mysql_root_password: {{ MYSQL_ROOT_PASSWORD }}
