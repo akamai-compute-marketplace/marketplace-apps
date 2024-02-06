@@ -18,6 +18,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="splunk_user" Label="Splunk Admin User">
 
 ## Akamai SIEM Settings
+#<UDF name="sslheader" label="Akamai SIEM Settings" header="Yes" default="Yes">
 #<UDF name="access_token_password" Label="Akamai Access Token" default="">
 #<UDF name="client_secret_password" Label="Akamai Client Secret" default="">
 #<UDF name="client_token_password" Label="Akamai Client Token" default="">
