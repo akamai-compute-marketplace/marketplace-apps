@@ -18,7 +18,7 @@
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
         dest: /root/per-instance.sh
-        mode: 755
+        mode: 0755
 
     - name: run Cyberpanel init script
       ansible.builtin.command:
