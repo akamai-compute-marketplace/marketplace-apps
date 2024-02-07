@@ -27,7 +27,7 @@
 - name: Allow all access to websocket port
   community.general.ufw:
     rule: allow
-    port: '{{ websocket_port }}'
+    port: "{{ websocket_port }}"
     proto: tcp
 
 - name: Allow all access to mqtt port
