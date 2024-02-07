@@ -10,7 +10,7 @@
     - name: set cloudron executable 
       ansible.builtin.file: 
         path: /tmp/cloudron-setup
-        mode: 754
+        mode: 0755
     
     - name: run Cloudron installer
       ansible.builtin.command: 

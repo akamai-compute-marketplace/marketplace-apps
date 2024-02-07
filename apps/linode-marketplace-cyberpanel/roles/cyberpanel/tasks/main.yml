@@ -7,7 +7,7 @@
       ansible.builtin.get_url: 
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/cybersetup.sh  
         dest: /root/cybersetup.sh 
-        mode: 754
+        mode: 0755
     
     - name: run Cyberpanel installer
       ansible.builtin.command: 
@@ -18,7 +18,7 @@
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
         dest: /root/per-instance.sh
-        mode: 754
+        mode: 0755
 
     - name: run Cyberpanel init script
       ansible.builtin.command:

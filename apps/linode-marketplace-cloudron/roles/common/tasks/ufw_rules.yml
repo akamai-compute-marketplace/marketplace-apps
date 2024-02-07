@@ -9,11 +9,11 @@
 - name: allow http 
   community.general.ufw:
     rule: allow
-    port: 80
+    port: '80'
     proto: tcp
 
 - name: allow https
   community.general.ufw:
     rule: allow
-    port: 443
+    port: '443'
     proto: tcp
