@@ -1,5 +1,0 @@
-  - name: restart splunk
-    systemd:
-      name: Splunkd
-      state: restarted
-      enabled: yes
