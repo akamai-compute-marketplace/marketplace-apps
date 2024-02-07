@@ -32,11 +32,13 @@ function cleanup {
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars}
-  else 
-    echo "No username entered"
-  fi
+
+  sed 's/  //g' <<EOF > ${group_vars}
+  # sudo username
+  username: ${USER_NAME}
+  soa_email_address: ${SOA_EMAIL_ADDRESS}
+EOF
+
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars}
@@ -46,10 +48,6 @@ function udf {
 
   # vars
   
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
-  fi
-
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars}
   else
@@ -79,7 +77,7 @@ function run {
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  #git -C /tmp clone -b ${SOMEBRANCH} ${GIT_REPO}
+  #git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}

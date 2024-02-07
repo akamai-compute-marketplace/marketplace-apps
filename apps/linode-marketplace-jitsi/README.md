@@ -6,7 +6,7 @@ Jitsi is a free, open source video conferencing and communication platform. It p
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Jitsi    | latest    | Application SIEM |
+| Jitsi    | latest    | Video Conferencing Bridge |
 
 **Supported Distributions:**
 
