@@ -38,8 +38,4 @@
   import_role:
     name: update_pkgs
 
-# ufw_install
-- name: enabling ufw
-  import_role:
-    name: ufw
 
