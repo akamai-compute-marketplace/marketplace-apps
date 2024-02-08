@@ -1,0 +1,5 @@
+- name: restart antmedia
+  service:
+    name: antmedia
+    state: restart
+
