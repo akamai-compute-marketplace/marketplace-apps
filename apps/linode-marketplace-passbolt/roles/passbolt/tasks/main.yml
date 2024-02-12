@@ -61,22 +61,23 @@
   become: yes
 
 # Postfix
-- name: install postfix MTA
+- name: install postfix MTA and mailutils
   apt:
     pkg:
     - postfix
+    - mailutils
     state: present
 
 - name: updating postfix inet_interfaces
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^inet_interfaces ='
-    line: inet_interfaces = 172.17.0.1
+    line: 'inet_interfaces = {{ ansible_default_ipv4.address }}'
+
 
 - name: updating postfix mynetwork
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^mynetworks ='
-    line: mynetworks = 192.168.0.0/16, 172.16.0.0/12
+    line: 'mynetworks = 192.168.0.0/16, 172.16.0.0/12, {{ ansible_default_ipv4.address }}/32'
   notify: restart postfix
-
