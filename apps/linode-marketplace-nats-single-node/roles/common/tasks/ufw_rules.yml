@@ -9,13 +9,13 @@
 - name: Allow all access to https port
   community.general.ufw:
     rule: allow
-    port: "443"
+    port: '443'
     proto: tcp
 
 - name: Allow all access to http port
   community.general.ufw:
     rule: allow
-    port: "80"
+    port: '80'
     proto: tcp
 
 - name: Allow all access to nats server port
