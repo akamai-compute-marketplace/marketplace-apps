@@ -1,4 +1,4 @@
--
+---
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
   template:
@@ -7,7 +7,7 @@
 
 - name: writing harbor creds into file
   copy:
-    dest: /root/.credentials
+    dest: /home/"{{ username }}"/.credentials
     mode: '0600'
     content: |
       Sudo Username: {{ username }}

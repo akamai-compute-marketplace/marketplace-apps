@@ -32,7 +32,7 @@
 
 - name: writing kepler builder creds into file
   copy:
-    dest: /root/.credentials
+    dest: /home/"{{ username }}"/.credentials
     mode: '0600'
     content: |
       Sudo Username: {{ username }}

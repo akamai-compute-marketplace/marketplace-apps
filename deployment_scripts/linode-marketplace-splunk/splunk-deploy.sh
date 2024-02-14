@@ -112,12 +112,6 @@ EOF
     echo "Leaving root login enabled"
   fi
 
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars}
-  else 
-    echo "No pubkey entered"
-  fi
-
   # vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
