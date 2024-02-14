@@ -7,7 +7,7 @@
 
 - name: writing harbor creds into file
   copy:
-    dest: /home/"{{ username }}"/.credentials
+    dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
       Sudo Username: {{ username }}
