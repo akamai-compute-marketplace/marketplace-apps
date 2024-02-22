@@ -110,7 +110,7 @@
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^inet_interfaces ='
-    line: 'inet_interfaces = {{ ansible_default_ipv4.address }}'
+    line: 'inet_interfaces = 127.0.0.1'
 
 - name: updating postfix mynetwork
   ansible.builtin.lineinfile:

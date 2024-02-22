@@ -18,3 +18,11 @@
       Mysql Root Password: {{ mysql_root_password }}
       passbolt Login: admin
       passbolt Password: {{ passbolt_password }}
+
+- name: Copy passbolt config template to /etc/passbolt/passbolt.php
+  template:
+    src: templates/passbolt.php
+    dest: /etc/passbolt/passbolt.php
+    owner: www-data
+    group: www-data
+    mode: '0440'
