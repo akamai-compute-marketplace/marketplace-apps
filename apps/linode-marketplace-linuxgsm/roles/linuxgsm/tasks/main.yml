@@ -1,10 +1,22 @@
 ---  
+    - name: generating linuxgsm user password
+      set_fact:
+      linuxgsm_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+      no_log: true
+
+    - name: writing linuxgsm user password to vars
+      lineinfile:
+      insertafter: EOF
+      path: group_vars/linode/vars
+      line: | 
+        linuxgsm_password: {{ password }}
+    
     - name: create linuxgsm user 
       ansible.builtin.user: 
         name: linuxgsm
         shell: /bin/bash
         groups: sudo
-        password: "{{ password | password_hash('sha512') }}"
+        password: "{{ linuxgsm_password | password_hash('sha512') }}"
         update_password: on_create
         expires: -1
         append: yes
