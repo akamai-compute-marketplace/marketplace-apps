@@ -7,58 +7,96 @@
     dest: "/tmp/passbolt-repo-setup.ce.sh"
 
 - name: Make Passbolt repository setup script executable
-  become: yes
-  become_user: root
   file:
     path: /tmp/passbolt-repo-setup.ce.sh
-    mode: "+x"
+    mode: "0755"
 
 - name: Download Passbolt SHA512 checksum file
   get_url:
     url: "https://github.com/passbolt/passbolt-dep-scripts/releases/latest/download/passbolt-ce-SHA512SUM.txt"
     dest: "/tmp/passbolt-ce-SHA512SUM.txt"
 
-- name: Verify SHA-512 checksum
-  command: sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt
-  args:
-    chdir: /tmp
-  register: checksum_result
+- name: Get SHA-512 checksum of the setup script
+  ansible.builtin.stat:
+    path: /tmp/passbolt-repo-setup.ce.sh
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: script_checksum
 
-- name: Check if checksum is OK
-  fail:
-    msg: "Bad Checksum. Aborting."
-  when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+- name: Conditionally execute the script if checksum matches
+  ansible.builtin.shell:
+    cmd: sudo bash /tmp/passbolt-repo-setup.ce.sh
+  when: script_checksum.stat.checksum == {{ passbolt_checksum_value }}
+  register: script_execution
+  ignore_errors: yes
 
-- name: Remove setup script if checksum is not OK
-  command: rm -f /tmp/passbolt-repo-setup.ce.sh
-  when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+- name: Remove setup script if checksum verification fails
+  ansible.builtin.file:
+    path: /tmp/passbolt-repo-setup.ce.sh
+    state: absent
+  when: script_checksum.stat.checksum != {{ passbolt_checksum_value }}
 
-- name: Run passbolt-repo-setup.ce.sh script as root
-  command: "bash ./passbolt-repo-setup.ce.sh"
-  args:
-    chdir: /tmp
-  become: yes
-  become_user: root
+# - name: Verify SHA-512 checksum
+#   command: sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt
+#   args:
+#     chdir: /tmp
+#   register: checksum_result
 
-- name: Configure Passbolt parameters in non-interactive mode
-  shell: |
-    echo "passbolt-ce-server passbolt/mysql-configuration boolean true" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/mysql-passbolt-username string passboltadmin" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/mysql-passbolt-password password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/mysql-passbolt-password-repeat password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-configuration boolean true" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-configuration-three-choices select auto" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-domain string {{ _domain }}" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ _domain }}/fullchain.pem" | sudo debconf-set-selections
-    echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ _domain }}/privkey.pem" | sudo debconf-set-selections
-  become: yes
+# - name: Check if checksum is OK
+#   fail:
+#     msg: "Bad Checksum. Aborting."
+#   when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+
+# - name: Remove setup script if checksum is not OK
+#   command: rm -f /tmp/passbolt-repo-setup.ce.sh
+#   when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+
+- name: Run passbolt-repo-setup.ce.sh script
+  command: "/tmp/passbolt-repo-setup.ce.sh"
+
+- name: Configure Passbolt MySQL settings
+  ansible.builtin.debconf:
+    name: passbolt-ce-server
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: "passbolt/mysql-configuration", value: "true", vtype: "boolean" }
+    - { question: "passbolt/mysql-passbolt-username", value: "passboltadmin", vtype: "string" }
+    - { question: "passbolt/mysql-passbolt-password", value: "{{ passbolt_db_admin_password }}", vtype: "password" }
+    - { question: "passbolt/mysql-passbolt-password-repeat", value: "{{ passbolt_db_admin_password }}", vtype: "password" }
+    - { question: "passbolt/mysql-passbolt-dbname", value: "passboltdb", vtype: "string" }
+
+- name: Configure Passbolt Nginx settings
+  ansible.builtin.debconf:
+    name: passbolt-ce-server
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: "passbolt/nginx-configuration", value: "true", vtype: "boolean" }
+    - { question: "passbolt/nginx-configuration-three-choices", value: "auto", vtype: "select" }
+    - { question: "passbolt/nginx-domain", value: "{{ _domain }}", vtype: "string" }
+    - { question: "passbolt/nginx-certificate-file", value: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", vtype: "string" }
+    - { question: "passbolt/nginx-certificate-key-file", value: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", vtype: "string" }
+
+# - name: Configure Passbolt parameters in non-interactive mode
+#   shell: |
+#     echo "passbolt-ce-server passbolt/mysql-configuration boolean true" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/mysql-passbolt-username string passboltadmin" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/mysql-passbolt-password password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/mysql-passbolt-password-repeat password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/nginx-configuration boolean true" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/nginx-configuration-three-choices select auto" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/nginx-domain string {{ _domain }}" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ _domain }}/fullchain.pem" | sudo debconf-set-selections
+#     echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ _domain }}/privkey.pem" | sudo debconf-set-selections
 
 - name: Install Passbolt CE server in non-interactive mode
   apt:
     name: passbolt-ce-server
     state: present
-  become: yes
 
 # Postfix
 - name: install postfix MTA and mailutils
@@ -73,7 +111,6 @@
     path: /etc/postfix/main.cf
     regexp: '^inet_interfaces ='
     line: 'inet_interfaces = {{ ansible_default_ipv4.address }}'
-
 
 - name: updating postfix mynetwork
   ansible.builtin.lineinfile:
