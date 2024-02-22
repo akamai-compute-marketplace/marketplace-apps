@@ -32,6 +32,7 @@ authors: ["Linode"]
 
 - **Email address** *(required)*: Enter the email address to use for generating the SSL certificates.
 - **Game Server Name**: Enter the code for the server you want to install. See the [LinuxGSM Server List](https://github.com/GameServerManagers/LinuxGSM/blob/master/lgsm/data/serverlist.csv). 
+
 {{< content "marketplace-limited-user-fields-shortguide">}}
 
 {{< content "marketplace-custom-domain-fields-shortguide">}}
@@ -42,16 +43,17 @@ authors: ["Linode"]
 
 ### Obtaining the Admin Password
 
-The password for the sudo user account was automatically generated during the initial install process. To find this password, log in to your Compute Instance through the [LISH Console](/docs/products/compute/compute-instances/guides/lish/#through-the-cloud-manager-weblish). The credentials are available in the file `/root/.credentials`
+The password for the sudo user account was automatically generated during the initial install process. To find this password, log in to your Compute Instance through the [LISH Console](/docs/products/compute/compute-instances/guides/lish/#through-the-cloud-manager-weblish), or with SSH if you provided an [Account Key](). The credentials are available in the file `/home/$SUDO_USER/.credentials`
 ```
-cat /root/.credentials
-sudo username: $SUDO_USER
-sudo password: 0oVSsWmkbGesmtuTlOEgFl7t
-
+cat /home/$SUDO_USER/.credentials
+Sudo Username: $SUDO_USER
+Sudo Password: 0oVSsWmkbGesmtuTlOEgFl7t
+LinuxGSM User: linuxgsm
+LinuxGSM User Password: nc023n30cal-3kd
 ```
-`linuxgsm` is a member of the sudo group, and shares a generated password with the user inputed sudo user.
+`linuxgsm` is a member of the sudo group.
 
-To complete the server installation process run `su linuxgms && chdir /home/linuxgsm` followed by `./$GAMEERVERNAME install`
+To complete the server installation process run `su linuxgsm && chdir /home/linuxgsm` followed by `./$GAMEERVERNAME install`
 
 ### More Information
 
