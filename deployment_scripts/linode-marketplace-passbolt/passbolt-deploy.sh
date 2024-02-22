@@ -34,7 +34,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lemp
+  passbolt_checksum_value: e1a2efad6a53aa874842a09073ca9ac5880a7e55ae4e4276c0ddc6e0ba4a4faeea9b89d0371eedbeceee1e11864ed544bcc9a553031fa4ff7cc6aa7bcf774ba5"
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

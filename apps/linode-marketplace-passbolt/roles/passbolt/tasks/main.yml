@@ -26,7 +26,7 @@
 - name: Conditionally execute the script if checksum matches
   ansible.builtin.shell:
     cmd: sudo bash /tmp/passbolt-repo-setup.ce.sh
-  when: script_checksum.stat.checksum == {{ passbolt_checksum_value }}
+  when: script_checksum.stat.checksum == passbolt_checksum_value
   register: script_execution
   ignore_errors: yes
 
@@ -34,22 +34,7 @@
   ansible.builtin.file:
     path: /tmp/passbolt-repo-setup.ce.sh
     state: absent
-  when: script_checksum.stat.checksum != {{ passbolt_checksum_value }}
-
-# - name: Verify SHA-512 checksum
-#   command: sha512sum -c /tmp/passbolt-ce-SHA512SUM.txt
-#   args:
-#     chdir: /tmp
-#   register: checksum_result
-
-# - name: Check if checksum is OK
-#   fail:
-#     msg: "Bad Checksum. Aborting."
-#   when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
-
-# - name: Remove setup script if checksum is not OK
-#   command: rm -f /tmp/passbolt-repo-setup.ce.sh
-#   when: "'passbolt-repo-setup.ce.sh: OK' not in checksum_result.stdout_lines"
+  when: script_checksum.stat.checksum != passbolt_checksum_value
 
 - name: Run passbolt-repo-setup.ce.sh script
   command: "/tmp/passbolt-repo-setup.ce.sh"
