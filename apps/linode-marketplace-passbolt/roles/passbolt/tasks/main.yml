@@ -65,19 +65,6 @@
     - { question: "passbolt/nginx-certificate-file", value: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", vtype: "string" }
     - { question: "passbolt/nginx-certificate-key-file", value: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", vtype: "string" }
 
-# - name: Configure Passbolt parameters in non-interactive mode
-#   shell: |
-#     echo "passbolt-ce-server passbolt/mysql-configuration boolean true" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/mysql-passbolt-username string passboltadmin" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/mysql-passbolt-password password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/mysql-passbolt-password-repeat password {{ passbolt_db_admin_password }}" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/mysql-passbolt-dbname string passboltdb" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/nginx-configuration boolean true" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/nginx-configuration-three-choices select auto" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/nginx-domain string {{ _domain }}" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/nginx-certificate-file string /etc/letsencrypt/live/{{ _domain }}/fullchain.pem" | sudo debconf-set-selections
-#     echo "passbolt-ce-server passbolt/nginx-certificate-key-file string /etc/letsencrypt/live/{{ _domain }}/privkey.pem" | sudo debconf-set-selections
-
 - name: Install Passbolt CE server in non-interactive mode
   apt:
     name: passbolt-ce-server
@@ -103,3 +90,10 @@
     regexp: '^mynetworks ='
     line: 'mynetworks = 192.168.0.0/16, 172.16.0.0/12, {{ ansible_default_ipv4.address }}/32'
   notify: restart postfix
+
+- name: Update /etc/hosts file
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ _domain }}"
+    state: present
+  

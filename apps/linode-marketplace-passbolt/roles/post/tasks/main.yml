@@ -26,3 +26,91 @@
     owner: www-data
     group: www-data
     mode: '0440'
+
+    - name: Generate GPG key pair
+      command: gpg --batch --gen-key
+      args:
+        creates: /root/.gnupg/pubring.kbx
+      environment:
+        GNUPGHOME: /root/.gnupg
+      expect:
+        command: gpg --edit-key "{{ gpg_name }} <{{ gpg_email }}>"
+        responses:
+          - pattern: "GnuPG needs to construct a user ID to identify your key."
+            command: "N"
+          - pattern: "Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit?"
+            command: "O"
+    
+- name: Create GPG key generation batch file
+  copy:
+    dest: "/tmp/gpg_key_gen_batch"
+    content: |
+      %echo Generating a basic OpenPGP key
+      Key-Type: RSA
+      Key-Length: 2048
+      Subkey-Type: RSA
+      Subkey-Length: 2048
+      Name-Real: {{ gpg_name}}
+      Name-Comment: Ansible generated key
+      Name-Email: {{ gpg_email }}
+      Expire-Date: 0
+      %no-protection
+      %commit
+      %echo done
+
+- name: Generate GPG key non-interactively
+  command: gpg --batch --generate-key /tmp/gpg_key_gen_batch
+
+- name: Get GPG secret key
+  shell: gpg --list-secret-keys | grep sec
+  register: gpg_secret_keys_output
+  ignore_errors: yes
+  changed_when: False
+
+- name: Extract and save the secret key to a variable
+  set_fact:
+    gpg_secret_key: "{{ gpg_secret_keys_output.stdout | regex_search('([A-F0-9]{40})') }}"
+  when: gpg_secret_keys_output.stdout is defined
+  
+# - name: Ensure /etc/passbolt/gpg/ directory exists
+# ansible.builtin.file:
+#   path: /etc/passbolt/gpg/
+#   state: directory
+#   mode: '0770' 
+
+- name: Export GPG public key to serverkey.asc
+  shell: gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc
+  args:
+    executable: /bin/bash
+
+- name: Export GPG private key to serverkey_private.asc
+  shell: gpg --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc
+  args:
+    executable: /bin/bash
+
+- name: Writing gpg_secret_key to group_vars/linode/vars
+  lineinfile:
+    path: group_vars/linode/vars
+    line: "gpg_secret_key: '{{ gpg_secret_key }}'"
+
+- name: Update GPG fingerprint in passbolt.php
+  ansible.builtin.replace:
+    path: /etc/passbolt/passbolt.php
+    regexp: "'fingerprint' => '[A-F0-9]{40}',"
+    replace: "'fingerprint' => '{{ gpg_secret_key }}',"
+
+- name: Install Passbolt without admin user
+  become: yes
+  become_method: sudo
+  become_user: "{{ webuser }}"
+  shell: "/usr/share/php/passbolt/bin/cake passbolt install --no-admin --force"
+  args:
+    executable: /bin/bash
+
+- name: Register first admin user for Passbolt
+  become: yes
+  become_method: sudo
+  become_user: "{{ webuser }}"
+  shell: "/usr/share/php/passbolt/bin/cake passbolt register_user -u {{ passbolt_first_admin_email }} -f {{ passbolt_first_admin_username }} -l {{ passbolt_first_admin_surname }} -r admin"
+  args:
+    executable: /bin/bash

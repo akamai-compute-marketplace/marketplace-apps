@@ -30,7 +30,7 @@ return [
         // A base URL to use for absolute links.
         // The url where the passbolt instance will be reachable to your end users.
         // This information is need to render images in emails for example
-        'fullBaseUrl' => '{{ _domain }}',
+        'fullBaseUrl' => 'https://{{ _domain }}',
     ],
 
     // Database configuration.

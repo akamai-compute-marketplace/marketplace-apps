@@ -13,6 +13,10 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token" />
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
 
+#<UDF name="passbolt_first_admin_username" label="First admin user for Passbolt." *No Special Characters* />
+#<UDF name="passbolt_first_admin_surname" label="Surname for your first admin user in Passbolt." *No Special Characters* />
+#<UDF name="passbolt_first_admin_email" label="Email address for your first admin user in Passbolt." example="user@domain.tld" />
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -34,6 +38,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  webuser: www-data
   passbolt_checksum_value: e1a2efad6a53aa874842a09073ca9ac5880a7e55ae4e4276c0ddc6e0ba4a4faeea9b89d0371eedbeceee1e11864ed544bcc9a553031fa4ff7cc6aa7bcf774ba5
 EOF
 
@@ -67,7 +72,22 @@ EOF
     echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
   else echo "No API token entered";
   fi
-  
+
+  if [[ -n ${PASSBOLT_FIRST_ADMIN_USERNAME} ]]; then
+    echo "passbolt_first_admin_username: ${PASSBOLT_FIRST_ADMIN_USERNAME}" >> ${group_vars};
+  else echo "No Passbolt first admin user entered";
+  fi
+
+  if [[ -n ${PASSBOLT_FIRST_ADMIN_SURNAME} ]]; then
+    echo "passbolt_first_admin_surname: ${PASSBOLT_FIRST_ADMIN_SURNAME}" >> ${group_vars};
+  else echo "No Passbolt first admin surname entered";
+  fi
+
+  if [[ -n ${PASSBOLT_FIRST_ADMIN_EMAIL} ]]; then
+    echo "passbolt_first_admin_email: ${PASSBOLT_FIRST_ADMIN_EMAIL}" >> ${group_vars};
+  else echo "No Passbolt first admin email entered";
+  fi
+
 }
 
 function run {
