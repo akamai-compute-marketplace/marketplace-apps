@@ -11,16 +11,16 @@
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
       
-    - name: generating passbolt_password
+    - name: generating gpg_key_passphrase
       set_fact:
-        passbolt_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+        gpg_key_passphrase: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
 
-    - name: writing passbolt_password to vars
+    - name: writing gpg_key_passphrase to vars
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          passbolt_password: {{ passbolt_password }}
+          gpg_key_passphrase: {{ gpg_key_passphrase }}
 
     - name: generating passbolt_db_admin_password
       set_fact:

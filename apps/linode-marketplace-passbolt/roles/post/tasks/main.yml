@@ -16,8 +16,8 @@
       Passbolt Database: passboltdb
       Passbolt Database Password: {{ passbolt_db_admin_password }}
       Mysql Root Password: {{ mysql_root_password }}
-      passbolt Login: admin
-      passbolt Password: {{ passbolt_password }}
+      Passbolt Login: admin
+      Passbolt GPG Key Passphrase: {{ gpg_key_passphrase }}
 
 - name: Copy passbolt config template to /etc/passbolt/passbolt.php
   template:
