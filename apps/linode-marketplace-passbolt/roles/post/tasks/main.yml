@@ -27,19 +27,19 @@
     group: www-data
     mode: '0440'
 
-    - name: Generate GPG key pair
-      command: gpg --batch --gen-key
-      args:
-        creates: /root/.gnupg/pubring.kbx
-      environment:
-        GNUPGHOME: /root/.gnupg
-      expect:
-        command: gpg --edit-key "{{ gpg_name }} <{{ gpg_email }}>"
-        responses:
-          - pattern: "GnuPG needs to construct a user ID to identify your key."
-            command: "N"
-          - pattern: "Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit?"
-            command: "O"
+- name: Generate GPG key pair
+  command: gpg --batch --gen-key
+  args:
+    creates: /root/.gnupg/pubring.kbx
+  environment:
+    GNUPGHOME: /root/.gnupg
+  expect:
+    command: gpg --edit-key "{{ gpg_name }} <{{ gpg_email }}>"
+    responses:
+      - pattern: "GnuPG needs to construct a user ID to identify your key."
+        command: "N"
+      - pattern: "Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit?"
+        command: "O"
     
 - name: Create GPG key generation batch file
   copy:
