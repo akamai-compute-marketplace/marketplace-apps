@@ -33,9 +33,9 @@
     content: |
       %echo Generating a GPG key with a passphrase
       Key-Type: RSA
-      Key-Length: 2048
+      Key-Length: 3072
       Subkey-Type: RSA
-      Subkey-Length: 2048
+      Subkey-Length: 3072
       Name-Real: {{ passbolt_first_admin_username }}
       Name-Comment: Ansible generated key
       Name-Email: {{ passbolt_first_admin_email }}
