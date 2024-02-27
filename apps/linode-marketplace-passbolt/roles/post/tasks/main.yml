@@ -36,9 +36,9 @@
       Key-Length: 2048
       Subkey-Type: RSA
       Subkey-Length: 2048
-      Name-Real: {{ gpg_name }}
+      Name-Real: {{ passbolt_first_admin_username }}
       Name-Comment: Ansible generated key
-      Name-Email: {{ gpg_email }}
+      Name-Email: {{ passbolt_first_admin_email }}
       Expire-Date: 0
       Passphrase: {{ gpg_key_passphrase }}
       %commit
@@ -50,26 +50,23 @@
   environment:
     GNUPGHOME: /root/.gnupg
 
-- name: Get GPG secret key
-  shell: gpg --list-secret-keys | grep sec
-  register: gpg_secret_keys_output
-  ignore_errors: yes
-  changed_when: False
+- name: Run gpg --list-secret-keys and save output to a temp file
+  shell: gpg --list-secret-keys > /tmp/secret-keys.txt
+  args:
+    executable: /bin/bash
 
-- name: Extract and save the secret key to a variable
+- name: Extract the key ID and save to a variable
+  shell: |
+    awk '/^sec/{getline; print $1}' /tmp/secret-keys.txt
+  register: gpg_key_id_output
+
+- name: Set the extracted key ID as a fact
   set_fact:
-    gpg_secret_key: "{{ gpg_secret_keys_output.stdout | regex_search('([A-F0-9]{40})') }}"
-  when: gpg_secret_keys_output.stdout is defined
+    gpg_secret_key: "{{ gpg_key_id_output.stdout }}"
 
-- name: Export GPG public key to serverkey.asc
-  shell: gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc
-  args:
-    executable: /bin/bash
-
-- name: Export GPG private key to serverkey_private.asc
-  shell: gpg --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc
-  args:
-    executable: /bin/bash
+- name: Display GPG secret key variable
+  debug:
+    msg: "The GPG secret key ID is: {{ gpg_secret_key }}"
 
 - name: Writing gpg_secret_key to group_vars/linode/vars
   lineinfile:
@@ -79,8 +76,21 @@
 - name: Update GPG fingerprint in passbolt.php
   ansible.builtin.replace:
     path: /etc/passbolt/passbolt.php
-    regexp: "'fingerprint' => '[A-F0-9]{40}',"
+    regexp: "'fingerprint' => '.*',"
     replace: "'fingerprint' => '{{ gpg_secret_key }}',"
+
+- name: Export GPG public key to serverkey.asc
+  shell: >
+    gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc
+  args:
+    executable: /bin/bash
+
+- name: Export GPG private key to serverkey_private.asc
+  shell: >
+    gpg --pinentry-mode loopback --passphrase "{{ gpg_key_passphrase }}" --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc
+  args:
+    executable: /bin/bash
+  no_log: true
 
 - name: Install Passbolt without admin user
   become: yes
