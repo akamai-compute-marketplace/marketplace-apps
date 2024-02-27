@@ -27,39 +27,28 @@
     group: www-data
     mode: '0440'
 
-- name: Generate GPG key pair
-  command: gpg --batch --gen-key
-  args:
-    creates: /root/.gnupg/pubring.kbx
-  environment:
-    GNUPGHOME: /root/.gnupg
-  expect:
-    command: gpg --edit-key "{{ gpg_name }} <{{ gpg_email }}>"
-    responses:
-      - pattern: "GnuPG needs to construct a user ID to identify your key."
-        command: "N"
-      - pattern: "Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit?"
-        command: "O"
-    
-- name: Create GPG key generation batch file
+- name: Create GPG key generation batch file with passphrase
   copy:
     dest: "/tmp/gpg_key_gen_batch"
     content: |
-      %echo Generating a basic OpenPGP key
+      %echo Generating a GPG key with a passphrase
       Key-Type: RSA
       Key-Length: 2048
       Subkey-Type: RSA
       Subkey-Length: 2048
-      Name-Real: {{ gpg_name}}
+      Name-Real: {{ gpg_name }}
       Name-Comment: Ansible generated key
       Name-Email: {{ gpg_email }}
       Expire-Date: 0
-      %no-protection
+      Passphrase: {{ gpg_key_passphrase }}
       %commit
-      %echo done
+      %echo Done
+  no_log: true
 
-- name: Generate GPG key non-interactively
+- name: Generate GPG key non-interactively with passphrase
   command: gpg --batch --generate-key /tmp/gpg_key_gen_batch
+  environment:
+    GNUPGHOME: /root/.gnupg
 
 - name: Get GPG secret key
   shell: gpg --list-secret-keys | grep sec
@@ -71,12 +60,6 @@
   set_fact:
     gpg_secret_key: "{{ gpg_secret_keys_output.stdout | regex_search('([A-F0-9]{40})') }}"
   when: gpg_secret_keys_output.stdout is defined
-  
-# - name: Ensure /etc/passbolt/gpg/ directory exists
-# ansible.builtin.file:
-#   path: /etc/passbolt/gpg/
-#   state: directory
-#   mode: '0770' 
 
 - name: Export GPG public key to serverkey.asc
   shell: gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc
