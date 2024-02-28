@@ -8,3 +8,7 @@
 - name: restarting solr
   shell:
     cmd: service solr restart
+    
+- name: configure solr
+   import_task: 
+     - solr-config.yml
