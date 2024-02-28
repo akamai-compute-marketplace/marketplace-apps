@@ -48,7 +48,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 691621,
+      "stackscript_id": 691620,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
         "disable_root": "No",
