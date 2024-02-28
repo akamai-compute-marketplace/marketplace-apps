@@ -82,7 +82,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 691621 \
+  --stackscript_id 691620 \
   --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}","disable_root": "No","user_name":"sudo_user","password":"sudo_user_password","pubkey":"ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer","token_password":"A_Valid_API_Token","subdomain":"examplesubdomain","domain":"domain.tld"}' \
   --region us-east \
   --type g6-standard-2 \
