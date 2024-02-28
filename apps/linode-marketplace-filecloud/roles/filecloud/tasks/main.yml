@@ -74,6 +74,6 @@
   debug:
     msg: "{{ output }}"
 - name: deleting login.txt
-  shell:
-    chdir: /tmp/
-    cmd: rm -rf login.txt
+  file:
+    path: /tmp/login.txt
+    state: absent
