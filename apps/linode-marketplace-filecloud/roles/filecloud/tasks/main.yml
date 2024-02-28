@@ -1,7 +1,10 @@
 # FileCloud installation
 - name: Adding Keys for MongoDB
-  shell:
-    cmd: curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
+  get_url:
+      url: https://pgp.mongodb.com/server-6.0.asc
+      dest: /etc/apt/trusted.gpg.d/mongodb-server-6.0.gpg.asc
+      mode: '0644'
+      force: true 
 - name: Adding Keys For FileCloud
   shell:
     cmd: curl -fsSL https://repo.filecloudlabs.com/static/pgp/filecloud.asc | sudo gpg -o /usr/share/keyrings/filecloud.gpg --dearmor
