@@ -2,7 +2,7 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-## Docker Settings
+## FileCloud Settings
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode">
