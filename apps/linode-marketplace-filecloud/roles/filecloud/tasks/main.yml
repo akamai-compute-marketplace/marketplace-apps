@@ -8,12 +8,10 @@
 - name: Adding Keys For FileCloud
   shell:
     cmd: curl -fsSL https://repo.filecloudlabs.com/static/pgp/filecloud.asc | sudo gpg -o /usr/share/keyrings/filecloud.gpg --dearmor
-- name: adding mongodb repo to apt sources file
-  lineinfile:
-    state: present
-    create: yes
-    path: /etc/apt/sources.list.d/mongodb-org-6.0.list
-    line: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
+- name: Add MongoDB repo
+  apt_repository:
+    filename: MongoDB
+    repo: 'deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse'
 - name: add filecloud repo to apt sources file
   lineinfile:
     state: present
