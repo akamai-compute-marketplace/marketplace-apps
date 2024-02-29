@@ -1,15 +1,15 @@
 ---  
     - name: generating linuxgsm user password
       set_fact:
-      linuxgsm_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+        linuxgsm_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
       no_log: true
 
     - name: writing linuxgsm user password to vars
       lineinfile:
-      insertafter: EOF
-      path: group_vars/linode/vars
-      line: | 
-        linuxgsm_password: {{ password }}
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          linuxgsm_password: {{ password }}
     
     - name: create linuxgsm user 
       ansible.builtin.user: 
