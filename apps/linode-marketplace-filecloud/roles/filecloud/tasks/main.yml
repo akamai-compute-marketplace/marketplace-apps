@@ -5,23 +5,28 @@
       dest: /etc/apt/trusted.gpg.d/mongodb-server-6.0.gpg.asc
       mode: '0644'
       force: true 
+
 - name: Adding Keys For FileCloud
   shell:
     cmd: curl -fsSL https://repo.filecloudlabs.com/static/pgp/filecloud.asc | sudo gpg -o /usr/share/keyrings/filecloud.gpg --dearmor
+
 - name: Add MongoDB repo
   apt_repository:
     filename: MongoDB
     repo: 'deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse'
+
 - name: add filecloud repo to apt sources file
   lineinfile:
     state: present
     create: yes
     path: /etc/apt/sources.list.d/filecloud.list
     line: "deb [ arch=amd64 signed-by=/usr/share/keyrings/filecloud.gpg ] https://repo.filecloudlabs.com/apt/ubuntu jammy/filecloud/23.232 main"
+
 - name: running apt-get update
   apt:
     update_cache: yes
     upgrade: yes
+
 - name: Installing the Apache and MongoDB servers.
   apt:
     name:
@@ -29,37 +34,45 @@
     - mongodb-org
     - pigz
     state: present
+
 - name: Installing PHP 8.2 and dependencies
   apt:
     name: php8.2*
     install_recommends: no
     state: present
+
 - name: Installing FileCloud! :)
   shell:
     cmd: ACCEPT_EULA=Y  apt-get install filecloud -y
+
 - name: grabbing private ip
   shell: 
     cmd: hostname -i
   register: private_ip
+
 - name: logging into filecloud
   shell:
     chdir: /tmp/
     cmd: curl -c login.txt --location --request POST 'http://{{ private_ip.stdout }}/admin/adminlogin?adminuser=admin&adminpassword=password'
+
 - name: getting value of tonidocloud-ah
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 2p
   register: tonidocloud_ah
+
 - name: getting value of tonidocloud-as
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 3p
   register: tonidocloud_as
+
 - name: getting value of x-xsrf-token
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 5p
   register: x_xsrf_token
+
 - name: configuring GEO IP
   shell: |
     curl --location 'http://{{ private_ip.stdout }}/admin/' \
@@ -70,9 +83,11 @@
     --data-urlencode 'param0=TONIDOCLOUD_GEOIP_ENABLED' \
     --data-urlencode 'value0=1'
   register: output
+
 - name: output of configuring GEO IP
   debug:
     msg: "{{ output }}"
+
 - name: deleting login.txt
   file:
     path: /tmp/login.txt

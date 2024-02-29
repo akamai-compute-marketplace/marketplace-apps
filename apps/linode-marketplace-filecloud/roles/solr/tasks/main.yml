@@ -2,9 +2,12 @@
 - name: installing solr
   shell:
     cmd: filecloudcp -s
+
 - name: deleting fccore
-  shell:
-    cmd: rm -rf /opt/solrfcdata/var/solr/data/fccore
+  file: 
+    path: /opt/solrfcdata/var/solr/data/fccore
+    state: absent
+
 - name: restarting solr
   shell:
     cmd: service solr restart

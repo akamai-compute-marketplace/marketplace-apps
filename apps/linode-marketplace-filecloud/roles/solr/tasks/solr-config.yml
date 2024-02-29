@@ -2,51 +2,62 @@
   file: 
     path: /opt/solrfcdata/var/solr/data/fccore
     state: absent
+
 - name: copying fcskel into dest
   copy:
     src: /var/www/html/thirdparty/overrides/solarium/Solarium/fcskel
     dest: /opt/solrfcdata/var/solr/data/
+
 - name: renaming fcskel to fccore
   shell:
     cmd: mv /opt/solrfcdata/var/solr/data/fcskel /opt/solrfcdata/var/solr/data/fccore
+
 - name: changing owner of fccore
   file:
     path: /opt/solrfcdata/var/solr/data/fccore
     owner: solr
     state: directory
     recurse: yes
+
 - name: grabbing private ip
   shell: 
     cmd: hostname -i
   register: private_ip
+
 - name: logging into filecloud
   shell:
     chdir: /tmp/
     cmd: curl -c login.txt --location --request POST 'http://{{ private_ip.stdout }}/admin/adminlogin?adminuser=admin&adminpassword=password'
+
 - name: getting value of tonidocloud-ah
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 2p
   register: tonidocloud_ah
+
 - name: getting value of tonidocloud-as
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 3p
   register: tonidocloud_as
+
 - name: getting value of x-xsrf-token
   shell:
     chdir: /tmp/
     cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 5p
   register: x_xsrf_token
+
 - name: configuring solr
   shell: |
       curl --location --request POST 'http://{{ private_ip.stdout }}/admin/confcreate' \
       --header 'Cookie: X-XSRF-TOKEN={{ x_xsrf_token.stdout }}; X-XSRF-TOKEN-admin={{ x_xsrf_token.stdout }}; tonidocloud-ah={{ tonidocloud_ah.stdout }}; tonidocloud-as={{ tonidocloud_as.stdout }}; tonidocloud-au=admin'
   register: output
+
 - name: output of configuring solr
   debug:
     msg: "{{ output }}"
+
 - name: deleting login.txt
-  shell:
-    chdir: /tmp/
-    cmd: rm -rf login.txt
+  file:
+    path: /tmp/login.txt
+    state: absent
