@@ -20,12 +20,10 @@
     - token_password is defined
     - default_dns is not defined
 
-# sets customer supplied ssh pubkey to limited user
+# sets account SSH pubkey to limited user
 - name: set ssh pubkey
   import_role:
       name: sshkey
-  when: 
-    - pubkey is defined
 
 # disable root login w/wo pubkey
 - name: secure ssh

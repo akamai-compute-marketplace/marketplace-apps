@@ -1,0 +1,14 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      sudo username: {{ username }}
+      sudo password: {{ password }}
