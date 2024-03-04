@@ -53,7 +53,7 @@ return [
             // Main server key.
             'serverKey' => [
                 // Server private key fingerprint.
-                'fingerprint' => '9FF8227184E24AAF57CE82CE360DFD864D837CDF',
+                'fingerprint' => '{{ gpg_secret_key }}',
                 'public' => CONFIG . DS . 'gpg' . DS . 'serverkey.asc',
                 'private' => CONFIG . DS . 'gpg' . DS . 'serverkey_private.asc',
             ],
