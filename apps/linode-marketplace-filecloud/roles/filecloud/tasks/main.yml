@@ -16,7 +16,7 @@
       url: https://repo.filecloudlabs.com/static/pgp/filecloud.asc
       dest: /usr/share/keyrings/filecloud.asc
       mode: '0644'
-      force: tru
+      force: true
 
 - name: adding filecloud repo
   apt_repository:
