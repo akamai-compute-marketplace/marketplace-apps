@@ -2,25 +2,26 @@
 - name: Adding Keys for MongoDB
   get_url:
       url: https://pgp.mongodb.com/server-6.0.asc
-      dest: /etc/apt/trusted.gpg.d/mongodb-server-6.0.gpg.asc
+      dest: /usr/share/keyrings/mongodb-server-6.0.asc
       mode: '0644'
       force: true 
 
-- name: Adding Keys For FileCloud
-  shell:
-    cmd: curl -fsSL https://repo.filecloudlabs.com/static/pgp/filecloud.asc | sudo gpg -o /usr/share/keyrings/filecloud.gpg --dearmor
-
-- name: Add MongoDB repo
+- name: adding mongodb repo
   apt_repository:
-    filename: MongoDB
-    repo: 'deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse'
-
-- name: add filecloud repo to apt sources file
-  lineinfile:
+    repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.asc ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
     state: present
-    create: yes
-    path: /etc/apt/sources.list.d/filecloud.list
-    line: "deb [ arch=amd64 signed-by=/usr/share/keyrings/filecloud.gpg ] https://repo.filecloudlabs.com/apt/ubuntu jammy/filecloud/23.232 main"
+
+- name: Adding Keys for FileCloud
+  get_url:
+      url: https://repo.filecloudlabs.com/static/pgp/filecloud.asc
+      dest: /usr/share/keyrings/filecloud.asc
+      mode: '0644'
+      force: tru
+
+- name: adding filecloud repo
+  apt_repository:
+    repo: "deb [ arch=amd64 signed-by=/usr/share/keyrings/filecloud.asc ] https://repo.filecloudlabs.com/apt/ubuntu jammy/filecloud/23.232 main"
+    state: present
 
 - name: running apt-get update
   apt:
@@ -42,8 +43,9 @@
     state: present
 
 - name: Installing FileCloud! :)
-  shell:
-    cmd: ACCEPT_EULA=Y  apt-get install filecloud -y
+  apt:
+    name: filecloud
+    state: present
 
 - name: grabbing private ip
   shell: 
