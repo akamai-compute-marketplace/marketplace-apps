@@ -1,0 +1,18 @@
+---
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing sudo creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      LinuxGSM User: linuxgsm
+      LinuxGSM User Password: {{ linuxgsm_password }}
