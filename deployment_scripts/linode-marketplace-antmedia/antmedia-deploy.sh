@@ -14,7 +14,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## antmedia setup
 #<UDF name="soa_email_address" label="Email address (for the Ant Media Server Login & SSL Generation)">
-###<UDF name="version" label="Would you like the Community Version or Enterprise Version of Ant Media?" oneOf="Community,Enterprise" default="Community">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"

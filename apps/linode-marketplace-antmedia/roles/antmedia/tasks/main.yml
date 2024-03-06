@@ -6,14 +6,6 @@
     ant_media_install_script_url: 'https://raw.githubusercontent.com/ant-media/Scripts/master/install_ant-media-server.sh'
     ant_media_zip_remote_url: 'https://antmedia.io/download/latest.zip'
     ant_media_zip_local_path: '/tmp/ams.zip'
-# when: version == 'Community'
-
-#- name: set facts for Enterprise edition & SSL
-#  set_fact:
-#    ant_media_install_script_url: 'https://raw.githubusercontent.com/ant-media/Scripts/master/install_ant-media-server.sh'
-#    ant_media_zip_remote_url: 'https://antmedia.io/linode/antmedia_2.5.3.zip'
-#    ant_media_zip_local_path: '/tmp/ams.zip'
-#  when: version == 'Enterprise'
 
 - name: download install_ant-media-server.sh script
   get_url:
