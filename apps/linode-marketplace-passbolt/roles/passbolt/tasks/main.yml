@@ -88,7 +88,14 @@
   ansible.builtin.lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^mynetworks ='
-    line: 'mynetworks = 192.168.0.0/16, 172.16.0.0/12, {{ ansible_default_ipv4.address }}/32'
+    line: 'mynetworks = 127.0.0.0/8'
+
+- name: set smtpd_recipient_restrictions in /etc/postfix/main.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    line: "smtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination"
+    create: no
+    state: present
   notify: restart postfix
 
 - name: Update /etc/hosts file
