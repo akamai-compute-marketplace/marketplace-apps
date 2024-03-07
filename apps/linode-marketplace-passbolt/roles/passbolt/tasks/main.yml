@@ -5,10 +5,6 @@
   get_url:
     url: "https://download.passbolt.com/ce/installer/passbolt-repo-setup.ce.sh"
     dest: "/tmp/passbolt-repo-setup.ce.sh"
-
-- name: Make Passbolt repository setup script executable
-  file:
-    path: /tmp/passbolt-repo-setup.ce.sh
     mode: "0755"
 
 - name: Download Passbolt SHA512 checksum file
@@ -23,18 +19,16 @@
     get_checksum: yes
   register: script_checksum
 
-- name: Conditionally execute the script if checksum matches
-  ansible.builtin.shell:
-    cmd: sudo bash /tmp/passbolt-repo-setup.ce.sh
-  when: script_checksum.stat.checksum == passbolt_checksum_value
-  register: script_execution
-  ignore_errors: yes
+- name: Verify SHA-512 checksum of the setup script
+  ansible.builtin.assert:
+    that:
+      - script_checksum.stat.checksum == passbolt_checksum_value
+    fail_msg: "Checksum verification failed for /tmp/passbolt-repo-setup.ce.sh"
+    success_msg: "Checksum verification passed for /tmp/passbolt-repo-setup.ce.sh"
 
-- name: Remove setup script if checksum verification fails
-  ansible.builtin.file:
-    path: /tmp/passbolt-repo-setup.ce.sh
-    state: absent
-  when: script_checksum.stat.checksum != passbolt_checksum_value
+- name: Execute the passbolt setup script
+  ansible.builtin.shell:
+    cmd: bash /tmp/passbolt-repo-setup.ce.sh
 
 - name: Run passbolt-repo-setup.ce.sh script
   command: "/tmp/passbolt-repo-setup.ce.sh"
@@ -132,23 +126,20 @@
   args:
     executable: /bin/bash
 
-- name: Extract the key ID and save to a variable
-  shell: |
-    awk '/^sec/{getline; print $1}' /tmp/secret-keys.txt
-  register: gpg_key_id_output
+- name: Slurp the content of secret-keys.txt
+  ansible.builtin.slurp:
+    src: /tmp/secret-keys.txt
+  register: secret_keys_content
+
+- name: Extract the key ID and set as a fact
+  set_fact:
+    gpg_secret_key: >-
+      {{ (secret_keys_content.content | b64decode) | 
+         regex_search('(sec\\s+rsa3072\\s+\\S+\\s+\\[SCEA]\\s+\\n\\s+)([A-F0-9]{40})', '\\2') }}
 
 - name: Set the extracted key ID as a fact
   set_fact:
     gpg_secret_key: "{{ gpg_key_id_output.stdout }}"
-
-- name: Display GPG secret key variable
-  debug:
-    msg: "The GPG secret key ID is: {{ gpg_secret_key }}"
-
-- name: Writing gpg_secret_key to group_vars/linode/vars
-  lineinfile:
-    path: group_vars/linode/vars
-    line: "gpg_secret_key: '{{ gpg_secret_key }}'"
 
 - name: Copy passbolt config template to /etc/passbolt/passbolt.php
   template:
@@ -197,23 +188,20 @@
   set_fact:
     passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('https://' + _domain | regex_escape + '/setup/start/[a-z0-9-]+/[a-z0-9-]+') }}"
 
-- name: Writing passbolt_admin_registration_url to group_vars/linode/vars
-  lineinfile:
-    path: group_vars/linode/vars
-    line: "passbolt_admin_registration_url: '{{ passbolt_admin_registration_url }}'"
-
-- name: Set ownership and permissions for serverkey.asc
+- name: Set ownership and permissions for GPG keys
   ansible.builtin.file:
-    path: /etc/passbolt/gpg/serverkey.asc
+    path: "/etc/passbolt/gpg/{{ item }}"
     owner: www-data
     group: www-data
-    mode: '0440'  
+    mode: '0440'
     state: file
+  loop:
+    - serverkey.asc
+    - serverkey_private.asc
 
-- name: Set ownership and permissions for serverkey_private.asc
-  ansible.builtin.file:
-    path: /etc/passbolt/gpg/serverkey_private.asc
-    owner: www-data
-    group: www-data
-    mode: '0440'  
-    state: file
+# For password recovery
+- name: Update email configuration in Passbolt's app.php
+  ansible.builtin.replace:
+    path: /etc/passbolt/app.php
+    regexp: "env\('EMAIL_DEFAULT_FROM', '[^']+'\) => env\('EMAIL_DEFAULT_FROM_NAME', '[^']+'\)"
+    replace: "env('EMAIL_DEFAULT_FROM', 'root@{{ _domain }}') => env('EMAIL_DEFAULT_FROM_NAME', 'root')"
