@@ -191,6 +191,12 @@
   shell: "/usr/share/php/passbolt/bin/cake passbolt register_user -u {{ passbolt_first_admin_email }} -f {{ passbolt_first_admin_username }} -l {{ passbolt_first_admin_surname }} -r admin"
   args:
     executable: /bin/bash
+  register: admin_registration_output
+
+- name: Writing admin_registration_output to group_vars/linode/vars
+  lineinfile:
+    path: group_vars/linode/vars
+    line: "admin_registration_output: '{{ admin_registration_output }}'"
 
 - name: Set ownership and permissions for serverkey.asc
   ansible.builtin.file:
