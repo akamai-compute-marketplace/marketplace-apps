@@ -203,5 +203,5 @@
 - name: Update email configuration in Passbolt's app.php
   ansible.builtin.replace:
     path: /etc/passbolt/app.php
-    regexp: "env\('EMAIL_DEFAULT_FROM', '[^']+'\) => env\('EMAIL_DEFAULT_FROM_NAME', '[^']+'\)"
+    regexp: 'env\(''EMAIL_DEFAULT_FROM'', ''[^'']+''\) => env\(''EMAIL_DEFAULT_FROM_NAME'', ''[^'']+''\)'
     replace: "env('EMAIL_DEFAULT_FROM', 'root@{{ _domain }}') => env('EMAIL_DEFAULT_FROM_NAME', 'root')"
