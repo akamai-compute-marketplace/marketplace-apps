@@ -193,10 +193,14 @@
     executable: /bin/bash
   register: admin_registration_output
 
-- name: Writing admin_registration_output to group_vars/linode/vars
+- name: Extract registration URL
+  set_fact:
+    passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('(https://www\\.example\\.com/setup/start/[a-z0-9-]+/[a-z0-9-]+)', '\\1') }}"
+
+- name: Writing passbolt_admin_registration_url to group_vars/linode/vars
   lineinfile:
     path: group_vars/linode/vars
-    line: "admin_registration_output: '{{ admin_registration_output }}'"
+    line: "passbolt_admin_registration_url: '{{ passbolt_admin_registration_url }}'"
 
 - name: Set ownership and permissions for serverkey.asc
   ansible.builtin.file:
