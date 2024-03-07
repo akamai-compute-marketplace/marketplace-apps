@@ -195,7 +195,7 @@
 
 - name: Extract registration URL
   set_fact:
-    passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('(https://www\\.example\\.com/setup/start/[a-z0-9-]+/[a-z0-9-]+)', '\\1') }}"
+    passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('(https://{{ _domain }}/setup/start/[a-z0-9-]+/[a-z0-9-]+)', '\\1') }}"
 
 - name: Writing passbolt_admin_registration_url to group_vars/linode/vars
   lineinfile:
