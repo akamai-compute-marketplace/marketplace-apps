@@ -133,13 +133,7 @@
 
 - name: Extract the key ID and set as a fact
   set_fact:
-    gpg_secret_key: >-
-      {{ (secret_keys_content.content | b64decode) | 
-         regex_search('([A-F0-9]{40})') }}
-
-- name: Set the extracted key ID as a fact
-  set_fact:
-    gpg_secret_key: "{{ gpg_key_id_output.stdout }}"
+    gpg_secret_key: "{{ (secret_keys_content.content | b64decode) | regex_search('[A-F0-9]{40}') }}"
 
 - name: Copy passbolt config template to /etc/passbolt/passbolt.php
   template:
