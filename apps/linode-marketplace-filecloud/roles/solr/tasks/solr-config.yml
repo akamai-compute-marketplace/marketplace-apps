@@ -19,45 +19,36 @@
     state: directory
     recurse: yes
 
-- name: grabbing private ip
-  shell: 
-    cmd: hostname -i
-  register: private_ip
-
 - name: logging into filecloud
-  shell:
-    chdir: /tmp/
-    cmd: curl -c login.txt --location --request POST 'http://{{ private_ip.stdout }}/admin/adminlogin?adminuser=admin&adminpassword=password'
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/adminlogin?adminuser=admin&adminpassword=password
+    method: POST
+    body_format: form-urlencoded
+    status_code: 200
+    force_basic_auth: yes
+  register: login_cookies
 
-- name: getting value of tonidocloud-ah
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 2p
-  register: tonidocloud_ah
+- name: saving cookies to variable
+  set_fact:
+    login: "{{ login_cookies.cookies }}"
 
-- name: getting value of tonidocloud-as
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 3p
-  register: tonidocloud_as
+- name: extracting tonidocloud_ah value
+  set_fact:
+    tonidocloud_ah: "{{ login['tonidocloud-ah'] }}"
 
-- name: getting value of x-xsrf-token
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 5p
-  register: x_xsrf_token
+- name: extracting tonidocloud_as value
+  set_fact:
+    tonidocloud_as: "{{ login['tonidocloud-as'] }}"
 
-- name: configuring solr
-  shell: |
-      curl --location --request POST 'http://{{ private_ip.stdout }}/admin/confcreate' \
-      --header 'Cookie: X-XSRF-TOKEN={{ x_xsrf_token.stdout }}; X-XSRF-TOKEN-admin={{ x_xsrf_token.stdout }}; tonidocloud-ah={{ tonidocloud_ah.stdout }}; tonidocloud-as={{ tonidocloud_as.stdout }}; tonidocloud-au=admin'
-  register: output
+- name: extracting x_xsrf_token value
+  set_fact:
+    x_xsrf_token: "{{ login['X-XSRF-TOKEN'] }}"
 
-- name: output of configuring solr
-  debug:
-    msg: "{{ output }}"
-
-- name: deleting login.txt
-  file:
-    path: /tmp/login.txt
-    state: absent
+- name: Configuring Solr
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/confcreate
+    method: POST
+    headers:
+      Cookie: X-XSRF-TOKEN={{ x_xsrf_token }}; X-XSRF-TOKEN-admin={{ x_xsrf_token }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-au=admin
+    body_format: form-urlencoded
+    force_basic_auth: yes

@@ -47,50 +47,41 @@
     name: filecloud
     state: present
 
-- name: grabbing private ip
-  shell: 
-    cmd: hostname -i
-  register: private_ip
-
 - name: logging into filecloud
-  shell:
-    chdir: /tmp/
-    cmd: curl -c login.txt --location --request POST 'http://{{ private_ip.stdout }}/admin/adminlogin?adminuser=admin&adminpassword=password'
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/adminlogin?adminuser=admin&adminpassword=password
+    method: POST
+    body_format: form-urlencoded
+    status_code: 200
+    force_basic_auth: yes
+  register: login_cookies
 
-- name: getting value of tonidocloud-ah
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 2p
-  register: tonidocloud_ah
+- name: saving cookies to variable
+  set_fact:
+    login: "{{ login_cookies.cookies }}"
 
-- name: getting value of tonidocloud-as
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 3p
-  register: tonidocloud_as
+- name: extracting tonidocloud_ah value
+  set_fact:
+    tonidocloud_ah: "{{ login['tonidocloud-ah'] }}"
 
-- name: getting value of x-xsrf-token
-  shell:
-    chdir: /tmp/
-    cmd: awk 'NR > 3 {print $7}' login.txt | sed -n 5p
-  register: x_xsrf_token
+- name: extracting tonidocloud_as value
+  set_fact:
+    tonidocloud_as: "{{ login['tonidocloud-as'] }}"
+
+- name: extracting x_xsrf_token value
+  set_fact:
+    x_xsrf_token: "{{ login['X-XSRF-TOKEN'] }}"
 
 - name: configuring GEO IP
-  shell: |
-    curl --location 'http://{{ private_ip.stdout }}/admin/' \
-    --header 'Content-type: application/x-www-form-urlencoded' \
-    --header 'Cookie: X-XSRF-TOKEN-admin={{ x_xsrf_token.stdout }}; X-XSRF-TOKEN={{ x_xsrf_token.stdout }}; tonidocloud-au=admin; tonidocloud-as={{ tonidocloud_as.stdout }}; tonidocloud-ah={{ tonidocloud_ah.stdout }}; tonidocloud-ah={{ tonidocloud_ah.stdout }}; tonidocloud-as={{ tonidocloud_as.stdout }}; tonidocloud-au=admin' \
-    --data-urlencode 'op=setconfigsetting' \
-    --data-urlencode 'count=1' \
-    --data-urlencode 'param0=TONIDOCLOUD_GEOIP_ENABLED' \
-    --data-urlencode 'value0=1'
-  register: output
-
-- name: output of configuring GEO IP
-  debug:
-    msg: "{{ output }}"
-
-- name: deleting login.txt
-  file:
-    path: /tmp/login.txt
-    state: absent
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/
+    method: POST
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      Cookie: X-XSRF-TOKEN-admin={{ x_xsrf_token }}; X-XSRF-TOKEN={{ x_xsrf_token }}; tonidocloud-au=admin; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-au=admin
+    body_format: form-urlencoded
+    body:
+      op: "setconfigsetting"
+      count: "1"
+      param0: "TONIDOCLOUD_GEOIP_ENABLED"
+      value0: "1"
