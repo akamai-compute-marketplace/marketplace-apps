@@ -1,0 +1,25 @@
+---
+ # cloudron tasks as block
+  - name: Install Cloudron, handle status 1
+    block:
+    - name: download Cloudron
+      ansible.builtin.get_url: 
+        url: https://cloudron.io/cloudron-setup 
+        dest: /tmp/cloudron-setup 
+
+    - name: set cloudron executable 
+      ansible.builtin.file: 
+        path: /tmp/cloudron-setup
+        mode: 0755
+    
+    - name: run Cloudron installer
+      ansible.builtin.command: 
+        chdir: /tmp
+        cmd: ./cloudron-setup --provider linode-mp
+      register: result
+    rescue: 
+    - name: print cloudron msg
+      when: '"After reboot" in result.stdout'
+      debug: 
+        msg: '{{ result.stdout }}'
+

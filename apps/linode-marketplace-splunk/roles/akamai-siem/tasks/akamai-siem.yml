@@ -1,0 +1,86 @@
+---
+# akamai-siem
+
+- name: install default-jre package
+  apt:
+    name: default-jre
+    state: present
+
+- name: install splunksecrets pip package
+  pip:
+    name: splunksecrets==1.0.0
+    state: present
+
+# secrets
+
+- name: encypting access token
+  command:
+    cmd: splunksecrets splunk-encrypt -S /opt/splunk/etc/auth/splunk.secret --password '{{ siem_access_token }}'
+  register: hash_access_token
+
+- name: encypting client token
+  command:
+    cmd: splunksecrets splunk-encrypt -S /opt/splunk/etc/auth/splunk.secret --password '{{ siem_client_token }}'
+  register: hash_client_token
+
+- name: encypting client secret token
+  command:
+    cmd: splunksecrets splunk-encrypt -S /opt/splunk/etc/auth/splunk.secret --password '{{ siem_client_secret }}'
+  register: hash_client_secret  
+
+- name: setting password hash variables
+  set_fact:
+    hash_access_token: "{{ hash_access_token.stdout_lines[0] }}"
+    hash_client_token: "{{ hash_access_token.stdout_lines[0] }}"
+    hash_client_secret: "{{ hash_client_secret.stdout_lines[0] }}"
+
+- name: unarchiving akamai-siem tarball
+  unarchive:
+    src: 'files/akamai-siem-integration-1_4_19.tgz'
+    dest: '/opt/splunk/etc/apps'
+    owner: splunk
+    group: splunk
+    mode: 0755
+
+- name: creating local directory to configure inputs
+  file:
+    path: '/opt/splunk/etc/apps/TA-Akamai_SIEM/local'
+    state: directory
+    mode: 0755
+    owner: splunk
+    group: splunk  
+
+- name: dropping inputs and password templates
+  template:
+    src: "templates/{{ item.src }}"
+    dest: "/opt/splunk/etc/apps/TA-Akamai_SIEM/local/{{ item.dest }}"
+    owner: splunk
+    group: splunk
+    mode: 0644
+  loop:
+    - { src: 'inputs.conf.j2', dest: 'inputs.conf'}
+    - { src: 'passwords.conf.j2', dest: 'passwords.conf'}
+
+- name: enabing akamai-siem application
+  lineinfile:
+    path: '/opt/splunk/etc/apps/TA-Akamai_SIEM/local/app.conf'
+    create: true
+    owner: splunk
+    group: splunk
+    mode: 0644
+    line: |
+      [install]
+      state = enabled
+
+- name: updating akamai-siem directory permissions
+  file:
+    path: '/opt/splunk/etc/apps/TA-Akamai_SIEM'
+    state: directory
+    recurse: yes
+    owner: splunk
+    group: splunk
+
+- name: restart Splunkd service
+  systemd:
+    name: Splunkd.service
+    state: restarted
