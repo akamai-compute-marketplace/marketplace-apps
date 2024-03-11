@@ -30,6 +30,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})
 EOF
   if [[ -n ${PUBKEY} ]]; then
     echo "pubkey: ${PUBKEY}" >> ${group_vars};
