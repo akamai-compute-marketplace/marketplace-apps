@@ -9,7 +9,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 ## Domain Settings 
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your WordPress server's DNS records" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your Wazuh server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
@@ -34,7 +34,6 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
