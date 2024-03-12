@@ -15,6 +15,10 @@
   become: true
   #become_user: "{{ username }}"
 
+- name: enabling virtual env
+  set_fact:
+    enable_venv: "source /var/www/django_app/djangoenv/bin/activate"
+
 # Postgres
 - name: Configure PostgreSQL
   postgresql_db:
@@ -96,7 +100,7 @@
 
 - name: Start Django project
   shell:
-    cmd: 'django-admin startproject django_sample'
+    cmd: '{{ enable_venv }} && django-admin startproject django_sample'
   args:
     executable: /bin/bash
     chdir: '/var/www/django_app'
@@ -113,7 +117,7 @@
 - name: copy settings template
   template:
     src: templates/settings.py.j2
-    dest: '/var/www/django_app/django_sample/django_same/settings.py'
+    dest: '/var/www/django_app/django_sample/django_sample/settings.py'
     force: yes
   become: true  
   become_user: "{{ username }}"
@@ -231,7 +235,7 @@
 #    #exec_venv: "python3 manage.py collectstatic --noinput"
 
 - name: Collect static files
-  command: "python manage.py collectstatic --noinput"
+  command: "{{ enable_venv }} && python manage.py collectstatic --noinput"
   args:
     chdir: "/var/www/django_app/django_sample"
   become: true
@@ -315,6 +319,3 @@
   systemd:
     name: nginx
     state: started
-
-
-

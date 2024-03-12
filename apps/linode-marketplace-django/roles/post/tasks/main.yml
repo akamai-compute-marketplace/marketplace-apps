@@ -5,15 +5,11 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing harbor creds into file
+- name: writing django creds into file
   copy:
     dest: /root/.credentials
     mode: '0600'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Harbor user: admin
-      Harbor admin password: {{ harbor_admin_pass }} 
-
-
 
