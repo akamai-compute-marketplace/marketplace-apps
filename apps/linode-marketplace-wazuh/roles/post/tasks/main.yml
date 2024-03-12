@@ -13,4 +13,3 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
       wazuh Login: admin
-      wazuh Password: {{ wazuh_password }}

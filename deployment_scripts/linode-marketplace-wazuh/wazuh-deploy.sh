@@ -2,12 +2,14 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-# #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+
 ## Linode/SSH Security Settings
 #<UDF name="username" label="The limited sudo user to be created for the Linode" default="">
 #<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
 #<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+
 ## Domain Settings 
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Wazuh server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
@@ -34,6 +36,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

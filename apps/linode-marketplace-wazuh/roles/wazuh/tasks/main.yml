@@ -32,7 +32,8 @@
   ansible.builtin.get_url:
     url: https://packages.wazuh.com/4.7/wazuh-install.sh
     dest: /tmp/wazuh-install.sh
-    mode: '0644'
+    mode: '0755'
+  notify: stop nginx service
 
 - name: Install Wazuh
   ansible.builtin.shell:
@@ -44,9 +45,15 @@
     src: /tmp/wazuh-install-files.tar
     dest: /tmp/
 
-- name: Extract and append wazuh-passwords.txt to .deployment-secrets.txt
+- name: Extract wazuh-passwords.txt from the archive
+  ansible.builtin.unarchive:
+    src: /tmp/wazuh-install-files.tar
+    dest: /tmp/
+    remote_src: yes
+
+- name: Append wazuh-passwords.txt to .deployment-secrets.txt
   ansible.builtin.shell:
-    cmd: "tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt >> /tmp/.deployment-secrets.txt"
+    cmd: cat /wazuh-install-files/wazuh-passwords.txt >> .deployment-secrets.txt
     chdir: /tmp
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
