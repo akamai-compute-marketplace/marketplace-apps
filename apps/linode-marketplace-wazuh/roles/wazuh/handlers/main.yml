@@ -1,0 +1,6 @@
+# wazuh handlers
+  - name: restart wazuh dashboard
+    systemd:
+      name: wazuh-dashboard
+      state: restarted
+      enabled: yes
