@@ -237,7 +237,9 @@
 #    #exec_venv: "python3 manage.py collectstatic --noinput"
 
 - name: collect static files
-  command: "{{ enable_venv }} && python manage.py collectstatic --noinput"
+  shell: 
+    cmd: "{{ enable_venv }} && python manage.py collectstatic --noinput"
+    executable: /bin/bash
   args:
     chdir: "/var/www/django_app/django_sample"
   become: true
