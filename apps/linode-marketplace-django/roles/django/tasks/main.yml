@@ -1,6 +1,6 @@
 ---
  # django
-- name: Install required packages
+- name: install required packages
   apt:
     name: "{{ item }}"
     state: present
@@ -20,14 +20,14 @@
     enable_venv: "source /var/www/django_app/djangoenv/bin/activate"
 
 # Postgres
-- name: Configure PostgreSQL
+- name: configure PostgreSQL
   postgresql_db:
     name: django
     state: present
   become: true
   become_user: postgres
 
-- name: Create PostgreSQL user
+- name: create PostgreSQL user
   postgresql_user:
     name: django
     password: "{{ postgres_db_pass }}"
@@ -37,7 +37,7 @@
   become_user: postgres
 
 # https://docs.djangoproject.com/en/5.0/ref/databases/#optimizing-postgresql-s-configuration
-- name: Set client_encoding for django
+- name: set client_encoding for django
   postgresql_query:
     db: django
     login_user: postgres
@@ -47,7 +47,7 @@
   become: true
   become_user: postgres
 
-- name: Set default_transaction_isolation for django
+- name: set default_transaction_isolation for django
   postgresql_query:
     db: django
     login_user: postgres
@@ -56,7 +56,7 @@
   become: true
   become_user: postgres
 
-- name: Set timezone for django
+- name: set timezone for django
   postgresql_query:
     db: django
     login_user: postgres
@@ -66,28 +66,28 @@
   become: true
   become_user: postgres
 
-- name: Create project directory
+- name: create project directory
   file:
     path: '/var/www/django_app'
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
 
-- name: Create and activate virtual environment
+- name: create and activate virtual environment
   command: python3 -m venv djangoenv
   args:
     chdir: '/var/www/django_app'
   become: true
   become_user: "{{ username }}"
 
-- name: Activate virtual environment
-  shell:
-    cmd: "source /var/www/django_app/djangoenv/bin/activate"
-  args:
-    executable: /bin/bash
-  become_user: "{{ username }}"
+#- name: activate virtual environment
+#  shell:
+#    cmd: "source /var/www/django_app/djangoenv/bin/activate"
+#  args:
+#    executable: /bin/bash
+#  become_user: "{{ username }}"
 
-- name: Install Django and Gunicorn
+- name: install Django and Gunicorn
   pip:
     name: "{{ item }}"
     virtualenv: /var/www/django_app/djangoenv
@@ -98,7 +98,7 @@
   become: true
   become_user: "{{ username }}"
 
-- name: Start Django project
+- name: start django project
   shell:
     cmd: '{{ enable_venv }} && django-admin startproject django_sample'
   args:
@@ -122,7 +122,7 @@
   become: true  
   become_user: "{{ username }}"
 
-- name: Generate a new SECRET_KEY
+- name: generate a new SECRET_KEY
   command: 'django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
   register: new_secret_key
 
@@ -144,7 +144,7 @@
 #  become_user: "{{ username }}"
 #  register: new_secret_key
 
-- name: Replace SECRET_KEY line in Django settings
+- name: replace SECRET_KEY line in Django settings
   lineinfile:
     path: /var/www/django_app/django_sample/django_sample/settings.py
     regexp: '^SECRET_KEY = '
@@ -182,7 +182,7 @@
 #  become: true
 #  become_user: "{{ username }}"
 
-- name: Create an initial superuser
+- name: create an initial superuser
   community.general.django_manage:
     command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
     virtualenv: '/var/www/django_app/djangoenv'
@@ -205,11 +205,13 @@
 
 - name: set django admin password
   shell:
-    cmd: ./manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+    cmd: | 
+      {{ enable_venv }}  && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
     executable: /bin/bash
     chdir: '/var/www/django_app/django_sample'
   become: true
   become_user: "{{ username }}"
+  no_log: true
 
 #- name: set django admin password
 #  community.general.django_manage:
@@ -234,7 +236,7 @@
 #    exec_venv: "source /var/www/django_app/djangoenv/bin/activate"
 #    #exec_venv: "python3 manage.py collectstatic --noinput"
 
-- name: Collect static files
+- name: collect static files
   command: "{{ enable_venv }} && python manage.py collectstatic --noinput"
   args:
     chdir: "/var/www/django_app/django_sample"
