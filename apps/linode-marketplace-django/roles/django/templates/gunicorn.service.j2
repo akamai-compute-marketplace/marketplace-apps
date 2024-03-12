@@ -11,6 +11,7 @@ ExecStart=/var/www/django_app/djangoenv/bin/gunicorn \
           --access-logfile - \
           --workers 3 \
           --bind unix:/run/gunicorn.sock \
+          --chdir /var/www/django_app/django_sample \
           django_sample.wsgi:application
 
 [Install]

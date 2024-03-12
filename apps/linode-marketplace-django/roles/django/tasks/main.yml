@@ -66,8 +66,8 @@
   file:
     path: '/var/www/django_app'
     state: directory
-    owner: holden
-    group: holden
+    owner: "{{ username }}"
+    group: "{{ username }}"
 
 - name: Create and activate virtual environment
   command: python3 -m venv djangoenv
@@ -101,19 +101,19 @@
     executable: /bin/bash
     chdir: '/var/www/django_app'
   become: true
-  #become_user: "{{ username }}"
+  become_user: "{{ username }}"
 
 - name: set ownership for django_app
   file:
     path: '/var/www/django_app'
-    owner: holden
-    group: holden
+    owner: "{{ username }}"
+    group: "{{ username }}"
     recurse: yes
 
 - name: copy settings template
   template:
     src: templates/settings.py.j2
-    dest: '/var/www/django_app/django_sample/settings.py'
+    dest: '/var/www/django_app/django_sample/django_same/settings.py'
     force: yes
   become: true  
   become_user: "{{ username }}"
@@ -142,7 +142,7 @@
 
 - name: Replace SECRET_KEY line in Django settings
   lineinfile:
-    path: /var/www/django_app/django_sample/settings.py
+    path: /var/www/django_app/django_sample/django_sample/settings.py
     regexp: '^SECRET_KEY = '
     line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
   become: true
@@ -205,7 +205,7 @@
     executable: /bin/bash
     chdir: '/var/www/django_app/django_sample'
   become: true
-    #  become_user: "{{ username }}"
+  become_user: "{{ username }}"
 
 #- name: set django admin password
 #  community.general.django_manage:
@@ -225,12 +225,17 @@
 #  become: true
 #  become_user: "{{ username }}" 
 
+#- name: Calling the env
+#  set_fact:
+#    exec_venv: "source /var/www/django_app/djangoenv/bin/activate"
+#    #exec_venv: "python3 manage.py collectstatic --noinput"
+
 - name: Collect static files
   command: "python manage.py collectstatic --noinput"
   args:
     chdir: "/var/www/django_app/django_sample"
   become: true
-  #become_user: "{{ username }}"
+  become_user: "{{ username }}"
 
 #- name: collect static files
 #  community.general.django_manage:
