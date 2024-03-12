@@ -1,0 +1,315 @@
+---
+ # django
+- name: Install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-venv
+    - python3-dev
+    - libpq-dev
+    - postgresql
+    - postgresql-contrib
+    - nginx
+    - certbot
+  become: true
+  #become_user: "{{ username }}"
+
+# Postgres
+- name: Configure PostgreSQL
+  postgresql_db:
+    name: django
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Create PostgreSQL user
+  postgresql_user:
+    name: django
+    password: "{{ postgres_db_pass }}"
+    encrypted: yes
+    state: present
+  become: true
+  become_user: postgres
+
+# https://docs.djangoproject.com/en/5.0/ref/databases/#optimizing-postgresql-s-configuration
+- name: Set client_encoding for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    login_unix_socket: /var/run/postgresql
+    query:
+      - "ALTER ROLE django SET client_encoding TO 'utf8';"
+  become: true
+  become_user: postgres
+
+- name: Set default_transaction_isolation for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    query:
+      - "ALTER ROLE django SET default_transaction_isolation TO 'read committed';"
+  become: true
+  become_user: postgres
+
+- name: Set timezone for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    login_password: "{{ postgres_db_pass }}"
+    query:
+      - "ALTER ROLE django SET timezone TO 'UTC';"
+  become: true
+  become_user: postgres
+
+- name: Create project directory
+  file:
+    path: '/var/www/django_app'
+    state: directory
+    owner: holden
+    group: holden
+
+- name: Create and activate virtual environment
+  command: python3 -m venv djangoenv
+  args:
+    chdir: '/var/www/django_app'
+  become: true
+  become_user: "{{ username }}"
+
+- name: Activate virtual environment
+  shell:
+    cmd: "source /var/www/django_app/djangoenv/bin/activate"
+  args:
+    executable: /bin/bash
+  become_user: "{{ username }}"
+
+- name: Install Django and Gunicorn
+  pip:
+    name: "{{ item }}"
+    virtualenv: /var/www/django_app/djangoenv
+  loop:
+    - django
+    - gunicorn
+    - psycopg2-binary
+  become: true
+  become_user: "{{ username }}"
+
+- name: Start Django project
+  shell:
+    cmd: 'django-admin startproject django_sample'
+  args:
+    executable: /bin/bash
+    chdir: '/var/www/django_app'
+  become: true
+  #become_user: "{{ username }}"
+
+- name: set ownership for django_app
+  file:
+    path: '/var/www/django_app'
+    owner: holden
+    group: holden
+    recurse: yes
+
+- name: copy settings template
+  template:
+    src: templates/settings.py.j2
+    dest: '/var/www/django_app/django_sample/settings.py'
+    force: yes
+  become: true  
+  become_user: "{{ username }}"
+
+- name: Generate a new SECRET_KEY
+  command: 'django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
+  register: new_secret_key
+
+#- name: Generate a new SECRET_KEY
+#  shell:
+#    cmd: 'source /var/www/django_app/djangoenv/bin/activate && django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
+#    executable: /bin/bash
+#    chdir: '/var/www/django_app'
+#  become: true
+#  become_user: "{{ username }}"   
+#  register: new_secret_key
+
+#- name: gen secret key
+#  community.general.django_manage:
+#    command: 'shell -c "from django.core.management import utils; print(utils.get_random_secret_key())" --no-input'
+#    virtualenv: '/var/www/django_app/djangoenv'
+#    project_path: '/var/www/django_app/django_sample'
+#  become: true
+#  become_user: "{{ username }}"
+#  register: new_secret_key
+
+- name: Replace SECRET_KEY line in Django settings
+  lineinfile:
+    path: /var/www/django_app/django_sample/settings.py
+    regexp: '^SECRET_KEY = '
+    line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
+  become: true
+  become_user: "{{ username }}"
+
+#- name: Apply migrations
+#  command: "./manage.py migrate"
+#  args:
+#    chdir: "/var/www/django_app/django_sample"
+#  become: true
+#  become_user: "{{ username }}"
+
+- name: django migrate
+  community.general.django_manage:
+    command: 'migrate'
+    virtualenv: '/var/www/django_app/djangoenv'
+    project_path: '/var/www/django_app/django_sample'
+  become: true
+  become_user: "{{ username }}"
+
+#- name: apply migrations
+#  shell:
+#    cmd: "source /var/www/django_app/djangoenv/bin/activate && ./manage.py migrate"
+#    executable: /bin/bash
+#    chdir: '/var/www/django_app/django_sample'
+#  become: true
+#  become_user: "{{ username }}" 
+
+#- name: Create superuser
+#  command: "./manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+#  args:
+#    chdir: "/var/www/django_app/django_sample"
+#  become: true
+#  become_user: "{{ username }}"
+
+- name: Create an initial superuser
+  community.general.django_manage:
+    command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+    virtualenv: '/var/www/django_app/djangoenv'
+    project_path: '/var/www/django_app/django_sample'
+
+#- name: create Django superuser
+#  shell:
+#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}
+#    executable: /var/www/django_app/djangoenv
+#    chdir: '/var/www/django_app/django_sample/'
+#  become: true
+#  become_user: "{{ username }}"  
+
+#- name: Create Django superuser
+#  command: django-admin shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('{{ django_user }}', '{{ soa_email_address }}', '{{ django_password }}')"
+#  args:
+#    chdir: '/var/www/django_app'
+#  become: true
+#  become_user: "{{ username }}"
+
+- name: set django admin password
+  shell:
+    cmd: ./manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+    executable: /bin/bash
+    chdir: '/var/www/django_app/django_sample'
+  become: true
+    #  become_user: "{{ username }}"
+
+#- name: set django admin password
+#  community.general.django_manage:
+#    command: shell
+#    args:
+#      cmd: "-c 'from django.contrib.auth.models import User; u = User.objects.get(username=\"{{ django_user }}\"); u.set_password(\"{{ django_password }}\"); u.save()'"
+#    virtualenv: '/var/www/django_app/djangoenv'
+#    project_path: '/var/www/django_app/django_sample'
+#  become: true
+#  become_user: "{{ username }}" 
+
+#- name: set django admin password
+#  shell:
+#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+#    executable: /bin/bash
+#    chdir: '/var/www/django_app/django_sample'
+#  become: true
+#  become_user: "{{ username }}" 
+
+- name: Collect static files
+  command: "python manage.py collectstatic --noinput"
+  args:
+    chdir: "/var/www/django_app/django_sample"
+  become: true
+  #become_user: "{{ username }}"
+
+#- name: collect static files
+#  community.general.django_manage:
+#    command: 'python manage.py collectstatic --noinput'
+#    virtualenv: '/var/www/django_app/djangoenv'
+#    project_path: '/var/www/django_app/django_sample'
+#  become: true
+#  become_user: "{{ username }}" 
+
+#- name: collect static files
+#  shell:
+#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py collectstatic --noinput
+#    executable: /bin/bash
+#    chdir: '/var/www/django_app/'
+#  become: true
+#  become_user: "{{ username }}" 
+
+# Gunicorn
+- name: configure Gunicorn socket
+  template:
+    src: gunicorn.socket.j2
+    dest: /etc/systemd/system/gunicorn.socket
+
+- name: configure Gunicorn systemd service
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: start and enable Gunicorn service
+  systemd:
+    name: gunicorn
+    state: started
+    enabled: yes
+
+# Nginx
+- name: update default config file 
+  template:
+    src: templates/default.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: stop nginx to run certbot standalone
+  systemd:
+    name: nginx
+    state: stopped
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+#- name: nginx config file setup
+#  template:
+#    src: templates/nginx.conf.j2
+#    dest: "/etc/nginx/nginx.conf"  
+
+- name: vhost file 
+  template:
+    src: templates/vhost.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"   
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: start nginx after certbot gen
+  systemd:
+    name: nginx
+    state: started
+
+
+
