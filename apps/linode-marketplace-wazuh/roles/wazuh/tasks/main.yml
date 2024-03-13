@@ -49,11 +49,6 @@
   ansible.builtin.unarchive:
     src: /tmp/wazuh-install-files.tar
     dest: /tmp/
-
-- name: Extract wazuh-passwords.txt from the archive
-  ansible.builtin.unarchive:
-    src: /tmp/wazuh-install-files.tar
-    dest: /tmp/
     remote_src: yes
 
 - name: Append wazuh-passwords.txt to .deployment-secrets.txt
