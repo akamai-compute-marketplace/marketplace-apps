@@ -66,7 +66,7 @@
 
 - name: create project directory
   file:
-    path: '{{ project_directory }}'
+    path: "{{ project_directory }}"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
@@ -74,7 +74,7 @@
 - name: create and activate virtual environment
   command: python3 -m venv djangoenv
   args:
-    chdir: '{{ project_directory }}'
+    chdir: "{{ project_directory }}"
   become: true
   become_user: "{{ username }}"
 
@@ -91,24 +91,24 @@
 
 - name: start django project
   shell:
-    cmd: '{{ enable_venv }} && django-admin startproject django_sample'
+    cmd: "{{ enable_venv }} && django-admin startproject django_sample"
   args:
     executable: /bin/bash
-    chdir: '{{ project_directory }}'
+    chdir: "{{ project_directory }}"
   become: true
   become_user: "{{ username }}"
 
 - name: set ownership for django_app
   file:
-    path: '{{ project_directory }}'
+    path: "{{ project_directory }}"
     owner: "{{ username }}"
     group: "{{ username }}"
     recurse: yes
 
 - name: copy settings template
   template:
-    src: templates/settings.py.j2
-    dest: '{{ project_directory }}/django_sample/django_sample/settings.py'
+    src: "templates/settings.py.j2"
+    dest: "{{ project_directory }}/django_sample/django_sample/settings.py"
     force: yes
   become: true  
   become_user: "{{ username }}"
@@ -119,32 +119,32 @@
 
 - name: replace SECRET_KEY line in Django settings
   lineinfile:
-    path: '{{ project_directory }}/django_sample/django_sample/settings.py'
-    regexp: '^SECRET_KEY = '
+    path: "{{ project_directory }}/django_sample/django_sample/settings.py"
+    regexp: "^SECRET_KEY = "
     line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
   become: true
   become_user: "{{ username }}"
 
 - name: django migrate
   community.general.django_manage:
-    command: 'migrate'
-    virtualenv: '{{ project_directory }}/djangoenv'
-    project_path: '{{ project_directory }}/django_sample'
+    command: "migrate"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
   become: true
   become_user: "{{ username }}"
 
 - name: create an initial superuser
   community.general.django_manage:
     command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
-    virtualenv: '{{ project_directory }}/djangoenv'
-    project_path: '{{ project_directory }}/django_sample'
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
 
 - name: set django admin password
   shell:
     cmd: | 
       {{ enable_venv }}  && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
     executable: /bin/bash
-    chdir: '{{ project_directory }}/django_sample'
+    chdir: "{{ project_directory }}/django_sample"
   become: true
   become_user: "{{ username }}"
   no_log: true
@@ -159,15 +159,15 @@
   become_user: "{{ username }}"
 
 # gunicorn
-- name: configure Gunicorn socket
-  template:
-    src: gunicorn.socket.j2
-    dest: /etc/systemd/system/gunicorn.socket
+- name: configure gunicorn socket
+  copy:
+    src: "files/gunicorn.socket"
+    dest: "/etc/systemd/system/gunicorn.socket"
 
 - name: configure Gunicorn systemd service
   template:
-    src: gunicorn.service.j2
-    dest: /etc/systemd/system/gunicorn.service
+    src: "gunicorn.service.j2"
+    dest: "/etc/systemd/system/gunicorn.service"
 
 - name: reload systemd daemon
   systemd:
@@ -175,14 +175,14 @@
 
 - name: start and enable Gunicorn service
   systemd:
-    name: gunicorn
+    name: "gunicorn"
     state: started
     enabled: yes
 
 # nginx
 - name: update default config file 
   template:
-    src: templates/default.conf.j2
+    src: "templates/default.conf.j2"
     dest: "/etc/nginx/sites-available/{{ _domain }}"  
 
 - name: stop nginx to run certbot standalone
@@ -197,7 +197,7 @@
 
 - name: vhost file 
   template:
-    src: templates/vhost.j2
+    src: "templates/vhost.j2"
     dest: "/etc/nginx/sites-available/{{ _domain }}"   
 
 - name: create a symbolic link for the nginx configuration
