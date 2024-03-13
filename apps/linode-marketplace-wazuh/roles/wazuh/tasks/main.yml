@@ -33,7 +33,15 @@
     url: https://packages.wazuh.com/4.7/wazuh-install.sh
     dest: /tmp/wazuh-install.sh
     mode: '0755'
-  notify: stop nginx service
+  #notify: stop nginx service
+
+- name: Stop and disable nginx service before Wazuh installation
+  systemd:
+    name: nginx
+    state: stopped
+    enabled: no
+  notify:
+    - debug msg="NGINX service stopped."
 
 - name: Install Wazuh
   ansible.builtin.shell:
