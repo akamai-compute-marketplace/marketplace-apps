@@ -10,6 +10,8 @@
     dest: /root/.credentials
     mode: '0600'
     content: |
-      Sudo Username: {{ username }}
-      Sudo Password: {{ password }}
-
+      Sudo username: {{ username }}
+      Sudo password: {{ password }}
+      postgres Django DB password: {{ postgres_db_password }}
+      Django user: {{ django_user }}
+      Django password: {{ django_password }}

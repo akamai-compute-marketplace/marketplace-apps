@@ -12,14 +12,13 @@
     - postgresql-contrib
     - nginx
     - certbot
-  become: true
-  #become_user: "{{ username }}"
 
-- name: enabling virtual env
+- name: setting facts for deployment
   set_fact:
     enable_venv: "source /var/www/django_app/djangoenv/bin/activate"
+    project_directory: "/var/www/django_app"
 
-# Postgres
+# postgres
 - name: configure PostgreSQL
   postgresql_db:
     name: django
@@ -30,13 +29,12 @@
 - name: create PostgreSQL user
   postgresql_user:
     name: django
-    password: "{{ postgres_db_pass }}"
+    password: "{{ postgres_db_password }}"
     encrypted: yes
     state: present
   become: true
   become_user: postgres
 
-# https://docs.djangoproject.com/en/5.0/ref/databases/#optimizing-postgresql-s-configuration
 - name: set client_encoding for django
   postgresql_query:
     db: django
@@ -60,7 +58,7 @@
   postgresql_query:
     db: django
     login_user: postgres
-    login_password: "{{ postgres_db_pass }}"
+    login_password: "{{ postgres_db_password }}"
     query:
       - "ALTER ROLE django SET timezone TO 'UTC';"
   become: true
@@ -68,7 +66,7 @@
 
 - name: create project directory
   file:
-    path: '/var/www/django_app'
+    path: '{{ project_directory }}'
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
@@ -76,21 +74,14 @@
 - name: create and activate virtual environment
   command: python3 -m venv djangoenv
   args:
-    chdir: '/var/www/django_app'
+    chdir: '{{ project_directory }}'
   become: true
   become_user: "{{ username }}"
-
-#- name: activate virtual environment
-#  shell:
-#    cmd: "source /var/www/django_app/djangoenv/bin/activate"
-#  args:
-#    executable: /bin/bash
-#  become_user: "{{ username }}"
 
 - name: install Django and Gunicorn
   pip:
     name: "{{ item }}"
-    virtualenv: /var/www/django_app/djangoenv
+    virtualenv: "{{ project_directory}}/djangoenv"
   loop:
     - django
     - gunicorn
@@ -103,13 +94,13 @@
     cmd: '{{ enable_venv }} && django-admin startproject django_sample'
   args:
     executable: /bin/bash
-    chdir: '/var/www/django_app'
+    chdir: '{{ project_directory }}'
   become: true
   become_user: "{{ username }}"
 
 - name: set ownership for django_app
   file:
-    path: '/var/www/django_app'
+    path: '{{ project_directory }}'
     owner: "{{ username }}"
     group: "{{ username }}"
     recurse: yes
@@ -117,7 +108,7 @@
 - name: copy settings template
   template:
     src: templates/settings.py.j2
-    dest: '/var/www/django_app/django_sample/django_sample/settings.py'
+    dest: '{{ project_directory }}/django_sample/django_sample/settings.py'
     force: yes
   become: true  
   become_user: "{{ username }}"
@@ -126,142 +117,48 @@
   command: 'django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
   register: new_secret_key
 
-#- name: Generate a new SECRET_KEY
-#  shell:
-#    cmd: 'source /var/www/django_app/djangoenv/bin/activate && django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
-#    executable: /bin/bash
-#    chdir: '/var/www/django_app'
-#  become: true
-#  become_user: "{{ username }}"   
-#  register: new_secret_key
-
-#- name: gen secret key
-#  community.general.django_manage:
-#    command: 'shell -c "from django.core.management import utils; print(utils.get_random_secret_key())" --no-input'
-#    virtualenv: '/var/www/django_app/djangoenv'
-#    project_path: '/var/www/django_app/django_sample'
-#  become: true
-#  become_user: "{{ username }}"
-#  register: new_secret_key
-
 - name: replace SECRET_KEY line in Django settings
   lineinfile:
-    path: /var/www/django_app/django_sample/django_sample/settings.py
+    path: '{{ project_directory }}/django_sample/django_sample/settings.py'
     regexp: '^SECRET_KEY = '
     line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
   become: true
   become_user: "{{ username }}"
 
-#- name: Apply migrations
-#  command: "./manage.py migrate"
-#  args:
-#    chdir: "/var/www/django_app/django_sample"
-#  become: true
-#  become_user: "{{ username }}"
-
 - name: django migrate
   community.general.django_manage:
     command: 'migrate'
-    virtualenv: '/var/www/django_app/djangoenv'
-    project_path: '/var/www/django_app/django_sample'
+    virtualenv: '{{ project_directory }}/djangoenv'
+    project_path: '{{ project_directory }}/django_sample'
   become: true
   become_user: "{{ username }}"
-
-#- name: apply migrations
-#  shell:
-#    cmd: "source /var/www/django_app/djangoenv/bin/activate && ./manage.py migrate"
-#    executable: /bin/bash
-#    chdir: '/var/www/django_app/django_sample'
-#  become: true
-#  become_user: "{{ username }}" 
-
-#- name: Create superuser
-#  command: "./manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
-#  args:
-#    chdir: "/var/www/django_app/django_sample"
-#  become: true
-#  become_user: "{{ username }}"
 
 - name: create an initial superuser
   community.general.django_manage:
     command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
-    virtualenv: '/var/www/django_app/djangoenv'
-    project_path: '/var/www/django_app/django_sample'
-
-#- name: create Django superuser
-#  shell:
-#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}
-#    executable: /var/www/django_app/djangoenv
-#    chdir: '/var/www/django_app/django_sample/'
-#  become: true
-#  become_user: "{{ username }}"  
-
-#- name: Create Django superuser
-#  command: django-admin shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('{{ django_user }}', '{{ soa_email_address }}', '{{ django_password }}')"
-#  args:
-#    chdir: '/var/www/django_app'
-#  become: true
-#  become_user: "{{ username }}"
+    virtualenv: '{{ project_directory }}/djangoenv'
+    project_path: '{{ project_directory }}/django_sample'
 
 - name: set django admin password
   shell:
     cmd: | 
       {{ enable_venv }}  && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
     executable: /bin/bash
-    chdir: '/var/www/django_app/django_sample'
+    chdir: '{{ project_directory }}/django_sample'
   become: true
   become_user: "{{ username }}"
   no_log: true
-
-#- name: set django admin password
-#  community.general.django_manage:
-#    command: shell
-#    args:
-#      cmd: "-c 'from django.contrib.auth.models import User; u = User.objects.get(username=\"{{ django_user }}\"); u.set_password(\"{{ django_password }}\"); u.save()'"
-#    virtualenv: '/var/www/django_app/djangoenv'
-#    project_path: '/var/www/django_app/django_sample'
-#  become: true
-#  become_user: "{{ username }}" 
-
-#- name: set django admin password
-#  shell:
-#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
-#    executable: /bin/bash
-#    chdir: '/var/www/django_app/django_sample'
-#  become: true
-#  become_user: "{{ username }}" 
-
-#- name: Calling the env
-#  set_fact:
-#    exec_venv: "source /var/www/django_app/djangoenv/bin/activate"
-#    #exec_venv: "python3 manage.py collectstatic --noinput"
 
 - name: collect static files
   shell: 
     cmd: "{{ enable_venv }} && python manage.py collectstatic --noinput"
     executable: /bin/bash
   args:
-    chdir: "/var/www/django_app/django_sample"
+    chdir: "{{ project_directory }}/django_sample"
   become: true
   become_user: "{{ username }}"
 
-#- name: collect static files
-#  community.general.django_manage:
-#    command: 'python manage.py collectstatic --noinput'
-#    virtualenv: '/var/www/django_app/djangoenv'
-#    project_path: '/var/www/django_app/django_sample'
-#  become: true
-#  become_user: "{{ username }}" 
-
-#- name: collect static files
-#  shell:
-#    cmd: source /var/www/django_app/djangoenv/bin/activate && ./manage.py collectstatic --noinput
-#    executable: /bin/bash
-#    chdir: '/var/www/django_app/'
-#  become: true
-#  become_user: "{{ username }}" 
-
-# Gunicorn
+# gunicorn
 - name: configure Gunicorn socket
   template:
     src: gunicorn.socket.j2
@@ -282,7 +179,7 @@
     state: started
     enabled: yes
 
-# Nginx
+# nginx
 - name: update default config file 
   template:
     src: templates/default.conf.j2
@@ -297,11 +194,6 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
-
-#- name: nginx config file setup
-#  template:
-#    src: templates/nginx.conf.j2
-#    dest: "/etc/nginx/nginx.conf"  
 
 - name: vhost file 
   template:
