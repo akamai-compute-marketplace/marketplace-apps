@@ -5,9 +5,9 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing django creds into file
+- name: writing jitsi creds into file
   copy:
-    dest: /root/.credentials
+    dest: "{{ item.user }}/.credentials"
     mode: '0600'
     content: |
       Sudo username: {{ username }}
@@ -15,3 +15,6 @@
       postgres Django DB password: {{ postgres_db_password }}
       Django user: {{ django_user }}
       Django password: {{ django_password }}
+  loop:
+    - {user: "/root"}
+    - {user: "/home/{{ username }}"}
