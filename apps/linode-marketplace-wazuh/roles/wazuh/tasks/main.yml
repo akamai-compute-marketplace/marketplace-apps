@@ -33,15 +33,12 @@
     url: https://packages.wazuh.com/4.7/wazuh-install.sh
     dest: /tmp/wazuh-install.sh
     mode: '0755'
-  #notify: stop nginx service
 
 - name: Stop and disable nginx service before Wazuh installation
   systemd:
     name: nginx
     state: stopped
     enabled: no
-  notify:
-    - debug msg="NGINX service stopped."
 
 - name: Install Wazuh
   ansible.builtin.shell:
@@ -61,8 +58,7 @@
 
 - name: Append wazuh-passwords.txt to .deployment-secrets.txt
   ansible.builtin.shell:
-    cmd: cat /wazuh-install-files/wazuh-passwords.txt >> .deployment-secrets.txt
-    chdir: /tmp
+    cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> .deployment-secrets.txt
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
