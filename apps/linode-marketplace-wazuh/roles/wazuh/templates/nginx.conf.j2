@@ -1,17 +1,1 @@
 # rename and add any templates for wazuh
-server {
-    listen 80;
-    listen [::]:80;
-    server_name {{ _domain }};
-    root /var/www/certs;
-    location / {
-        return 301 https://\$host\$request_uri;
-        try_files \$uri \$uri/ =404;
-    }
-# allow .well-known
-    location ^~ /.well-known {
-      allow all;
-      auth_basic off;
-      alias /var/www/certs/.well-known;
-    }
-}
