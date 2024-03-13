@@ -4,6 +4,16 @@
   import_role:
     name: hostname
 
+  # sets account ssh pubkey to limited user
+- name: set ssh pubkey
+  import_role:
+    name: sshkey
+  
+- name: disable root login
+  import_role: 
+    name: securessh
+  when: disable_root is defined
+  
 # write _domain to vars.
 - name: write _domain to vars
   lineinfile: 
@@ -19,19 +29,6 @@
   when: 
     - token_password is defined
     - default_dns is not defined
-
-# sets customer supplied ssh pubkey to limited user
-- name: set ssh pubkey
-  import_role:
-      name: sshkey
-  when: 
-    - pubkey is defined
-
-# disable root login w/wo pubkey
-- name: secure ssh
-  import_role:
-      name: securessh
-  when: disable_root is defined
 
 # apt_setup_update
 - name: update system packages
