@@ -4,6 +4,11 @@
   import_role:
     name: hostname
 
+# sets account ssh pubkey to limited user
+- name: set ssh pubkey
+  import_role:
+      name: sshkey
+
 # write _domain to vars.
 - name: write _domain to vars
   lineinfile: 
@@ -11,14 +16,6 @@
     path: group_vars/linode/vars
     line: | 
       _domain: {{ _domain }}
-
-# dns creation
-- name: create dns A record
-  import_role:
-    name: create_dns_record
-  when: 
-    - token_password is defined
-    - default_dns is not defined
 
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
@@ -52,8 +49,3 @@
 - name: enabling fail2ban
   import_role:
     name: fail2ban_install
-
-- name: write motd 
-  ansible.builtin.template: 
-    src: templates/motd.j2
-    dest: /etc/motd  
