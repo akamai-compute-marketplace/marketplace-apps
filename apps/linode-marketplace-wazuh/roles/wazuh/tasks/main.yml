@@ -22,7 +22,7 @@
     state: absent
   notify: reload nginx service
 
-# ssl_certbot
+ssl_certbot
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
@@ -34,11 +34,11 @@
     dest: /tmp/wazuh-install.sh
     mode: '0755'
 
-- name: Stop and disable nginx service before Wazuh installation
-  systemd:
-    name: nginx
-    state: stopped
-    enabled: no
+# - name: Stop and disable nginx service before Wazuh installation
+#   systemd:
+#     name: nginx
+#     state: stopped
+#     enabled: no
 
 - name: Install Wazuh
   ansible.builtin.shell:
