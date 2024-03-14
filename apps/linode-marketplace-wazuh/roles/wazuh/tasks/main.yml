@@ -51,9 +51,9 @@
     dest: /tmp/
     remote_src: yes
 
-- name: Append wazuh-passwords.txt to .deployment-secrets.txt
+- name: Append wazuh-passwords.txt to /root/.deployment-secrets.txt
   ansible.builtin.shell:
-    cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> .deployment-secrets.txt
+    cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> /root/.deployment-secrets.txt
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
