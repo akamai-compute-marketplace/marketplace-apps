@@ -23,9 +23,13 @@
   notify: reload nginx service
 
 # ssl_certbot
-- name: setting up ssl certificate
-  import_role:
-    name: certbot_ssl
+# - name: setting up ssl certificate
+#   import_role:
+#     name: certbot_ssl
+
+- name: Obtain a Let's Encrypt certificate for the domain
+  ansible.builtin.shell:
+    cmd: certbot certonly --agree-tos --non-interactive --no-eff-email --webroot --webroot-path=/var/www/certs -d {{ _domain }} -m {{ soa_email_address }}
 
 # wazuh
 - name: Download Wazuh install script
