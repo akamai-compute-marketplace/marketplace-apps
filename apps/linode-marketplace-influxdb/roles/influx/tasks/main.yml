@@ -53,6 +53,12 @@
     state: absent
   notify: reload nginx service
 
+handlers:
+  - name: reload nginx service
+    service:
+      name: nginx
+      state: reloaded
+
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
