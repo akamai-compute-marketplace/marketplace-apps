@@ -1,0 +1,18 @@
+---
+# openlitespeed
+
+- name: Install OpenLiteSpeed and Django
+  ansible.builtin.shell: |
+    bash <(curl -sk https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh)
+  args:
+    executable: /bin/bash
+
+- name: Regenerate password and setup Welcome Message
+  ansible.builtin.shell: |
+    bash <(curl -sk https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh)
+  args:
+    executable: /bin/bash
+
+- name: Reboot server
+  ansible.builtin.reboot:
+  tags: reboot
