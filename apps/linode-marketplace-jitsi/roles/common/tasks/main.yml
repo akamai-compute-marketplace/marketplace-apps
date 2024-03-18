@@ -11,6 +11,21 @@
     path: group_vars/linode/vars
     line: | 
       _domain: {{ _domain }}
+  when: _domain is defined 
+
+# dns creation
+- name: create dns A record
+  import_role:
+    name: create_dns_record
+  when: 
+    - token_password is defined
+    - default_dns is not defined
+
+# disable root login w/wo pubkey
+- name: secure ssh
+  import_role:
+      name: securessh
+  when: disable_root is defined
 
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
@@ -18,13 +33,6 @@
       name: sshkey
   when: 
     - pubkey is defined
-    - username is defined
-
-# disable root login w/wo pubkey
-- name: secure ssh
-  import_role:
-      name: securessh
-  when: disable_root is defined
 
 # apt_setup_update
 - name: update system packages

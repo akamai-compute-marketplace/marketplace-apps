@@ -34,26 +34,26 @@
 
 - name: Download and unzip nats server bin
   ansible.builtin.unarchive:
-    src: https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip
-    dest: /tmp/nats-server
+    src: 'https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip'
+    dest: '/tmp/nats-server'
     remote_src: yes
 
 - name: Copy nats server bin to /bin
   ansible.builtin.copy:
-    src: /tmp/nats-server/nats-server-v{{ version }}-linux-amd64/nats-server 
-    dest: /usr/local/bin
+    src: '/tmp/nats-server/nats-server-v{{ version }}-linux-amd64/nats-server'
+    dest: '/usr/local/bin'
     owner: nats
     mode: '700'
 
 - name: Add nats service file 
   template:
-    src: nats.service.j2
-    dest: "/etc/systemd/system/nats.service"
+    src: 'nats.service.j2'
+    dest: '/etc/systemd/system/nats.service'
 
 - name: Add nats config file 
   template:
-    src: nats.conf.j2
-    dest: "/etc/nats.conf"
+    src: 'nats.conf.j2'
+    dest: '/etc/nats.conf'
 
 - name: Reload systemd daemon
   systemd:
@@ -73,18 +73,18 @@
 
 - name: config file setup
   template:
-      src: templates/nginx.conf.j2
-      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+      src: 'templates/nginx.conf.j2'
+      dest: '/etc/nginx/sites-available/{{ _domain }}'
 
 - name: create a symbolic link for the nginx configuration
   file:
-    src: "/etc/nginx/sites-available/{{ _domain }}"
-    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
 
 - name: unlink the default nginx configuration
   file:
-    path: "/etc/nginx/sites-enabled/default"
+    path: '/etc/nginx/sites-enabled/default'
     state: absent
   notify: reload nginx service
 

@@ -18,6 +18,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="splunk_user" Label="Splunk Admin User">
 
 ## Akamai SIEM Settings
+#<UDF name="sslheader" label="Akamai SIEM Settings" header="Yes" default="Yes">
 #<UDF name="access_token_password" Label="Akamai Access Token" default="">
 #<UDF name="client_secret_password" Label="Akamai Client Secret" default="">
 #<UDF name="client_token_password" Label="Akamai Client Token" default="">
@@ -150,9 +151,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  #git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone -b akamai-siem ${GIT_REPO}
+  #git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
