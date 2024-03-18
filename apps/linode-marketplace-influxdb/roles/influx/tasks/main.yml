@@ -15,15 +15,9 @@
   systemd:
     daemon_reload: yes
 
-- name: enable influxdb service
-  systemd:
-    name: influxdb.service
-    enabled: yes
-
-- name: start influxdb service
-  systemd:
-    name: influxdb.service
-    state: started
+- name: start influxdb
+  command:
+    cmd: docker start influxdb2
 
 # nginx
 - name: install nginx

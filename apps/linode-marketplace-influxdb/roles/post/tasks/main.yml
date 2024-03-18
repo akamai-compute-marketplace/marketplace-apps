@@ -4,3 +4,11 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+
+- name: writing influx creds into file
+  copy:
+    dest: /root/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
