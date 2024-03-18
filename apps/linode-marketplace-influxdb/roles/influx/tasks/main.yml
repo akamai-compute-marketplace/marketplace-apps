@@ -11,14 +11,6 @@
     src: templates/docker-compose.yaml
     dest: "/etc/docker/compose/influxdb/docker-compose.yml"
 
-- name: reload systemd daemon
-  systemd:
-    daemon_reload: yes
-
-- name: start influxdb
-  command:
-    cmd: docker start influxdb2
-
 # nginx
 - name: install nginx
   apt:
