@@ -1,6 +1,11 @@
 ---
 # influxdb
 
+- name: config file setup
+  template:
+    src: templates/influxdb.service
+    dest: "/etc/systemd/system/influxdb.service"
+
 - name: create docker compose directory
   file:
     path: /etc/docker/compose/influxdb
@@ -14,6 +19,16 @@
 - name: reload systemd daemon
   systemd:
     daemon_reload: yes
+
+- name: enable influxdb service
+  systemd:
+    name: influxdb.service
+    enabled: yes
+
+- name: start influxdb service
+  systemd:
+    name: influxdb.service
+    state: started
 
 # nginx
 - name: install nginx
