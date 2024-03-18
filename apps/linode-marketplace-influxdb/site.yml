@@ -10,5 +10,6 @@
     - group_vars/linode/vars
   roles:
     - common
+    - docker
     - influx
     - post
