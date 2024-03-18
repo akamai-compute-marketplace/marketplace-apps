@@ -1,5 +1,6 @@
 ---
-# If root login is disabled and they provide an SSH KEY
+#This requires linode_helpers/roles/tasks/sshkey runs first in tasks/common/main.yml 
+#If root login is disabled and they have uploaded account keys
 - name: secure ssh config
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -12,7 +13,8 @@
   notify: restart ssh
   when: 
     - disable_root is defined
-    - pubkey is defined
+    - authorized_keys_file.stat.exists
+    - authorized_keys_file.stat.size > 0
 # If root login is disabled and they don't provide an SSH KEY
 - name: secure ssh config
   lineinfile:
@@ -24,4 +26,4 @@
   notify: restart ssh
   when: 
     - disable_root is defined
-    - pubkey is not defined
+    - authorized_keys_file is not defined 
