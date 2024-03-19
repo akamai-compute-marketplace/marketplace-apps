@@ -149,8 +149,7 @@
     replace: "'fingerprint' => '{{ gpg_secret_key }}',"
 
 - name: Export GPG public key to serverkey.asc
-  shell: >
-    gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc
+  shell: "gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc"
   args:
     executable: /bin/bash
 
