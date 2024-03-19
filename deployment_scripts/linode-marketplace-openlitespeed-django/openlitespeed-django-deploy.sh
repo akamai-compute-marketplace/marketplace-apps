@@ -37,7 +37,8 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  python3 -m virtualenv env
+  #python3 -m virtualenv env
+  python3 -m virtualenv /usr/local/lsws/Example/html/
   # source env/bin/activate
   source ${VHDOCROOT}/bin/activate
   pip install pip --upgrade
