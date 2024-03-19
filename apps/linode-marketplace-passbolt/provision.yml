@@ -11,25 +11,13 @@
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    - name: writing gpg_key_passphrase to vars
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
-          gpg_key_passphrase: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
-
-    - name: writing passbolt_db_admin_password to vars
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
-          passbolt_db_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
-
-    - name: writing passbolt_mysql_user to vars
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
+    - name: writing deployment variables to vars file
+      blockinfile:
+        path: ./group_vars/galera/vars
+        marker: "# {mark} INSTANCE VARS"
+        block: |
+          gpg_key_passphrase: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }} 
+          passbolt_db_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}          
           passbolt_mysql_user: passboltadmin
 
     - name: generating mysql root password
