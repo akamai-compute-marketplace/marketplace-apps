@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Script to handle Certbot renewal & BeEf
+# Debug
+# set -xo pipefail
+export BEEF_FULL=/home/beef/fullchain.pem
+export BEEF_PRIVKEY=/home/beef/privkey.pem
+export FULLCHAIN=/etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+export PRIVKEY=/etc/letsencrypt/live/{{ _domain }}/privkey.pem
+certbot renew
+cat \$FULLCHAIN > \$BEEF_FULL
+cat \$PRIVKEY > \$BEEF_PRIVKEY
+service beef reload
