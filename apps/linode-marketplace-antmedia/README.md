@@ -1,15 +1,13 @@
-# Linode antmedia Deployment One-Click APP
+# Linode Ant Media Server Deployment One-Click APP
 
-Capture your thoughts and securely access them from any device with a highly customizable note-taking software.
+Ant Media Server is an open source video streaming platform known for its scalability and low latency. It supports WebRTC live streaming, as well as CMAF and HLS streaming, and can be ingested through RTMP, WebRTC, or HLS.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
-| antmedia | Latest | Describe what antmedia is |
-| postgresql | 13 | Free and open-source relational database management system |
+| Ant Media Server | Latest | Highly scalable and feature-rich live video streaming platform. |
+
 
 **Supported Distributions:**
 
@@ -26,7 +24,7 @@ Capture your thoughts and securely access them from any device with a highly cus
 
 ## Use our API
 
-Customers can choose to the deploy the antmedia app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Ant Media Server through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -37,7 +35,7 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export POSTGRES_PASSWORD="aComplexP@ssword"
+export USERNAME="sudouser"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -46,10 +44,10 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 985374,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-        "postgres_password" : "${POSTGRES_PASSWORD}"
+        "username": "${USERNAME}",
       },
       "authorized_users": [
         "myUser",
@@ -69,14 +67,13 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export POSTGRES_PASSWORD="aComplexP@ssword"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${POSTGRES_PASSWORD}"}' \
+  --stackscript_id 985374 \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"},{"username": "${USERNAME}"} \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
