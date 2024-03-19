@@ -11,14 +11,10 @@
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
       
-    - name: generating antmedia password
-      set_fact:
-        ANTMEDIA_PASSWORD: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
-
     - name: writing ant media password to vars
       blockinfile:
         insertafter: EOF
         path: group_vars/linode/vars
         block: | 
-          antmedia_password: {{ ANTMEDIA_PASSWORD }}
+          antmedia_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
 
