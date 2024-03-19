@@ -1,0 +1,7 @@
+collections:
+ - name: linode.cloud
+   version: 0.16.1
+ - name: community.postgresql
+   version: 3.3.0
+ - name: community.general 
+   version: 8.2.0
