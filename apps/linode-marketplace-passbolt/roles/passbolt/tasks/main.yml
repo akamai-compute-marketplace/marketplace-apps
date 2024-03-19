@@ -164,7 +164,7 @@
   become: yes
   become_method: sudo
   become_user: "{{ webuser }}"
-  shell: "/usr/share/php/passbolt/bin/cake passbolt install --no-admin --force"
+  shell: /usr/share/php/passbolt/bin/cake passbolt install --no-admin --force
   args:
     executable: /bin/bash
 
