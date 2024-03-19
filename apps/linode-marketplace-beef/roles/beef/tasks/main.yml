@@ -151,7 +151,7 @@
   template:
     src: 'ssl_cron_renew.bash.j2'
     dest: '/root/certbot-beef-renewal.sh'
-    mode: a+x
+    mode: '0775'
 
 - name: backup existing crontab
   shell: crontab -l > /tmp/cron_backup || true
