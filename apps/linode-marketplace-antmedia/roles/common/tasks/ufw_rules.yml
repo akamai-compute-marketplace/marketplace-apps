@@ -19,11 +19,6 @@
     port: '443'
     proto: tcp
 
-- name: Allow all access to tcp port 5080
-  community.general.ufw:
-    rule: allow
-    port: '5080'
-    proto: tcp
 
 - name: Allow all access to tcp port 5443
   community.general.ufw:
