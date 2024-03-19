@@ -6,7 +6,7 @@ trap "cleanup $? $LINENO" EXIT
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-openlitespeed-django"
-
+export VHDOCROOT="/usr/local/lsws/Example/html"
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
@@ -38,7 +38,8 @@ function run {
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
   python3 -m virtualenv env
-  source env/bin/activate
+  # source env/bin/activate
+  source ${VHDOCROOT}/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
