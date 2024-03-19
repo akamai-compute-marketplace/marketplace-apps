@@ -27,8 +27,7 @@
     success_msg: "Checksum verification passed for /tmp/passbolt-repo-setup.ce.sh"
 
 - name: Execute the passbolt setup script
-  ansible.builtin.shell:
-    cmd: bash /tmp/passbolt-repo-setup.ce.sh
+  ansible.builtin.shell: bash /tmp/passbolt-repo-setup.ce.sh
 
 - name: Run passbolt-repo-setup.ce.sh script
   command: "/tmp/passbolt-repo-setup.ce.sh"
