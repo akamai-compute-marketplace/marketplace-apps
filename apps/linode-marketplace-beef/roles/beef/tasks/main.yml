@@ -113,11 +113,25 @@
    chdir: /home/beef
 
 - name: Install dependencies using bundle
-  command: bundle3.0 install
+  community.general.bundler:
+    state: present
+    chdir: /home/beef
   become_user: beef
   become: true
-  args:
-   chdir: /home/beef
+
+#- name: bundle config setup
+#  command: bundle3.0 config set --local path /home/beef/.gem
+#  become_user: beef
+#  become: true
+#  args:
+#   chdir: /home/beef
+
+#- name: Install dependencies using bundle
+#  command: bundle3.0 install
+#  become_user: beef
+#  become: true
+#  args:
+#   chdir: /home/beef
 
 - name: install xmlrpc gem
   community.general.gem:
