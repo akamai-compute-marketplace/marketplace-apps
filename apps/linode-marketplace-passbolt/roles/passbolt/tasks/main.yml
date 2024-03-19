@@ -154,8 +154,7 @@
     executable: /bin/bash
 
 - name: Export GPG private key to serverkey_private.asc
-  shell: >
-    gpg --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc
+  shell: "gpg --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc"
   args:
     executable: /bin/bash
 
