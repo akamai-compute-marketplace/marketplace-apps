@@ -13,7 +13,7 @@
 
     - name: writing deployment variables to vars file
       blockinfile:
-        path: ./group_vars/galera/vars
+        path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
           gpg_key_passphrase: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }} 
