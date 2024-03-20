@@ -1,0 +1,6 @@
+
+---
+# akamai-siem
+- name: configure and install akamai siem
+  import_tasks: akamai-siem.yml
+  when: install_akamai_siem == 'YES'
