@@ -9,7 +9,7 @@ Capture your thoughts and securely access them from any device with a highly cus
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
 | wazuh | Latest | Describe what wazuh is |
-| postgres:13 | 13 | Free and open-source relational database management system |
+| postgresql | 13 | Free and open-source relational database management system |
 
 **Supported Distributions:**
 
