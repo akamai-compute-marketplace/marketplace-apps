@@ -60,11 +60,6 @@
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
   register: wazuh_passwords_content
 
-- name: Read existing content from /root/.deployment-secrets.txt if it exists
-  ansible.builtin.slurp:
-    src: /root/.deployment-secrets.txt
-  register: deployment_secrets_content
-
 - name: Combine contents and write to /root/.deployment-secrets.txt
   ansible.builtin.copy:
     dest: /root/.deployment-secrets.txt
