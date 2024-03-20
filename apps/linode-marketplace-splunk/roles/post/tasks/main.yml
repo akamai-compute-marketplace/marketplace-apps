@@ -9,6 +9,8 @@
   copy:
     dest: /home/{{ username }}/.credentials
     mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
     content: |
       sudo username: {{ username }}
       sudo password: {{ password }}
