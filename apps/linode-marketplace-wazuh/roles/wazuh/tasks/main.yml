@@ -51,10 +51,6 @@
     dest: /tmp/
     remote_src: yes
 
-# - name: Append wazuh-passwords.txt to /root/.deployment-secrets.txt
-#   ansible.builtin.shell:
-#     cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> /root/.deployment-secrets.txt
-
 - name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
   ansible.builtin.slurp:
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
