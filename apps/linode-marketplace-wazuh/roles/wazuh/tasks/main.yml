@@ -60,12 +60,11 @@
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
   register: wazuh_passwords_content
 
-- name: Combine contents and write to /root/.deployment-secrets.txt
+- name: Create /root/.deployment-secrets.txt with the content
   ansible.builtin.copy:
     dest: /root/.deployment-secrets.txt
-    content: |
-      {{ (deployment_secrets_content.content | b64decode | default('')) + (wazuh_passwords_content.content | b64decode) }}
-    mode: '0660'
+    content: "{{ wazuh_passwords_content['content'] | b64decode }}"
+    mode: '0600'
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
