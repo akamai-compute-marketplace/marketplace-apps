@@ -17,7 +17,9 @@
 
   - name: writing creds into file
     copy:
-      dest: /root/.credentials
+      dest: '/home/{{ username }}/.credentials'
+      owner: '{{ username }}'
+      group: '{{ username }}'
       mode: '0600'
       content: |
         Sudo Username: {{ username }}
