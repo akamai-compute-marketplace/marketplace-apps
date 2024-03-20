@@ -51,17 +51,32 @@
     dest: /tmp/
     remote_src: yes
 
-- name: Append wazuh-passwords.txt to /root/.deployment-secrets.txt
-  ansible.builtin.shell:
-    cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> /root/.deployment-secrets.txt
+# - name: Append wazuh-passwords.txt to /root/.deployment-secrets.txt
+#   ansible.builtin.shell:
+#     cmd: cat /tmp/wazuh-install-files/wazuh-passwords.txt >> /root/.deployment-secrets.txt
+
+- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
+  ansible.builtin.slurp:
+    src: /tmp/wazuh-install-files/wazuh-passwords.txt
+  register: wazuh_passwords_content
+
+- name: Read existing content from /root/.deployment-secrets.txt if it exists
+  ansible.builtin.slurp:
+    src: /root/.deployment-secrets.txt
+  register: deployment_secrets_content
+
+- name: Combine contents and write to /root/.deployment-secrets.txt
+  ansible.builtin.copy:
+    dest: /root/.deployment-secrets.txt
+    content: |
+      {{ (deployment_secrets_content.content | b64decode | default('')) + (wazuh_passwords_content.content | b64decode) }}
+    mode: '0660'
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
     src: "/etc/letsencrypt/live/{{ _domain }}/{{ item.src }}"
     dest: "/etc/wazuh-dashboard/certs/{{ item.dest }}"
     remote_src: yes
-    owner: root
-    group: root
     mode: '0644'
   loop:
     - { src: 'fullchain.pem', dest: 'wazuh-dashboard.pem' }
