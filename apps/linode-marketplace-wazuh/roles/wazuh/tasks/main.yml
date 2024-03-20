@@ -60,8 +60,6 @@
     src: "/etc/letsencrypt/live/{{ _domain }}/{{ item.src }}"
     dest: "/etc/wazuh-dashboard/certs/{{ item.dest }}"
     remote_src: yes
-    owner: root
-    group: root
     mode: '0644'
   loop:
     - { src: 'fullchain.pem', dest: 'wazuh-dashboard.pem' }
