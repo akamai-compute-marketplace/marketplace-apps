@@ -31,8 +31,6 @@
 - name: set ssh pubkey
   import_role:
       name: sshkey
-  when: 
-    - pubkey is defined
 
 # apt_setup_update
 - name: update system packages

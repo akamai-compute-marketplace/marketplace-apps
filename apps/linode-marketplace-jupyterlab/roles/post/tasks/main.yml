@@ -1,4 +1,4 @@
--
+---
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
   template:
@@ -9,10 +9,12 @@
   command: docker exec jupyter_jupyterlab_1 /bin/bash -c "jupyter server list | grep -oP '(?<=token=)[^ ]*'"
   register: jupyter_token_output
 
-- name: writing creds into file
+- name: writing sudo creds into file
   copy:
-    dest: /root/.credentials
+    dest: '/home/{{ username }}/.credentials'
     mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}

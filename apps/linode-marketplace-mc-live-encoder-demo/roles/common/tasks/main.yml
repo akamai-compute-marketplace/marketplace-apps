@@ -4,6 +4,11 @@
     import_role:
       name: hostname
 
+  # sets account ssh pubkey to limited user
+  - name: set ssh pubkey
+    import_role:
+      name: sshkey
+
   # write _domain to vars.
   - name: write _domain to vars
     lineinfile: 
@@ -20,19 +25,12 @@
       - token_password is defined
       - default_dns is not defined
 
-  # sets customer supplied ssh pubkey to limited user
-  - name: set ssh pubkey
-    import_role:
-        name: sshkey
-    when: 
-      - pubkey is defined
-
   # apt_setup_update
   - name: update system packages
     dnf:
       name: '*'
       state: latest        
-    become: yes
+    become: true
 
   - name: allow http
     shell: 
