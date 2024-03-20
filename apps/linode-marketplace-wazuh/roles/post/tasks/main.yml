@@ -7,9 +7,11 @@
 
 - name: writing wazuh creds into file
   copy:
-    dest: /root/.credentials
+    dest: /home/{{ username }}/.credentials
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: '0600'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      wazuh Login: admin
+      wazuh Login: {{ wazuh_password }}
