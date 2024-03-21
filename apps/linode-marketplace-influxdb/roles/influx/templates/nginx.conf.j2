@@ -1,0 +1,21 @@
+server {
+    listen 80;
+
+    {% if subdomain != "www" or default_dns is defined %}
+    server_name {{ _domain }};
+    error_log /var/log/nginx/{{ _domain }}.error;
+    access_log /var/log/nginx/{{ _domain }}.access;
+    {% elif subdomain == "www" %}
+    server_name {{ _domain }} www.{{ _domain }};
+    error_log /var/log/nginx/{{ _domain }}.error;
+    access_log /var/log/nginx/{{ _domain }}.access;
+    {% endif %}
+
+    location / {
+        proxy_pass         http://localhost:8086;
+        proxy_http_version 1.1;
+        proxy_set_header   Upgrade $http_upgrade;
+        proxy_set_header   Connection "upgrade";
+        proxy_set_header   Host $host;
+    }
+}
