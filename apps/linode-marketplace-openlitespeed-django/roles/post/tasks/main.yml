@@ -5,9 +5,11 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing openlitespeed creds into file
+- name: writing creds into file
   copy:
     dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
       Web Admin password: {{ litespeed_password }}
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
