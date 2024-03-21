@@ -1,0 +1,26 @@
+<VirtualHost *:443>
+# Admin email, Server Name (domain name) and any aliases
+ ServerAdmin {{ soa_email_address }}
+ ServerName {{ _domain }}
+# Index file and Document Root (where the public files are located)
+ DirectoryIndex index.php
+DocumentRoot /var/www/html
+ <Directory /var/www/html>
+ Options Indexes FollowSymLinks MultiViews
+ AllowOverride All
+ Order allow,deny
+ allow from all
+ </Directory>
+ 
+ ErrorLog ${APACHE_LOG_DIR}/error.log
+# Possible values include: debug, info, notice, warn, error, crit,
+ # alert, emerg.
+ LogLevel warn
+ CustomLog ${APACHE_LOG_DIR}/access.log combined
+ 
+ SSLEngine On
+ SSLCertificateFile /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+ SSLCertificateKeyFile /etc/letsencrypt/live/{{ _domain }}/privkey.pem
+ SSLCertificateChainFile /etc/letsencrypt/live/{{ _domain }}/chain.pem
+  
+</VirtualHost>

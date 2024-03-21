@@ -1,0 +1,20 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing passbolt creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Passbolt Admin Database User: passboltadmin
+      Passbolt Database: passboltdb
+      Passbolt Database Password: {{ passbolt_db_admin_password }}
+      Mysql Root Password: {{ mysql_root_password }}
+      Passbolt Login: admin
+      Passbolt GPG Key Passphrase: {{ gpg_key_passphrase }}
