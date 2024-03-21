@@ -10,4 +10,4 @@
     dest: /root/.credentials
     mode: '0600'
     content: |
-      All login credentials and setup instructions can be found after logging in via SSH.
+      All log in credentials and setup instructions can be found after logging in via SSH.
