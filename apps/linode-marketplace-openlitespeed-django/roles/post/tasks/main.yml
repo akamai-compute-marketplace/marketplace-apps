@@ -7,7 +7,7 @@
 
 - name: writing openlitespeed creds into file
   copy:
-    dest: /root/.credentials
+    dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
-      All log in credentials and setup instructions can be found after logging in via SSH.
+      Web Admin password: {{ litespeed_password }}

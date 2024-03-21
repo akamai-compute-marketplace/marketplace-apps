@@ -2,6 +2,10 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
+##Linode/SSH security settings
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
+#<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -37,9 +41,7 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  #python3 -m virtualenv env
   python3 -m virtualenv /usr/local/lsws/Example/html/
-  # source env/bin/activate
   source ${VHDOCROOT}/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
