@@ -1,0 +1,30 @@
+---
+# openlitespeed
+
+- name: Download OpenLiteSpeed and Django setup script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/wpimgsetup.sh
+    dest: /tmp/wpimgsetup.sh
+    mode: '0755'
+
+- name: Install OpenLiteSpeed and Django
+  ansible.builtin.command: bash /tmp/wpimgsetup.sh
+
+- name: Download script to regenerate password for Web Admin, Database, setup Welcome Message
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
+    dest: /tmp/per-instance.sh
+    mode: '0755'
+
+- name: Regenerate password for Web Admin, Database, setup Welcome Message
+  ansible.builtin.command: bash /tmp/per-instance.sh
+
+- name: Slurp Web Admin admin password at /root/.litespeed_password
+  ansible.builtin.slurp:
+    src: /root/.litespeed_password
+  register: litespeed_password
+
+- name: Slurp MySQL root password and MySQL WordPress user password at /root/.db_password
+  ansible.builtin.slurp:
+    src: /root/.db_password
+  register: db_password
