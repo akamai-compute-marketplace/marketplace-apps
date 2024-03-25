@@ -29,7 +29,7 @@ EOF
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
   apt-get install -y git python3 python3-pip
 
