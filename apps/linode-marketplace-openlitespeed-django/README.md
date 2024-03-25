@@ -21,6 +21,10 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that h
 | Update Packages   | The Update Packages module performs apt update and upgrade actions as root.  |
 | Fail2Ban   | The Fail2Ban module installs, activates and enables the Fail2Ban service.  |
 
+## How to Access the Installed Software
+
+See the Linode tab at: https://docs.litespeedtech.com/cloud/images/django/
+
 ## Use our API
 
 Customers can choose to the deploy the openlitespeed app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
