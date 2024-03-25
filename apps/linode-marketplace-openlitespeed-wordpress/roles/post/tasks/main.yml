@@ -16,3 +16,8 @@
         {{ db_password }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+
+- name: Remove /tmp/lshttpd
+  ansible.builtin.file:
+    path: /tmp/lshttpd
+    state: absent
