@@ -2,7 +2,13 @@
 - name: apt update
   apt:
     update_cache: yes
+  ignore_errors: true # tempporary fix 
 
 - name: apt upgrade
   apt:
     upgrade: full
+  ignore_errors: true # temporary fix
+
+# ignore errors temporary for duration of ubuntu outage
+# https://status.canonical.com/#/incident/KNms6QK9ewuzz-7xUsPsNylV20jEt5kyKsd8A-3ptQG-R6bil1_KnGrNhlmDfGeBqxPulG7NPS3y2X0ZcEptVQ== # temporary fix
+

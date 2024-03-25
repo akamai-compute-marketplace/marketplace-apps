@@ -1,0 +1,20 @@
+# linode ansible playbook
+
+# linodes
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    - name: generating sudo user password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: writing filecloud_admin_password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          filecloud_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
