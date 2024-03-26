@@ -5,6 +5,18 @@
     src: templates/motd.j2
     dest: /etc/motd
 
+# - name: writing creds into file
+#   copy:
+#     dest: /home/{{ username }}/.credentials
+#     mode: '0600'
+#     content: |
+#       Web Admin password: 
+#         {{ litespeed_password }}
+#       MySQL root password and MySQL Wordpress user password:
+#         {{ db_password }}
+#       Sudo Username: {{ username }}
+#       Sudo Password: {{ password }}
+
 - name: writing creds into file
   copy:
     dest: /home/{{ username }}/.credentials
@@ -12,8 +24,8 @@
     content: |
       Web Admin password: 
         {{ litespeed_password }}
-      MySQL root password and MySQL Wordpress user password:
-        {{ db_password }}
+      MySQL root password: {{ root_mysql_pass }}
+      MySQL Wordpress user password: {{ wordpress_mysql_pass }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
