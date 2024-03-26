@@ -19,12 +19,35 @@
 - name: Regenerate password for Web Admin, Database, setup Welcome Message
   ansible.builtin.command: bash /tmp/per-instance.sh
 
+# - name: Slurp Web Admin admin password at /root/.litespeed_password
+#   ansible.builtin.slurp:
+#     src: /root/.litespeed_password
+#   register: litespeed_password
+
+# - name: Slurp MySQL root password and MySQL WordPress user password at /root/.db_password
+#   ansible.builtin.slurp:
+#     src: /root/.db_password
+#   register: db_password
+
 - name: Slurp Web Admin admin password at /root/.litespeed_password
   ansible.builtin.slurp:
     src: /root/.litespeed_password
-  register: litespeed_password
+  register: litespeed_password_slurped
+
+- name: Decode Web Admin password from base64
+  set_fact:
+    litespeed_password: "{{ litespeed_password_slurped['content'] | b64decode }}"
 
 - name: Slurp MySQL root password and MySQL WordPress user password at /root/.db_password
   ansible.builtin.slurp:
     src: /root/.db_password
-  register: db_password
+  register: db_password_slurped
+
+- name: Decode MySQL passwords from base64
+  set_fact:
+    db_passwords_decoded: "{{ db_password_slurped['content'] | b64decode }}"
+
+- name: Extract MySQL root password and WordPress user password
+  set_fact:
+    root_mysql_pass: "{{ db_passwords_decoded.split('\n')[0].split('=')[1] | trim }}"
+    wordpress_mysql_pass: "{{ db_passwords_decoded.split('\n')[1].split('=')[1] | trim }}"
