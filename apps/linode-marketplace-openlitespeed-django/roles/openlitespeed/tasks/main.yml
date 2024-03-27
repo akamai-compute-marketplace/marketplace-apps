@@ -1,35 +1,44 @@
 ---
 # openlitespeed
 
+# - name: Download OpenLiteSpeed and Django setup script
+#   ansible.builtin.get_url:
+#     url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh
+#     dest: /tmp/djangosetup.sh
+#     mode: '0755'
+
 # - name: Install OpenLiteSpeed and Django
-#   ansible.builtin.shell: |
-#     bash <(curl -sk https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh)
-#   args:
-#     executable: /bin/bash
+#   ansible.builtin.command: bash /tmp/djangosetup.sh
 
-# - name: Regenerate password and setup Welcome Message
-#   ansible.builtin.shell: |
-#     bash <(curl -sk https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh)
-#   args:
-#     executable: /bin/bash
+# - name: Download script to regenerate password for Web Admin, Database, setup Welcome Message
+#   ansible.builtin.get_url:
+#     url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
+#     dest: /tmp/per-instance.sh
+#     mode: '0755'
 
-- name: Download OpenLiteSpeed and Django setup script
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh
-    dest: /tmp/djangosetup.sh
-    mode: '0755'
+# - name: Regenerate password for Web Admin, Database, setup Welcome Message
+#   ansible.builtin.command: bash /tmp/per-instance.sh
 
-- name: Install OpenLiteSpeed and Django
-  ansible.builtin.command: bash /tmp/djangosetup.sh
+- name: Download OpenLiteSpeed and Django setup scripts
+  block:
+    - name: Download scripts
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0755'
+      loop:
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh', dest: '/tmp/djangosetup.sh' }
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
+      loop_control:
+        label: "{{ item.url }}"
 
-- name: Download script to regenerate password for Web Admin, Database, setup Welcome Message
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
-    dest: /tmp/per-instance.sh
-    mode: '0755'
-
-- name: Regenerate password for Web Admin, Database, setup Welcome Message
-  ansible.builtin.command: bash /tmp/per-instance.sh
+    - name: Execute OpenLiteSpeed and Django setup scripts
+      ansible.builtin.command: bash "{{ item.dest }}"
+      loop:
+        - { dest: '/tmp/djangosetup.sh' }
+        - { dest: '/tmp/per-instance.sh' }
+      loop_control:
+        label: "{{ item.dest }}"
 
 - name: Slurp content of /root/.litespeed_password
   ansible.builtin.slurp:
