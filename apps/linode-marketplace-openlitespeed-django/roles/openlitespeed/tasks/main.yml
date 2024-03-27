@@ -1,24 +1,6 @@
 ---
 # openlitespeed
 
-# - name: Download OpenLiteSpeed and Django setup script
-#   ansible.builtin.get_url:
-#     url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh
-#     dest: /tmp/djangosetup.sh
-#     mode: '0755'
-
-# - name: Install OpenLiteSpeed and Django
-#   ansible.builtin.command: bash /tmp/djangosetup.sh
-
-# - name: Download script to regenerate password for Web Admin, Database, setup Welcome Message
-#   ansible.builtin.get_url:
-#     url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
-#     dest: /tmp/per-instance.sh
-#     mode: '0755'
-
-# - name: Regenerate password for Web Admin, Database, setup Welcome Message
-#   ansible.builtin.command: bash /tmp/per-instance.sh
-
 - name: Download OpenLiteSpeed and Django setup scripts
   block:
     - name: Download scripts
