@@ -1,0 +1,20 @@
+---
+# sets account ssh pubkey to limited user
+- name: set ssh pubkey
+  import_role:
+    name: sshkey
+  
+- name: disable root login
+  import_role: 
+    name: securessh
+  when: disable_root is defined
+
+# apt_setup_update
+- name: update system packages
+  import_role:
+    name: update_pkgs
+
+# fail2ban
+- name: enabling fail2ban
+  import_role:
+    name: fail2ban_install

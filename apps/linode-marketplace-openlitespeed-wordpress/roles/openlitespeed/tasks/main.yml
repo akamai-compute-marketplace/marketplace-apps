@@ -1,0 +1,35 @@
+---
+# openlitespeed
+- name: Download install scripts
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: '0755'
+  loop:
+    - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/wpimgsetup.sh', dest: '/tmp/wpimgsetup.sh' }
+    - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
+
+- name: Execute install scripts
+  ansible.builtin.command:
+    cmd: "bash {{ item }}"
+  loop:
+    - '/tmp/wpimgsetup.sh'
+    - '/tmp/per-instance.sh'
+
+- name: Slurp and decode base64 passwords
+  ansible.builtin.slurp:
+    src: "{{ item.src }}"
+  register: slurped_files
+  loop:
+    - { name: 'litespeed_password', src: '/root/.litespeed_password' }
+    - { name: 'db_password', src: '/root/.db_password' }
+
+- name: Decode slurped content
+  set_fact:
+    "{{ item.item.name }}": "{{ item.content | b64decode }}"
+  loop: "{{ slurped_files.results }}"
+
+- name: Extract MySQL root password and WordPress user password
+  set_fact:
+    root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
+    wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
