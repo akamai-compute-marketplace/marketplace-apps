@@ -1,14 +1,15 @@
-# Linode OpenLiteSpeed Deployment One-Click APP
+# Linode OpenLiteSpeed Wordpress Deployment One-Click APP
 
-OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that helps your site load faster than ever. The Django OpenLiteSpeed One-Click app automatically installs Linux, OpenLiteSpeed, Python LSAPI and ACME to deliver fast and scalable web applications. OpenLiteSpeed features HTTP/3 support, and easy setup for SSL and RewriteRules.
+OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that helps your site load faster than ever. The OpenLiteSpeed Wordpress One-Click app automatically installs OpenLiteSpeed, PHP, MySQL Server, WordPress, LiteSpeed Cache, and other useful applications. OpenLiteSpeed features HTTP/3 support and easy setup for SSL.
 
 ## Software Included
 
-| Software  | Version   | Description   |
-| :---      | :----     | :---          |
-| OpenLiteSpeed    | 1.7    | High-performance, lightweight, open-source HTTP server |
-| Django    | 5.0    | High-level Python web framework that encourages rapid development and clean, pragmatic design |
-
+| Software        | Version | Description   |
+| :---            | :----   | :---          |
+| OpenLiteSpeed   | 1.7     | High-performance, lightweight, open-source HTTP server |
+| Wordpress       | Latest  | Open-source content management system |
+| LiteSpeed PHP   | 8.1     | LiteSpeed Web Server is a high-performance, high-scalability web server that is known for its speed and efficiency |
+| MariaDB         | 10.11  | Open-source relational database management system |
 
 **Supported Distributions:**
 
@@ -23,11 +24,11 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that h
 
 ## How to Access the Installed Software
 
-See the Linode tab at: https://docs.litespeedtech.com/cloud/images/django/
+See the Linode tab at: https://docs.litespeedtech.com/cloud/images/wordpress/
 
 ## Use our API
 
-Customers can choose to the deploy the openlitespeed app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the openlitespeed app through the Akamai Compute Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
