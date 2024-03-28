@@ -1,0 +1,28 @@
+---
+# openlitespeed
+
+- name: Download OpenLiteSpeed and Django setup scripts
+  block:
+    - name: Download scripts
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0755'
+      loop:
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh', dest: '/tmp/djangosetup.sh' }
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
+      loop_control:
+        label: "{{ item.url }}"
+
+    - name: Execute OpenLiteSpeed and Django setup scripts
+      ansible.builtin.command: bash "{{ item.dest }}"
+      loop:
+        - { dest: '/tmp/djangosetup.sh' }
+        - { dest: '/tmp/per-instance.sh' }
+      loop_control:
+        label: "{{ item.dest }}"
+
+- name: Slurp content of /root/.litespeed_password
+  ansible.builtin.slurp:
+    src: /root/.litespeed_password
+  register: litespeed_password
