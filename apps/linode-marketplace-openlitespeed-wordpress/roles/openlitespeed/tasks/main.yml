@@ -39,14 +39,12 @@
     src: '/root/.db_password'
   register: db_password_encode
 
-- name: setting db, litespeed, MySQL and WordPress password
+- name: set db & litespeed passwords
   set_fact:
     litespeed_password: "{{ litespeed_password_encode['content'] | b64decode }}"
     db_password: "{{ db_password_encode['content'] | b64decode }}"
+
+- name: Set MySQL root password and WordPress user password
+  set_fact:
     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
-
-# - name: Extract MySQL root password and WordPress user password
-#   set_fact:
-#     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
-#     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
