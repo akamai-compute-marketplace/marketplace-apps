@@ -16,19 +16,6 @@
     - '/tmp/wpimgsetup.sh'
     - '/tmp/per-instance.sh'
 
-# - name: Slurp and decode base64 passwords
-#   ansible.builtin.slurp:
-#     src: "{{ item.src }}"
-#   register: slurped_files
-#   loop:
-#     - { name: 'litespeed_password', src: '/root/.litespeed_password' }
-#     - { name: 'db_password', src: '/root/.db_password' }
-
-# - name: Decode slurped content
-#   set_fact:
-#     "{{ item.item.name }}": "{{ item.content | b64decode }}"
-#   loop: "{{ slurped_files.results }}"
-
 - name: get litespeed password
   ansible.builtin.slurp:
     src: '/root/.litespeed_password'
