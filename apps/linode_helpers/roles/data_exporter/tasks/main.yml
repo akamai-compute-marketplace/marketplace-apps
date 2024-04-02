@@ -1,0 +1,12 @@
+---
+# apps/linode_helpers/roles/data_exporter/tasks/main.yml
+
+- name: install prometheus node_exporter
+  include_tasks:
+    file: node-exporter.yml
+  when: prometheus_exporter == 'node_exporter'
+
+- name: install mysqld_exporter
+  include_tasks:
+    file: mysqld-exporter.yml
+  when: prometheus_exporter == 'mysqld_exporter'

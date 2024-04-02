@@ -7,7 +7,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="webserver_stack" label="The stack you are looking to deploy Wordpress on" oneOf="LAMP,LEMP">
 
 #<UDF name="site_title" label="Website title" example="My Blog">
-#<UDF name="wp_admin_user" label="Admin username" example="admin">
+#<UDF name="wp_admin_user" label="Wordpress admin username" example="admin">
 #<UDF name="wp_db_user" label="Wordpress database user" example="wordpress">
 #<UDF name="wp_db_name" label="Wordpress database name" example="wordpress">
 

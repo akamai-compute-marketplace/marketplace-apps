@@ -15,6 +15,7 @@ The Linode Helper functions are static roles that can be imported into Marketpla
 | Sudo User  | Creates limited `sudo` user with variable supplied username and password.  | Creates limited user from UDF supplied `username` and `password.` Note that usernames containing illegal characters will cause the play to fail. |
 | SSH Key   | Writes SSH pubkey to `sudo` user's `authorized_keys`.  | Writes UDF supplied `pubkey` to `/home/$username/.ssh/authorized_keys`. To add a SSH key to `root` please use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/).   |
 | Update Packages   | Performs standard apt updates and upgrades. | The Update Packages module performs apt update and upgrade actions as root.  |
+| Data Exporter | Prometheus exporters that allow OS-level metrics collection |
 
 ## Creating Your Own
 
