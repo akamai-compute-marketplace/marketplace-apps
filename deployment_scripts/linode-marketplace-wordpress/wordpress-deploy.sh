@@ -53,7 +53,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   # misc
-  prometheus_exporter: ${PROMETHEUS_EXPORTER}  
+  prometheus_exporter: [${PROMETHEUS_EXPORTER}]  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
