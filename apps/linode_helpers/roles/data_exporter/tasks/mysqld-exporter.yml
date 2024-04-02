@@ -73,12 +73,10 @@
   community.mysql.mysql_user:
     name: 'mysqld_exporter'
     password: "{{ exporter_password }}"
-    priv: '*.*:GRANT PROCESS,REPLICATION CLIENT,SELECT'
+    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
     host: 'localhost'
-    login_user: 'root'
-    login_password: '{{ mysql_root_password }}'  
+    login_unix_socket: '/var/run/mysqld/mysqld.sock'
     state: present  
-  ignore_errors: true
   register: dbconnect
 
 - name: dbg

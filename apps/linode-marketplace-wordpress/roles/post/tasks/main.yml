@@ -45,6 +45,7 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Mysql root Password: {{ mysql_root_password }}
       Wordpress DB User: {{ wp_db_user }}
       Wordpress DB Password: {{ wp_db_pass }}
       Wordpress Admin User: {{ wp_admin_user }}
