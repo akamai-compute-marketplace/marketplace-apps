@@ -16,20 +16,37 @@
     - '/tmp/wpimgsetup.sh'
     - '/tmp/per-instance.sh'
 
-- name: Slurp and decode base64 passwords
+# - name: Slurp and decode base64 passwords
+#   ansible.builtin.slurp:
+#     src: "{{ item.src }}"
+#   register: slurped_files
+#   loop:
+#     - { name: 'litespeed_password', src: '/root/.litespeed_password' }
+#     - { name: 'db_password', src: '/root/.db_password' }
+
+# - name: Decode slurped content
+#   set_fact:
+#     "{{ item.item.name }}": "{{ item.content | b64decode }}"
+#   loop: "{{ slurped_files.results }}"
+
+- name: get litespeed password
   ansible.builtin.slurp:
-    src: "{{ item.src }}"
-  register: slurped_files
-  loop:
-    - { name: 'litespeed_password', src: '/root/.litespeed_password' }
-    - { name: 'db_password', src: '/root/.db_password' }
+    src: '/root/.litespeed_password'
+  register: litespeed_password_encode
 
-- name: Decode slurped content
-  set_fact:
-    "{{ item.item.name }}": "{{ item.content | b64decode }}"
-  loop: "{{ slurped_files.results }}"
+- name: get db password
+  ansible.builtin.slurp:
+    src: '/root/.db_password'
+  register: db_password_encode
 
-- name: Extract MySQL root password and WordPress user password
+- name: setting db, litespeed, MySQL and WordPress password
   set_fact:
+    litespeed_password: "{{ litespeed_password_encode['content'] | b64decode }}"
+    db_password: "{{ db_password_encode['content'] | b64decode }}"
     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
+
+# - name: Extract MySQL root password and WordPress user password
+#   set_fact:
+#     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
+#     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
