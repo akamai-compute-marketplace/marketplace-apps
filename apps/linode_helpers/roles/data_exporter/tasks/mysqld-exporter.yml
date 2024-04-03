@@ -48,7 +48,6 @@
 - name: generating mysqld exporter password
   set_fact:
     exporter_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
-    mysql_root_password: 'SDAFsadfSADFASDFS'
   no_log: true
 
 - name: creating client config for exporter
@@ -78,11 +77,6 @@
     login_unix_socket: '/var/run/mysqld/mysqld.sock'
     state: present  
   register: dbconnect
-
-- name: dbg
-  debug:
-    msg: "--> {{ dbconnect.msg }}"
-  when: '"unable to connect to database" in dbconnect.msg'
 
 # system service
 
