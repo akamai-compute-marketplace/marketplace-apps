@@ -19,8 +19,8 @@
       no_log: true
 
     - name: writing sudo user password to vars
-    lineinfile:
-      insertafter: EOF
-      path: group_vars/linode/vars
-      line: | 
-        zabbix_db_pass: {{ zabbix_db_pass }}
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          zabbix_db_pass: {{ zabbix_db_pass }}
