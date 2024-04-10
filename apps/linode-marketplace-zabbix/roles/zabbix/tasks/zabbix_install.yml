@@ -26,14 +26,16 @@
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: zabbix
     password: '{{ zabbix_db_pass }}'
-    priv: '*.*:zabbix'
+    priv: 'zabbix.*:ALL'
     state: present
 
 - name: set log bin relaxed
   community.mysql.mysql_variables:
     variable: log_bin_trust_function_creators
     value: 1
-    mode: global 
+    mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}' 
   
 - name: import inital db schema
   community.mysql.mysql_db:
@@ -49,6 +51,8 @@
     variable: log_bin_trust_function_creators
     value: 0
     mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
 
 - name: write zabbix password to the conf
   lineinfile:

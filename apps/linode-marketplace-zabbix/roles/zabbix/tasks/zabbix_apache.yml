@@ -38,4 +38,4 @@
     group: root
     mode: 0644
     state: link
-  notify: reload apache2
+  notify: restart apache2
