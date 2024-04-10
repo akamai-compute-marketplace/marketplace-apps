@@ -10,6 +10,5 @@
     - group_vars/linode/vars
   roles:
     - common
-    - mysql
     - zabbix
     - post

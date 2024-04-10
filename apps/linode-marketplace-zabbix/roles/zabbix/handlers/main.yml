@@ -1,5 +1,5 @@
-- name: reload nginx service
+- name: restart apache2
   systemd:
-    name: nginx
+    name: apache2
     state: restarted
     enabled: yes

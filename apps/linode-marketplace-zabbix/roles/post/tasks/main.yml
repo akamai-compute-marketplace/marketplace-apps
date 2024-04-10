@@ -14,5 +14,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Yacht Email: {{ yemail }}
-      Yacht Password: {{ ypassword }}
+      Zabbix DB User: {{ some_val }}
+      Zabbix DB Password: {{ mysql_root_password }}

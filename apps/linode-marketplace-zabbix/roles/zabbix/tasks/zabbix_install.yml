@@ -1,0 +1,14 @@
+--- 
+- name: add zabbix deb
+  apt: 
+    deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
+
+- name: install zabbix pkgs
+  apt: 
+    pkgs: 
+      - zabbix-server-mysql 
+      - zabbix-frontend-php 
+      - zabbix-apache-conf 
+      - zabbix-sql-scripts 
+      - zabbix-agent
+    update_cache: true

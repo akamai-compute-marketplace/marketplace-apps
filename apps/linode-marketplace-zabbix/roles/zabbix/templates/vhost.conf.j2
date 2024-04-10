@@ -1,17 +1,23 @@
-    server  {                                                       
-    listen 80;                                                      
-   {% if subdomain != "www" or default_dns is defined %}
-    server_name {{ _domain }};                             
-    error_log /var/log/nginx/{{ _domain }}.error;          
-    access_log /var/log/nginx/{{ _domain }}.access;  
+<Directory /var/www/wordpress/>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>
+
+<VirtualHost *:80>
+   {% if subdomain != "www" %}
+   ServerName {{ _domain }}
    {% elif subdomain == "www" %}
-    server_name {{ _domain }} www.{{ _domain }};                             
-    error_log /var/log/nginx/{{ _domain }}.error;          
-    access_log /var/log/nginx/{{ _domain }}.access;  
-   {% endif %}                                                
-    location / {                                                    
-       proxy_pass         http://localhost:8000;                    
-       proxy_set_header Host $host;
-       proxy_set_header X-Real-IP $remote_addr;                            
-    }                                                               
-    } 
+   ServerName {{ _domain }}
+   ServerAlias www.{{ _domain }} 
+   {% elif default_dns is defined %}
+   ServerName {{ _domain }}
+   {% endif %}
+   DocumentRoot /var/www/{{ _domain }}/public_html
+   ErrorLog /var/log/apache2/error.log
+   CustomLog /var/log/apache2/access.log combined
+   <files xmlrpc.php>
+   order allow,deny
+   deny from all
+   </files>
+</VirtualHost>
