@@ -1,0 +1,26 @@
+---
+ # apache
+- name: installing apache
+  apt:
+    pkg:
+    - apache2
+    state: present
+
+- name: enabling apache on boot
+  service:
+    name: apache2
+    enabled: yes
+
+- name: enable apache rewrite module
+  apache2_module:
+    name: rewrite
+    state: present
+  notify: restart apache2
+
+- name: disable apache default site
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+
+- name: apache configs for customer domain
+  import_tasks: zabbix_apache_configs.yml
