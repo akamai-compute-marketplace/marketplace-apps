@@ -5,10 +5,56 @@
 
 - name: install zabbix pkgs
   apt: 
-    pkgs: 
+    pkg: 
       - zabbix-server-mysql 
       - zabbix-frontend-php 
       - zabbix-apache-conf 
       - zabbix-sql-scripts 
       - zabbix-agent
     update_cache: true
+
+- name: create zabbix database
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    state: present
+    encoding: utf8mb4 
+    collation: utf8mb4_bin
+
+- name: create zabbix user
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    password: '{{ zabbix_db_pass }}'
+    priv: '*.*:zabbix'
+    state: present
+
+- name: set log bin relaxed
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 1
+    mode: global 
+  
+- name: import inital db schema
+  community.mysql.mysql_db:
+    state: import
+    name: zabbix
+    login_user: zabbix
+    login_password: '{{ zabbix_db_pass }}'
+    encoding: utf8mb4
+    target: /usr/share/zabbix-sql-scripts/mysql/server.sql.gz
+
+- name: set log bin strict
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 0
+    mode: global
+
+- name: write zabbix password to the conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regex: '^\# DBPassword\= '
+    line: "DBPassword={{ zabbix_db_pass }}"
+  notify: 
+    - restart zabbix-agent
+    - restart zabbix-server

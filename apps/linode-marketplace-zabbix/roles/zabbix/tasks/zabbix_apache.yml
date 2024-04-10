@@ -22,5 +22,20 @@
     path: /etc/apache2/sites-enabled/000-default.conf
     state: absent
 
-- name: apache configs for customer domain
-  import_tasks: zabbix_apache_configs.yml
+- name: moving vhost template
+  template:
+    src: templates/vhost.conf.j2
+    dest: "/etc/apache2/sites-available/{{ _domain }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: symlinking our vhost
+  file:
+    src: "/etc/apache2/sites-available/{{ _domain }}.conf"
+    dest: "/etc/apache2/sites-enabled/{{ _domain }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+    state: link
+  notify: reload apache2
