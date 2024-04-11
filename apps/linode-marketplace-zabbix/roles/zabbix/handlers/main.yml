@@ -1,17 +1,10 @@
-- name: restart apache2
+- name: bounce zabbix
   systemd:
-    name: apache2
-    state: restarted
-    enabled: yes
-
-- name: restart zabbix-server 
-  systemd: 
-    name: zabbix-server
-    state: restarted
-    enable: yes
-
-- name: restart zabbix-agent
-  systemd: 
-    name: zabbix-agent
-    state: restarted
-    enabled: yes
+    name: 
+      - mysql
+      - zabbix-server
+      - zabbix-agent
+      - nginx
+      - php8.1-fpm
+  state: restarted
+  enabled: true

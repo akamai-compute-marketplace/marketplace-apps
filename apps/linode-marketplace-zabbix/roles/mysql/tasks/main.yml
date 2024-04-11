@@ -11,12 +11,3 @@
 - name: running mysql secure installation
   import_role:
     name: securemysql
-
-# php
-- name: install php
-  apt:
-    pkg:
-    - php-common
-    - libapache2-mod-php
-    - php-mysql
-    state: present

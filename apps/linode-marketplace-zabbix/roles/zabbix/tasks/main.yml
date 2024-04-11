@@ -1,9 +1,86 @@
----
-- name: install mysql
-  include_tasks: zabbix_mysql.yml
+--- 
+- name: import nginx certbot
+  import_role: 
+    name: certbot_ssl
 
-- name: install apache
-  include_tasks: zabbix_apache.yml
+- name: add zabbix deb
+  apt: 
+    deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
 
-- name: install zabbix
-  include_tasks: zabbix_install.yml
+- name: install zabbix pkgs
+  apt: 
+    pkg: 
+      - zabbix-server-mysql 
+      - zabbix-frontend-php 
+      - zabbix-nginx-conf
+      - zabbix-sql-scripts 
+      - zabbix-agent
+    update_cache: true
+
+- name: create zabbix database
+  mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    state: present
+    encoding: utf8mb4 
+    collation: utf8mb4_bin
+
+- name: create zabbix user
+  mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    password: '{{ zabbix_db_pass }}'
+    priv: 'zabbix.*:ALL'
+    state: present
+
+- name: set log bin relaxed
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 1
+    mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}' 
+  
+- name: import inital db schema
+  community.mysql.mysql_db:
+    state: import
+    name: zabbix
+    login_user: zabbix
+    login_password: '{{ zabbix_db_pass }}'
+    encoding: utf8mb4
+    target: /usr/share/zabbix-sql-scripts/mysql/server.sql.gz
+
+- name: set log bin strict
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 0
+    mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+
+- name: write zabbix password to the conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regex: '^\# DBPassword\= '
+    line: "DBPassword={{ zabbix_db_pass }}"
+
+- name: set zabbix site name in conf
+  lineinfile:
+    path: /etc/zabbix/nginx.conf
+    regex: '^\# listen 8080\;'
+    line: "listen 8080"
+
+- name: set zabbix site name in conf
+  lineinfile:
+    path: /etc/zabbix/nginx.conf
+    regex: '^\# server\_name example\.com\;'
+    line: "server_name {{ _domain }}"
+
+- name: template ssl_vhost
+  template: 
+    src: ../roles/nginx/templates/vhost_ssl.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: bounce zabbix
