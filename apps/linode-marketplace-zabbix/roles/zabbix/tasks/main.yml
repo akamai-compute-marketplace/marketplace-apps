@@ -66,13 +66,13 @@
   lineinfile:
     path: /etc/zabbix/nginx.conf
     regex: '^\#        listen          8080\;'
-    line: "          listen           8080"
+    line: "          listen           8080;"
 
 - name: set zabbix site name in conf
   lineinfile:
     path: /etc/zabbix/nginx.conf
     regex: '^\#        server\_name     example\.com\;'
-    line: "           server_name     {{ _domain }}"
+    line: "           server_name     {{ _domain }};"
 
 # nginx configs for ssl
 
