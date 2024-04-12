@@ -1,15 +1,15 @@
-# Linode Yacht Deployment One-Click APP
+# Linode Zabbix Deployment One-Click APP
 
-Simplify Docker deployments and make containerization easy for anyone to use. Please note: Yacht is still in alpha and is not recommended for production use.
+Zabbix is an enterprise-class, open-source, distributed monitoring solution. Designed as an all-in-one monitoring solution, Zabbix can track performance and availability of network servers, devices, services, and other IT resources. Zabbix empowers administrators to quickly respond to incidents with on-screen display capabilities and alerts by email, SMS, or Jabber. Users can also collect, store, manage, and analyze information received from IT infrastructure. Actively used by SMBs and large enterprises across all industries and in almost every country, Zabbix has a robust community driving its continued development.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
-| selfhostedpro/yacht | Latest | web interface for managing docker containers |
-
+| Nginx    | 20.10    | Container Management tool |
+| MariaDB | 1.29   | Container Management tool |
+| PHP-FPM | Latest | web interface for managing docker containers |
+| Zabbix | 
 
 **Supported Distributions:**
 
@@ -36,24 +36,12 @@ SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
+# add udfs
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
     -X POST -d '{
-      "backups_enabled": true,
-      "swap_size": 512,
-      "image": "linode/ubuntu2204",
-      "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
-      "stackscript_data": {
-        "yemail": "${YEMAIL}",
-        "ypassword" : "${YPASSWORD}",
-        "compose_support" : "${COMPOSE_SUPPORT}",
-        "ytheme" : "${YTHEME}"
+# add
       },
       "authorized_users": [
         "myUser",
@@ -72,17 +60,14 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export YEMAIL="email@domain.com"
-export YPASSWORD="email@domain.com"
-export COMPOSE_SUPPORT="Yes|No"
-export YTHEME="Default|RED|OMV"
+# add udfs
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${YEMAIL}"}, {"ypassword" : "${YPASSWORD}"}, {"compose_support" : "${COMPOSE_SUPPORT}"}, {"ytheme" : "${YTHEME}"}' \
+  --stackscript_id 741208 \
+  --stackscript_data '{ #add data }' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"

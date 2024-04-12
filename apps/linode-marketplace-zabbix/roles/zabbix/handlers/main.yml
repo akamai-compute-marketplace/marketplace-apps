@@ -1,9 +1,0 @@
-- name: bounce zabbix
-  systemd:
-    name: 
-      - mysql
-      - zabbix-server
-      - zabbix-agent
-      - php8.1-fpm
-    state: restarted
-    enabled: true
