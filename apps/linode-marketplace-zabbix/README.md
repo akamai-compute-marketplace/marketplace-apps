@@ -6,10 +6,10 @@ Zabbix is an enterprise-class, open-source, distributed monitoring solution. Des
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Nginx    | 20.10    | Container Management tool |
-| MariaDB | 1.29   | Container Management tool |
-| PHP-FPM | Latest | web interface for managing docker containers |
-| Zabbix | 
+| Nginx    | latest   | Open Source Webserver |
+| MariaDB | 10.6.16   | Open Source SQL Database |
+| PHP-FPM | 8.1 | Server Side scripting |
+| Zabbix | 6.0 | Open Source Monitoring |
 
 **Supported Distributions:**
 
@@ -36,24 +36,30 @@ SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-# add udfs
 
 curl -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TOKEN}" \
-    -X POST -d '{
-# add
-      },
-      "authorized_users": [
-        "myUser",
-        "secondaryUser"
-      ],
-      "booted": true,
-      "label": "linode123",
-      "type": "g6-standard-2",
-      "region": "us-east",
-      "group": "Linode-Group"
-    }' \
-https://api.linode.com/v4/linode/instances
+-H "Authorization: Bearer $TOKEN" \
+-X POST -d '{
+    "authorized_users": [],
+    "backups_enabled": false,
+    "booted": true,
+    "image": "linode/ubuntu22.04",
+    "label": "zabbix-oca-us-mia",
+    "private_ip": false,
+    "region": "us-mia",
+    "root_pass": "$ROOT_PASS",
+    "stackscript_data": {
+        "disable_root": "No",
+        "user_name": "sudo_user",
+        "soa_email_address": "email@tld.com",
+        "token_password": "$TOKEN",
+        "subdomain": "zabbix",
+        "domain": "example.com"
+    },
+    "stackscript_id": 741208,
+    "tags": [],
+    "type": "g6-standard-4"
+}' https://api.linode.com/v4/linode/instances
 ```
 
 CLI:
@@ -63,15 +69,15 @@ export ROOT_PASS="aComplexP@ssword"
 # add udfs
 
 linode-cli linodes create \
-  --label linode123 \
+  --label zabbix-oca-us-mia \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 741208 \
-  --stackscript_data '{ #add data }' \
-  --region us-east \
-  --type g6-standard-2 \
-  --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
-  --authorized_users "myUser"
+  --stackscript_data '{"disable_root": "No","user_name":"sudo_user","soa_email_address":"email@tld.com","token_password":"$TOKEN","subdomain":"zabbix","domain":"example.com"}' \
+  --region us-mia \
+  --type g6-standard-4 \
+  --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer" \
+  --authorized_users "myUser" \
   --authorized_users "secondaryUser"
 ```
 
