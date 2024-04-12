@@ -4,7 +4,6 @@
       - mysql
       - zabbix-server
       - zabbix-agent
-      - nginx
       - php8.1-fpm
-  state: restarted
-  enabled: true
+    state: restarted
+    enabled: true

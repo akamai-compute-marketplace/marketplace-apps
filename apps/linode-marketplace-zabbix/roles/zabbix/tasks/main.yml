@@ -1,8 +1,4 @@
 --- 
-- name: import nginx certbot
-  import_role: 
-    name: certbot_ssl
-
 - name: add zabbix deb
   apt: 
     deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
@@ -64,23 +60,55 @@
     regex: '^\# DBPassword\= '
     line: "DBPassword={{ zabbix_db_pass }}"
 
-- name: set zabbix site name in conf
-  lineinfile:
-    path: /etc/zabbix/nginx.conf
-    regex: '^\# listen 8080\;'
-    line: "listen 8080"
+# do we still need these?
 
-- name: set zabbix site name in conf
-  lineinfile:
-    path: /etc/zabbix/nginx.conf
-    regex: '^\# server\_name example\.com\;'
-    line: "server_name {{ _domain }}"
+#- name: set zabbix site name in conf
+#  lineinfile:
+#    path: /etc/zabbix/nginx.conf
+#    regex: '^\# listen 8080\;'
+#    line: "listen 8080"
 
-- name: template ssl_vhost
-  template: 
-    src: ../roles/nginx/templates/vhost_ssl.conf.j2
-    dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
-    owner: root
-    group: root
-    mode: 0644
+#- name: set zabbix site name in conf
+#  lineinfile:
+#    path: /etc/zabbix/nginx.conf
+#    regex: '^\# server\_name example\.com\;'
+#    line: "server_name {{ _domain }}"
+
+# nginx configs for ssl
+
+- name: update default config file
+  template:
+    src: "templates/vhost_default.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+
+- name: stop nginx to run certbot standalone
+  systemd:
+    name: nginx
+    state: stopped
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: vhost file
+  template:
+    src: "templates/vhost_ssl.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: start nginx after certbot gen
+  systemd:
+    name: nginx
+    state: started
   notify: bounce zabbix

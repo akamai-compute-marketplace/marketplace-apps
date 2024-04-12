@@ -1,9 +1,3 @@
-# upstream to abstract backend connection(s) for php
-upstream php {
-        server unix:/tmp/php-cgi.socket;
-        server 127.0.0.1:9000;
-}
-
 server {
     listen 80;
     listen [::]:80;
