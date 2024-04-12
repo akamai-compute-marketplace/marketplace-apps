@@ -14,7 +14,7 @@
     update_cache: true
 
 - name: create zabbix database
-  mysql_db:
+  community.mysql.mysql_db:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: zabbix
     state: present
@@ -22,7 +22,7 @@
     collation: utf8mb4_bin
 
 - name: create zabbix user
-  mysql_user:
+  community.mysql.mysql_user:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: zabbix
     password: '{{ zabbix_db_pass }}'
