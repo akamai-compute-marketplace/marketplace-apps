@@ -57,11 +57,10 @@
 - name: write zabbix password to the conf
   lineinfile:
     path: /etc/zabbix/zabbix_server.conf
-    regex: '^\# DBPassword\= '
+    regex: '^\# DBPassword\=' 
     line: "DBPassword={{ zabbix_db_pass }}"
 
 # is there a better regex?
-
 - name: set zabbix site name in conf
   lineinfile:
     path: /etc/zabbix/nginx.conf
@@ -75,7 +74,6 @@
     line: "           server_name     {{ _domain }};"
 
 # nginx configs for ssl
-
 - name: update default config file
   template:
     src: "templates/vhost_default.conf.j2"
@@ -107,7 +105,16 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
 
-- name: bounce zabbix
+#still needs udfs
+- name: add zabbix front end configs
+  template: 
+    src: templates/zabbix.conf.php.j2
+    dest: /etc/zabbix/web/zabbix.conf.php
+    owner: www-data
+    group: www-data
+    mode: '0600'
+
+- name: restart services
   systemd:
     name: "{{ item }}"
     state: restarted
