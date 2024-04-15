@@ -105,7 +105,6 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
 
-#still needs udfs
 - name: add zabbix front end configs
   template: 
     src: templates/zabbix.conf.php.j2

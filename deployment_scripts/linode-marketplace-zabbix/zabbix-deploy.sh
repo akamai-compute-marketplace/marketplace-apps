@@ -13,7 +13,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Zabbix Settings 
-
+#<UDF name="zabbix_server_name" label="A friendly name for your Zabbix server" default="zabbix-server">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
