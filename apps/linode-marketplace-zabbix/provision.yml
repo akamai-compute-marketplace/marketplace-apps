@@ -13,16 +13,11 @@
     - name: generating MySQL password
       import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
 
-    - name: generating zabbix database password
-      set_fact:
-        zabbix_db_pass: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-        zabbix_gui_pass: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-      no_log: true
-
     - name: writing zabbix passwords to vars
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          zabbix_db_pass: {{ zabbix_db_pass }}
-          zabbix_gui_pass: {{ zabbix_gui_pass }}
+          zabbix_db_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          zabbix_gui_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+      no_log: true
