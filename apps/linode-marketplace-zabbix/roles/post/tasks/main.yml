@@ -14,6 +14,8 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Zabbix DB User: zabbix
+      Zabbix DB Username: zabbix
       Zabbix DB Password: {{ zabbix_db_pass }}
+      Zabbix Admin GUI Username: Admin
+      Zabbix Admin GUI Password: {{ zabbix_gui_pass }}
       MySQL Root Password: {{ mysql_root_password }}
