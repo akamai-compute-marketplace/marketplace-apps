@@ -37,6 +37,8 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: standalone
+  # zabbix server name
+  zabbix_server_name: ${ZABBIX_SERVER_NAME}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
