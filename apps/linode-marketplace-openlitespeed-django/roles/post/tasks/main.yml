@@ -10,6 +10,11 @@
     dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
-      Web Admin password: {{ decoded_password }}
+      OpenLiteSpeed admin password: {{ decoded_password }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+
+- name: Remove /root/.litespeed_password
+  ansible.builtin.file:
+    path: /root/.litespeed_password
+    state: absent

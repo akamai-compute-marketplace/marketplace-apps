@@ -1,4 +1,9 @@
 ---
+# set_hostname
+- name: setting up hostname
+  import_role:
+    name: hostname
+
 # sets account ssh pubkey to limited user
 - name: set ssh pubkey
   import_role:
@@ -13,6 +18,10 @@
 - name: update system packages
   import_role:
     name: update_pkgs
+
+# ufw rules 
+- name: apply ufw rules
+  import_tasks: ufw_rules.yml
 
 # fail2ban
 - name: enabling fail2ban
