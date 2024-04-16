@@ -10,6 +10,6 @@
     dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
-      Web Admin password: {{ litespeed_password }}
+      Web Admin password: {{ decoded_password }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}

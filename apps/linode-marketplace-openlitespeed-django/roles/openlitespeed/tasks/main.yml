@@ -26,3 +26,7 @@
   ansible.builtin.slurp:
     src: /root/.litespeed_password
   register: litespeed_password
+
+- name: Decode base64 password and extract password
+  set_fact:
+    decoded_password: "{{ (litespeed_password.content | b64decode).split('=')[1].strip() }}"
