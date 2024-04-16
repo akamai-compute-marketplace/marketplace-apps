@@ -41,7 +41,7 @@ function run {
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip3 install virtualenv
-  python3 -m virtualenv /usr/local/lsws/Example/html/
+  python3 -m virtualenv ${VHDOCROOT}/
   source ${VHDOCROOT}/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
