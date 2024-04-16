@@ -75,7 +75,7 @@
 
 - name: update zabbix Admin password
   community.mysql.mysql_query: 
-    login: zabbix
+    login_db: zabbix
     login_user: zabbix
     login_password: '{{ zabbix_db_pass }}'
     query: update zabbix.users set passwd=md5('{{ zabbix_gui_pass }}') where username='Admin';
