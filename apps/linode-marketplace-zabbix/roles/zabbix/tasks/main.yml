@@ -60,19 +60,6 @@
     regex: '^\# DBPassword\=' 
     line: "DBPassword={{ zabbix_db_pass }}"
 
-# is there a better regex?
-- name: set zabbix site name in conf
-  lineinfile:
-    path: /etc/zabbix/nginx.conf
-    regex: '^\#        listen          8080\;'
-    line: "          listen           8080;"
-
-- name: set zabbix site name in conf
-  lineinfile:
-    path: /etc/zabbix/nginx.conf
-    regex: '^\#        server\_name     example\.com\;'
-    line: "           server_name     {{ _domain }};"
-
 - name: update zabbix Admin password
   community.mysql.mysql_query: 
     login_db: zabbix
@@ -113,10 +100,15 @@
     path: "/etc/nginx/sites-enabled/default"
     state: absent
 
+- name: unlink the default zabbix configs
+  file: 
+    path: "/etc/nginx/conf.d/zabbix.conf"
+    state: absent
+
 - name: add zabbix front end configs
   template: 
-    src: templates/zabbix.conf.php.j2
-    dest: /etc/zabbix/web/zabbix.conf.php
+    src: "templates/zabbix.conf.php.j2"
+    dest: "/etc/zabbix/web/zabbix.conf.php"
     owner: www-data
     group: www-data
     mode: '0600'
