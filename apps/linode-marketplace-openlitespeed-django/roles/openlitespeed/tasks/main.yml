@@ -14,13 +14,13 @@
       loop_control:
         label: "{{ item.url }}"
 
-    - name: Execute OpenLiteSpeed and Django setup scripts
-      ansible.builtin.command: bash "{{ item.dest }}"
-      loop:
-        - { dest: '/tmp/djangosetup.sh' }
-        - { dest: '/tmp/per-instance.sh' }
-      loop_control:
-        label: "{{ item.dest }}"
+- name: Execute OpenLiteSpeed and Django setup scripts
+  ansible.builtin.command: bash "{{ item.dest }}"
+  loop:
+    - { dest: '/tmp/djangosetup.sh' }
+    - { dest: '/tmp/per-instance.sh' }
+  loop_control:
+    label: "{{ item.dest }}"
 
 - name: Slurp content of /root/.litespeed_password
   ansible.builtin.slurp:
