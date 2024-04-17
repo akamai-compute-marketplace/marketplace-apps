@@ -7,7 +7,12 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="django_superuser_username" label="Django Admin Username" example="myadmin">
 #<UDF name="django_superuser_email" label="Django Admin Email Address" example="user@domain.tld">
-#<UDF name="django_superuser_password" label="Django Admin Password" fieldType="password" default="">
+#<UDF name="django_superuser_password" label="Django Admin Password" fieldType="password" example="aComplexP@ssword">
+
+## Domain Settings
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"

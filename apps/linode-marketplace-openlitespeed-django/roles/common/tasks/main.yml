@@ -13,11 +13,32 @@
   import_role: 
     name: securessh
   when: disable_root is defined
-  
+
+# write _domain to vars.
+- name: write _domain to vars
+  lineinfile: 
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      _domain: {{ _domain }}
+
+# dns creation
+- name: create dns A record
+  import_role:
+    name: create_dns_record
+  when: 
+    - token_password is defined
+    - default_dns is not defined
+
 # apt_setup_update
 - name: update system packages
   import_role:
     name: update_pkgs
+
+# ufw_install
+- name: enabling ufw
+  import_role:
+    name: ufw
 
 # ufw rules 
 - name: apply ufw rules
