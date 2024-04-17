@@ -54,6 +54,22 @@ EOF
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
   fi
+
+  if [[ -n ${DJANGO_SUPERUSER_USERNAME} ]]; then
+    echo "django_superuser_username: ${DJANGO_SUPERUSER_USERNAME}" >> ${group_vars};
+  else echo "No django_superuser_username entered";
+  fi
+
+  if [[ -n ${DJANGO_SUPERUSER_EMAIL} ]]; then
+    echo "django_superuser_email: ${DJANGO_SUPERUSER_EMAIL}" >> ${group_vars};
+  else echo "No django_superuser_email entered";
+  fi
+
+  if [[ -n ${DJANGO_SUPERUSER_PASSWORD} ]]; then
+    echo "django_superuser_password: ${DJANGO_SUPERUSER_PASSWORD}" >> ${group_vars};
+  else echo "No django_superuser_password entered";
+  fi
+
 }
 
 function run {
