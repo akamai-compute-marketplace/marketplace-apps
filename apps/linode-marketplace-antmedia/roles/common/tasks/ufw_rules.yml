@@ -1,0 +1,63 @@
+---
+# set app specific ufw rules 
+#https://antmedia.io/docs/guides/installing-on-linux/installing-ams-on-linux/#server-ports
+- name: Allow all access to tcp port 22
+  community.general.ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+- name: Allow all access to tcp port 80
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: Allow all access to tcp port 443
+  community.general.ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+
+
+- name: Allow all access to tcp port 5443
+  community.general.ufw:
+    rule: allow
+    port: '5443'
+    proto: tcp
+
+- name: Allow all access to tcp port 46531
+  community.general.ufw:
+    rule: allow
+    port: '46531'
+    proto: tcp
+
+- name: Allow all access to tcp port 5443
+  community.general.ufw:
+    rule: allow
+    port: '5443'
+    proto: tcp
+
+- name: Allow all access to tcp port 46531
+  community.general.ufw:
+    rule: allow
+    port: '46531'
+    proto: tcp
+
+- name: Allow all access to tcp port 9999
+  community.general.ufw:
+    rule: allow
+    port: '9999'
+    proto: tcp
+  
+- name: Allow all access to tcp port 1935
+  community.general.ufw:
+    rule: allow
+    port: '1935'
+    proto: tcp
+
+- name: Allow UDP traffic to port range 50000-60000
+  community.general.ufw:
+    rule: allow
+    port: '50000:60000'
+    proto: udp
