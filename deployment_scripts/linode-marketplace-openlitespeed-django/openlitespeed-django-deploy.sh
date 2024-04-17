@@ -5,6 +5,9 @@ trap "cleanup $? $LINENO" EXIT
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+#<UDF name="django_superuser_username" label="Django Admin Username" example="myadmin">
+#<UDF name="django_superuser_email" label="Django Admin Email Address" example="user@domain.tld">
+#<UDF name="django_superuser_password" label="Django Admin Password" fieldType="password" default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"

@@ -30,3 +30,13 @@
 - name: Decode base64 password and extract password
   set_fact:
     decoded_password: "{{ (litespeed_password.content | b64decode).split('=')[1].strip() }}"
+
+- name: Create Django superuser
+  ansible.builtin.command:
+    cmd: >
+      {{ ansible_python_interpreter }} manage.py createsuperuser --no-input
+    chdir: /usr/local/lsws/Example/html/demo
+    environment:
+      DJANGO_SUPERUSER_USERNAME: "{{ django_superuser_username }}"
+      DJANGO_SUPERUSER_EMAIL: "{{ django_superuser_email }}"
+      DJANGO_SUPERUSER_PASSWORD: "{{ django_superuser_password }}"
