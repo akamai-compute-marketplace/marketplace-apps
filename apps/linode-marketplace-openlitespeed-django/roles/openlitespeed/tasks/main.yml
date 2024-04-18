@@ -36,7 +36,7 @@
     command: "createsuperuser --noinput --username={{ django_superuser_username }} --email={{ django_superuser_email }}"
     project_path: "/usr/local/lsws/Example/html/demo"
   environment:
-    DJANGO_SUPERUSER_PASSWORD: "{{ django_superuser_password }}"
+    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
 
 - name: Update domain setup script to accept _domain command line argument
   ansible.builtin.lineinfile:
