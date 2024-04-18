@@ -7,7 +7,6 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 #<UDF name="django_superuser_username" label="Django Admin Username" example="myadmin">
 #<UDF name="django_superuser_email" label="Django Admin Email Address" example="user@domain.tld">
-#<UDF name="django_superuser_password" label="Django Admin Password" fieldType="password" example="aComplexP@ssword">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
@@ -63,11 +62,6 @@ EOF
   if [[ -n ${DJANGO_SUPERUSER_EMAIL} ]]; then
     echo "django_superuser_email: ${DJANGO_SUPERUSER_EMAIL}" >> ${group_vars};
   else echo "No django_superuser_email entered";
-  fi
-
-  if [[ -n ${DJANGO_SUPERUSER_PASSWORD} ]]; then
-    echo "django_superuser_password: ${DJANGO_SUPERUSER_PASSWORD}" >> ${group_vars};
-  else echo "No django_superuser_password entered";
   fi
 
 }

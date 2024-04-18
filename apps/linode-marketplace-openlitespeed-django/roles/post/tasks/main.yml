@@ -10,7 +10,8 @@
     dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
-      OpenLiteSpeed admin password: {{ decoded_password }}
+      OpenLiteSpeed admin password: {{ litespeed_decoded_password }}
+      Django admin password: {{ django_password }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
