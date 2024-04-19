@@ -65,6 +65,11 @@ EOF
   else echo "No django_superuser_email entered";
   fi
 
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No soa_email_address entered";
+  fi
+
 }
 
 function run {
