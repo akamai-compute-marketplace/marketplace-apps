@@ -16,7 +16,7 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Django Settings 
-#<UDF name="soa_email_address" label="Admin Email for the Django server and Let's Encrypt SSL certificate">
+#<UDF name="soa_email_address" label="Admin Email for the Django server and Let's Encrypt SSL certificate" default="admin@domain.tld">
 #<UDF name="django_user" label="The Django app user: *No Capital Letters or Special Characters*">
 
 # git repo

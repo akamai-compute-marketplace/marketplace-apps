@@ -38,12 +38,25 @@
   environment:
     DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
 
-- name: Update domain setup script to accept _domain command line argument
-  ansible.builtin.lineinfile:
-    path: /opt/domainsetup.sh
-    regexp: "^DOMAIN=''$"
-    line: "'DOMAIN=\\${1:-\\$DOMAIN}'"
+# - name: Update domain setup script to accept _domain command line argument
+#   ansible.builtin.lineinfile:
+#     path: /opt/domainsetup.sh
+#     regexp: "^DOMAIN=''$"
+#     line: "DOMAIN=\\${1:-\\$DOMAIN}"
+
+# - name: Run domain setup script
+#   ansible.builtin.shell:
+#     cmd: "/opt/domainsetup.sh {{ _domain }}"
 
 - name: Run domain setup script
-  ansible.builtin.shell:
-    cmd: "/opt/domainsetup.sh {{ _domain }}"
+  ansible.builtin.expect:
+    command: "/opt/domainsetup.sh"
+    responses:
+      Question:
+      - "{{ _domain }}"
+      - "y"
+      - "y"
+      - "{{ soa_email_address }}"
+      - "y"
+      - "y"
+      - "y"
