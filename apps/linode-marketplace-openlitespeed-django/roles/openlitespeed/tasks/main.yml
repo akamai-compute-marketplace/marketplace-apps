@@ -48,29 +48,29 @@
 #   ansible.builtin.shell:
 #     cmd: "/opt/domainsetup.sh {{ _domain }}"
 
-# - name: Run domain setup script
-#   ansible.builtin.expect:
-#     command: "/opt/domainsetup.sh"
-#     responses:
-#       Question:
-#       - "{{ _domain }}"
-#       - "y"
-#       - "y"
-#       - "{{ soa_email_address }}"
-#       - "y"
-#       - "y"
-#       - "y"
-
-- name: Run domain setup script with full automation
+- name: Run domain setup script
   ansible.builtin.expect:
     command: "/opt/domainsetup.sh"
     responses:
-      "(?i)^Your domain:": "{{ _domain }}"
-      "(?i)^Please verify it is correct. \\[y/N\\]": "y"
-      "(?i)^Do you wish to issue a Let's encrypt certificate for this domain\\? \\[y/N\\]": "y"
-      "(?i)^Please enter your E-mail:": "{{ soa_email_address }}"
-      "(?i)^Please verify it is correct: \\[y/N\\]": "y"
-      "(?i)^Do you wish to force HTTPS rewrite rule for this domain\\? \\[y/N\\]": "y"
-      "(?i)^Do you wish to update the system now\\? This will update the web server as well. \\[Y/n\\]\\?": "y"
+      Question:
+      - "{{ _domain }}"
+      - "y"
+      - "y"
+      - "{{ soa_email_address }}"
+      - "y"
+      - "y"
+      - "y"
+
+- name: Run domain setup script
+  ansible.builtin.expect:
+    command: "/opt/domainsetup.sh"
+    responses:
+      'Your domain:': "{{ _domain }}"
+      'Please verify it is correct\. \[y/N\]': "y"
+      'Do you wish to issue a Let''s encrypt certificate for this domain\? \[y/N\]': "y"
+      'Please enter your E-mail:': "{{ soa_email_address }}"
+      'Please verify it is correct: \[y/N\]:': "y"
+      'Do you wish to force HTTPS rewrite rule for this domain\? \[y/N\]:': "y"
+      'Do you wish to update the system now\? This will update the web server as well\. \[Y/n\]\?:': "y"
    
   
