@@ -66,10 +66,11 @@
     command: "/opt/domainsetup.sh"
     responses:
       "(?i)^Your domain:": "{{ _domain }}"
-      "(?i)^Please verify it is correct. \[y/N\]": "y"
-      "(?i)^Do you wish to issue a Let's encrypt certificate for this domain\? \[y/N\]": "y"
+      "(?i)^Please verify it is correct. \\[y/N\\]": "y"
+      "(?i)^Do you wish to issue a Let's encrypt certificate for this domain\\? \\[y/N\\]": "y"
       "(?i)^Please enter your E-mail:": "{{ soa_email_address }}"
-      "(?i)^Please verify it is correct: \[y/N\]": "y"
-      "(?i)^Do you wish to force HTTPS rewrite rule for this domain\? \[y/N\]": "y"
-      "(?i)^Do you wish to update the system now\? This will update the web server as well. \[Y/n\]?": "y"
-    
+      "(?i)^Please verify it is correct: \\[y/N\\]": "y"
+      "(?i)^Do you wish to force HTTPS rewrite rule for this domain\\? \\[y/N\\]": "y"
+      "(?i)^Do you wish to update the system now\\? This will update the web server as well. \\[Y/n\\]\\?": "y"
+   
+  
