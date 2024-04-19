@@ -42,7 +42,7 @@
   ansible.builtin.lineinfile:
     path: /opt/domainsetup.sh
     regexp: "^DOMAIN=''$"
-    line: "DOMAIN=\${1:-\$DOMAIN}"
+    line: "'DOMAIN=\${1:-\$DOMAIN}'"
 
 - name: Run domain setup script
   ansible.builtin.shell:
