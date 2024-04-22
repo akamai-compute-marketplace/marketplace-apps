@@ -51,13 +51,12 @@
       "(?i)Do you wish to update the system now": "y"
     timeout: 120
 
-- name: Update keyFile and certFile paths in lsws admin_config.conf
+- name: Update SSL path for lsws admin_config.conf
   ansible.builtin.lineinfile:
     path: /usr/local/lsws/admin/conf/admin_config.conf
-    regexp: '^\\s*{{ item.regexp }}\\s*'
-    line: '{{ item.line }}'
-    backrefs: yes
+    regexp: '^\s*{{ item.key }}\s+.*$'
+    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
   loop:
-    - { regexp: 'keyFile\\s+\\$SERVER_ROOT/admin/conf/webadmin\\.key', line: 'keyFile               /etc/letsencrypt/live/{{ _domain }}/privkey.pem' }
-    - { regexp: 'certFile\\s+\\$SERVER_ROOT/admin/conf/webadmin\\.crt', line: 'certFile              /etc/letsencrypt/live/{{ _domain }}/fullchain.pem' }
+    - { key: 'keyFile', file: 'privkey.pem' }
+    - { key: 'certFile', file: 'fullchain.pem' }
   notify: reload lsws
