@@ -51,14 +51,14 @@
       "(?i)Do you wish to update the system now": "y"
     timeout: 120
 
-- name: Replace LiteSpeed SSL configuration files
-  ansible.builtin.copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: root
-    group: root
-    mode: '0644'
-  loop:
-    - { src: '/etc/letsencrypt/live/172-233-197-22.ip.linodeusercontent.com/privkey.pem', dest: '/usr/local/lsws/admin/conf/webadmin.key' }
-    - { src: '/etc/letsencrypt/live/172-233-197-22.ip.linodeusercontent.com/fullchain.pem', dest: '/usr/local/lsws/admin/conf/webadmin.crt' }
+- name: Update SSL configuration in vhconf.conf
+  ansible.builtin.blockinfile:
+    path: /usr/local/lsws/conf/vhosts/Example/vhconf.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      vhssl  {
+        keyFile                 /etc/letsencrypt/live/{{ _domain }}/privkey.pem
+        certFile                /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+        certChain               1
+      }
   notify: reload lsws
