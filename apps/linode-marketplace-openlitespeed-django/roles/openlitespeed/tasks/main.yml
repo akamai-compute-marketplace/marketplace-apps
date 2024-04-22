@@ -38,29 +38,6 @@
   environment:
     DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
 
-# - name: Update domain setup script to accept _domain command line argument
-#   ansible.builtin.lineinfile:
-#     path: /opt/domainsetup.sh
-#     regexp: "^DOMAIN=''$"
-#     line: "DOMAIN=\\${1:-\\$DOMAIN}"
-
-# - name: Run domain setup script
-#   ansible.builtin.shell:
-#     cmd: "/opt/domainsetup.sh {{ _domain }}"
-
-# - name: Run domain setup script
-#   ansible.builtin.expect:
-#     command: "/opt/domainsetup.sh"
-#     responses:
-#       Question:
-#       - "{{ _domain }}"
-#       - "y"
-#       - "y"
-#       - "{{ soa_email_address }}"
-#       - "y"
-#       - "y"
-#       - "y"
-
 - name: Run domain setup script with full automation
   ansible.builtin.expect:
     command: "/opt/domainsetup.sh"
@@ -73,9 +50,15 @@
       "(?i)Do you wish to force HTTPS rewrite rule for this domain": "y"
       "(?i)Do you wish to update the system now": "y"
     timeout: 120
-  register: expect_output
 
-- name: Show expect task output
-  ansible.builtin.debug:
-    var: expect_output
-  
+- name: Replace LiteSpeed SSL configuration files
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: '/etc/letsencrypt/live/172-233-197-22.ip.linodeusercontent.com/privkey.pem', dest: '/usr/local/lsws/admin/conf/webadmin.key' }
+    - { src: '/etc/letsencrypt/live/172-233-197-22.ip.linodeusercontent.com/fullchain.pem', dest: '/usr/local/lsws/admin/conf/webadmin.crt' }
+  notify: reload lsws
