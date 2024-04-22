@@ -51,14 +51,13 @@
       "(?i)Do you wish to update the system now": "y"
     timeout: 120
 
-- name: Update SSL configuration in vhconf.conf
-  ansible.builtin.blockinfile:
-    path: /usr/local/lsws/conf/vhosts/Example/vhconf.conf
-    marker: "# {mark} ANSIBLE MANAGED BLOCK"
-    block: |
-      vhssl  {
-        keyFile                 /etc/letsencrypt/live/{{ _domain }}/privkey.pem
-        certFile                /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
-        certChain               1
-      }
+- name: Update keyFile and certFile paths in lsws admin_config.conf
+  ansible.builtin.lineinfile:
+    path: /usr/local/lsws/admin/conf/admin_config.conf
+    regexp: '^\\s*{{ item.regexp }}\\s*'
+    line: '{{ item.line }}'
+    backrefs: yes
+  loop:
+    - { regexp: 'keyFile\\s+\\$SERVER_ROOT/admin/conf/webadmin\\.key', line: 'keyFile               /etc/letsencrypt/live/{{ _domain }}/privkey.pem' }
+    - { regexp: 'certFile\\s+\\$SERVER_ROOT/admin/conf/webadmin\\.crt', line: 'certFile              /etc/letsencrypt/live/{{ _domain }}/fullchain.pem' }
   notify: reload lsws
