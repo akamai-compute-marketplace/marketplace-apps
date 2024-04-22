@@ -60,3 +60,10 @@
     - { key: 'keyFile', file: 'privkey.pem' }
     - { key: 'certFile', file: 'fullchain.pem' }
   notify: reload lsws
+
+- name: Comment out ssh motd in pam_motd
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
+    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+    backrefs: yes
