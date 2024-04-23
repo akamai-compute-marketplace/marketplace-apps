@@ -1,0 +1,126 @@
+--- 
+- name: add zabbix deb
+  apt: 
+    deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
+
+- name: install zabbix pkgs
+  apt: 
+    pkg: 
+      - zabbix-server-mysql 
+      - zabbix-frontend-php 
+      - zabbix-nginx-conf
+      - zabbix-sql-scripts 
+      - zabbix-agent
+    update_cache: true
+
+- name: create zabbix database
+  community.mysql.mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    state: present
+    encoding: utf8mb4 
+    collation: utf8mb4_bin
+
+- name: create zabbix user
+  community.mysql.mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: zabbix
+    password: '{{ zabbix_db_pass }}'
+    priv: 'zabbix.*:ALL'
+    state: present
+
+- name: set log bin relaxed
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 1
+    mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}' 
+  
+- name: import inital db schema
+  community.mysql.mysql_db:
+    state: import
+    name: zabbix
+    login_user: zabbix
+    login_password: '{{ zabbix_db_pass }}'
+    encoding: utf8mb4
+    target: /usr/share/zabbix-sql-scripts/mysql/server.sql.gz
+
+- name: set log bin strict
+  community.mysql.mysql_variables:
+    variable: log_bin_trust_function_creators
+    value: 0
+    mode: global
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+
+- name: write zabbix password to the conf
+  lineinfile:
+    path: /etc/zabbix/zabbix_server.conf
+    regex: '^\# DBPassword\=' 
+    line: "DBPassword={{ zabbix_db_pass }}"
+
+- name: update zabbix Admin password
+  community.mysql.mysql_query: 
+    login_db: zabbix
+    login_user: zabbix
+    login_password: '{{ zabbix_db_pass }}'
+    query: update zabbix.users set passwd=md5('{{ zabbix_gui_pass }}') where username='Admin';
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+# nginx configs for ssl
+- name: update default config file
+  template:
+    src: "templates/vhost_default.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+
+- name: stop nginx to run certbot standalone
+  systemd:
+    name: nginx
+    state: stopped
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: vhost file
+  template:
+    src: "templates/vhost_ssl.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: unlink the default zabbix configs
+  file: 
+    path: "/etc/nginx/conf.d/zabbix.conf"
+    state: absent
+
+- name: add zabbix front end configs
+  template: 
+    src: "templates/zabbix.conf.php.j2"
+    dest: "/etc/zabbix/web/zabbix.conf.php"
+    owner: www-data
+    group: www-data
+    mode: '0600'
+
+- name: restart services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: true
+  with_items:
+    - nginx.service
+    - mysql.service
+    - php8.1-fpm
+    - zabbix-server.service
+    - zabbix-agent.service
