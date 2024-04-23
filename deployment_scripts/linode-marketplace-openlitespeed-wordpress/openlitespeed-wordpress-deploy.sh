@@ -2,9 +2,15 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
-##Linode/SSH security settings
+## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
+
+## Wordpress Settings
+#<UDF name="site_title" label="Website title" example="My Blog">
+#<UDF name="wp_admin_user" label="Admin username" example="admin">
+#<UDF name="wp_db_user" label="Wordpress database user" example="wordpress">
+#<UDF name="wp_db_name" label="Wordpress database name" example="wordpress">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
@@ -31,6 +37,12 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+
+  # deployment vars
+  site_title: ${SITE_TITLE}
+  wp_admin_user: ${WP_ADMIN_USER}
+  wp_db_user: ${WP_DB_USER}
+  wp_db_name: ${WP_DB_NAME}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
