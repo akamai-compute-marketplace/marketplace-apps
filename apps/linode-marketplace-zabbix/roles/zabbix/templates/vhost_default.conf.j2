@@ -1,0 +1,16 @@
+server {
+    listen 80;
+    listen [::]:80;
+    {% if domain is defined and subdomain != "www" %}
+    server_name {{ _domain }};
+    {% else %}
+    server_name {{_domain}} www.{{ _domain }};
+    {% endif %}
+    root           /var/www/{{ _domain }}/public_html;
+    index          index.html index.php;
+    location / {
+      try_files $uri $uri/ /index.php?$args =404;
+    }
+    include snippets/well-known;
+    return 301 https://$host$request_uri;
+}
