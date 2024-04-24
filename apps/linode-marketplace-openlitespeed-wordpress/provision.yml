@@ -10,3 +10,26 @@
   # generate creds
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: generating wordpress db password
+      set_fact:
+        WP_DB_PASS: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+    - name: writing wordpress db password to vars
+      #blockinfile:
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          wp_db_pass: {{ WP_DB_PASS }}
+  
+    - name: generating wordpress admin password
+      set_fact:
+        WP_ADMIN_PASS: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+    - name: writing wordpress admin password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          wp_admin_pass: {{ WP_ADMIN_PASS }}
