@@ -77,3 +77,33 @@
 - name: running mysql secure installation
   import_role:
     name: securemysql
+
+- name: Run domain setup script with full automation
+  ansible.builtin.expect:
+    command: "/opt/domainsetup.sh"
+    responses:
+      "(?i)Your domain:": "{{ _domain }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to issue a Let's encrypt certificate for this domain": "y"
+      "(?i)Please enter your E-mail": "{{ soa_email_address }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to force HTTPS rewrite rule for this domain": "y"
+      "(?i)Do you wish to update the system now": "y"
+    timeout: 120
+
+- name: Update SSL path for lsws admin_config.conf
+  ansible.builtin.lineinfile:
+    path: /usr/local/lsws/admin/conf/admin_config.conf
+    regexp: '^\s*{{ item.key }}\s+.*$'
+    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+  loop:
+    - { key: 'keyFile', file: 'privkey.pem' }
+    - { key: 'certFile', file: 'fullchain.pem' }
+  notify: reload lsws
+
+- name: Comment out ssh motd in pam_motd
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
+    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+    backrefs: yes
