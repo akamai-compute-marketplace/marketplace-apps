@@ -8,5 +8,5 @@ dnspython==2.2.1
 polling==0.3.2
 ansible-specdoc==0.0.14
 pyyaml==6.0.1
-dnspython==2.2.1
 docker==6.1.3
+pexpect=4.8.0
