@@ -47,3 +47,33 @@
           --admin_email="{{ soa_email_address }}" \
           --admin_password="{{ wp_admin_pass }}" \
           --path="/var/www/html"
+
+- name: Slurp the .db_password file
+  ansible.builtin.slurp:
+    src: "~/.db_password"
+  register: slurped_db_password
+
+- name: Set fact for root_mysql_pass
+  set_fact:
+    root_mysql_pass: "{{ (slurped_db_password.content | b64decode).split('\n') | select('match', '^root_mysql_pass=.*$') | map('regex_replace', '^root_mysql_pass=\"(.*)\"$', '\\1') | first }}"
+
+- name: Write MySQL root password to vars file
+  ansible.builtin.lineinfile:
+    path: "./group_vars/linode/vars"
+    create: yes
+    line: "root_mysql_pass: {{ root_mysql_pass }}"
+
+- name: Create .my.cnf file in /root with MySQL credentials
+  ansible.builtin.copy:
+    dest: "/root/.my.cnf"
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      [client]
+      user=root
+      password={{ root_mysql_pass }}
+
+- name: running mysql secure installation
+  import_role:
+    name: securemysql
