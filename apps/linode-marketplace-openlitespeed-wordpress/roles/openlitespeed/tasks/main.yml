@@ -42,7 +42,7 @@
     path: "/var/www/html/wp-settings.php"
   register: wp_check
   until: wp_check.stat.exists
-  retries: 5
+  retries: 10
   delay: 10
 
 - name: configuring admin info
