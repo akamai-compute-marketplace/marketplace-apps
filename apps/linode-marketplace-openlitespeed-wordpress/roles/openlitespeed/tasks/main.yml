@@ -36,6 +36,15 @@
     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
 
+# Make sure wordpress files exist before configuring admin info
+- name: Check if WordPress is installed in /var/www/html
+  ansible.builtin.stat:
+    path: "/var/www/html/wp-settings.php"
+  register: wp_check
+  until: wp_check.stat.exists
+  retries: 5
+  delay: 10
+
 - name: configuring admin info
   shell:
     chdir: "/var/www/html"
