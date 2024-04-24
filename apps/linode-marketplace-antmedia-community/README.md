@@ -1,4 +1,4 @@
-# Linode Ant Media Server Deployment One-Click APP
+# Linode Ant Media Server Community Edition Deployment One-Click APP
 
 Ant Media Server is an open source video streaming platform known for its scalability and low latency. It supports WebRTC live streaming, as well as CMAF and HLS streaming, and can be ingested through RTMP, WebRTC, or HLS.
 
@@ -6,7 +6,7 @@ Ant Media Server is an open source video streaming platform known for its scalab
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Ant Media Server | Latest | Highly scalable and feature-rich live video streaming platform. |
+| Ant Media Server Community Edition | 2.9.0 | Highly scalable and feature-rich live video streaming platform. | 
 
 
 **Supported Distributions:**
@@ -44,7 +44,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 985374,
+      "stackscript_id": 804144,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "username": "${USERNAME}",
@@ -72,7 +72,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 985374 \
+  --stackscript_id 804144 \
   --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"},{"username": "${USERNAME}"} \
   --region us-east \
   --type g6-standard-2 \
