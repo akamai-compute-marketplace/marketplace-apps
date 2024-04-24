@@ -53,15 +53,15 @@
     src: "~/.db_password"
   register: slurped_db_password
 
-- name: Set fact for root_mysql_pass
-  set_fact:
-    root_mysql_pass: "{{ (slurped_db_password.content | b64decode).split('\n') | select('match', '^root_mysql_pass=.*$') | map('regex_replace', '^root_mysql_pass=\"(.*)\"$', '\\1') | first }}"
+# - name: Set fact for root_mysql_pass
+#   set_fact:
+#     root_mysql_pass: "{{ (slurped_db_password.content | b64decode).split('\n') | select('match', '^root_mysql_pass=.*$') | map('regex_replace', '^root_mysql_pass=\"(.*)\"$', '\\1') | first }}"
 
 - name: Write MySQL root password to vars file
   ansible.builtin.lineinfile:
     path: "./group_vars/linode/vars"
     create: yes
-    line: "root_mysql_pass: {{ root_mysql_pass }}"
+    line: "mysql_root_password: {{ root_mysql_pass }}"
 
 - name: Create .my.cnf file in /root with MySQL credentials
   ansible.builtin.copy:
