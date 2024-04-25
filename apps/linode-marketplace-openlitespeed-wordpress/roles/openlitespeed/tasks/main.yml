@@ -44,17 +44,6 @@
     line: "{{ item.key }}: {{ item.value }}"
   loop: "{{ lookup('dict', passwords) }}"
 
-###########################################
-# debug
-- name: check if wordpress is installed
-  ansible.builtin.stat:
-    path: "/var/www/html/wp-settings.php"
-  register: wp_check
-
-- name: check value of wp_check var
-  ansible.builtin.debug:
-    msg: "value of wp_check is: {{ wp_check }}"
-###########################################
 # Make sure wordpress files exist before configuring admin info
 - name: check if wordpress is installed
   ansible.builtin.stat:

@@ -19,8 +19,11 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that h
 
 | Name  | Action  |
 | :---  | :---    |
+| Hostname   | Assigns a hostname to the Linode based on domains provided via UDF or uses default rDNS. | The Hostname module accepts a UDF to assign a FQDN and write to the `/etc/hosts` file. If no domain is provided the default `ip.linodeusercontent.com` rDNS will be used. For consistency, DNS and SSL configurations should use the Hostname generated `_domain` var when possible. |
 | Update Packages   | The Update Packages module performs apt update and upgrade actions as root.  |
 | Fail2Ban   | The Fail2Ban module installs, activates and enables the Fail2Ban service.  |
+| UFW   | Add UFW firewalls to the Linode  | The UFW module will import a `ufw_rules.yml` provided in `roles/$APP/tasks` and enables the service.  |
+| Secure MySQL   | The Secure MySQL module will use `passgen.yml` to generate a secure root password and write to `group_vars/linode/vars`. It will then update MySQL to be accessible by local socket or root password, and remove anonymous users, test databases and remote access.  |
 
 ## How to Access the Installed Software
 
@@ -49,6 +52,12 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
+        "disable_root": "${disable_root}",
+        "user_name": "${user_name}",
+        "site_title": "${site_title}",
+        "wp_admin_user": "${wp_admin_user}",
+        "wp_db_user": "${wp_db_user}",
+        "wp_db_name": "${wp_db_name}",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
       },
       "authorized_users": [
@@ -75,7 +84,7 @@ linode-cli linodes create \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
+  --stackscript_data '{"disable_root": "${disable_root}", "user_name": "${user_name}", "site_title": "${site_title}", "wp_admin_user": "${wp_admin_user}", "wp_db_user": "${wp_db_user}", "wp_db_name": "${wp_db_name}", "soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
