@@ -50,7 +50,7 @@
     path: "/var/www/html/wp-settings.php"
   register: wp_check
   until: wp_check.stat.exists
-  retries: 30
+  retries: 60
   delay: 10
 
 - name: configure admin info
