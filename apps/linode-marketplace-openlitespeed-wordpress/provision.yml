@@ -23,7 +23,7 @@
     #     line: | 
     #       wp_db_pass: {{ WP_DB_PASS }}
   
-      - name: writing wordpress db password to vars
+    - name: writing wordpress db password to vars
       #blockinfile:
       lineinfile: 
         insertafter: EOF
