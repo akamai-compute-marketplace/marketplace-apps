@@ -10,11 +10,12 @@
     dest: /home/{{ username }}/.credentials
     mode: '0600'
     content: |
-      LiteSpeed web admin password: {{ litespeed_password }}
-      MySQL root password: {{ mysql_root_password }}
-      MySQL Wordpress user password: {{ wordpress_mysql_pass }}
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      LiteSpeed web `admin` password: {{ litespeed_password }}
+      PHPMyAdmin `root` password: {{ mysql_root_password }}
+      MySQL `root` password: {{ mysql_root_password }}
+      MySQL `wordpress` user password: {{ wordpress_mysql_pass }}
 
 - name: Remove /tmp/lshttpd
   ansible.builtin.file:
