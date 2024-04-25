@@ -53,7 +53,7 @@
 
 - name: check value of wp_check var
   ansible.builtin.debug:
-    msg: "{{ wp_check['rc'] }}"
+    msg: "value of wp_check is: {{ wp_check }}"
 ###########################################
 # Make sure wordpress files exist before configuring admin info
 - name: check if wordpress is installed
