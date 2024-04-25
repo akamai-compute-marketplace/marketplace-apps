@@ -31,11 +31,6 @@
     litespeed_password: "{{ litespeed_password_encode['content'] | b64decode }}"
     db_password: "{{ db_password_encode['content'] | b64decode }}"
 
-# - name: Set MySQL root password and WordPress user password vars
-#   set_fact:
-#     root_mysql_pass: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
-#     wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
-
 - name: set mysql root and wordpress user passwords
   set_fact:
     passwords:
@@ -49,14 +44,25 @@
     line: "{{ item.key }}: {{ item.value }}"
   loop: "{{ lookup('dict', passwords) }}"
 
+###########################################
+# debug
+- name: check if wordpress is installed
+  ansible.builtin.stat:
+    path: "/var/www/html/wp-settings.php"
+  register: wp_check
+
+- name: check value of wp_check var
+  ansible.builtin.debug:
+    msg: "{{ wp_check['rc'] }}"
+###########################################
 # Make sure wordpress files exist before configuring admin info
 - name: check if wordpress is installed
   ansible.builtin.stat:
     path: "/var/www/html/wp-settings.php"
   register: wp_check
   until: wp_check.stat.exists
-  retries: 10
-  delay: 30
+  retries: 30
+  delay: 10
 
 - name: configure admin info
   shell:
@@ -69,21 +75,6 @@
           --admin_email="{{ soa_email_address }}" \
           --admin_password="{{ wp_admin_pass }}" \
           --path="/var/www/html"
-
-# - name: Slurp the .db_password file
-#   ansible.builtin.slurp:
-#     src: "~/.db_password"
-#   register: slurped_db_password
-
-# - name: Set fact for root_mysql_pass
-#   set_fact:
-#     root_mysql_pass: "{{ (slurped_db_password.content | b64decode).split('\n') | select('match', '^root_mysql_pass=.*$') | map('regex_replace', '^root_mysql_pass=\"(.*)\"$', '\\1') | first }}"
-
-# - name: Write MySQL root password to vars file
-#   ansible.builtin.lineinfile:
-#     path: "./group_vars/linode/vars"
-#     create: yes
-#     line: "mysql_root_password: {{ root_mysql_pass }}"
 
 - name: create .my.cnf file with mysql creds
   ansible.builtin.copy:
