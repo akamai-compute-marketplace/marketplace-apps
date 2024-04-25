@@ -94,7 +94,7 @@
     content: |
       [client]
       user=root
-      password={{ root_mysql_pass }}
+      password={{ mysql_root_password }}
 
 - name: run mysql secure installation
   import_role:
