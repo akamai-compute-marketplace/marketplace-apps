@@ -16,6 +16,8 @@
       PHPMyAdmin `root` password: {{ mysql_root_password }}
       MySQL `root` password: {{ mysql_root_password }}
       MySQL `wordpress` user password: {{ wordpress_mysql_pass }}
+      Wordpress admin user: {{ wp_admin_user }}
+      Wordpress admin password: {{ wp_admin_pass }}
 
 - name: Remove /tmp/lshttpd
   ansible.builtin.file:
