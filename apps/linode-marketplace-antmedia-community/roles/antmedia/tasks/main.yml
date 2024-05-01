@@ -1,0 +1,65 @@
+---
+# antmedia
+
+- name: set facts for Community edition & SSL
+  set_fact:
+    ant_media_install_script_url: 'https://raw.githubusercontent.com/ant-media/Scripts/master/install_ant-media-server.sh'
+    ant_media_zip_remote_url: 'https://github.com/ant-media/Ant-Media-Server/releases/download/ams-v2.9.0/ant-media-server-community-2.9.0.zip'
+    ant_media_zip_local_path: '/tmp/ams.zip'
+
+- name: download install_ant-media-server.sh script
+  get_url:
+    url: "{{ ant_media_install_script_url }}"
+    dest: '/tmp/install_ant-media-server.sh'
+    mode: '0755'
+
+- name: download ams.zip file from a remote location
+  get_url:
+    url: "{{ ant_media_zip_remote_url }}"
+    dest: "{{ ant_media_zip_local_path }}"
+
+- name: run Ant Media Server installation script
+  script: "/tmp/install_ant-media-server.sh -i {{ ant_media_zip_local_path }}"
+
+# Bypass user setup
+- name: wait for service to be available
+  wait_for:
+    host: localhost
+    port: 5080
+  timeout: 60
+
+- name: send POST request
+  uri:
+    url: http://localhost:5080/rest/v2/users/initial
+    method: POST
+    body_format: json
+    body:
+      email: "{{ soa_email_address }}"
+      password: "{{ antmedia_password }}"
+      scope: 'system'
+      userType: 'ADMIN'
+    headers:
+      Content-Type: 'application/json'
+  register: result
+  until: result.status != 403
+  retries: 5
+  delay: 10
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: set facts for letsencrypt certs
+  set_fact:
+    full: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
+    priv: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem"
+    chain: "/etc/letsencrypt/live/{{ _domain }}/chain.pem"
+
+# AMS ssl install script
+- name: ant media ssl script install
+  script: "/usr/local/antmedia/enable_ssl.sh -f {{ full }} -p {{ priv }} -c {{ chain }} -d {{ _domain }}"
+
+
+
+
