@@ -1,0 +1,17 @@
+---
+# plesk
+- name: download plesk installer script
+  ansible.builtin.get_url:
+    url: https://autoinstall.plesk.com/one-click-installer
+    dest: /tmp/plesk_installer.sh
+    mode: '0755'
+
+- name: run plesk installer script
+  ansible.builtin.shell:
+    cmd: /tmp/plesk_installer.sh
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  notify: reload apache2
