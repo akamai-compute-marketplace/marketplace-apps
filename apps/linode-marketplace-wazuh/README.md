@@ -37,19 +37,21 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export POSTGRES_PASSWORD="aComplexP@ssword"
+export USER_NAME="user_name"
+export DISABLE_ROOT="Yes/No"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
     -X POST -d '{
       "backups_enabled": true,
       "swap_size": 512,
-      "image": "linode/ubuntu2204",
+      "image": "linode/ubuntu22.04",
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
+        "disable_root": "${DISABLE_ROOT}",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-        "postgres_password" : "${POSTGRES_PASSWORD}"
+        "user_name": "${USER_NAME}"
       },
       "authorized_users": [
         "myUser",
@@ -60,8 +62,7 @@ curl -H "Content-Type: application/json" \
       "type": "g6-standard-2",
       "region": "us-east",
       "group": "Linode-Group"
-    }' \
-https://api.linode.com/v4/linode/instances
+    }' https://api.linode.com/v4/linode/instances
 ```
 
 CLI:
@@ -75,8 +76,9 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
+  --image 'linode/ubuntu22.04' \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${POSTGRES_PASSWORD}"}' \
+  --stackscript_data '{"disable_root": "${DISABLE_ROOT}","soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"user_name": "${USER_NAME}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
