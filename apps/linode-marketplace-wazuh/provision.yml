@@ -10,10 +10,3 @@
   # generate creds
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
-    - name: writing wazuh_password to vars
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
-          wazuh_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
