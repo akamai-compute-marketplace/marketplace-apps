@@ -35,7 +35,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: standalone
+  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
