@@ -10,7 +10,7 @@
   ansible.builtin.shell:
     cmd: /tmp/plesk_installer.sh
 
-ssl_certbot
+# ssl_certbot
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
