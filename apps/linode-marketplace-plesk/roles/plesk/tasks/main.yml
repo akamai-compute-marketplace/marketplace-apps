@@ -11,7 +11,7 @@
     cmd: /tmp/plesk_installer.sh
 
 # ssl_certbot
-- name: setting up ssl certificate
-  import_role:
-    name: certbot_ssl
-  notify: reload nginx
+# - name: setting up ssl certificate
+#   import_role:
+#     name: certbot_ssl
+#   notify: reload nginx
