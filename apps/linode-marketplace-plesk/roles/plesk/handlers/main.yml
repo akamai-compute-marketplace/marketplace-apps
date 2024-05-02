@@ -1,1 +1,5 @@
 # plesk handlers
+- name: reload apache2
+  service:
+    name: apache2
+    state: reloaded

@@ -15,4 +15,3 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
       plesk Login: admin
-      plesk Password: {{ plesk_password }}
