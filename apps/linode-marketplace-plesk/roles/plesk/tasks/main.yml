@@ -9,9 +9,3 @@
 - name: run plesk installer script
   ansible.builtin.shell:
     cmd: /tmp/plesk_installer.sh
-
-# ssl_certbot
-# - name: setting up ssl certificate
-#   import_role:
-#     name: certbot_ssl
-#   notify: reload nginx

@@ -1,9 +1,0 @@
-- name: reload apache2
-  service:
-    name: apache2
-    state: reloaded
-
-- name: reload nginx
-  service:
-    name: nginx
-    state: reloaded
