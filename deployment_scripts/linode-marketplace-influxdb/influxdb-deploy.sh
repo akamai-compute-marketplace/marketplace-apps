@@ -39,6 +39,12 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
 
   # deployment vars
+  soa_email_address: ${SOA_EMAIL_ADDRESS}
+  admin_username: ${ADMIN_USERNAME}
+  admin_password: ${ADMIN_PASSWORD}
+  org_name: ${ORG_NAME}
+  bucket_name: ${BUCKET_NAME}
+
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
@@ -67,6 +73,26 @@ EOF
   if [[ -n ${SUBDOMAIN} ]]; then
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
+  fi
+
+  if [[ -n ${ADMIN_USERNAME} ]]; then
+    echo "admin_username: ${ADMIN_USERNAME}" >> ${group_vars};
+  else echo "No admin username entered";
+  fi
+
+  if [[ -n ${ADMIN_PASSWORD} ]]; then
+    echo "admin_password: ${ADMIN_PASSWORD}" >> ${group_vars};
+  else echo "No admin password entered";
+  fi
+
+  if [[ -n ${ORG_NAME} ]]; then
+    echo "org_name: ${ORG_NAME}" >> ${group_vars};
+  else echo "No organization name entered";
+  fi
+
+  if [[ -n ${BUCKET_NAME} ]]; then
+    echo "bucket_name: ${BUCKET_NAME}" >> ${group_vars};
+  else echo "No bucket name entered";
   fi
 }
 
