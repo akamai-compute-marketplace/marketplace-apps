@@ -1,0 +1,53 @@
+server {
+    listen 80;
+    {% if subdomain != "www" or default_dns is defined %}
+    server_name {{ _domain }};                             
+    {% elif subdomain == "www" %}
+    server_name {{ _domain }} www.{{ _domain }};      
+    {% endif %}   
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /var/www/django_app ;
+    }
+
+    location / {
+    include proxy_params;
+    proxy_pass http://unix:/run/gunicorn.sock;
+    return 301 https://$host$request_uri;
+    }
+
+
+# Certbot SSL configuration
+    location ~ /.well-known/acme-challenge {
+        allow all;
+        root /var/www/django_app ;
+    }
+}
+
+server {
+    listen 443 ssl;
+    {% if subdomain != "www" or default_dns is defined %}
+    server_name {{ _domain }};                             
+    {% elif subdomain == "www" %}
+    server_name {{ _domain }} www.{{ _domain }};      
+    {% endif %} 
+
+    ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;  
+    ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;  
+
+    location = /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    location /static/ {
+        root /var/www/django_app/django_sample ;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

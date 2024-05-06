@@ -1,0 +1,41 @@
+---
+# set_hostname
+- name: setting system hostname
+  hostname:
+    name: "cpanel"
+
+- name: Fetch cPanel
+  get_url:
+    url: https://securedownloads.cpanel.net/latest
+    dest: /home/installer
+    mode: 0755
+    force: yes
+    validate_certs: false 
+
+- name: Install the package
+  apt:
+    name: grub-pc
+    state: present
+
+- name: Run the script with flags 
+  script: /home/installer --skiplicensecheck --skip-cloudlinux 
+
+- name: Remove /etc/cpupdate.conf
+  file:
+    path: /etc/cpupdate.conf
+    state: absent 
+
+- name: Write .bash_profile
+  template:
+    src: templates/bashprofile.j2
+    dest: /root/.bash_profile
+
+- name: Write motd.sh
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd.sh
+
+- name: Create cpinit.done file
+  file:
+    path: /var/cpanel/cpinit.done
+    state: touch
