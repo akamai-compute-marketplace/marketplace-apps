@@ -65,6 +65,7 @@
   until: wp_check.stat.exists
   retries: 60
   delay: 10
+  ignore_errors: yes
 
 - name: configure admin info
   shell:
