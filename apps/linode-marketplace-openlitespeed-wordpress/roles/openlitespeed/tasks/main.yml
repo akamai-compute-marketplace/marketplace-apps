@@ -43,29 +43,25 @@
     create: yes
     line: "{{ item.key }}: {{ item.value }}"
   loop: "{{ lookup('dict', passwords) }}"
-#############
-# Debug
-#############
-- name: List contents of /var/www/html
-  ansible.builtin.command: ls -lah /var/www/html
-  register: html_dir_contents
-
-- name: Show contents of /var/www/html
-  ansible.builtin.debug:
-    var: html_dir_contents.stdout_lines
-#############
-# Debug
-#############
 
 # Make sure wordpress files exist before configuring admin info
-- name: check if wordpress is installed
-  ansible.builtin.stat:
-    path: "/var/www/html/wp-settings.php"
-  register: wp_check
-  until: wp_check.stat.exists
-  retries: 60
+# - name: check if wordpress is installed
+#   ansible.builtin.stat:
+#     path: "/var/www/html/wp-settings.php"
+#   register: wp_check
+#   until: wp_check.stat.exists
+#   retries: 60
+#   delay: 10
+#   ignore_errors: yes
+
+# verify wordpress is installed before configuring admin info
+- name: Verify WordPress checksums
+  command: wp core verify-checksums --path='/var/www/html' --allow-root
+  register: checksum_verification
+  retries: 30
   delay: 10
-  ignore_errors: yes
+  until: checksum_verification.stdout is search("Success")
+  changed_when: false
 
 - name: configure admin info
   shell:
