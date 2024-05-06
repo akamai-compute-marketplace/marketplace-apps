@@ -44,21 +44,15 @@
     line: "{{ item.key }}: {{ item.value }}"
   loop: "{{ lookup('dict', passwords) }}"
 
-# Make sure wordpress files exist before configuring admin info
-# - name: check if wordpress is installed
-#   ansible.builtin.stat:
-#     path: "/var/www/html/wp-settings.php"
-#   register: wp_check
-#   until: wp_check.stat.exists
-#   retries: 60
-#   delay: 10
-#   ignore_errors: yes
+- name: wait for wordpress to be installed
+  ansible.builtin.pause:
+    minutes: 3
 
 # verify wordpress is installed before configuring admin info
 - name: Verify WordPress checksums
   command: wp core verify-checksums --path='/var/www/html' --allow-root
   register: checksum_verification
-  retries: 30
+  retries: 60
   delay: 10
   until: checksum_verification.stdout is search("Success")
   changed_when: false
