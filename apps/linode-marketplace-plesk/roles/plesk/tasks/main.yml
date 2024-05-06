@@ -9,3 +9,9 @@
 - name: run plesk installer script
   ansible.builtin.shell:
     cmd: /tmp/plesk_installer.sh
+
+- name: remove plesk motd
+  ansible.builtin.lineinfile:
+    path: /usr/lib64/plesk-9.0/ssh-banner
+    regexp: '^(?!#)(.*print_banner.*)$'
+    line: '#\1'
