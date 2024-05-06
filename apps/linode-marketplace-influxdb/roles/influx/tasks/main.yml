@@ -22,12 +22,12 @@
 
 - name: enable influxdb service
   systemd:
-    name: influxdb.service
+    name: influxdb
     enabled: yes
 
 - name: start influxdb service
   systemd:
-    name: influxdb.service
+    name: influxdb
     state: started
 
 # nginx
