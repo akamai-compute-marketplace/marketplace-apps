@@ -43,6 +43,19 @@
     create: yes
     line: "{{ item.key }}: {{ item.value }}"
   loop: "{{ lookup('dict', passwords) }}"
+#############
+# Debug
+#############
+- name: List contents of /var/www/html
+  ansible.builtin.command: ls -lah /var/www/html
+  register: html_dir_contents
+
+- name: Show contents of /var/www/html
+  ansible.builtin.debug:
+    var: html_dir_contents.stdout_lines
+#############
+# Debug
+#############
 
 # Make sure wordpress files exist before configuring admin info
 - name: check if wordpress is installed
