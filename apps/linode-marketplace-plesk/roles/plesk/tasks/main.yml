@@ -12,6 +12,6 @@
 
 - name: remove plesk motd
   ansible.builtin.lineinfile:
-    path: /usr/lib64/plesk-9.0/ssh-banner
+    path: /usr/lib/plesk-9.0/ssh-banner
     regexp: '^(?!#)(.*print_banner.*)$'
     line: '#\1'
