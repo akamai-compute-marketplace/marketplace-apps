@@ -4,6 +4,10 @@ trap "cleanup $? $LINENO" EXIT
 
 ## InfluxDB Settings
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="admin_username" label="Admin Username" example="The username for the InfluxDB admin user" default="">
+#<UDF name="admin_password" label="Admin Password" example="The password for the InfluxDB admin user" default="">
+#<UDF name="org_name" label="Organization Name" example="The name of the InfluxDB organization" default="">
+#<UDF name="bucket_name" label="Bucket Name" example="The name of the InfluxDB bucket" default="">
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
