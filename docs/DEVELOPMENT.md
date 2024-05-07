@@ -2,7 +2,7 @@
 
 A Marketplace App leverages the Linode API and Ansible to deploy and configure a single node service. The end-user’s Linode API token must be scoped with appropriate permissions to add and remove the necessary platform resources, such as compute, DNS, storage, etc. In additon, please adhere to the following guidelines for Marketplace apps:
 
-  - We recommend Marketplace applications use fully Ubuntu 22.04 LTS images when possible. 
+  - We recommend Marketplace applications use Ubuntu 22.04 LTS images when possible. 
   - Required Linode plans for Marketplace applications should be no more than 16GB shared CPU or 8GB dedicated  CPU. This is the default instance size limit for new user accounts. Deployments designed for larger instance sizes can be accepted on a case-by-case basis where required. 
   - The deployment of the service should be “hands-off,” requiring no command-line intervention from the user before reaching its initial state. The end user should provide all necessary details via User Defined Variables (UDF) defined in the StackScript, so that Ansible can fully automate the deployment.
   - There is not currently password strength validation for StackSctript UDFs, therefore, whenever possible credentials should be generated and provided to the end-user.
@@ -20,13 +20,13 @@ All Bash files, including the deployment Stackscript for each Marketplace App is
 - The primary purposes of the Stackscript is to assign global variables, create a working directory and Python venv before cloning the correct Marketplace App repo.
   - Installations and configurations that are not necessary for supporting the Ansible environment (i.e. Python or Git dependencies) should be performed with Ansible playbooks, and not included in the Stackscript. The StackScript should be as slim as possible, letting Ansible do most of the heavy lifting.
   - All working directories should be cleaned up on successful completion of the Stackscript.
-  - A public deployment script must conform to the [Stackscript requirements](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/) and we strongly recommend including a limited number of [UDF variables](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs).
+  - A public deployment script must conform to the [Stackscript requirements](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/) and we strongly suggest including a limited number of [UDF variables](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs).
 
 ## Ansible Playbooks 
 
 - All Ansible playbooks should generally adhere to the [sample directory layout](https://docs.ansible.com/ansible/latest/user_guide/sample_setup.html#sample-ansible-setup) and best practices/recommendations from the latest Ansible [User Guide](https://docs.ansible.com/ansible/latest/user_guide/index.html).
   - All Ansible playbooks for Marketplace applications should include common [`.ansible-lint`](../apps/linode-marketplace-wordpress/.ansible-lint), [`.yamllint`](../apps/linode-marketplace-wordpress/.yamllint), [`ansible.cfg`](../apps/linode-marketplace-wordpress/ansible.cfg) and [`.gitignore`](../.gitignore) files.
-  - All Ansible playbooks should use Ansible Vault for initial secrets management. Generated credentials should be provided to the end-user in a standard `.deployment-secrets.txt` file located in the sudo user’s home directory. 
+  - All Ansible playbooks should use Ansible Vault for initial secrets management. Generated credentials should be provided to the end-user in a standard `.credentials` file located in the sudo user’s home directory. 
   - Whenever possible Jinja should be leveraged to populate a consistent variable naming convention during [node provisioning](../apps/linode-marketplace-wordpress/provision.yml).
   - It is recommended to import service specific tasks as modular `.yml` files under the application’s `main.yml`. 
 
@@ -75,7 +75,7 @@ As general guidelines:
   - The `roles` should general conform to the following standards:
     - `common` - including preliminary configurations and Linux best practices.
     - `$app` - including all necessary plays for service/app deployment and configuration.
-    - `post` - any post installation tasks such as clean up operations and generating additonal user credentials. This should include the creation of a credentials file in `/root/.credentials` and a MOTD (Message of the Day) file to display after login to provide some additional direction after the deployment. 
+    - `post` - any post installation tasks such as clean up operations and generating additonal user credentials. This should include the creation of a credentials file in `/home/$SUDO_USER/.credentials` and a MOTD (Message of the Day) file to display after login to provide some additional direction after the deployment. 
 
 ## Helper Functions
 
