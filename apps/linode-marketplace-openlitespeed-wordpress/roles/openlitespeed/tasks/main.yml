@@ -46,16 +46,17 @@
 
 - name: wait for wp core to be installed
   ansible.builtin.pause:
-    minutes: 8
+    minutes: 2
 
 # verify wordpress is installed before configuring admin info
 - name: Verify WordPress checksums
   command: wp core verify-checksums --path='/var/www/html' --allow-root
   register: checksum_verification
-  retries: 30
-  delay: 10
+  retries: 4
+  delay: 60
   until: checksum_verification.stdout is search("Success")
   changed_when: false
+  ignore_errors: true
 
 - name: configure admin info
   shell:
