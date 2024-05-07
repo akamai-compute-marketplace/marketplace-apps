@@ -26,13 +26,16 @@ authors: ["Linode"]
 ## Configuration Options
 
 - **Supported distributions:** Ubuntu 22.04 LTS
-- **Recommended plan:** All plan types and sizes can be used.
+- **Suggested plan:** All plan types and sizes can be used.
 
 ### InfluxDB Options
 
 - **Email address** *(required)*: Enter the email address to use for generating the SSL certificates.
+- **Admin Username** *(required)*: Username for InfluxDB admin.
+- **Organization Name** *(required)*: Name of the InfluxDB organization.
+- **Bucket Name** *(required)*: Name of inital InfluxDB bucket.
 
-{{< content "marketplace-limited-user-fields-shortguide">}}
+{{< content "marketplace-required-limited-user-fields-shortguide">}}
 
 {{< content "marketplace-custom-domain-fields-shortguide">}}
 

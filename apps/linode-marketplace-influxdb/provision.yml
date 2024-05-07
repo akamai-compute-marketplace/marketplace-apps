@@ -11,3 +11,11 @@
   tasks:
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: generate admin_password
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          admin_password: {{ lookup('password', '/dev/null length=45 characters=ascii_letters,digits') }}
+      no_log: true

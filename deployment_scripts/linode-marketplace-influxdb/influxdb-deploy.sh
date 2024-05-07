@@ -5,7 +5,6 @@ trap "cleanup $? $LINENO" EXIT
 ## InfluxDB Settings
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 #<UDF name="admin_username" label="Admin Username" example="The username for the InfluxDB admin user" default="" required="true">
-#<UDF name="admin_password" label="Admin Password" example="The password for the InfluxDB admin user" default="" required="true">
 #<UDF name="org_name" label="Organization Name" example="The name of the InfluxDB organization" default="" required="true">
 #<UDF name="bucket_name" label="Bucket Name" example="The name of the InfluxDB bucket" default="" required="true">
 
@@ -35,12 +34,10 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
   sed 's/  //g' <<EOF > ${group_vars}
 
   # deployment vars
   soa_email_address: ${SOA_EMAIL_ADDRESS}
-  admin_username: ${ADMIN_USERNAME}
   admin_password: ${ADMIN_PASSWORD}
   org_name: ${ORG_NAME}
   bucket_name: ${BUCKET_NAME}
@@ -49,11 +46,6 @@ function udf {
   username: ${USER_NAME}
   webserver_stack: lemp
 EOF
-
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
-  else echo "No email entered";
-  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
@@ -73,26 +65,6 @@ EOF
   if [[ -n ${SUBDOMAIN} ]]; then
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
-  fi
-
-  if [[ -n ${ADMIN_USERNAME} ]]; then
-    echo "admin_username: ${ADMIN_USERNAME}" >> ${group_vars};
-  else echo "No admin username entered";
-  fi
-
-  if [[ -n ${ADMIN_PASSWORD} ]]; then
-    echo "admin_password: ${ADMIN_PASSWORD}" >> ${group_vars};
-  else echo "No admin password entered";
-  fi
-
-  if [[ -n ${ORG_NAME} ]]; then
-    echo "org_name: ${ORG_NAME}" >> ${group_vars};
-  else echo "No organization name entered";
-  fi
-
-  if [[ -n ${BUCKET_NAME} ]]; then
-    echo "bucket_name: ${BUCKET_NAME}" >> ${group_vars};
-  else echo "No bucket name entered";
   fi
 }
 
