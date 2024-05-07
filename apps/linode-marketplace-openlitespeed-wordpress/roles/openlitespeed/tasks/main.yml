@@ -53,11 +53,11 @@
 - name: Verify WordPress checksums
   command: wp core verify-checksums --path='/var/www/html' --allow-root
   register: checksum_verification
-  retries: 500
+  retries: 10
   delay: 10
   until: checksum_verification.stdout is search("Success")
   # changed_when: false
-  changed_when: my_output.rc == 1
+  changed_when: my_output.rc == 0
   ignore_errors: true
 
 - name: configure admin info
