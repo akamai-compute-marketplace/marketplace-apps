@@ -51,13 +51,13 @@
 
 # verify wordpress is installed before configuring admin info
 - name: Verify WordPress checksums
-  command: wp core verify-checksums --path='/var/www/html' --allow-root
+  command: bash -lc "wp core verify-checksums --path='/var/www/html' --allow-root"
   register: checksum_verification
   retries: 10
   delay: 10
   until: checksum_verification.stdout is search("Success")
   # changed_when: false
-  changed_when: my_output.rc == 0
+  changed_when: my_output.rc != 0
   ignore_errors: true
 
 - name: configure admin info
