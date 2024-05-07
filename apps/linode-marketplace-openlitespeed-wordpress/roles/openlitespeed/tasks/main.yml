@@ -15,6 +15,7 @@
   loop:
     - '/tmp/wpimgsetup.sh'
     - '/tmp/per-instance.sh'
+  notify: restart openlitespeed
 
 - name: get litespeed password
   ansible.builtin.slurp:

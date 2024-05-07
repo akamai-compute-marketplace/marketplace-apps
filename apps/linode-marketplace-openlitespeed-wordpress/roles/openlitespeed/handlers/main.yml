@@ -1,0 +1,5 @@
+- name: restart openlitespeed
+  systemd:
+    name: openlitespeed
+    state: restarted
+    enabled: yes
