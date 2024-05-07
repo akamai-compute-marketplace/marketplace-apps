@@ -32,6 +32,13 @@
     litespeed_password: "{{ litespeed_password_encode['content'] | b64decode }}"
     db_password: "{{ db_password_encode['content'] | b64decode }}"
 
+- name: comment out ssh motd in pam_motd
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
+    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+    backrefs: yes
+  
 - name: set mysql root and wordpress user passwords
   set_fact:
     passwords:
@@ -50,15 +57,15 @@
 #     minutes: 2
 
 # verify wordpress is installed before configuring admin info
-- name: Verify WordPress checksums
-  command: bash -lc "wp core verify-checksums --path='/var/www/html' --allow-root"
-  register: checksum_verification
-  retries: 10
-  delay: 10
-  until: checksum_verification.stdout is search("Success")
+# - name: Verify WordPress checksums
+#   command: bash -lc "wp core verify-checksums --path='/var/www/html' --allow-root"
+#   register: checksum_verification
+#   retries: 10
+#   delay: 10
+#   until: checksum_verification.stdout is search("Success")
   # changed_when: false
-  changed_when: my_output.rc != 0
-  ignore_errors: true
+  # changed_when: my_output.rc != 0
+  # ignore_errors: true
 
 - name: configure admin info
   shell:
@@ -109,10 +116,3 @@
     - { key: 'keyFile', file: 'privkey.pem' }
     - { key: 'certFile', file: 'fullchain.pem' }
   notify: reload lsws
-
-- name: comment out ssh motd in pam_motd
-  ansible.builtin.lineinfile:
-    path: /etc/pam.d/sshd
-    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
-    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
-    backrefs: yes
