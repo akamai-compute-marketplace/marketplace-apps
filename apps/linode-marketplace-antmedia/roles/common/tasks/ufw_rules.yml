@@ -19,35 +19,16 @@
     port: '443'
     proto: tcp
 
-
 - name: Allow all access to tcp port 5443
   community.general.ufw:
     rule: allow
     port: '5443'
     proto: tcp
 
-- name: Allow all access to tcp port 46531
+- name: Allow all access to tcp port 5080
   community.general.ufw:
     rule: allow
-    port: '46531'
-    proto: tcp
-
-- name: Allow all access to tcp port 5443
-  community.general.ufw:
-    rule: allow
-    port: '5443'
-    proto: tcp
-
-- name: Allow all access to tcp port 46531
-  community.general.ufw:
-    rule: allow
-    port: '46531'
-    proto: tcp
-
-- name: Allow all access to tcp port 9999
-  community.general.ufw:
-    rule: allow
-    port: '9999'
+    port: '5080'
     proto: tcp
   
 - name: Allow all access to tcp port 1935
@@ -55,6 +36,12 @@
     rule: allow
     port: '1935'
     proto: tcp
+
+- name: Allow all access to udp port 4200
+  community.general.ufw:
+    rule: allow
+    port: '4200'
+    proto: udp
 
 - name: Allow UDP traffic to port range 50000-60000
   community.general.ufw:
