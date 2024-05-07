@@ -21,6 +21,11 @@
     src: '/root/.litespeed_password'
   register: litespeed_password_encode
 
+- name: Slurp content of /root/.litespeed_password
+  ansible.builtin.slurp:
+    src: /root/.litespeed_password
+  register: litespeed_encoded_password
+
 - name: get db password
   ansible.builtin.slurp:
     src: '/root/.db_password'
@@ -28,8 +33,8 @@
 
 - name: set db & litespeed passwords
   set_fact:
-    litespeed_password: "{{ litespeed_password_encode['content'] | b64decode }}"
-    db_password: "{{ db_password_encode['content'] | b64decode }}"
+    litespeed_password: "{{ (litespeed_password_encode.content | b64decode).split('=')[1].strip() }}"
+    db_password: "{{ db_password_encode.content | b64decode }}"
 
 - name: comment out ssh motd in pam_motd
   ansible.builtin.lineinfile:
