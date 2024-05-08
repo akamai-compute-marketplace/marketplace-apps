@@ -78,11 +78,6 @@
           --admin_password="{{ wp_admin_pass }}" \
           --path="/var/www/html"
 
-- name: purge LiteSpeed plugin cache
-  ansible.builtin.shell:
-    cmd: wp litespeed-purge all --allow-root
-    chdir: /var/www/html
-
 - name: create .my.cnf file with mysql creds
   ansible.builtin.copy:
     dest: "/root/.my.cnf"
@@ -176,4 +171,9 @@
       # END NON_LSCACHE
     insertbefore: BOF
     create: no
+
+- name: purge LiteSpeed plugin cache
+  ansible.builtin.shell:
+    cmd: wp litespeed-purge all --allow-root
+    chdir: /var/www/html
   notify: reload lsws
