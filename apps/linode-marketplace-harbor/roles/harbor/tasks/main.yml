@@ -1,21 +1,5 @@
-
-#Creds generation
-
-- name: generating harbor admin/db passwords
-  set_fact:
-    HARBOR_ADMIN_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-    HARBOR_DB_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-
-- name: writing harbor admin/db password to vars
-  blockinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    block: | 
-      harbor_admin_pass: {{ HARBOR_ADMIN_PASSWORD }}
-      harbor_db_pass: {{ HARBOR_DB_PASSWORD }}
-
-
-#harbor setup
+---
+# harbor
 
 - name: create harbor data directory
   file:
@@ -35,7 +19,6 @@
 
 - name: execute install script
   shell: bash /root/harbor/install.sh
-
 
 # nginx
 - name: install nginx
@@ -61,18 +44,10 @@
     state: absent
   notify: reload nginx service
 
-
-
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
-    name: certbot_ssl
-  
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
+    name: certbot_ssl 
 
 - name: copy harbor.service template
   template:
@@ -88,11 +63,3 @@
     name: harbor.service
     state: started
     enabled: yes
-      
-       
-#Writing creds to file
-- name: copy creds template
-  template:
-    mode: '0600'
-    src: templates/creds.j2
-    dest: /root/.credentials

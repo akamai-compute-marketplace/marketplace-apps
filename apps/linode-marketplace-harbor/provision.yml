@@ -1,0 +1,25 @@
+# harbor
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    # generate creds
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      
+    - name: generating harbor admin/db passwords
+      set_fact:
+        HARBOR_ADMIN_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+        HARBOR_DB_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+    - name: writing harbor admin/db password to vars
+      blockinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        block: | 
+          harbor_admin_pass: {{ HARBOR_ADMIN_PASSWORD }}
+          harbor_db_pass: {{ HARBOR_DB_PASSWORD }}

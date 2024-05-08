@@ -3,10 +3,8 @@ set -e
 trap "cleanup $? $LINENO" EXIT
 
 ## Linode/SSH security settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode" default="">
-#<UDF name="password" label="The password for the limited sudo user" example="an0th3r_s3cure_p4ssw0rd" default="">
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
@@ -15,7 +13,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Joplin setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="postgres_password" label="Password for the postgres database" example="s3cure_p4ssw0rd">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -34,34 +31,19 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  
-  echo "webserver_stack: lemp" >> ${group_vars};
-  
-  if [[ -n ${USER_NAME} ]]; then
-    echo "username: ${USER_NAME}" >> ${group_vars};
-  else echo "No username entered";
-  fi
+  sed 's/  //g' <<EOF > ${group_vars}
+
+  # sudo username
+  username: ${USER_NAME}
+  webserver_stack: lemp
+EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
 
-  if [[ -n ${PASSWORD} ]]; then
-    echo "password: ${PASSWORD}" >> ${group_vars};
-  else echo "No password entered";
-  fi
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
-
   # Joplin vars
-  if [[ -n ${POSTGRES_PASSWORD} ]]; then
-    echo "postgres_password: ${POSTGRES_PASSWORD}" >> ${group_vars};
-  fi
-
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
@@ -92,7 +74,7 @@ function run {
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -106,7 +88,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in site.yml; do ansible-playbook -vvvv $playbook; done
+  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
   
 }
 

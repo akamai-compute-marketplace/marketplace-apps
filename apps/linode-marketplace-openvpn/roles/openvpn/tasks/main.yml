@@ -1,0 +1,39 @@
+---
+  - name: install depend packages for openvpn
+    apt:
+      pkg:
+      - ca-certificates
+      - wget
+      - net-tools
+      - gnupg
+  
+  - name: Add OpenVPN GPG key
+    ansible.builtin.get_url:
+      url: https://as-repository.openvpn.net/as-repo-public.gpg
+      dest: /etc/apt/trusted.gpg.d/as-repo-public.gpg.asc
+      mode: '0644'
+      force: true 
+
+  - name: Add OpenVPN repo
+    ansible.builtin.apt_repository:
+      filename: OpenVPN
+      repo: 'deb [signed-by=/etc/apt/trusted.gpg.d/as-repo-public.gpg.asc] http://as-repository.openvpn.net/as/debian jammy main'
+
+  - name: update repos 
+    apt:
+      update_cache: yes     
+
+  - name: install OpenVPN package
+    apt: 
+      name: openvpn-as
+      state: present 
+
+#  - name: capture OpenVPN creds
+#    ansible.builtin.slurp: 
+#       src: /usr/local/openvpn_as/init.log
+#    register: openvpn_log
+
+#  - name: regex for generated password
+#    ansible.builtin.debug:
+#      msg: "{{ openvpn_log.content | b64decode | regex_search('Auto-generated pass = \"([^\"]+)\"', multiline=True) | regex_search('\"([^\"]+)\"') | regex_replace('[\"\\\\]', '') }}"
+#    register: opevpn_pass

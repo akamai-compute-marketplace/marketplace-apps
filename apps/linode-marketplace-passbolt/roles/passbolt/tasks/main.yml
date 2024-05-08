@@ -1,0 +1,198 @@
+---
+# passbolt
+
+- name: Download Passbolt repository setup script
+  get_url:
+    url: "https://download.passbolt.com/ce/installer/passbolt-repo-setup.ce.sh"
+    dest: "/tmp/passbolt-repo-setup.ce.sh"
+    mode: "0755"
+
+- name: Download Passbolt SHA512 checksum file
+  get_url:
+    url: "https://github.com/passbolt/passbolt-dep-scripts/releases/latest/download/passbolt-ce-SHA512SUM.txt"
+    dest: "/tmp/passbolt-ce-SHA512SUM.txt"
+
+- name: Get SHA-512 checksum of the setup script
+  ansible.builtin.stat:
+    path: /tmp/passbolt-repo-setup.ce.sh
+    checksum_algorithm: sha512
+    get_checksum: yes
+  register: script_checksum
+
+- name: Verify SHA-512 checksum of the setup script
+  ansible.builtin.assert:
+    that:
+      - script_checksum.stat.checksum == passbolt_checksum_value
+    fail_msg: "Checksum verification failed for /tmp/passbolt-repo-setup.ce.sh"
+    success_msg: "Checksum verification passed for /tmp/passbolt-repo-setup.ce.sh"
+
+- name: Execute the passbolt setup script
+  ansible.builtin.shell: bash /tmp/passbolt-repo-setup.ce.sh
+
+- name: Run passbolt-repo-setup.ce.sh script
+  command: "/tmp/passbolt-repo-setup.ce.sh"
+
+- name: Configure Passbolt MySQL settings
+  ansible.builtin.debconf:
+    name: passbolt-ce-server
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: "passbolt/mysql-configuration", value: "true", vtype: "boolean" }
+    - { question: "passbolt/mysql-passbolt-username", value: "passboltadmin", vtype: "string" }
+    - { question: "passbolt/mysql-passbolt-password", value: "{{ passbolt_db_admin_password }}", vtype: "password" }
+    - { question: "passbolt/mysql-passbolt-password-repeat", value: "{{ passbolt_db_admin_password }}", vtype: "password" }
+    - { question: "passbolt/mysql-passbolt-dbname", value: "passboltdb", vtype: "string" }
+
+- name: Configure Passbolt Nginx settings
+  ansible.builtin.debconf:
+    name: passbolt-ce-server
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: "passbolt/nginx-configuration", value: "true", vtype: "boolean" }
+    - { question: "passbolt/nginx-configuration-three-choices", value: "auto", vtype: "select" }
+    - { question: "passbolt/nginx-domain", value: "{{ _domain }}", vtype: "string" }
+    - { question: "passbolt/nginx-certificate-file", value: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", vtype: "string" }
+    - { question: "passbolt/nginx-certificate-key-file", value: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", vtype: "string" }
+
+- name: Install Passbolt CE server in non-interactive mode
+  apt:
+    name: passbolt-ce-server
+    state: present
+
+# Postfix
+- name: install postfix MTA and mailutils
+  apt:
+    pkg:
+    - postfix
+    - mailutils
+    state: present
+
+- name: updating postfix inet_interfaces
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces ='
+    line: 'inet_interfaces = 127.0.0.1'
+
+- name: updating postfix mynetwork
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^mynetworks ='
+    line: 'mynetworks = 127.0.0.0/8'
+
+- name: set smtpd_recipient_restrictions in /etc/postfix/main.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    line: "smtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination"
+    create: no
+    state: present
+  notify: restart postfix
+
+- name: Update /etc/hosts file
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_default_ipv4.address }} {{ _domain }}"
+    state: present
+  
+# GPG key generation
+- name: Create GPG key generation batch file (no passphrase required for Passbolt)
+  copy:
+    dest: "/tmp/gpg_key_gen_batch"
+    content: |
+      %echo Generating a GPG key with a passphrase
+      Key-Type: RSA
+      Key-Length: 3072
+      Subkey-Type: RSA
+      Subkey-Length: 3072
+      Name-Real: {{ passbolt_first_admin_username }}
+      Name-Comment: Ansible generated key
+      Name-Email: {{ passbolt_first_admin_email }}
+      Expire-Date: 0
+      %no-protection
+      %commit
+      %echo Done
+
+- name: Generate GPG key non-interactively
+  command: gpg --batch --generate-key /tmp/gpg_key_gen_batch
+  environment:
+    GNUPGHOME: /root/.gnupg
+
+- name: Run gpg --list-secret-keys and save output to a temp file
+  shell: gpg --list-secret-keys > /tmp/secret-keys.txt
+  args:
+    executable: /bin/bash
+
+- name: Slurp the content of secret-keys.txt
+  ansible.builtin.slurp:
+    src: /tmp/secret-keys.txt
+  register: secret_keys_content
+
+- name: Extract the key ID and set as a fact
+  set_fact:
+    gpg_secret_key: "{{ (secret_keys_content.content | b64decode) | regex_search('[A-F0-9]{40}') }}"
+
+- name: Copy passbolt config template to /etc/passbolt/passbolt.php
+  template:
+    src: templates/passbolt.php
+    dest: /etc/passbolt/passbolt.php
+    owner: www-data
+    group: www-data
+    mode: '0440'
+
+- name: Update GPG fingerprint in passbolt.php
+  ansible.builtin.replace:
+    path: /etc/passbolt/passbolt.php
+    regexp: "'fingerprint' => '.*',"
+    replace: "'fingerprint' => '{{ gpg_secret_key }}',"
+
+- name: Export GPG public key to serverkey.asc
+  shell: "gpg --armor --export {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey.asc"
+  args:
+    executable: /bin/bash
+
+- name: Export GPG private key to serverkey_private.asc
+  shell: "gpg --armor --export-secret-keys {{ gpg_secret_key }} > /etc/passbolt/gpg/serverkey_private.asc"
+  args:
+    executable: /bin/bash
+
+- name: Install Passbolt without admin user
+  become: yes
+  become_method: sudo
+  become_user: "{{ webuser }}"
+  shell: /usr/share/php/passbolt/bin/cake passbolt install --no-admin --force
+  args:
+    executable: /bin/bash
+
+- name: Register first admin user for Passbolt
+  become: yes
+  become_method: sudo
+  become_user: "{{ webuser }}"
+  shell: "/usr/share/php/passbolt/bin/cake passbolt register_user -u {{ passbolt_first_admin_email }} -f {{ passbolt_first_admin_username }} -l {{ passbolt_first_admin_surname }} -r admin"
+  args:
+    executable: /bin/bash
+  register: admin_registration_output
+
+- name: Extract registration URL
+  set_fact:
+    passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('https://' + _domain | regex_escape + '/setup/start/[a-z0-9-]+/[a-z0-9-]+') }}"
+
+- name: Set ownership and permissions for GPG keys
+  ansible.builtin.file:
+    path: "/etc/passbolt/gpg/{{ item }}"
+    owner: www-data
+    group: www-data
+    mode: '0440'
+    state: file
+  loop:
+    - serverkey.asc
+    - serverkey_private.asc
+
+# For password recovery
+- name: Update email configuration in Passbolt's app.php
+  ansible.builtin.replace:
+    path: /etc/passbolt/app.php
+    regexp: 'env\(''EMAIL_DEFAULT_FROM'', ''[^'']+''\) => env\(''EMAIL_DEFAULT_FROM_NAME'', ''[^'']+''\)'
+    replace: "env('EMAIL_DEFAULT_FROM', 'root@{{ _domain }}') => env('EMAIL_DEFAULT_FROM_NAME', 'root')"

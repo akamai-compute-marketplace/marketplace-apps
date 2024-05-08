@@ -1,8 +1,8 @@
 # Contributing
 
-Thanks for your interest in contributing to the Linode Marketplace!
+Thanks for your interest in contributing to the Akamai Connected Cloud Marketplace!
 
-You can contribute by [opening an issue](https://github.com/akamai-compute-marketplace/marketplace-apps/issues) or submitting a pull request. Best practices for development of Linode Marketplace Apps are discussed in the [Development Readme](docs/DEVELOPMENT.md).
+You can contribute by [opening an issue](https://github.com/akamai-compute-marketplace/marketplace-apps/issues) or submitting a pull request. Best practices for development of Akamai Marketplace Apps are discussed in the [Development Readme](docs/DEVELOPMENT.md).
 
 ## Opening an issue
 
@@ -34,14 +34,30 @@ In addition to submitting your [Ansible playbook](https://docs.ansible.com/ansib
 *All apps must have a designated support URL to direct users to a resource like a Contact form, specific Community forum, or active social media account they can contact for help.*
 
 **Operating System**  
-*One-Click Apps currently support Debian 11, and Ubuntu 22.04 LTS.*
+*One-Click Apps currently supports Ubuntu 22.04 LTS.*
 
 **Documentation**  
 Providing thorough technical documentation is a requirement of submitting a One-Click App to Linode’s Marketplace for both testing purposes and publishing the Doc to our Docs Library.
 
-[Documentation Example: Deploying WordPress with One-Click Apps.](https://www.linode.com/docs/platform/one-click/deploying-wordpress-with-one-click-apps/)
+Add your documentation as an additional file named `DOCUMENTATION.md` in your pull request, alongside `README.md`
 
-Add your documentation as an additional file in your pull request or add a link to documentation on your company website.
+### Documentation Guidelines
+All deployment documentation must contain the following details: 
+1. Required Distribution (Ubuntu 22.04 LTS)
+2. Suggested Plan
+3. [Marketplace-required-limited-user-shortguide](https://github.com/linode/docs/blob/develop/docs/products/tools/marketplace/_shortguides/marketplace-required-limited-user-fields-shortguide/index.md) 
+4. Locations and details of all necessary login credentials
+5. Screenshots of GUI login and dashboard if applicable. 
+
+We suggested adhering to this format for all deployment documentation:
+
+Front matter - [Title, publish date, links, tags, keywords](https://github.com/linode/docs/blob/88e0343a92b40244ffc6c5930d91e1d7ac01a80d/docs/products/tools/marketplace/guides/wordpress/index.md?plain=1#L1-L11).
+App paragraph - [A concise description of the app](https://github.com/linode/docs/blob/88e0343a92b40244ffc6c5930d91e1d7ac01a80d/docs/products/tools/marketplace/guides/wordpress/index.md?plain=1#L12-L14).
+Deploying + Configuring - [Includes UDFs and general shortcodes](https://github.com/linode/docs/blob/88e0343a92b40244ffc6c5930d91e1d7ac01a80d/docs/products/tools/marketplace/guides/wordpress/index.md?plain=1#L15-L49).
+Accessing + First Steps - [Includes credential locations, login steps and screenshots](https://github.com/linode/docs/blob/88e0343a92b40244ffc6c5930d91e1d7ac01a80d/docs/products/tools/marketplace/guides/wordpress/index.md?plain=1#L49-L135).
+Wrap up - [Links to further documentation](https://github.com/linode/docs/blob/88e0343a92b40244ffc6c5930d91e1d7ac01a80d/docs/products/tools/marketplace/guides/wordpress/index.md?plain=1#L136-L145).
+
+[Example Deployment Guide: Wordpress](https://github.com/linode/docs/blob/develop/docs/products/tools/marketplace/guides/wordpress/index.md)
 
 ## App Assets
 

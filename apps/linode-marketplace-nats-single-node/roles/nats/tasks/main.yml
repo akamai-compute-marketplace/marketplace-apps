@@ -1,0 +1,94 @@
+---
+
+- name: create system group
+  group:
+    name: nats
+    state: present
+
+- name: create system user
+  user:
+    name: nats
+    group: nats
+    system: true
+    shell: /bin/false
+    createhome: no
+
+- name: install required packages
+  apt:
+    pkg:
+      - net-tools
+      - curl
+      - unzip
+    state: latest
+
+- name: create nats-server jetstream dir
+  ansible.builtin.file:
+    path: /nats
+    state: directory
+    owner: nats
+
+- name: create nats-server dir
+  ansible.builtin.file:
+    path: /tmp/nats-server
+    state: directory
+
+- name: Download and unzip nats server bin
+  ansible.builtin.unarchive:
+    src: 'https://github.com/nats-io/nats-server/releases/download/v{{ version }}/nats-server-v{{ version }}-linux-amd64.zip'
+    dest: '/tmp/nats-server'
+    remote_src: yes
+
+- name: Copy nats server bin to /bin
+  ansible.builtin.copy:
+    src: '/tmp/nats-server/nats-server-v{{ version }}-linux-amd64/nats-server'
+    dest: '/usr/local/bin'
+    owner: nats
+    mode: '700'
+
+- name: Add nats service file 
+  template:
+    src: 'nats.service.j2'
+    dest: '/etc/systemd/system/nats.service'
+
+- name: Add nats config file 
+  template:
+    src: 'nats.conf.j2'
+    dest: '/etc/nats.conf'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: start nats service
+  systemd:
+    name: nats.service
+    state: started
+    enabled: yes
+
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: 'templates/nginx.conf.j2'
+      dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl

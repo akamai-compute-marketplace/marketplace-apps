@@ -1,15 +1,4 @@
 ---
-- name: generating postgres_password
-  set_fact:
-    postgres_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
-
-- name: writing postgres_password to vars
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: | 
-      postgres_password: {{ postgres_password }}
-
 - name: create docker Volume
   docker_volume:
     name: "odoo-db"
@@ -76,21 +65,5 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
-  
-# motd and creds gen
-- name: copy MOTD template to /etc/motd
-  template:
-    src: templates/motd.j2
-    dest: /etc/motd
-
-- name: writing odoo creds into file
-  copy:
-    dest: /root/.credentials
-    mode: '0600'
-    content: |
-      Odoo Database name: odoo
-      Postgres Password: {{ postgres_password }}
-      
-       
 
     

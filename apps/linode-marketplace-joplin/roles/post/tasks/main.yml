@@ -1,0 +1,20 @@
+---
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing sudo creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Joplin Login: admin@localhost
+      Joplin Password: admin
+      Postgres Password: {{ postgres_password }}
+      *** Please ensure you change the default credentials immediately after login! ***
