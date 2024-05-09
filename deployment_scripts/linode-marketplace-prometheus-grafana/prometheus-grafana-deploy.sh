@@ -33,6 +33,8 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  prometheus_exporter: node_exporter
+  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

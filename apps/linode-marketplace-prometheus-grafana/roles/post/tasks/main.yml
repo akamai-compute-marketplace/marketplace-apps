@@ -1,5 +1,5 @@
--
-# motd and creds gen
+---
+# motd and cred dump
 - name: copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
@@ -12,9 +12,7 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Passbolt Admin Database User: passboltadmin
-      Passbolt Database: passboltdb
-      Passbolt Database Password: {{ passbolt_db_admin_password }}
-      Mysql Root Password: {{ mysql_root_password }}
-      Passbolt Login: admin
-      Passbolt GPG Key Passphrase: {{ gpg_key_passphrase }}
+      Prometheus Username: prometheus
+      Prometheus Password: {{ prometheus_htpasswd }}
+      Grafana Username: admin
+      Grafana Password: {{ grafana_pass }}

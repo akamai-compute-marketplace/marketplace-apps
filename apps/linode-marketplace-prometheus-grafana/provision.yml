@@ -16,9 +16,5 @@
         path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
-          gpg_key_passphrase: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }} 
-          passbolt_db_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}          
-          passbolt_mysql_user: passboltadmin
-
-    - name: generating mysql root password
-      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
+          prometheus_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }} 
+          grafana_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}         
