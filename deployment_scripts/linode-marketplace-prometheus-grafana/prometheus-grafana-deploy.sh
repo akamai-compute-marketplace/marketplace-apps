@@ -6,11 +6,11 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-## Prometheus & Grafana Settings
-#<UDF name="domain" label="Domain name for your Prometheus & Grafana instance. (Requires API Token)" example="" />
+## Domain Settings
+#<UDF name="domain" label="Domain name for your Prometheus & Grafana instance. (Requires API Token)" example="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
-#<UDF name="token_password" label="Your Linode API token" default="" />
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
+#<UDF name="token_password" label="Your Linode API token" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
