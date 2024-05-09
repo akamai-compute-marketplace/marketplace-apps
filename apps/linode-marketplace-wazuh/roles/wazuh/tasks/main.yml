@@ -78,3 +78,12 @@
     src: templates/nginx.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}"
   notify: reload nginx service
+
+- name: slurp /root/.deployment-secrets.txt
+  ansible.builtin.slurp:
+    src: /root/.deployment-secrets.txt
+  register: deployment_secrets
+
+- name: decode and append deployment_secrets to creds file
+  ansible.builtin.shell:
+    cmd: "echo '{{ deployment_secrets['content'] | b64decode }}' >> /home/{{ username }}/.credentials"
