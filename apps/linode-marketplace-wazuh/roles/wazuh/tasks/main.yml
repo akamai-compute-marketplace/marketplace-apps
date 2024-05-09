@@ -56,11 +56,15 @@
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
   register: wazuh_passwords_content
 
-- name: Create /root/.deployment-secrets.txt with the content
-  ansible.builtin.copy:
-    dest: /root/.deployment-secrets.txt
-    content: "{{ wazuh_passwords_content['content'] | b64decode }}"
-    mode: '0600'
+# - name: Create /root/.deployment-secrets.txt with the content
+#   ansible.builtin.copy:
+#     dest: /root/.deployment-secrets.txt
+#     content: "{{ wazuh_passwords_content['content'] | b64decode }}"
+#     mode: '0600'
+
+- name: decode and append wazuh_passwords_content to creds file
+  ansible.builtin.shell:
+    cmd: "echo '{{ wazuh_passwords_content['content'] | b64decode }}' >> /home/{{ username }}/.credentials"
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
@@ -79,11 +83,3 @@
     dest: "/etc/nginx/sites-available/{{ _domain }}"
   notify: reload nginx service
 
-- name: slurp /root/.deployment-secrets.txt
-  ansible.builtin.slurp:
-    src: /root/.deployment-secrets.txt
-  register: deployment_secrets
-
-- name: decode and append deployment_secrets to creds file
-  ansible.builtin.shell:
-    cmd: "echo '{{ deployment_secrets['content'] | b64decode }}' >> /home/{{ username }}/.credentials"
