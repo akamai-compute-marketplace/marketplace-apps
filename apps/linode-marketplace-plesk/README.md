@@ -4,12 +4,16 @@ Plesk is the leading secure WordPress and website management platform. This Ansi
 
 ## Software Included
 
-| Software  | Version   | Description   |
-| :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
-| plesk | Latest | Describe what plesk is |
-| postgres:13 | 13 | Free and open-source relational database management system |
+| Software       | Version   | Description   |
+| :---           | :----     | :---          |
+| Dovecot        | 2.3       | An open-source IMAP and POP3 email server for Linux/UNIX-like systems, known for its performance and security. |
+| nginx          | 1.24      | A high-performance web server, reverse proxy, and HTTP cache, widely used for its efficiency, stability, and low resource consumption. |
+| Node.js        | Latest    | An open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser. |
+| PHP            | 8.3       | A popular general-purpose scripting language especially suited to web development, fast, flexible and pragmatic. |
+| phpMyAdmin     | 5.2       | A free and open-source administration tool for MySQL and MariaDB databases, accessible via a web browser. |
+| Plesk Obsidian | Latest    | A commercial web hosting and server data center automation software with a control panel that allows a server administrator to set up new websites, reseller accounts, email accounts, and DNS entries through a web-based interface. |
+| Postfix        | 3.5       | A free and open-source mail transfer agent (MTA) that routes and delivers email over the Internet. |
+| Ruby           | 3.2       | A dynamic, open-source programming language with a focus on simplicity and productivity, featuring an elegant syntax that is natural to read and easy to write. |
 
 **Supported Distributions:**
 
@@ -37,7 +41,8 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export POSTGRES_PASSWORD="aComplexP@ssword"
+export DISABLE_ROOT="Yes or No"
+export USER_NAME="username"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -48,8 +53,9 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-        "postgres_password" : "${POSTGRES_PASSWORD}"
+        '{"disable_root": "${DISABLE_ROOT}", 
+        "user_name":"${USER_NAME}",
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}"}'
       },
       "authorized_users": [
         "myUser",
@@ -69,14 +75,15 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export POSTGRES_PASSWORD="aComplexP@ssword"
+export DISABLE_ROOT="Yes or No"
+export USER_NAME="username"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"yemail": "${POSTGRES_PASSWORD}"}' \
+  --stackscript_data '{"disable_root": "${DISABLE_ROOT}", "user_name":"${USER_NAME}", "soa_email_address": "${SOA_EMAIL_ADDRESS}"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
