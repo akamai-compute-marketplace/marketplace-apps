@@ -2,7 +2,7 @@
 # install + configure nginx
 - name: install nginx pkgs
   apt: 
-    pkgs: 
+    pkg: 
       - nginx
       - apache2-utils
     state: present
@@ -10,7 +10,7 @@
 - name: template nginx configs
   template:
     src: 'templates/nginx.conf.j2'
-    dest: '/etc/nginx/sites-available/{{ _domain }}.conf'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
 
 - name: symlink for configs
   file: 

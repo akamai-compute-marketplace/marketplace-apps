@@ -35,19 +35,22 @@
 
 - name: moving prometheus to etc
   copy:
-    src: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64/prometheus"
+    src: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64"
     dest: "/etc/prometheus"
+    recurse: true
     mode: 0755
     owner: prometheus
     group: prometheus
 
-- name: moving prometheus binaries to path
+- name: moving prometheus binary to path
   copy: 
-    src: "/etc/prometheus/{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop: 
-    - '{{ src: prometheus dest: /usr/local/bin/prometheus }}'
-    - '{{ src: promtool dest: /usr/local/bin/promtool }}'
+    src: "/etc/prometheus/prometheus"
+    dest: "/usr/local/bin/prometheus"
+
+- name: moving promtool binary to path
+  copy: 
+    src: "/etc/prometheus/promtool"
+    dest: "/usr/local/bin/promtool"
 
 - name: remove binaries from etc directory
   file: 

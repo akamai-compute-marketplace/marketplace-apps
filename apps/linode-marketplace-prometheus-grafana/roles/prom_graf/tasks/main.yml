@@ -4,7 +4,8 @@
   import_tasks: nginx.yml
 
 - name: run node_exporter helper
-  import_role: data_exporter
+  import_role: 
+    name: data_exporter
 
 - name: install prometheus
   import_tasks: prom_install.yml

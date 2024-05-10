@@ -7,10 +7,13 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Domain Settings
-#<UDF name="domain" label="Domain name for your Prometheus & Grafana instance. (Requires API Token)" example="">
+#<UDF name="domain" label="Domain name for your Prometheus & Grafana instance. (Requires API Token)" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
 #<UDF name="token_password" label="Your Linode API token" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+
+## Prometheus Settings
+# <UDF name="remote_ips" lable="Remote IPs to scrape with Prometheus. Requires CSV list." default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -33,7 +36,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  prometheus_exporter: node_exporter
+  prometheus_exporter: [node_exporter]
   webserver_stack: lemp
 EOF
 
@@ -42,7 +45,7 @@ EOF
   else echo "Leaving root login enabled";
   fi
 
-  # passbolt vars
+  # domain vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
@@ -63,6 +66,11 @@ EOF
   else echo "No API token entered";
   fi
 
+  # prometheus vars
+  if [[ -n ${REMOTE_IPS} ]]; then
+    echo: "remote_ips: [${REMOTE_IPS}]" >> ${group_vars};
+  else echo "No remote IPs entered";
+  fi
 }
 
 function run {

@@ -36,5 +36,6 @@
     enabled: true
 
 - name: run certbot
-  import_role: certbot_ssl
+  import_role: 
+    name: certbot_ssl
 
