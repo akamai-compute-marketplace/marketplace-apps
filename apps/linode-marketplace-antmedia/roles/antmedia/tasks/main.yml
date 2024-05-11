@@ -28,23 +28,6 @@
     port: 5080
   timeout: 60
 
-- name: send POST request
-  uri:
-    url: http://localhost:5080/rest/v2/users/initial
-    method: POST
-    body_format: json
-    body:
-      email: "{{ soa_email_address }}"
-      password: "{{ antmedia_password }}"
-      scope: 'system'
-      userType: 'ADMIN'
-    headers:
-      Content-Type: 'application/json'
-  register: result
-  until: result.status != 403
-  retries: 5
-  delay: 10
-
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
