@@ -2,8 +2,7 @@
 # install latest prometheus
 - name: create prometheus data dir
   file: 
-    path: 
-      - /var/lib/prometheus/
+    path: '/var/lib/prometheus/'
     state: directory
     owner: prometheus
     group: prometheus
@@ -34,11 +33,11 @@
     owner: prometheus
     group: prometheus
     mode: 0644    
-    creates: '/tmp/prometheus/'
+    creates: '/tmp/prometheus-{{ prom_version }}.linux-amd64/'
 
 - name: moving prometheus to etc
   copy:
-    src: '/tmp/prometheus/'
+    src: '/tmp/prometheus-{{ prom_version }}.linux-amd64/'
     dest: '/etc/prometheus/'
     mode: 0755
     owner: prometheus
