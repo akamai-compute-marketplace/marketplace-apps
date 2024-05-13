@@ -17,7 +17,9 @@
   copy:
     src: files/local_prometheus_scrape.yml
     dest: /etc/prometheus/file_sd_targets/local_prometheus.yml
-
+    mode: 0755
+    owner: prometheus
+    group: prometheus
 # - name: add udf supplied endpoints
 #   template:
 #     src: 'templates/remote_scrape.yml'
@@ -47,7 +49,7 @@
 #          - __instance
 #            target_label: instance
 #     insertafter: EOF
-# ask elvis
+# 
 - name: template prometheus service file
   template:
     src: 'templates/prometheus.service.j2'

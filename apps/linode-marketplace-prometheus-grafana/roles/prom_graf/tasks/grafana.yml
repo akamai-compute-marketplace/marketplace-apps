@@ -3,7 +3,7 @@
 - name: add grafana key
   get_url:
     url: https://apt.grafana.com/gpg.key
-    dest: /usr/share/keyrings/grafana.key
+    dest: '/usr/share/keyrings/grafana.key'
 
 - name: add grafana repo
   apt_repository: 
@@ -18,13 +18,13 @@
 
 - name: update grafana admin
   lineinfile:
-    path: /etc/grafana/grafana.ini
+    path: '/etc/grafana/grafana.ini'
     regex: '^\;admin_user = admin'
     line: admin_user = admin
 
 - name: update grafana password
   lineinfile:
-    path: /etc/grafana/grafana.ini
+    path: '/etc/grafana/grafana.ini'
     regex: '^\;admin_password = admin'
     line: 'admin_password = {{ grafana_pass }}'
 
