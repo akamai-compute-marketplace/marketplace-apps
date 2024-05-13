@@ -5,6 +5,14 @@
     src: 'files/default_prometheus.yml'
     dest: '/etc/prometheus/prometheus.yml'
 
+- name: make targets directory
+  file: 
+    path: /etc/prometheus/file_sd_targets/
+    state: directory
+    mode: 0755
+    owner: prometheus
+    group: prometheus
+
 - name: add local target file
   copy:
     src: files/local_prometheus_scrape.yml

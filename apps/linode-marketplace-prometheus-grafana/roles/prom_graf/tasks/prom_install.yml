@@ -3,7 +3,7 @@
 - name: create prometheus dirs
   file: 
     path: 
-      - /etc/prometheus/file_sd_targets
+      - /etc/prometheus
       - /var/lib/prometheus
     state: directory
     owner: prometheus
@@ -35,13 +35,12 @@
     owner: prometheus
     group: prometheus
     mode: 0644    
-    creates: "/tmp/prometheus-{{ prom_version }}.linux-amd64/prometheus"
+    creates: "/tmp/prometheus-{{ prom_version }}.linux-amd64/prometheus/"
 
 - name: moving prometheus to etc
   copy:
-    src: "/tmp/prometheus-{{ prom_version }}.linux-amd64"
+    src: "/tmp/prometheus-{{ prom_version }}.linux-amd64/prometheus/"
     dest: "/etc/prometheus"
-    recurse: true
     mode: 0755
     owner: prometheus
     group: prometheus
