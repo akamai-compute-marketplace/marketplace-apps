@@ -4,7 +4,6 @@
   get_url:
     url: https://apt.grafana.com/gpg.key
     dest: /usr/share/keyrings/grafana.key
-    state: present
 
 - name: add grafana repo
   apt_repository: 
@@ -14,7 +13,7 @@
 
 - name: install grafana
   apt:
-    pkgs: grafana
+    pkg: grafana
     state: present
 
 - name: update grafana admin
@@ -31,7 +30,7 @@
 
 - name: start and enable grafana
   systemd: 
-    name: grafana
+    name: grafana-server
     state: started
     enabled: true
 

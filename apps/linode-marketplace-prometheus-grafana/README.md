@@ -47,9 +47,14 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 985364,
       "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "disable_root": "No",
+        "user_name": "sudo_user",
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
+        "token_password": "${TOKEN}",
+        "subdomain": "prometheus",
+        "domain": "example.com"
       },
       "authorized_users": [
         "myUser",
@@ -58,7 +63,7 @@ curl -H "Content-Type: application/json" \
       "booted": true,
       "label": "linode123",
       "type": "g6-standard-2",
-      "region": "us-east",
+      "region": "us-mia",
       "group": "Linode-Group"
     }' \
 https://api.linode.com/v4/linode/instances
@@ -74,11 +79,10 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"} \
-  --region us-east \
+  --stackscript_id 985364 \
+  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com"}' \
+  --region us-mia \
   --type g6-standard-2 \
-  --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
   --authorized_users "myUser"
   --authorized_users "secondaryUser"
 ```
