@@ -9,33 +9,37 @@
     owner: prometheus
     group: prometheus
 
-- name: get prometheus latest
+- name: get prometheus latest version
   uri:
     url: "https://raw.githubusercontent.com/prometheus/prometheus/main/VERSION"
     return_content: true
     status_code: 200
   register: latest_prom
 
+- name: trim var
+  set_fact:
+    prom_version: '{{ latest_prom.content | trim }}'
+
 - name: download prometheus latest 
   get_url: 
-    url: "https://github.com/prometheus/prometheus/releases/download/v{{ latest_prom.content }}/prometheus-{{ latest_prom.content }}.linux-amd64.tar.gz"
-    dest: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64.tar.gz"
+    url: "https://github.com/prometheus/prometheus/releases/download/v{{ prom_version }}/prometheus-{{ prom_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/prometheus-{{ prom_version }}.linux-amd64.tar.gz"
     owner: prometheus
     group: prometheus
     mode: 0644
 
 - name: untar prometheus archive
   unarchive:
-    src: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64.tar.gz"
+    src: "/tmp/prometheus-{{ prom_version }}.linux-amd64.tar.gz"
     dest: "/tmp"
     owner: prometheus
     group: prometheus
     mode: 0644    
-    creates: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64/prometheus"
+    creates: "/tmp/prometheus-{{ prom_version }}.linux-amd64/prometheus"
 
 - name: moving prometheus to etc
   copy:
-    src: "/tmp/prometheus-{{ latest_prom.content }}.linux-amd64"
+    src: "/tmp/prometheus-{{ prom_version }}.linux-amd64"
     dest: "/etc/prometheus"
     recurse: true
     mode: 0755
