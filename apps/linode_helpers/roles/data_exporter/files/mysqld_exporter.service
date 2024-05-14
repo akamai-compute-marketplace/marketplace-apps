@@ -1,0 +1,9 @@
+[Unit]
+Description=Mysqld Exporter
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=prometheus
+ExecStart=/usr/local/bin/mysqld_exporter --config.my-cnf="/etc/mysqld_exporter.d/.my.cnf"
+[Install]
+WantedBy=default.target
