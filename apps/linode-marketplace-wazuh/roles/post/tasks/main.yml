@@ -14,3 +14,14 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+
+- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
+  ansible.builtin.slurp:
+    src: /tmp/wazuh-install-files/wazuh-passwords.txt
+  register: wazuh_passwords_content
+
+- name: decode and append wazuh_passwords_content to creds file
+  ansible.builtin.shell:
+    cmd: |
+      echo "" >> /home/{{ username }}/.credentials
+      echo "{{ wazuh_passwords_content['content'] | b64decode }}" >> /home/{{ username }}/.credentials
