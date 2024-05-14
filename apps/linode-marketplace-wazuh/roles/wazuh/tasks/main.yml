@@ -60,7 +60,7 @@
   ansible.builtin.shell:
     cmd: |
       echo "" >> /home/{{ username }}/.credentials
-      "echo '{{ wazuh_passwords_content['content'] | b64decode }}' >> /home/{{ username }}/.credentials"
+      echo '{{ wazuh_passwords_content['content'] | b64decode }}' >> /home/{{ username }}/.credentials
 
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
