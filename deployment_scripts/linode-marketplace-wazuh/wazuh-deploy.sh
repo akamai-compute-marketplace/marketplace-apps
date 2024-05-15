@@ -6,7 +6,6 @@ trap "cleanup $? $LINENO" EXIT
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode" default="">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Domain Settings 
