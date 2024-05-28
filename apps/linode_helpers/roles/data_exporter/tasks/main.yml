@@ -1,0 +1,18 @@
+---
+# apps/linode_helpers/roles/data_exporter/tasks/main.yml
+
+- name: install prometheus node_exporter
+  include_tasks:
+    file: node-exporter.yml
+  loop: "{{ prometheus_exporter }}"
+  loop_control:
+    index_var: count
+  when: prometheus_exporter[count] == 'node_exporter'
+
+- name: install prometheus mysqld_exporter
+  include_tasks:
+    file: mysqld-exporter.yml
+  loop: "{{ prometheus_exporter }}"
+  loop_control:
+    index_var: count
+  when: prometheus_exporter[count] == 'mysqld_exporter'

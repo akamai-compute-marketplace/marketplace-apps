@@ -1,0 +1,93 @@
+---
+# install mysqld_exporter latest
+# https://api.github.com/repos/prometheus/mysqld_exporter/releases/latest  
+
+- name: create prometheus user
+  import_tasks:
+    file: promuser.yml
+
+- name: get mysqld_exporter latest
+  uri:
+    url: 'https://api.github.com/repos/prometheus/mysqld_exporter/releases/latest'
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_release
+
+- name: set mysqld_exporter latest version
+  set_fact:
+    mysqld_exporter_version: "{{ latest_release.json.tag_name[1:] }}"
+
+- name: download mysqld_exporter latest binary
+  get_url: 
+    url: "https://github.com/prometheus/mysqld_exporter/releases/download/v{{ mysqld_exporter_version }}/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64.tar.gz"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+
+- name: untar mysqld exporter archive
+  unarchive:
+    src: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    owner: prometheus
+    group: prometheus
+    mode: 0644    
+    creates: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64/mysqld_exporter"
+
+- name: moving mysqld_exporter binary to path
+  copy:
+    src: "/tmp/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64/mysqld_exporter"
+    dest: "/usr/local/bin/mysqld_exporter"
+    mode: 0755
+    owner: prometheus
+    group: prometheus
+      
+# exporter config
+
+- name: generating mysqld exporter password
+  set_fact:
+    exporter_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+  no_log: true
+
+- name: creating client config for exporter
+  file:
+    path: '/etc/mysqld_exporter.d'
+    owner: prometheus
+    group: prometheus
+    mode: 0755
+    state: directory
+
+- name: adding db client config
+  template:
+    src: 'templates/my.cnf.j2' 
+    dest: '/etc/mysqld_exporter.d/.my.cnf'
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+
+# exporter db grants
+
+- name: creating mysqld_exporter db user and grants
+  community.mysql.mysql_user:
+    name: 'mysqld_exporter'
+    password: "{{ exporter_password }}"
+    priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
+    host: 'localhost'
+    login_unix_socket: '/var/run/mysqld/mysqld.sock'
+    state: present  
+  register: dbconnect
+
+# system service
+
+- name: moving mysqld_exporter service
+  copy:
+    src: 'files/mysqld_exporter.service'
+    dest: '/etc/systemd/system/mysqld_exporter.service'
+    
+- name: start mysqld_exporter service
+  systemd:
+    name: mysqld_exporter
+    state: started
+    enabled: true
+    daemon_reload: true
