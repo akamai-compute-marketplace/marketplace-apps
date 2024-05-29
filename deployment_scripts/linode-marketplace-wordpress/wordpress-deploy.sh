@@ -21,7 +21,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Misc
-#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter"  default="">
+#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter,none"  default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
