@@ -1,5 +1,0 @@
-- labels:
-    __instance: prometheus
-    cluster: local
-  targets:
-  - 127.0.0.1
