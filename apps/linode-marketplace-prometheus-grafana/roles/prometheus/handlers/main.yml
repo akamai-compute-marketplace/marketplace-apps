@@ -1,0 +1,11 @@
+---
+# prom_graf handlers
+- name: reload daemon
+  systemd: 
+    daemon_reload: true
+
+- name: start prometheus
+  systemd: 
+    name: prometheus
+    state: started
+    enabled: true
