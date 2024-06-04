@@ -1,4 +1,6 @@
-# passbolt
+---
+# provision prometheus and grafana
+
 - name: setting up environment 
   hosts: localhost
   connection: local
@@ -16,5 +18,5 @@
         path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
-          prometheus_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }} 
-          grafana_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}         
+          prometheus_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          grafana_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
