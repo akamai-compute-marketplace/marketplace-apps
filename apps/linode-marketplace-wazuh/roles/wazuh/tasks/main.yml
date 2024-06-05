@@ -51,17 +51,6 @@
     dest: /tmp/
     remote_src: yes
 
-- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
-  ansible.builtin.slurp:
-    src: /tmp/wazuh-install-files/wazuh-passwords.txt
-  register: wazuh_passwords_content
-
-- name: decode and append wazuh_passwords_content to creds file
-  ansible.builtin.shell:
-    cmd: |
-      echo "" >> /home/{{ username }}/.credentials
-      echo "{{ wazuh_passwords_content['content'] | b64decode }}" >> /home/{{ username }}/.credentials
-
 - name: Place Let's Encrypt certificates in the correct Wazuh directory
   ansible.builtin.copy:
     src: "/etc/letsencrypt/live/{{ _domain }}/{{ item.src }}"
