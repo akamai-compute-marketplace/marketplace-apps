@@ -5,6 +5,21 @@
     src: templates/motd.j2
     dest: /etc/motd
 
+# - name: writing wazuh creds into file
+#   copy:
+#     dest: /home/{{ username }}/.credentials
+#     owner: "{{ username }}"
+#     group: "{{ username }}"
+#     mode: '0600'
+#     content: |
+#       Sudo Username: {{ username }}
+#       Sudo Password: {{ password }}
+
+- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
+  ansible.builtin.slurp:
+    src: /tmp/wazuh-install-files/wazuh-passwords.txt
+  register: wazuh_passwords_content
+
 - name: writing wazuh creds into file
   copy:
     dest: /home/{{ username }}/.credentials
@@ -14,18 +29,15 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      {{ wazuh_passwords_content['content'] | b64decode }}
 
-- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
-  ansible.builtin.slurp:
-    src: /tmp/wazuh-install-files/wazuh-passwords.txt
-  register: wazuh_passwords_content
 
-- name: append decoded wazuh_passwords_content to credentials file
-  ansible.builtin.blockinfile:
-    path: /home/{{ username }}/.credentials
-    block: "{{ wazuh_passwords_content['content'] | b64decode }}"
-    marker: "###"
-    create: yes
-    owner: "{{ username }}"
-    group: "{{ username }}"
-    mode: '0600'
+# - name: append decoded wazuh_passwords_content to credentials file
+#   ansible.builtin.blockinfile:
+#     path: /home/{{ username }}/.credentials
+#     block: "{{ wazuh_passwords_content['content'] | b64decode }}"
+#     marker: "###"
+#     create: yes
+#     owner: "{{ username }}"
+#     group: "{{ username }}"
+#     mode: '0600'
