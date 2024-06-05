@@ -1,4 +1,4 @@
--
+---
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
   template:
