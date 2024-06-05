@@ -43,10 +43,10 @@
 #   args:
 #     chdir: /opt/McLiveEncoder/engine/
 
-- name: start mcliveencodingwebd service
-  systemd:
-    name: mcliveencodingwebd.service
-    state: started
-    enabled: yes
+  - name: start mcliveencodingwebd service
+    systemd:
+      name: mcliveencodingwebd.service
+      state: started
+      enabled: yes
 
 
