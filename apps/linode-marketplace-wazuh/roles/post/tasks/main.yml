@@ -20,8 +20,18 @@
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
   register: wazuh_passwords_content
 
-- name: decode and append wazuh_passwords_content to creds file
-  ansible.builtin.shell:
-    cmd: |
-      echo "" >> /home/{{ username }}/.credentials
-      echo "{{ wazuh_passwords_content['content'] | b64decode }}" >> /home/{{ username }}/.credentials
+# - name: decode and append wazuh_passwords_content to creds file
+#   ansible.builtin.shell:
+#     cmd: |
+#       echo "" >> /home/{{ username }}/.credentials
+#       echo "{{ wazuh_passwords_content['content'] | b64decode }}" >> /home/{{ username }}/.credentials
+
+- name: append decoded wazuh_passwords_content to credentials file
+  ansible.builtin.blockinfile:
+    path: /home/{{ username }}/.credentials
+    block: "{{ wazuh_passwords_content['content'] | b64decode }}"
+    marker: "###"
+    create: yes
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
