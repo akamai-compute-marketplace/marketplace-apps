@@ -43,6 +43,10 @@
 #   args:
 #     chdir: /opt/McLiveEncoder/engine/
 
-  - name: Start MainConcept Live Encoder
-    shell: systemctl start --quiet mcliveencodingwebd.service
+- name: start mcliveencodingwebd service
+  systemd:
+    name: mcliveencodingwebd.service
+    state: started
+    enabled: yes
+
 
