@@ -8,12 +8,10 @@ Plesk is the leading secure WordPress and website management platform. This Ansi
 | :---           | :----     | :---          |
 | Dovecot        | 2.3       | An open-source IMAP and POP3 email server for Linux/UNIX-like systems, known for its performance and security. |
 | nginx          | 1.24      | A high-performance web server, reverse proxy, and HTTP cache, widely used for its efficiency, stability, and low resource consumption. |
-| Node.js        | Latest    | An open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser. |
 | PHP            | 8.3       | A popular general-purpose scripting language especially suited to web development, fast, flexible and pragmatic. |
 | phpMyAdmin     | 5.2       | A free and open-source administration tool for MySQL and MariaDB databases, accessible via a web browser. |
 | Plesk Obsidian | Latest    | A commercial web hosting and server data center automation software with a control panel that allows a server administrator to set up new websites, reseller accounts, email accounts, and DNS entries through a web-based interface. |
 | Postfix        | 3.5       | A free and open-source mail transfer agent (MTA) that routes and delivers email over the Internet. |
-| Ruby           | 3.2       | A dynamic, open-source programming language with a focus on simplicity and productivity, featuring an elegant syntax that is natural to read and easy to write. |
 
 **Supported Distributions:**
 
