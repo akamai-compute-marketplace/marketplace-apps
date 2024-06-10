@@ -1,0 +1,117 @@
+---
+# openlitespeed
+- name: download install scripts
+  ansible.builtin.get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: '0755'
+  loop:
+    - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/wpimgsetup.sh', dest: '/tmp/wpimgsetup.sh' }
+    - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
+
+- name: execute install scripts
+  ansible.builtin.command:
+    cmd: "bash {{ item }}"
+  loop:
+    - '/tmp/wpimgsetup.sh'
+    - '/tmp/per-instance.sh'
+
+- name: get litespeed password
+  ansible.builtin.slurp:
+    src: '/root/.litespeed_password'
+  register: litespeed_password_encode
+
+- name: Slurp content of /root/.litespeed_password
+  ansible.builtin.slurp:
+    src: /root/.litespeed_password
+  register: litespeed_encoded_password
+
+- name: get db password
+  ansible.builtin.slurp:
+    src: '/root/.db_password'
+  register: db_password_encode
+
+- name: set db & litespeed passwords
+  set_fact:
+    litespeed_password: "{{ (litespeed_password_encode.content | b64decode).split('=')[1].strip() }}"
+    db_password: "{{ db_password_encode.content | b64decode }}"
+
+- name: comment out ssh motd in pam_motd
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
+    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+    backrefs: yes
+  
+- name: set mysql root and wordpress user passwords
+  set_fact:
+    passwords:
+      mysql_root_password: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
+      wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
+
+- name: write mysql root and wordpress user passwords to vars
+  ansible.builtin.lineinfile:
+    path: "./group_vars/linode/vars"
+    create: yes
+    line: "{{ item.key }}: {{ item.value }}"
+  loop: "{{ lookup('dict', passwords) }}"
+
+# verify wordpress is installed before configuring admin info
+- name: verify WordPress checksums
+  command: bash -lc "wp core verify-checksums --path='/var/www/html' --allow-root"
+  register: checksum_verification
+  retries: 10
+  delay: 30
+  until: checksum_verification.stdout is search("Success")
+  changed_when: checksum_verification.rc != 0
+  ignore_errors: true
+
+- name: configure admin info
+  shell:
+    chdir: "/var/www/html"
+    cmd: |
+      wp core install --allow-root \
+          --url="{{ _domain }}" \
+          --title="{{ site_title }}" \
+          --admin_user="{{ wp_admin_user }}" \
+          --admin_email="{{ soa_email_address }}" \
+          --admin_password="{{ wp_admin_pass }}" \
+          --path="/var/www/html"
+
+- name: create .my.cnf file with mysql creds
+  ansible.builtin.copy:
+    dest: "/root/.my.cnf"
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      [client]
+      user=root
+      password={{ mysql_root_password }}
+
+- name: run mysql secure installation
+  import_role:
+    name: securemysql
+
+- name: run domain setup script with full automation
+  ansible.builtin.expect:
+    command: "/opt/domainsetup.sh"
+    responses:
+      "(?i)Your domain:": "{{ _domain }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to issue a Let's encrypt certificate for this domain": "y"
+      "(?i)Please enter your E-mail": "{{ soa_email_address }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to force HTTPS rewrite rule for this domain": "y"
+      "(?i)Do you wish to update the system now": "y"
+    timeout: 120
+
+- name: update ssl path for lsws admin_config.conf
+  ansible.builtin.lineinfile:
+    path: /usr/local/lsws/admin/conf/admin_config.conf
+    regexp: '^\s*{{ item.key }}\s+.*$'
+    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+  loop:
+    - { key: 'keyFile', file: 'privkey.pem' }
+    - { key: 'certFile', file: 'fullchain.pem' }
+  notify: reload lsws

@@ -1,0 +1,16 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing plesk creds into file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}

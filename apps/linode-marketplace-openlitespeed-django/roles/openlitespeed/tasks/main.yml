@@ -1,0 +1,69 @@
+---
+# openlitespeed
+
+- name: Download OpenLiteSpeed and Django setup scripts
+  block:
+    - name: Download scripts
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+        mode: '0755'
+      loop:
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/djangosetup.sh', dest: '/tmp/djangosetup.sh' }
+        - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
+      loop_control:
+        label: "{{ item.url }}"
+
+- name: Execute OpenLiteSpeed and Django setup scripts
+  ansible.builtin.command: bash "{{ item.dest }}"
+  loop:
+    - { dest: '/tmp/djangosetup.sh' }
+    - { dest: '/tmp/per-instance.sh' }
+  loop_control:
+    label: "{{ item.dest }}"
+
+- name: Slurp content of /root/.litespeed_password
+  ansible.builtin.slurp:
+    src: /root/.litespeed_password
+  register: litespeed_encoded_password
+
+- name: Decode base64 password and extract password
+  set_fact:
+    litespeed_decoded_password: "{{ (litespeed_encoded_password.content | b64decode).split('=')[1].strip() }}"
+
+- name: Create Django superuser using django_manage module
+  community.general.django_manage:
+    command: "createsuperuser --noinput --username={{ django_superuser_username }} --email={{ django_superuser_email }}"
+    project_path: "/usr/local/lsws/Example/html/demo"
+  environment:
+    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
+
+- name: Run domain setup script with full automation
+  ansible.builtin.expect:
+    command: "/opt/domainsetup.sh"
+    responses:
+      "(?i)Your domain:": "{{ _domain }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to issue a Let's encrypt certificate for this domain": "y"
+      "(?i)Please enter your E-mail": "{{ soa_email_address }}"
+      "(?i)Please verify it is correct": "y"
+      "(?i)Do you wish to force HTTPS rewrite rule for this domain": "y"
+      "(?i)Do you wish to update the system now": "y"
+    timeout: 120
+
+- name: Update SSL path for lsws admin_config.conf
+  ansible.builtin.lineinfile:
+    path: /usr/local/lsws/admin/conf/admin_config.conf
+    regexp: '^\s*{{ item.key }}\s+.*$'
+    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+  loop:
+    - { key: 'keyFile', file: 'privkey.pem' }
+    - { key: 'certFile', file: 'fullchain.pem' }
+  notify: reload lsws
+
+- name: Comment out ssh motd in pam_motd
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
+    line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+    backrefs: yes

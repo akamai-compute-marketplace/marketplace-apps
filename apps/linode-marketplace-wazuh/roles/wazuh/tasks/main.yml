@@ -1,0 +1,70 @@
+---
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: templates/nginx.conf.j2
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+# wazuh
+- name: Download Wazuh install script
+  ansible.builtin.get_url:
+    url: https://packages.wazuh.com/4.7/wazuh-install.sh
+    dest: /tmp/wazuh-install.sh
+    mode: '0755'
+
+- name: Stop and disable nginx service before Wazuh installation
+  systemd:
+    name: nginx
+    state: stopped
+    enabled: no
+
+- name: Install Wazuh
+  ansible.builtin.shell:
+    cmd: ./wazuh-install.sh -a
+    chdir: /tmp
+
+- name: Extract the entire Wazuh installation files tar
+  ansible.builtin.unarchive:
+    src: /tmp/wazuh-install-files.tar
+    dest: /tmp/
+    remote_src: yes
+
+- name: Place Let's Encrypt certificates in the correct Wazuh directory
+  ansible.builtin.copy:
+    src: "/etc/letsencrypt/live/{{ _domain }}/{{ item.src }}"
+    dest: "/etc/wazuh-dashboard/certs/{{ item.dest }}"
+    remote_src: yes
+    mode: '0644'
+  loop:
+    - { src: 'fullchain.pem', dest: 'wazuh-dashboard.pem' }
+    - { src: 'privkey.pem', dest: 'wazuh-dashboard-key.pem' }
+  notify: restart wazuh dashboard
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+  notify: reload nginx service
+

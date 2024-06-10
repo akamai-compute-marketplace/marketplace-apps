@@ -1,0 +1,25 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Wordpress admin user: {{ wp_admin_user }}
+      Wordpress admin password: {{ wp_admin_pass }}
+      MySQL `root` password: {{ mysql_root_password }}
+      MySQL `wordpress` user password: {{ wordpress_mysql_pass }}
+      PHPMyAdmin `root` password: {{ mysql_root_password }}
+      LiteSpeed web `admin` password: {{ litespeed_password }}
+
+- name: Remove /tmp/lshttpd
+  ansible.builtin.file:
+    path: /tmp/lshttpd
+    state: absent
