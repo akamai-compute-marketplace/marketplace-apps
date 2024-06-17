@@ -8,7 +8,6 @@ fi
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
@@ -16,7 +15,7 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Django Settings 
-#<UDF name="soa_email_address" label="Admin Email for the Django server and Let's Encrypt SSL certificate" default="admin@domain.tld">
+#<UDF name="soa_email_address" label="Admin Email for the Django server and Let's Encrypt SSL certificate">
 #<UDF name="django_user" label="The Django app user: *No Capital Letters or Special Characters*">
 
 # git repo
@@ -47,11 +46,6 @@ EOF
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
   fi
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then

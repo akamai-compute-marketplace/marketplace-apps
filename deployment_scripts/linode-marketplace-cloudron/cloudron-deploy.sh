@@ -7,7 +7,6 @@ trap "cleanup $? $LINENO" EXIT
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -32,10 +31,6 @@ function udf {
   username: ${USER_NAME}
   default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})
 EOF
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
