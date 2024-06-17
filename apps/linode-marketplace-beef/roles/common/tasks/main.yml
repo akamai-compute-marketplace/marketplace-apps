@@ -30,9 +30,7 @@
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
   import_role:
-      name: sshkey
-  when: 
-    - pubkey is defined
+    name: sshkey
 
 # apt_setup_update
 - name: update system packages
