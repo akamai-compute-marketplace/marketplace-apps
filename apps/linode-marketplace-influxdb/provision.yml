@@ -17,5 +17,5 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: |
-          admin_password: {{ lookup('password', '/dev/null length=45 characters=ascii_letters,digits') }}
+          admin_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
       no_log: true

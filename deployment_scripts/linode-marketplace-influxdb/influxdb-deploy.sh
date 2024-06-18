@@ -38,7 +38,7 @@ function udf {
 
   # deployment vars
   soa_email_address: ${SOA_EMAIL_ADDRESS}
-  admin_password: ${ADMIN_PASSWORD}
+  admin_username: ${ADMIN_USERNAME}
   org_name: ${ORG_NAME}
   bucket_name: ${BUCKET_NAME}
 
