@@ -4,4 +4,11 @@ App URL: https://{{ _domain }}
 Credentials File: /home/{{ username }}/.credentials
 Documentation: https://www.linode.com/docs/products/tools/marketplace/guides/wazuh/
 *********************************************************
+To deploy the Wazuh agent, you will need to add the endpoint to your firewall:
+
+    sudo ufw allow from $AGENTSERVERIP to any port 1514 proto tcp
+    sudo ufw allow from $AGENTSERVERIP to any port 1515 proto tcp
+
+**Update `$AGENTSERVERIP` with the IP address you want to install the Wazuh Agent**
+*********************************************************
 To delete this message of the day: rm /etc/motd
