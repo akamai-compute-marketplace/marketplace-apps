@@ -7,7 +7,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="webserver_stack" label="The stack you are looking to deploy Wordpress on" oneOf="LAMP,LEMP">
 
 #<UDF name="site_title" label="Website title" example="My Blog">
-#<UDF name="wp_admin_user" label="Admin username" example="admin">
+#<UDF name="wp_admin_user" label="Wordpress admin username" example="admin">
 #<UDF name="wp_db_user" label="Wordpress database user" example="wordpress">
 #<UDF name="wp_db_name" label="Wordpress database name" example="wordpress">
 
@@ -19,6 +19,9 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+
+## Misc
+#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter,none"  default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -49,6 +52,8 @@ function udf {
   wp_db_name: ${WP_DB_NAME}
   # sudo username
   username: ${USER_NAME}
+  # misc
+  prometheus_exporter: [${PROMETHEUS_EXPORTER}]  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

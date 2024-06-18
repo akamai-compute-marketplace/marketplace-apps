@@ -1,0 +1,34 @@
+---
+## install nginx
+
+- name: install nginx pkgs
+  apt: 
+    pkg: 
+      - nginx
+      - apache2-utils
+    state: present
+
+- name: add nginx config
+  template:
+    src: 'templates/nginx.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: secure prometheus with htaccess
+  community.general.htpasswd:
+    path: '/etc/nginx/.prometheus_htpasswd'
+    name: prometheus
+    password: '{{ prometheus_htpasswd }}'
+    state: present
+    create: true
+
+- name: enable grafana vhost
+  file: 
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: remove default vhost
+  file: 
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: restart nginx

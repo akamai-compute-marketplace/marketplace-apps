@@ -1,0 +1,27 @@
+# openlitespeed
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+  # generate creds
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+  
+    - name: writing wordpress db password to vars
+      #blockinfile:
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          wp_db_pass: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+    - name: writing wordpress admin password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          wp_admin_pass: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"

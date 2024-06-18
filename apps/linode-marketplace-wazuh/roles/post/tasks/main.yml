@@ -1,0 +1,22 @@
+---
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: Read content from /tmp/wazuh-install-files/wazuh-passwords.txt
+  ansible.builtin.slurp:
+    src: /tmp/wazuh-install-files/wazuh-passwords.txt
+  register: wazuh_passwords_content
+
+- name: writing wazuh creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      {{ wazuh_passwords_content['content'] | b64decode }}
