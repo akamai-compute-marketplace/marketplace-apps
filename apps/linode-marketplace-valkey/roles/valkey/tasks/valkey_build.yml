@@ -1,40 +1,36 @@
 --- 
-# install grafana
+# build valkey
 
-- name: add grafana key
-  get_url:
-    url: 'https://apt.grafana.com/gpg.key'
-    dest: '/usr/share/keyrings/grafana.key'
+- apt: install dependencies 
+  pkg:
+    - libssl-dev
+    - libsystemd-dev
+    
+- name: download valkey archive
+  get_url: 
+    url: https://github.com/valkey-io/valkey/archive/refs/tags/7.2.5.tar.gz
+    dest: /tmp/valkey-7.2.5.tar.gz
 
-- name: add grafana repo
-  apt_repository: 
-    repo: 'deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main'
-    state: present
-    update_cache: true
+- name: create valkey dest
+  file: 
+    path: /tmp/valkey-7.2.5
+    state: directory
 
-- name: install grafana
-  apt:
-    pkg: grafana
-    state: present
+- name: inflate valkey archive
+  unarchive:
+    src: /tmp/valkey-7.2.5.tar.gz
+    dest: /tmp
 
-- name: update grafana config
-  lineinfile:
-    path: '/etc/grafana/grafana.ini'
-    regex: '^\;admin_user = admin'
-    line: admin_user = admin
+- name: make valkey
+  community.general.make: 
+    chdir: /tmp/valkey-7.2.5
+    target: install
+    params: 
+      BUILD_TLS: yes
+      USE_SYSTEMD: yes
 
-- name: update grafana password
-  lineinfile:
-    path: '/etc/grafana/grafana.ini'
-    regex: '^\;admin_password = admin'
-    line: 'admin_password = {{ grafana_password }}'
+- name: move the service file
+  file:
+    src: files/valkey.service
+    dest: /etc/systemd/system/valkey.service
 
-- name: start and enable grafana
-  systemd: 
-    name: grafana-server
-    state: started
-    enabled: true
-
-- name: run certbot
-  import_role: 
-    name: certbot_ssl

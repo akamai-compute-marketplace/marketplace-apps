@@ -1,7 +1,6 @@
 ---
-# prometheus and grafana playbook
-
-- name: deploy prometheus and grafana
+# valkey playbook
+- name: deploy valkey
   hosts: localhost
   connection: local
   gather_facts: true
@@ -11,6 +10,5 @@
     - group_vars/linode/vars
   roles:
     - common
-    - grafana
-    - prometheus
+    - valkey
     - post

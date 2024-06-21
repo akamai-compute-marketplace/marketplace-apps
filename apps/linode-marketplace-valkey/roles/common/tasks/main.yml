@@ -6,18 +6,18 @@
 
 # write _domain to vars.
 - name: write _domain to vars
-  lineinfile: 
+  lineinfile:
     insertafter: EOF
     path: group_vars/linode/vars
-    line: | 
+    line: |
       _domain: {{ _domain }}
-  when: _domain is defined 
+  when: _domain is defined
 
 # dns creation
 - name: create dns A record
   import_role:
     name: create_dns_record
-  when: 
+  when:
     - token_password is defined
     - default_dns is not defined
 
@@ -42,7 +42,7 @@
   import_role:
     name: ufw
 
-# ufw rules 
+# ufw rules
 - name: apply ufw rules
   import_tasks: ufw_rules.yml
 
