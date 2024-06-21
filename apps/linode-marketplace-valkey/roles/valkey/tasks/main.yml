@@ -1,0 +1,7 @@
+---
+# valkey
+- name: build valkey
+  import_tasks: valkey_build.yml
+
+- name: configure valkey
+  import_tasks: valkey_config.yml

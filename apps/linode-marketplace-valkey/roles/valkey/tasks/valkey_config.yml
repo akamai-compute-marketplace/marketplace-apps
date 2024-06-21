@@ -1,0 +1,23 @@
+---
+## configure valkey
+
+- name: create valkey directory tree
+  file:
+    path: 
+      - /etc/valkey
+      - /etc/valkey/data
+      - /etc/valkey/appendonly
+    state: directory
+
+- name: copy config file
+  copy:
+    src: files/valkey.conf
+    dest: /etc/valkey/valkey.conf
+
+- name: start valkey
+  systemd: 
+    name: valkey.service
+    state: started
+    daemon-reload: true
+    enabled: true
+
