@@ -8,9 +8,8 @@ After=network-online.target
 
 [Service]
 #ExecStart=/usr/local/bin/valkey-server --supervised systemd --daemonize no
-## Alternatively, have redis-server load a configuration file:
+## Alternatively, have valkey-server load a configuration file:
 ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf
-LimitNOFILE=10032
 NoNewPrivileges=yes
 #OOMScoreAdjust=-900
 #PrivateTmp=yes

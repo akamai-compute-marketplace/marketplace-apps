@@ -3,11 +3,11 @@
 
 - name: create valkey directory tree
   file:
-    path: 
-      - /etc/valkey
-      - /etc/valkey/data
-      - /etc/valkey/appendonly
+    path: '{{ item }}'
     state: directory
+  loop:
+    - '/etc/valkey/'
+    - '/var/valkey/'
 
 - name: copy config file
   copy:
