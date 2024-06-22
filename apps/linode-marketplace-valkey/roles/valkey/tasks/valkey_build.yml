@@ -9,8 +9,8 @@
 
 - name: disable THP
   copy: 
-    src: "files/disable-thp.service"
-    dest: "/etc/systemd/system/disable-thp.service"
+    src: files/disable-thp.service
+    dest: /etc/systemd/system/disable-thp.service
 
 - name: set vm.overcommit
   ansible.posix.sysctl:
@@ -20,27 +20,27 @@
 
 - name: download valkey archive
   get_url: 
-    url: "https://github.com/valkey-io/valkey/archive/refs/tags/7.2.5.tar.gz"
-    dest: "/tmp/valkey-7.2.5.tar.gz"
+    url: https://github.com/valkey-io/valkey/archive/refs/tags/7.2.5.tar.gz
+    dest: /tmp/valkey-7.2.5.tar.gz
 
 - name: create valkey dest
   file: 
-    path: "/tmp/valkey-7.2.5/"
+    path: /tmp/valkey-7.2.5
     state: directory
 
 - name: inflate valkey archive
   unarchive:
-    src: "/tmp/valkey-7.2.5.tar.gz"
-    dest: "/tmp/valkey-7.2.5/"
+    src: /tmp/valkey-7.2.5.tar.gz
+    dest: /tmp/valkey-7.2.5
     extra_opts: [--strip-components=1]
 
 - name: make valkey
   community.general.make: 
-    chdir: /tmp/valkey-7.2.5/
-    targets: 
-      - BUILD_TLS
-      - USE_SYSTEMD
-      - install
+    chdir: /tmp/valkey-7.2.5
+    target: install
+    params: 
+      BUILD_TLS: yes
+      USE_SYSTEMD: yes
 
 - name: move the service file
   copy:

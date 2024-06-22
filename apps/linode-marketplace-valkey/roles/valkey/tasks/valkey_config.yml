@@ -14,9 +14,15 @@
     src: files/valkey.conf
     dest: /etc/valkey/valkey.conf
 
+- name: start disable THP
+  systemd: 
+    name: disable-thp.service
+    state: started
+    enabled: true
+    daemon-reload: true
+
 - name: start valkey
   systemd: 
     name: valkey.service
     state: started
-    daemon-reload: true
     enabled: true
