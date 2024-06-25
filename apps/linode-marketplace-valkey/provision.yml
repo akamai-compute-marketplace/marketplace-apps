@@ -9,32 +9,31 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
-  
-  - name: set valkey memory
-    lineinfile:
-      path: ./group_vars/couchbase/vars
-      line: |
-        vk_mem: '{{ ((ansible_memtotal_mb) * 0.8) | int }}'
+    - name: set valkey memory
+      lineinfile:
+        path: ./group_vars/couchbase/vars
+        line: |
+          vk_mem: '{{ ((ansible_memtotal_mb) * 0.8) | int }}'
 
-  - name: generating sudo user and password
-    import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+    - name: generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-  - name: writing deployment variables to vars file
-    blockinfile:
-      path: ./group_vars/linode/vars
-      marker: "# {mark} INSTANCE VARS"
-      block: |
-        valkey_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-        ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-        # PATHS #
-        # Basic Paths
-        valkey_conf_directory: /etc/valkey
-        valkey_home_directory: /var/valkey
-        valkey_data_directory: /var/valkey/data
-        valkey_install_directory: /var/valkey/lib
-        # SSL Paths
-        valkey_ssl_directory: /etc/valkey/ssl
-        valkey_ssl_ca_directory: /etc/valkey/ssl/ca
-        valkey_ssl_reqs_directory: /etc/valkey/ssl/reqs
-        valkey_ssl_keys_directory: /etc/valkey/ssl/keys
-        valkey_ssl_certs_directory: /etc/valkey/ssl/certs
+    - name: writing deployment variables to vars file
+      blockinfile:
+        path: ./group_vars/linode/vars
+        marker: "# {mark} INSTANCE VARS"
+        block: |
+          valkey_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          # PATHS #
+          # Basic Paths
+          valkey_conf_directory: /etc/valkey
+          valkey_home_directory: /var/valkey
+          valkey_data_directory: /var/valkey/data
+          valkey_install_directory: /var/valkey/lib
+          # SSL Paths
+          valkey_ssl_directory: /etc/valkey/ssl
+          valkey_ssl_ca_directory: /etc/valkey/ssl/ca
+          valkey_ssl_reqs_directory: /etc/valkey/ssl/reqs
+          valkey_ssl_keys_directory: /etc/valkey/ssl/keys
+          valkey_ssl_certs_directory: /etc/valkey/ssl/certs

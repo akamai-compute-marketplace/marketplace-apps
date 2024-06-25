@@ -22,7 +22,7 @@
     name: vm.overcommit_memory
     value: '1'
     state: present
-    
+
 - name: create valkey group
   group:
     name: valkey
