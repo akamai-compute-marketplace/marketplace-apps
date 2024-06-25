@@ -3,7 +3,7 @@ services:
   influxdb:
     image: influxdb:latest
     ports:
-      - 8086:8086
+      - 127.0.0.1:8086:8086
     volumes:
       - /var/lib/influxdb:/var/lib/influxdb2
     environment:
