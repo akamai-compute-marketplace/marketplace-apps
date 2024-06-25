@@ -1,0 +1,126 @@
+---
+- name: generate ca key
+  community.crypto.openssl_privatekey:
+    path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    passphrase: '{{ ca_password }}'
+    cipher: auto
+    return_content: true
+    owner: valkey
+    group: valkey
+  no_log: true
+  register: ca_key
+
+- name: generate ca csr
+  community.crypto.openssl_csr:
+    path: '{{ valkey_ssl_ca_directory }}/ca-csr'
+    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    privatekey_passphrase: '{{ ca_password }}'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ email_address }}'
+    common_name: '{{ ca_common_name }}'
+    use_common_name_for_san: false
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
+    owner: valkey
+    group: valkey
+  register: ca_csr
+  
+- name: generate ca crt
+  community.crypto.x509_certificate:
+    path: '{{ valkey_ssl_ca_directory }}/ca-crt'
+    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    privatekey_passphrase: '{{ ca_password }}'
+    csr_path: '{{ valkey_ssl_ca_directory }}/ca-csr'
+    selfsigned_not_after: +3650d
+    provider: selfsigned
+    owner: valkey
+    group: valkey
+    mode: '0640'
+    return_content: true
+  register: ca_crt
+
+# gen ssl keys
+
+- name: generate server key
+  community.crypto.openssl_privatekey:
+    path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
+    owner: valkey
+    group: valkey
+    mode: '0600'
+    return_content: true
+ 
+- name: generate client key
+  community.crypto.openssl_privatekey:
+    path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    owner: valkey
+    group: valkey
+    mode: '0600'
+  with_sequence: count="{{ client_count }}"
+
+# gen csrs
+
+- name: generate server csr
+  community.crypto.openssl_csr:
+    path: '{{ valkey_ssl_reqs_directory }}/{{ _domain }}.csr'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ email_address }}'
+    common_name: '{{ _domain }}'
+    use_common_name_for_san: false
+    owner: valkey
+    group: valkey
+  
+- name: generate client csr
+  community.crypto.openssl_csr:
+    path: '{{ valkey_ssl_reqss_directory }}/client{{ item }}.csr'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ email_address }}'
+    common_name: 'client{{ item }}'
+    use_common_name_for_san: false
+    owner: valkey
+    group: valkey
+  with_sequence: count="{{ client_count }}"
+
+# sign cert with ca and get client cert
+
+- name: generate server cert signed with ca cert
+  community.crypto.x509_certificate:
+    path: '{{ valkey_ssl_certs_directory }}/{{ _domain }}.crt'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
+    csr_path: '{{ valkey_ssl_reqs_directory }}/{{ _domain }}.csr'
+    ownca_content: '{{ ca_crt.certificate }}'
+    ownca_privatekey_content: '{{ ca_key.privatekey }}'
+    ownca_privatekey_passphrase: '{{ ca_password }}'
+    ownca_not_after: +3650d
+    provider: ownca
+    owner: valkey
+    group: valkey
+    mode: '0640'
+
+- name: generate client cert signed with ca cert
+  community.crypto.x509_certificate:
+    path: '{{ valkey_ssl_certs_directory }}/client{{ item }}.crt'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    csr_path: '{{ valkey_ssl_reqs_directory }}/client{{ item }}.csr'
+    ownca_path: '{{ valkey_ssl_ca_directory }}/ca-crt'
+    ownca_privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    ownca_privatekey_passphrase: '{{ ca_password }}'
+    ownca_not_after: +3650d
+    provider: ownca
+    owner: valkey
+    group: valkey
+    mode: '0640'

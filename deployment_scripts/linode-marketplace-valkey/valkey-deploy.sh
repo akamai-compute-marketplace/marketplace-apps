@@ -15,6 +15,9 @@ fi
 #<UDF name="token_password" label="Your Linode API token" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
+## Valkey Version. Valkey is in early access, with only one stable version, and no beta branch established. 
+#<UDF name="valkeyversion" label="Which version of Valkey to install" oneOf="7.2.5">
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -37,6 +40,8 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  # valkey version
+  valkey_version: ${VALKEYVERSION}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

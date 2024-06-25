@@ -1,49 +1,39 @@
---- 
+---
 # build valkey
-
-- name: install dependencies
-  apt:
-    pkg:
-    - libssl-dev
-    - libsystemd-dev
-
-- name: disable THP
-  copy: 
-    src: files/disable-thp.service
-    dest: /etc/systemd/system/disable-thp.service
-
-- name: set vm.overcommit
-  ansible.posix.sysctl:
-    name: vm.overcommit_memory
-    value: '1'
-    state: present
-
 - name: download valkey archive
   get_url: 
-    url: https://github.com/valkey-io/valkey/archive/refs/tags/7.2.5.tar.gz
-    dest: /tmp/valkey-7.2.5.tar.gz
-
-- name: create valkey dest
-  file: 
-    path: /tmp/valkey-7.2.5
-    state: directory
+    url: 'https://github.com/valkey-io/valkey/archive/refs/tags/{{ valkey_version }}.tar.gz'
+    dest: '/tmp/valkey-{{ valkey_version }}.tar.gz'
 
 - name: inflate valkey archive
   unarchive:
-    src: /tmp/valkey-7.2.5.tar.gz
-    dest: /tmp/valkey-7.2.5
+    src: '/tmp/valkey-{{ valkey_version }}.tar.gz'
+    dest: '{{ valkey_install_directory }}'
     extra_opts: [--strip-components=1]
-
-- name: make valkey
-  community.general.make: 
-    chdir: /tmp/valkey-7.2.5
-    target: install
-    params: 
-      BUILD_TLS: yes
-      USE_SYSTEMD: yes
 
 - name: move the service file
   copy:
-    src: files/valkey.service
-    dest: /etc/systemd/system/valkey.service
+    src: 'files/valkey.service'
+    dest: '/etc/systemd/system/valkey.service'
 
+- name: copy config file
+  template:
+    src: 'templates/valkey.conf.j2'
+    dest: '{{ valkey_conf_directory }}/valkey.conf'
+    owner: valkey
+    group: valkey
+
+- name: make valkey
+  community.general.make:
+    chdir: '{{ valkey_install_directory }}'
+    target: install
+    params:
+      BUILD_TLS: "yes"
+      USE_SYSTEMD: "yes"
+
+#- name: start valkey
+#  systemd: 
+#    name: valkey.service
+#    state: started
+#    enabled: true
+#    daemon-reload: true

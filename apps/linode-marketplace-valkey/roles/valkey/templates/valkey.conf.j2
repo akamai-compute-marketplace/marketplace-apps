@@ -157,14 +157,14 @@ tcp-keepalive 300
 # default port, use:
 #
 # port 0
-# tls-port 6379
+tls-port 6379
 
 # Configure a X.509 certificate and private key to use for authenticating the
 # server to connected clients, masters or cluster peers.  These files should be
 # PEM formatted.
 #
-# tls-cert-file valkey.crt
-# tls-key-file valkey.key
+tls-cert-file {{ valkey_ssl_certs_directory }}/{{ _domain }}.crt 
+tls-key-file {{ valkey_ssl_keys_directory }}/{{ _domain }}.key
 #
 # If the key file is encrypted using a passphrase, it can be included here
 # as well.
@@ -180,8 +180,10 @@ tcp-keepalive 300
 # different certificates for incoming (server) and outgoing (client)
 # connections. To do that, use the following directives:
 #
-# tls-client-cert-file client.crt
-# tls-client-key-file client.key
+{% for item in client_count %}
+tls-client-cert-file {{ valkey_ssl_certs_directory }}/client{{ item }}.crt
+tls-client-key-file {{ valkey_ssl_keys_directory }}/client{{ item }}.key
+{% endfor %}
 #
 # If the key file is encrypted using a passphrase, it can be included here
 # as well.
@@ -198,8 +200,8 @@ tcp-keepalive 300
 # clients and peers. The server requires an explicit configuration of at least one
 # of these, and will not implicitly use the system wide configuration.
 #
-# tls-ca-cert-file ca.crt
-# tls-ca-cert-dir /etc/ssl/certs
+# tls-ca-cert-file 
+tls-ca-cert-dir {{ valkey_ssl_ca_directory }}
 
 # By default, clients (including replica servers) on a TLS port are required
 # to authenticate using valid client side certificates.
@@ -216,7 +218,7 @@ tcp-keepalive 300
 #
 # Use the following directive to enable TLS on replication links.
 #
-# tls-replication yes
+tls-replication yes
 
 # By default, the cluster bus uses a plain TCP connection. To enable
 # TLS for the bus protocol, use the following directive:
@@ -230,7 +232,7 @@ tcp-keepalive 300
 # "TLSv1.3" (OpenSSL >= 1.1.1) or any combination.
 # To enable only TLSv1.2 and TLSv1.3, use:
 #
-# tls-protocols "TLSv1.2 TLSv1.3"
+tls-protocols "TLSv1.2 TLSv1.3"
 
 # Configure allowed ciphers.  See the ciphers(1ssl) manpage for more information
 # about the syntax of this string.
@@ -472,7 +474,7 @@ rdb-del-sync-files no
 # The Append Only File will also be created inside this directory.
 #
 # Note that you must specify a directory here, not a file name.
-dir /var/valkey/
+dir {{ valkey_data_directory }}
 
 ################################# REPLICATION #################################
 
@@ -554,7 +556,116 @@ acllog-max-len 128
 
 ############################## MEMORY MANAGEMENT ################################
 
-# disabled
+# Set a memory usage limit to the specified amount of bytes.
+# When the memory limit is reached the server will try to remove keys
+# according to the eviction policy selected (see maxmemory-policy).
+#
+# If the server can't remove keys according to the policy, or if the policy is
+# set to 'noeviction', the server will start to reply with errors to commands
+# that would use more memory, like SET, LPUSH, and so on, and will continue
+# to reply to read-only commands like GET.
+#
+# This option is usually useful when using the server as an LRU or LFU cache, or to
+# set a hard memory limit for an instance (using the 'noeviction' policy).
+#
+# WARNING: If you have replicas attached to an instance with maxmemory on,
+# the size of the output buffers needed to feed the replicas are subtracted
+# from the used memory count, so that network problems / resyncs will
+# not trigger a loop where keys are evicted, and in turn the output
+# buffer of replicas is full with DELs of keys evicted triggering the deletion
+# of more keys, and so forth until the database is completely emptied.
+#
+# In short... if you have replicas attached it is suggested that you set a lower
+# limit for maxmemory so that there is some free RAM on the system for replica
+# output buffers (but this is not needed if the policy is 'noeviction').
+#
+maxmemory {{ vk_mem }}
+
+# MAXMEMORY POLICY: how the server will select what to remove when maxmemory
+# is reached. You can select one from the following behaviors:
+#
+# volatile-lru -> Evict using approximated LRU, only keys with an expire set.
+# allkeys-lru -> Evict any key using approximated LRU.
+# volatile-lfu -> Evict using approximated LFU, only keys with an expire set.
+# allkeys-lfu -> Evict any key using approximated LFU.
+# volatile-random -> Remove a random key having an expire set.
+# allkeys-random -> Remove a random key, any key.
+# volatile-ttl -> Remove the key with the nearest expire time (minor TTL)
+# noeviction -> Don't evict anything, just return an error on write operations.
+#
+# LRU means Least Recently Used
+# LFU means Least Frequently Used
+#
+# Both LRU, LFU and volatile-ttl are implemented using approximated
+# randomized algorithms.
+#
+# Note: with any of the above policies, when there are no suitable keys for
+# eviction, the server will return an error on write operations that require
+# more memory. These are usually commands that create new keys, add data or
+# modify existing keys. A few examples are: SET, INCR, HSET, LPUSH, SUNIONSTORE,
+# SORT (due to the STORE argument), and EXEC (if the transaction includes any
+# command that requires memory).
+#
+# The default is:
+#
+maxmemory-policy noeviction
+
+# LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated
+# algorithms (in order to save memory), so you can tune it for speed or
+# accuracy. By default the server will check five keys and pick the one that was
+# used least recently, you can change the sample size using the following
+# configuration directive.
+#
+# The default of 5 produces good enough results. 10 Approximates very closely
+# true LRU but costs more CPU. 3 is faster but not very accurate.
+#
+# maxmemory-samples 5
+
+# Eviction processing is designed to function well with the default setting.
+# If there is an unusually large amount of write traffic, this value may need to
+# be increased.  Decreasing this value may reduce latency at the risk of
+# eviction processing effectiveness
+#   0 = minimum latency, 10 = default, 100 = process without regard to latency
+#
+# maxmemory-eviction-tenacity 10
+
+# By default a replica will ignore its maxmemory setting
+# (unless it is promoted to master after a failover or manually). It means
+# that the eviction of keys will be just handled by the master, sending the
+# DEL commands to the replica as keys evict in the master side.
+#
+# This behavior ensures that masters and replicas stay consistent, and is usually
+# what you want, however if your replica is writable, or you want the replica
+# to have a different memory setting, and you are sure all the writes performed
+# to the replica are idempotent, then you may change this default (but be sure
+# to understand what you are doing).
+#
+# Note that since the replica by default does not evict, it may end using more
+# memory than the one set via maxmemory (there are certain buffers that may
+# be larger on the replica, or data structures may sometimes take more memory
+# and so forth). So make sure you monitor your replicas and make sure they
+# have enough memory to never hit a real out-of-memory condition before the
+# master hits the configured maxmemory setting.
+#
+# replica-ignore-maxmemory yes
+
+# The server reclaims expired keys in two ways: upon access when those keys are
+# found to be expired, and also in background, in what is called the
+# "active expire key". The key space is slowly and interactively scanned
+# looking for expired keys to reclaim, so that it is possible to free memory
+# of keys that are expired and will never be accessed again in a short time.
+#
+# The default effort of the expire cycle will try to avoid having more than
+# ten percent of expired keys still in memory, and will try to avoid consuming
+# more than 25% of total memory and to add latency to the system. However
+# it is possible to increase the expire "effort" that is normally set to
+# "1", to a greater value, up to the value "10". At its maximum value the
+# system will use more CPU, longer cycles (and technically may introduce
+# more latency), and will tolerate less already expired keys still present
+# in the system. It's a tradeoff between memory, CPU and latency.
+#
+# active-expire-effort 1
+
 
 ############################# LAZY FREEING ####################################
 
