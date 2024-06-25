@@ -19,7 +19,7 @@ fi
 # <UDF name="ca_common_name" label="CA Common Name" example="Example: Valkey CA" />
 
 ## Valkey Version. Valkey is in early access, with only one stable version, and no beta branch established. 
-#<UDF name="valkeyversion" label="Which version of Valkey to install" oneOf="7.2.5">
+#<UDF name="valkey_version" label="Which version of Valkey to install" oneOf="7.2.5">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -44,7 +44,14 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   # valkey version
-  valkey_version: ${VALKEYVERSION}
+  valkey_version: ${VALKEY_VERSION}
+  # ssl vars
+  country_name: ${COUNTRY_NAME}
+  state_or_province_name: ${STATE_OR_PROVINCE_NAME}
+  locality_name: ${LOCALITY_NAME}
+  organization_name: ${ORGANIZATION_NAME}
+  email_address: ${EMAIL_ADDRESS}
+  ca_common_name: ${CA_COMMON_NAME}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

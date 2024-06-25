@@ -11,7 +11,7 @@
   tasks:
     - name: set valkey memory
       lineinfile:
-        path: ./group_vars/couchbase/vars
+        path: ./group_vars/linode/vars
         line: |
           vk_mem: '{{ ((ansible_memtotal_mb) * 0.8) | int }}'
 
