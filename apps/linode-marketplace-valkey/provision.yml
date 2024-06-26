@@ -13,13 +13,14 @@
       lineinfile:
         path: ./group_vars/linode/vars
         line: |
-          vk_mem: {{ ((ansible_memtotal_mb) * 0.8) | int }} MB
+          vk_mem: {{ ((ansible_memtotal_mb) * 0.8) | int }}
+    # non integer input is parsed as 0
     - name: handle bad input for client_count
       lineinfile:
         path: ./group_vars/linode/vars
         regexp: '^client_count:'
         line: 'client_count: 1'
-      when: client_count is not <= 1 or not integer
+      when: client_count | int <= 1
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
@@ -42,3 +43,5 @@
           valkey_ssl_reqs_directory: /etc/valkey/ssl/reqs
           valkey_ssl_keys_directory: /etc/valkey/ssl/keys
           valkey_ssl_certs_directory: /etc/valkey/ssl/certs
+          valkey_ssl_server_cert: /etc/valkey/ssl/certs/valkey.crt
+          valkey_ssl_server_key: /etc/valkey/ssl/keys/valkey.key.pem

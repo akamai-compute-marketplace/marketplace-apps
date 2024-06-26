@@ -1,7 +1,7 @@
 ---
 - name: generate ca key
   community.crypto.openssl_privatekey:
-    path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    path: '{{ valkey_ssl_ca_directory }}/ca-key.key.pem'
     passphrase: '{{ ca_password }}'
     cipher: auto
     return_content: true
@@ -13,7 +13,7 @@
 - name: generate ca csr
   community.crypto.openssl_csr:
     path: '{{ valkey_ssl_ca_directory }}/ca-csr'
-    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key.key.pem'
     privatekey_passphrase: '{{ ca_password }}'
     country_name: '{{ country_name }}'
     state_or_province_name: '{{ state_or_province_name }}'
@@ -28,14 +28,16 @@
     key_usage:
       - keyCertSign
     key_usage_critical: true
+    authority_cert_issuer: 'email: {{ email_address }}'
+    authority_cert_serial_number: '1'
     owner: valkey
     group: valkey
   register: ca_csr
   
 - name: generate ca crt
   community.crypto.x509_certificate:
-    path: '{{ valkey_ssl_ca_directory }}/ca-crt'
-    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    path: '{{ valkey_ssl_ca_directory }}/ca.crt'
+    privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key.key.pem'
     privatekey_passphrase: '{{ ca_password }}'
     csr_path: '{{ valkey_ssl_ca_directory }}/ca-csr'
     selfsigned_not_after: +3650d
@@ -43,13 +45,14 @@
     owner: valkey
     group: valkey
     mode: '0640'
+    return_content: true
   register: ca_crt
 
 # gen ssl keys
 
 - name: generate server key
   community.crypto.openssl_privatekey:
-    path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
+    path: '{{ valkey_ssl_server_key }}'
     owner: valkey
     group: valkey
     mode: '0600'
@@ -57,7 +60,7 @@
  
 - name: generate client key
   community.crypto.openssl_privatekey:
-    path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key.pem'
     owner: valkey
     group: valkey
     mode: '0600'
@@ -67,29 +70,39 @@
 
 - name: generate server csr
   community.crypto.openssl_csr:
-    path: '{{ valkey_ssl_reqs_directory }}/{{ _domain }}.csr'
-    privatekey_path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
+    path: '{{ valkey_ssl_reqs_directory }}/valkey.csr'
+    privatekey_path: '{{ valkey_ssl_server_key }}'
     country_name: '{{ country_name }}'
     state_or_province_name: '{{ state_or_province_name }}'
     locality_name: '{{ locality_name }}'
     organization_name: '{{ organization_name }}'
     email_address: '{{ email_address }}'
-    common_name: '{{ _domain }}'
+    common_name: 'Valkey Server'
     use_common_name_for_san: false
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    authority_cert_issuer: 'email: {{ email_address }}'
+    authority_cert_serial_number: '1'
     owner: valkey
     group: valkey
   
 - name: generate client csr
   community.crypto.openssl_csr:
     path: '{{ valkey_ssl_reqs_directory }}/client{{ item }}.csr'
-    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key.pem'
     country_name: '{{ country_name }}'
     state_or_province_name: '{{ state_or_province_name }}'
     locality_name: '{{ locality_name }}'
     organization_name: '{{ organization_name }}'
     email_address: '{{ email_address }}'
-    common_name: 'client{{ item }}'
+    common_name: 'Valkey Client {{ item }}'
     use_common_name_for_san: false
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    authority_cert_issuer: 'email: {{ email_address }}'
+    authority_cert_serial_number: '1'
     owner: valkey
     group: valkey
   with_sequence: count="{{ client_count }}"
@@ -98,9 +111,9 @@
 
 - name: generate server cert signed with ca cert
   community.crypto.x509_certificate:
-    path: '{{ valkey_ssl_certs_directory }}/{{ _domain }}.crt'
-    privatekey_path: '{{ valkey_ssl_keys_directory }}/{{ _domain }}.key'
-    csr_path: '{{ valkey_ssl_reqs_directory }}/{{ _domain }}.csr'
+    path: '{{ valkey_ssl_server_cert }}'
+    privatekey_path: '{{ valkey_ssl_server_key }}'
+    csr_path: '{{ valkey_ssl_reqs_directory }}/valkey.csr'
     ownca_content: '{{ ca_crt.certificate }}'
     ownca_privatekey_content: '{{ ca_key.privatekey }}'
     ownca_privatekey_passphrase: '{{ ca_password }}'
@@ -115,8 +128,8 @@
     path: '{{ valkey_ssl_certs_directory }}/client{{ item }}.crt'
     privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
     csr_path: '{{ valkey_ssl_reqs_directory }}/client{{ item }}.csr'
-    ownca_path: '{{ valkey_ssl_ca_directory }}/ca-crt'
-    ownca_privatekey_path: '{{ valkey_ssl_ca_directory }}/ca-key'
+    ownca_content: '{{ ca_key.privatekey }}'
+    ownca_privatekey_content: '{{ ca_key.privatekey }}'
     ownca_privatekey_passphrase: '{{ ca_password }}'
     ownca_not_after: +3650d
     provider: ownca

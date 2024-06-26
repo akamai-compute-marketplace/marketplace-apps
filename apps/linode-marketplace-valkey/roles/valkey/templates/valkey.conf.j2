@@ -122,7 +122,7 @@ protected-mode yes
 
 # Accept connections on the specified port, default is 6379 (IANA #815344).
 # If port 0 is specified the server will not listen on a TCP socket.
-port 6379
+# port 6379
 
 # TCP listen() backlog.
 #
@@ -156,15 +156,15 @@ tcp-keepalive 300
 # directive can be used to define TLS-listening ports. To enable TLS on the
 # default port, use:
 #
-# port 0
+port 0
 tls-port 6379
 
 # Configure a X.509 certificate and private key to use for authenticating the
 # server to connected clients, masters or cluster peers.  These files should be
 # PEM formatted.
 #
-tls-cert-file {{ valkey_ssl_certs_directory }}/{{ _domain }}.crt 
-tls-key-file {{ valkey_ssl_keys_directory }}/{{ _domain }}.key
+tls-cert-file {{ valkey_ssl_server_cert }} 
+tls-key-file {{ valkey_ssl_server_key }}
 #
 # If the key file is encrypted using a passphrase, it can be included here
 # as well.
@@ -182,7 +182,7 @@ tls-key-file {{ valkey_ssl_keys_directory }}/{{ _domain }}.key
 #
 {% for item in range(1, (client_count + 1)) %}
 tls-client-cert-file {{ valkey_ssl_certs_directory }}/client{{ item }}.crt
-tls-client-key-file {{ valkey_ssl_keys_directory }}/client{{ item }}.key
+tls-client-key-file {{ valkey_ssl_keys_directory }}/client{{ item }}.key.pem
 {% endfor %}
 #
 # If the key file is encrypted using a passphrase, it can be included here
@@ -579,7 +579,7 @@ acllog-max-len 128
 # limit for maxmemory so that there is some free RAM on the system for replica
 # output buffers (but this is not needed if the policy is 'noeviction').
 #
-maxmemory {{ vk_mem }}
+maxmemory {{ vk_mem }}mb
 
 # MAXMEMORY POLICY: how the server will select what to remove when maxmemory
 # is reached. You can select one from the following behaviors:
