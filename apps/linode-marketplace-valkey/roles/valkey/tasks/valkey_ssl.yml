@@ -126,9 +126,9 @@
 - name: generate client cert signed with ca cert
   community.crypto.x509_certificate:
     path: '{{ valkey_ssl_certs_directory }}/client{{ item }}.crt'
-    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
+    privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key.pem'
     csr_path: '{{ valkey_ssl_reqs_directory }}/client{{ item }}.csr'
-    ownca_content: '{{ ca_key.privatekey }}'
+    ownca_content: '{{ ca_crt.certificate }}'
     ownca_privatekey_content: '{{ ca_key.privatekey }}'
     ownca_privatekey_passphrase: '{{ ca_password }}'
     ownca_not_after: +3650d
