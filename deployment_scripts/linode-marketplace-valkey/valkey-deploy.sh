@@ -20,6 +20,8 @@ fi
 
 ## Valkey Version. Valkey is in early access, with only one stable version, and no beta branch established. 
 #<UDF name="valkey_version" label="Which version of Valkey to install" oneOf="7.2.5">
+# Client Count
+# <UDF name="client_count" label="Number of clients connecting to Valkey">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -45,6 +47,8 @@ function udf {
   username: ${USER_NAME}
   # valkey version
   valkey_version: ${VALKEY_VERSION}
+  # client count
+  client_count: ${CLIENT_COUNT}
   # ssl vars
   country_name: ${COUNTRY_NAME}
   state_or_province_name: ${STATE_OR_PROVINCE_NAME}

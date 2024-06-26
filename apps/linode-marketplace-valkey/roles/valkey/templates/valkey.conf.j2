@@ -180,7 +180,7 @@ tls-key-file {{ valkey_ssl_keys_directory }}/{{ _domain }}.key
 # different certificates for incoming (server) and outgoing (client)
 # connections. To do that, use the following directives:
 #
-{% for item in client_count %}
+{% for item in range(1, (client_count + 1)) %}
 tls-client-cert-file {{ valkey_ssl_certs_directory }}/client{{ item }}.crt
 tls-client-key-file {{ valkey_ssl_keys_directory }}/client{{ item }}.key
 {% endfor %}

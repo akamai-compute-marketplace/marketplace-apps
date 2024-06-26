@@ -13,8 +13,13 @@
       lineinfile:
         path: ./group_vars/linode/vars
         line: |
-          vk_mem: '{{ ((ansible_memtotal_mb) * 0.8) | int }}'
-
+          vk_mem: {{ ((ansible_memtotal_mb) * 0.8) | int }} MB
+    - name: handle bad input for client_count
+      lineinfile:
+        path: ./group_vars/linode/vars
+        regexp: '^client_count:'
+        line: 'client_count: 1'
+      when: client_count is not <= 1 or not integer
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 

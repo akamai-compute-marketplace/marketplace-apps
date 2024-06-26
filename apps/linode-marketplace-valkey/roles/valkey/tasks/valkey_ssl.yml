@@ -43,7 +43,6 @@
     owner: valkey
     group: valkey
     mode: '0640'
-    return_content: true
   register: ca_crt
 
 # gen ssl keys
@@ -82,7 +81,7 @@
   
 - name: generate client csr
   community.crypto.openssl_csr:
-    path: '{{ valkey_ssl_reqss_directory }}/client{{ item }}.csr'
+    path: '{{ valkey_ssl_reqs_directory }}/client{{ item }}.csr'
     privatekey_path: '{{ valkey_ssl_keys_directory }}/client{{ item }}.key'
     country_name: '{{ country_name }}'
     state_or_province_name: '{{ state_or_province_name }}'
@@ -124,3 +123,4 @@
     owner: valkey
     group: valkey
     mode: '0640'
+  with_sequence: count="{{ client_count }}"
