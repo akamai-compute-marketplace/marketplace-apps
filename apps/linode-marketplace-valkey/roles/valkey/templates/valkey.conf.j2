@@ -513,7 +513,7 @@ acllog-max-len 128
 # The format of the external ACL user file is exactly the same as the
 # format that is used inside valkey.conf to describe users.
 #
-# aclfile /etc/valkey/users.acl
+aclfile {{ valkey_conf_directory }}/users.acl
 
 # IMPORTANT NOTE: "requirepass" is just a compatibility
 # layer on top of the new ACL system. The option effect will be just setting
@@ -524,7 +524,7 @@ acllog-max-len 128
 # The requirepass is not compatible with aclfile option and the ACL LOAD
 # command, these will cause requirepass to be ignored.
 #
-# requirepass {{ valkey_password }}
+# requirepass
 
 # The default Pub/Sub channels permission for new users is controlled by the
 # acl-pubsub-default configuration directive, which accepts one of these values:

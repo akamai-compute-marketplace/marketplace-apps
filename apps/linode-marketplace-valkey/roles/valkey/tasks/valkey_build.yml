@@ -23,6 +23,13 @@
     owner: valkey
     group: valkey
 
+- name: add basic ACL
+  template: 
+    src: 'files/users.acl'
+    dest: '{{ valkey_conf_directory }}/users.acl'
+    owner: valkey
+    group: valkey
+
 - name: make valkey
   community.general.make:
     chdir: '{{ valkey_install_directory }}'
@@ -31,9 +38,9 @@
       BUILD_TLS: "yes"
       USE_SYSTEMD: "yes"
 
-#- name: start valkey
-#  systemd: 
-#    name: valkey.service
-#    state: started
-#    enabled: true
-#    daemon-reload: true
+- name: start valkey
+  systemd: 
+    name: valkey.service
+    state: started
+    enabled: true
+    daemon-reload: true
