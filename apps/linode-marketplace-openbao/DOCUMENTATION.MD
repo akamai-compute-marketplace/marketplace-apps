@@ -89,8 +89,9 @@ Sealed             true
 Total Shares       3
 Threshold          2
 Unseal Progress    1/2
-Unseal Nonce       0124ce2a-6229-fac1-0e3f-da3e97e00583
-Version            1.1.0
+Unseal Nonce        n/a
+Version            2.0.0-alpha20240329
+Storage Type       raft
 HA Enabled         false
 {{< /output >}}
 
@@ -110,17 +111,24 @@ Unseal Key (will be hidden):
 
     {{< output >}}
 Unseal Key (will be hidden):
-Key             Value
----             -----
-Seal Type       shamir
-Initialized     true
-Sealed          false
-Total Shares    3
-Threshold       2
-Version         1.1.0
-Cluster Name    openbao-cluster-a397153e
-Cluster ID      a065557e-3ee8-9d26-4d90-b90c8d69fa5d
-HA Enabled      false
+Key                     Value
+---                     -----
+Seal Type               shamir
+Initialized             true
+Sealed                  false
+Total Shares            3
+Threshold               2
+Version                 2.0.0-alpha20240329
+Build Date              2024-03-29T21:37:50Z
+Storage Type            raft
+Cluster Name            vault-cluster-9b0549a6
+Cluster ID              4cb3e7c0-6ce5-2d54-2549-f88d29cb9691
+HA Enabled              true
+HA Cluster              n/a
+HA Mode                 standby
+Active Node Address     <none>
+Raft Committed Index    27
+Raft Applied Index      27
 {{< /output >}}
 
 OpenBao is now operational.
