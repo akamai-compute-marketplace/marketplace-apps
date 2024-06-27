@@ -25,11 +25,7 @@
     basic_constraints:
       - 'CA:TRUE'
     basic_constraints_critical: true
-    key_usage:
-      - keyCertSign
-    key_usage_critical: true
-    authority_cert_issuer: 'email: {{ email_address }}'
-    authority_cert_serial_number: '1'
+    create_subject_key_identifier: true
     owner: valkey
     group: valkey
   register: ca_csr
@@ -56,7 +52,6 @@
     owner: valkey
     group: valkey
     mode: '0600'
-    return_content: true
  
 - name: generate client key
   community.crypto.openssl_privatekey:
@@ -82,8 +77,7 @@
     key_usage:
       - digitalSignature
       - keyEncipherment
-    authority_cert_issuer: 'email: {{ email_address }}'
-    authority_cert_serial_number: '1'
+    create_subject_key_identifier: true
     owner: valkey
     group: valkey
   
@@ -101,8 +95,7 @@
     key_usage:
       - digitalSignature
       - keyEncipherment
-    authority_cert_issuer: 'email: {{ email_address }}'
-    authority_cert_serial_number: '1'
+    create_subject_key_identifier: true
     owner: valkey
     group: valkey
   with_sequence: count="{{ client_count }}"
@@ -118,6 +111,7 @@
     ownca_privatekey_content: '{{ ca_key.privatekey }}'
     ownca_privatekey_passphrase: '{{ ca_password }}'
     ownca_not_after: +3650d
+    ownca_create_authority_key_identifier: true
     provider: ownca
     owner: valkey
     group: valkey
@@ -132,6 +126,7 @@
     ownca_privatekey_content: '{{ ca_key.privatekey }}'
     ownca_privatekey_passphrase: '{{ ca_password }}'
     ownca_not_after: +3650d
+    ownca_create_authority_key_identifier: true
     provider: ownca
     owner: valkey
     group: valkey

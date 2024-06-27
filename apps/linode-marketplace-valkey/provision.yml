@@ -13,7 +13,7 @@
       lineinfile:
         path: ./group_vars/linode/vars
         line: |
-          vk_mem: {{ ((ansible_memtotal_mb) * 0.8) | int }}
+          valkey_memory_limit: {{ ((ansible_memtotal_mb) * 0.8) | int }}
     # non integer input is parsed as 0
     - name: handle bad input for client_count
       lineinfile:
@@ -23,7 +23,6 @@
       when: client_count | int <= 1
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
     - name: writing deployment variables to vars file
       blockinfile:
         path: ./group_vars/linode/vars
