@@ -1,0 +1,9 @@
+---
+- name: obtain let's encrypt certificate
+  import_tasks: ssl.yml
+
+- name: install jenkins
+  import_tasks: install.yml
+
+- name: configure jenkins
+  import_tasks: configure.yml
