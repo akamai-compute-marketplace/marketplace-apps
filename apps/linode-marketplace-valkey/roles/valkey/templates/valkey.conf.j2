@@ -200,8 +200,8 @@ tls-client-key-file {{ valkey_ssl_keys_directory }}/client{{ item }}.key.pem
 # clients and peers. The server requires an explicit configuration of at least one
 # of these, and will not implicitly use the system wide configuration.
 #
-# tls-ca-cert-file 
-tls-ca-cert-dir {{ valkey_ssl_ca_directory }}
+tls-ca-cert-file {{ valkey_ssl_ca_directory }}/ca.crt
+# tls-ca-cert-dir 
 
 # By default, clients (including replica servers) on a TLS port are required
 # to authenticate using valid client side certificates.
