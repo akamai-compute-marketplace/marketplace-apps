@@ -5,6 +5,11 @@
     src: templates/motd.j2
     dest: /etc/motd
 
+- name: get jenkins admin password
+  slurp:
+    src: /var/lib/jenkins/secrets/initialAdminPassword
+  register: initial_admin_password
+
 - name: writing sudo creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
@@ -14,3 +19,4 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Jenkins Admin password: {{ initial_admin_password.content | b64decode }}

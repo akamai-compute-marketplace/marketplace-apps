@@ -5,16 +5,15 @@
   ansible.builtin.get_url:
     url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
     dest: /usr/share/keyrings/jenkins-keyring.asc
-    checksum: sha256:bb42f0db45d46bab5f9ec619e1a47360b94c27142e57aa71f7050d08672309e0
+    checksum: sha256:f1c175f9e68915d8d861e2884b40b77a9b763a32735bc996cd6a29639b2563e5
 
-  - name: add jenkins repo
-    apt_repository:
-      repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/'
-      filename: jenkins
-      update_cache: true
-      state: present
+- name: add jenkins repo
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/'
+    filename: jenkins
+    update_cache: true
+    state: present
 
-# installs nginx as a pkg dep
 - name: installing jenkins version {{ jenkins_version }}
   apt:
     name: jenkins={{ jenkins_version }}
