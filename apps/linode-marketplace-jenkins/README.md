@@ -35,30 +35,32 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export  REGION="us-southeast"
+export USERNAME="admin"
 
 curl -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TOKEN}" \
-    -X POST -d '{
-      "backups_enabled": true,
-      "swap_size": 512,
-      "image": "linode/ubuntu2204",
-      "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
-      "stackscript_data": {
-        "disable_root": "no/yes",
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
-      },
-      "authorized_users": [
-        "myUser",
-        "secondaryUser"
-      ],
-      "booted": true,
-      "label": "linode123",
-      "type": "g6-standard-2",
-      "region": "us-east",
-      "group": "Linode-Group"
-    }' \
-https://api.linode.com/v4/linode/instances
+-H "Authorization: Bearer $TOKEN" \
+-X POST -d '{
+    "authorized_users": [
+        "muUser"
+    ],
+    "backups_enabled": false,
+    "booted": true,
+    "image": "linode/ubuntu22.04",
+    "label": "jenkins-server",
+    "private_ip": true,
+    "region": "${REGION}",
+    "root_pass": "${ROOT_PASS}",
+    "stackscript_data": {
+        "disable_root": "No",
+        "user_name": "${USERNAME}",
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
+        "jenkins_version": "2.464"
+    },
+    "stackscript_id": 00000000000,
+    "tags": ['tag1', 'tag2'],
+    "type": "g6-dedicated-4"
+}' https://api.linode.com/v4/linode/instances
 ```
 
 CLI:
@@ -66,22 +68,24 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export  REGION="us-southeast"
+export USERNAME="admin"
 
 linode-cli linodes create \
-  --label linode123 \
-  --root_pass ${ROOT_PASS} \
+  --authorized_users myUser \
+  --backups_enabled false \
   --booted true \
+  --image 'linode/ubuntu22.04' \
+  --label jenkins-server \
+  --private_ip true \
+  --region us-southeast \
+  --root_pass ${ROOT_PASS} \
+  --stackscript_data '{"disable_root": "No","user_name":"${USERNAME}","soa_email_address":"${SOA_EMAIL_ADDRESS}","jenkins_version":"2.464"}' \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "disable_root": "no/yes" }' \
-  --region us-east \
-  --type g6-standard-2 \
-  --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
-  --authorized_users "myUser"
-  --authorized_users "secondaryUser"
+  --type g6-dedicated-4
 ```
 
 ## Resources
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
-

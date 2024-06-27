@@ -1,6 +1,5 @@
 ---
 # handlers
-
 - name: restart jenkins
   systemd:
     name: jenkins
