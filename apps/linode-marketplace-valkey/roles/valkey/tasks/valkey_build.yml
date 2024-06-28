@@ -25,7 +25,7 @@
 
 - name: add basic ACL
   template: 
-    src: 'files/users.acl'
+    src: 'templates/users.acl.j2'
     dest: '{{ valkey_conf_directory }}/users.acl'
     owner: valkey
     group: valkey

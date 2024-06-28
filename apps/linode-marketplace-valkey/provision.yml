@@ -28,8 +28,9 @@
         path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
-          valkey_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          valkey_default_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          sudo_db_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           # PATHS #
           # Basic Paths
           valkey_conf_directory: /etc/valkey

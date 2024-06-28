@@ -1,6 +1,8 @@
 # Linode Valkey One-Click APP
 
-wip
+Valkey is an open source (BSD) key/value datastore that supports diverse workloads such as caching and message queues, and can act as a primary database. The Akamai Connected Cloud One-Click App for Valkey is configured as a standalone systemd daemon with TLS support.
+
+Valkey natively supports a broad collection of datatypes, and supports extensibility with built-in scripting support for Lua and supports module plugins to create new commands, data types, and more.
 
 ## Software Included
 
@@ -45,10 +47,14 @@ curl -H "Content-Type: application/json" \
       "stackscript_data": {
         "disable_root": "No",
         "user_name": "sudo_user",
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-        "token_password": "${TOKEN}",
-        "subdomain": "subdomain",
-        "domain": "example.com"
+        "email_address": "${EMAIL_ADDRESS}",
+        "country_name": "US",
+        "state_or_province_name": "Pennsylvania", 
+        "locality_name": "Philadelphia",
+        "organization_name": "Akamai Technologies",
+        "ca_common_name": "Valkey CA",
+        "valkey_version": "7.2.5",
+        "client_count": "1"
       },
       "authorized_users": [
         "myUser",
@@ -67,14 +73,14 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export SOA_EMAIL_ADDRESS="email@domain.com"
+export EMAIL_ADDRESS="email@domain.com"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 000000 \
-  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com"}' \
+  --stackscript_data '{"disable_root": "No","user_name": "sudo_user","email_address": "${EMAIL_ADDRESS}","country_name": "US","state_or_province_name": "Pennsylvania","locality_name": "Philadelphia","organization_name": "Akamai Technologies","ca_common_name": "Valkey CA","valkey_version": "7.2.5","client_count": "1"}' \
   --region us-mia \
   --type g6-standard-2 \
   --authorized_users "myUser"
