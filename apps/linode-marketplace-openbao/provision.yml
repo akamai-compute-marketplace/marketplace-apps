@@ -1,4 +1,4 @@
-# django
+# openbao
 - name: setting up environment 
   hosts: localhost
   connection: local
