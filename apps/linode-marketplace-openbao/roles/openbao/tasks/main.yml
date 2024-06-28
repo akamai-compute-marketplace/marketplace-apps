@@ -11,12 +11,12 @@
 - name: download openbao {{ openbao_version }}
   get_url: 
     url: "{{ openbao_download_link }}"
-    dest: "/tmp/openbao.zip"
+    dest: "{{ openbao_deb_file }}"
 
-- name: unzip openbao deb file
-  unarchive:
-    src: "/tmp/openbao.zip"
-    dest: "/tmp"
+# - name: unzip openbao deb file
+#   unarchive:
+#     src: "/tmp/openbao.zip"
+#     dest: "/tmp"
 
 - name: Install the .deb package
   apt:
