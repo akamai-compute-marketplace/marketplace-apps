@@ -13,7 +13,7 @@
     url: "{{ openbao_download_link }}"
     dest: "{{ openbao_deb_file }}"
 
-- name: Install the .deb package
+- name: install the .deb package
   apt:
     deb: "{{ openbao_deb_file }}"
 
@@ -38,7 +38,7 @@
     return_content: true
     owner: openbao
     group: openbao
-  #no_log: true
+  no_log: true
   register: ca_key
 
 - name: generate ca csr
@@ -137,7 +137,6 @@
   copy:
     src: "{{ openbao_config }}"
     dest: "{{ openbao_config }}.bak"
-    remote_src: yes
     owner: openbao
     group: openbao
     mode: '0644'
@@ -154,14 +153,11 @@
     src: "templates/openbao.service"
     dest: "/lib/systemd/system/openbao.service" 
 
-- name: reload systemd daemon
-  systemd:
-    daemon_reload: yes     
-
 - name: enable openbao service
   systemd:
     name: openbao
     enabled: yes
+    daemon_reload: true
     state: started
 
 - name: bao operator init command and capture output
