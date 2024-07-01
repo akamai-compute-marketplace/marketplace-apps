@@ -6,15 +6,7 @@
     port: '22'
     proto: tcp
 
-- name: Allow openbao public access to tcp port 8200
-  community.general.ufw:
-    rule: allow
-    port: '8200'
-    proto: tcp
-    from_ip: "{{ item }}"
-  loop: "{{ client_ips }}"
-
-- name: Allow openbao private access to tcp port 8200
+- name: Allow openbao clients access to tcp port 8200
   community.general.ufw:
     rule: allow
     port: '8200'

@@ -23,12 +23,6 @@
     line: 'export VAULT_ADDR=https://{{ privateip }}:8200'
     insertbefore: EOF
 
-# Private IP gets dropped during install, 
-# ignore error is there in case they select private IP during deployment
-- name: add private ip 
-  command: ip addr add {{ privateip }}/17 dev eth0 label eth0:1
-  ignore_errors: true
-
 # create root ca for signing
 - name: generate ca key
   community.crypto.openssl_privatekey:

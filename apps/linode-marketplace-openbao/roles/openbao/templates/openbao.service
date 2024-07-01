@@ -9,8 +9,6 @@ StartLimitBurst=3
 
 [Service]
 Type=notify
-Environment=VAULT_ADDR=https://{{ privateip }}:8200
-Environment=VAULT_ADDR=https://{{ ansible_default_ipv4.address }}:8200
 User=openbao
 Group=openbao
 ProtectSystem=full
