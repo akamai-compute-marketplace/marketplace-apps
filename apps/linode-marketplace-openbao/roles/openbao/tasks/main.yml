@@ -19,9 +19,12 @@
 
 - name: add VAULT_ADDR to .bashrc
   lineinfile:
-    path: ~/.bashrc
+    path: "{{ item }}"
     line: 'export VAULT_ADDR=https://{{ privateip }}:8200'
     insertbefore: EOF
+  with_items:
+    - "~/.bashrc"
+    - "/home/{{ username }}/.bashrc"
 
 # create root ca for signing
 - name: generate ca key
