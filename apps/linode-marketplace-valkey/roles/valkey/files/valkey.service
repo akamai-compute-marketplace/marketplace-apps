@@ -1,25 +1,16 @@
 [Unit]
 Description=Valkey key value database
 Documentation=https://github.com/valkey-io/valkey - https://redis.io/documentation
-#Before=your_application.service another_example_application.service
-#AssertPathExists=/var/lib/redis
 Wants=network-online.target
 After=network-online.target
 
 [Service]
-#ExecStart=/usr/local/bin/valkey-server --supervised systemd --daemonize no
-## Alternatively, have valkey-server load a configuration file:
 ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf
 NoNewPrivileges=yes
-#OOMScoreAdjust=-900
-#PrivateTmp=yes
 Type=notify
 TimeoutStartSec=infinity
 TimeoutStopSec=infinity
 UMask=0077
-#User=redis
-#Group=redis
-#WorkingDirectory=/var/lib/redis
 
 [Install]
 WantedBy=multi-user.target

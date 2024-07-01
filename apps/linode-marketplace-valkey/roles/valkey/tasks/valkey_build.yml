@@ -5,7 +5,7 @@
     url: 'https://github.com/valkey-io/valkey/archive/refs/tags/{{ valkey_version }}.tar.gz'
     dest: '/tmp/valkey-{{ valkey_version }}.tar.gz'
 
-- name: inflate valkey archive
+- name: unarchive valkey tar.gz
   unarchive:
     src: '/tmp/valkey-{{ valkey_version }}.tar.gz'
     dest: '{{ valkey_install_directory }}'

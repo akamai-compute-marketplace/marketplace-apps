@@ -48,10 +48,10 @@ curl -H "Content-Type: application/json" \
         "disable_root": "No",
         "user_name": "sudo_user",
         "email_address": "${EMAIL_ADDRESS}",
-        "country_name": "US",
-        "state_or_province_name": "Pennsylvania", 
-        "locality_name": "Philadelphia",
-        "organization_name": "Akamai Technologies",
+        "country_name": "",
+        "state_or_province_name": "", 
+        "locality_name": "",
+        "organization_name": "",
         "ca_common_name": "Valkey CA",
         "valkey_version": "7.2.5",
         "client_count": "1"
@@ -80,7 +80,7 @@ linode-cli linodes create \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 000000 \
-  --stackscript_data '{"disable_root": "No","user_name": "sudo_user","email_address": "${EMAIL_ADDRESS}","country_name": "US","state_or_province_name": "Pennsylvania","locality_name": "Philadelphia","organization_name": "Akamai Technologies","ca_common_name": "Valkey CA","valkey_version": "7.2.5","client_count": "1"}' \
+  --stackscript_data '{"disable_root": "No","user_name": "sudo_user","email_address": "${EMAIL_ADDRESS}","country_name": "","state_or_province_name": "","locality_name": "","organization_name": "","ca_common_name": "Valkey CA","valkey_version": "7.2.5","client_count": "1"}' \
   --region us-mia \
   --type g6-standard-2 \
   --authorized_users "myUser"
