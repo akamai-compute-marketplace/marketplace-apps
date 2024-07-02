@@ -79,10 +79,6 @@ EOF
   else echo "subdomain: www" >> ${group_vars};
   fi
 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
 }
 
 function run {
