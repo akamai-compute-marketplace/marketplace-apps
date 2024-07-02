@@ -116,7 +116,7 @@ function configure_privateip {
           echo "[warn] No private IP found. Adding.."
           add_privateip
           LINODE_IP=$(get_privateip)
-          echo "Address=$LINODE_IP/17" | sudo tee -a /etc/systemd/network/05-eth0.network
+          echo "Address=$LINODE_IP/17" | tee -a /etc/systemd/network/05-eth0.network
           systemctl restart systemd-networkd    
   fi
 }
