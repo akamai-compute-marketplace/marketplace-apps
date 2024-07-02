@@ -68,7 +68,7 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export  REGION="us-southeast"
+export REGION="us-southeast"
 export USERNAME="admin"
 
 linode-cli linodes create \
