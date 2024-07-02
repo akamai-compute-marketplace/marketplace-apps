@@ -1,0 +1,25 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing openbao creds into file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo username: {{ username }}
+      Sudo password: {{ password }}
+      # SSL
+      CA Password: {{ ca_password }}
+      
+      # The OpenBao Unseal Tokens and Initial Root Token:
+      {% for line in bao_output.stdout_lines %}
+      {{ line }}
+      {% endfor %}
+      
+      **PLEASE REMOVE THIS FILE ONCE YOU'VE LOGGED THESE CREDENTIALS IN A SECURE PASSWORD MANAGER**

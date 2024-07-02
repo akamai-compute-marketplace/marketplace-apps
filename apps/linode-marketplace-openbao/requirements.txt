@@ -1,0 +1,12 @@
+PyMySQL==1.0.2
+yamllint==1.30.0
+ansible-lint==24.6.0
+flake8==7.0.0
+linode_api4==5.16.0
+ansible==10.0.1
+dnspython==2.2.1
+polling==0.3.2
+ansible-specdoc==0.0.14
+pyyaml==6.0.1
+dnspython==2.2.1
+passlib==1.7.4
