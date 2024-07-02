@@ -1,0 +1,20 @@
+---
+# configure jenkins
+
+- name: stop jenkins service
+  systemd:
+    name: jenkins
+    state: stopped
+
+- name: update jenkins unit file
+  lineinfile:
+    path: /lib/systemd/system/jenkins.service
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^\#?Environment="JENKINS_PORT=8080"$', line: 'Environment="JENKINS_PORT=-1"' }
+    - { regexp: '^\#?Environment="JENKINS_HTTPS_PORT=443"$', line: 'Environment="JENKINS_HTTPS_PORT=443"' }
+    - { regexp: '^\#?Environment="JENKINS_HTTPS_KEYSTORE=/path/to/keystore.jks"$', line: 'Environment="JENKINS_HTTPS_KEYSTORE=/var/lib/jenkins/jenkins.keystore.jks"' }
+    - { regexp: '^\#?Environment="JENKINS_HTTPS_KEYSTORE_PASSWORD=s3cR3tPa55w0rD"$', line: 'Environment="JENKINS_HTTPS_KEYSTORE_PASSWORD={{ keystore_password }}"' }
+    - { regexp: '^\#?AmbientCapabilities=CAP_NET_BIND_SERVICE$', line: 'AmbientCapabilities=CAP_NET_BIND_SERVICE' }
+  notify: restart jenkins

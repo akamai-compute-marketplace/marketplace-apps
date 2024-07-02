@@ -1,0 +1,21 @@
+---
+# get let's encrypt certificate for web ui
+
+- name: get let's encrypt certificates
+  import_role:
+      name: certbot_ssl
+
+- name: create jenkins keystore
+  community.crypto.openssl_pkcs12:
+    action: export
+    path: /var/lib/jenkins/jenkins.keystore.jks
+    friendly_name: webui
+    privatekey_path: "/etc/letsencrypt/live/{{ _domain}}/privkey.pem"
+    certificate_path: "/etc/letsencrypt/live/{{ _domain}}/cert.pem"
+    other_certificates: "/etc/letsencrypt/live/{{ _domain}}/fullchain.pem"
+    other_certificates_parse_all: true
+    passphrase: "{{ keystore_password }}"
+    owner: jenkins
+    group: jenkins
+    mode: 0640
+    state: present
