@@ -1,0 +1,16 @@
+[Unit]
+Description=Valkey key value database
+Documentation=https://github.com/valkey-io/valkey - https://redis.io/documentation
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf
+NoNewPrivileges=yes
+Type=notify
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+---
+# Basic Paths
+valkey_conf_directory: /etc/valkey
+valkey_home_directory: /var/valkey
+valkey_data_directory: /var/valkey/data
+valkey_install_directory: /var/valkey/lib
+# SSL Paths
+valkey_ssl_directory: /etc/valkey/ssl
+valkey_ssl_ca_directory: /etc/valkey/ssl/ca
+valkey_ssl_reqs_directory: /etc/valkey/ssl/reqs
+valkey_ssl_keys_directory: /etc/valkey/ssl/keys
+valkey_ssl_certs_directory: /etc/valkey/ssl/certs
+valkey_ssl_server_cert: /etc/valkey/ssl/certs/valkey.crt
+valkey_ssl_server_key: /etc/valkey/ssl/keys/valkey.key.pem

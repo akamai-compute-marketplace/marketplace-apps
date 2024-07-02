@@ -1,0 +1,57 @@
+--- 
+- name: install dependencies
+  apt:
+    pkg:
+    - libssl-dev
+    - libsystemd-dev
+
+- name: add disable THP
+  copy: 
+    src: 'files/disable-thp.service'
+    dest: '/etc/systemd/system/disable-thp.service'
+
+- name: start disable THP
+  systemd: 
+    name: disable-thp.service
+    state: started
+    enabled: true
+    daemon-reload: true
+
+- name: set vm.overcommit
+  ansible.posix.sysctl:
+    name: vm.overcommit_memory
+    value: '1'
+    state: present
+
+- name: create valkey group
+  group:
+    name: valkey
+    state: present
+    system: true
+
+- name: create valkey user
+  user:
+    name: valkey
+    group: valkey
+    home: '{{ valkey_home_directory }}'
+    shell: /sbin/nologin
+    expires: -1
+    create_home: true
+    system: true
+    state: present
+
+- name: create valkey directories
+  file: 
+    path: '{{ item }}'
+    state: directory
+    owner: valkey
+    group: valkey
+  loop:
+    - '{{ valkey_conf_directory }}'
+    - '{{ valkey_data_directory }}'
+    - '{{ valkey_install_directory }}'
+    - '{{ valkey_ssl_directory }}'
+    - '{{ valkey_ssl_ca_directory}}'
+    - '{{ valkey_ssl_reqs_directory}}'
+    - '{{ valkey_ssl_keys_directory}}'
+    - '{{ valkey_ssl_certs_directory}}'

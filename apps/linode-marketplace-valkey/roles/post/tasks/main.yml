@@ -1,0 +1,20 @@
+---
+# motd and cred dump
+
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing deployment creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Valkey "default" User Password: {{ valkey_default_user_password }}
+      {{ username }} Valkey User Password: {{ sudo_db_user_password }}
+      Valkey CA Password (required to generate new certs): {{ ca_password }}

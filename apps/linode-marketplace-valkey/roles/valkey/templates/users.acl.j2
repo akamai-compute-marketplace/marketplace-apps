@@ -1,0 +1,2 @@
+user default on ><{{ valkey_default_user_password }}> sanitize-payload ~* &* +@all
+user {{ username }} on ><{{ sudo_db_user_password }}> sanitize-payload ~* &* +@all
