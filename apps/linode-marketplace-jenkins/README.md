@@ -35,7 +35,7 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
-export  REGION="us-southeast"
+export REGION="us-southeast"
 export USERNAME="admin"
 
 curl -H "Content-Type: application/json" \
