@@ -13,6 +13,7 @@
     proto: tcp
     from_ip: "{{ item }}"
   loop: "{{ client_ips }}"
+  when: client_ips is defined
 
 
 
