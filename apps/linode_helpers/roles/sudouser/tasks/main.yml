@@ -1,4 +1,39 @@
 ---
+
+# check system users
+
+# sanitation input is need to avoid the deployment breaking when a customer provides
+# a username that already exist on the system. If the username provided exist, the deployment will
+# hard fail with an appropiate message. We want to do this to ensure reliable delivery of the app
+# in the way it intended. 
+
+# Analysis:
+# {{ getusers['content'] | b64decode | regex_replace(' ', '') | split() | map('regex_replace', '^([^:]+):.*', '\\1') | list   }}
+
+# The string that we get from passwd is converted into a list via split(). Before split(), we need to remove all of the extra spaces
+# found in the passwd file. Without it, when the string is converted to a list, it will have the wrong information because
+# we didn't trim. regex_replace allows us to get the first column after we split each line at the `:` delimiter. 
+# This is the equivelant of doing `awk -F ':' {'print $1'} /etc/passwd`
+
+- name: get local system users
+  slurp:
+    src: /etc/passwd
+  register: getusers
+
+- name: create system user list
+  set_fact:  
+    system_users: "{{ getusers['content'] | b64decode | regex_replace(' ', '') | split() | map('regex_replace', '^([^:]+):.*', '\\1') | list }}"
+
+- name: check if {{ username }} user already exist
+  fail:
+    msg: |
+      [FATAL] illegal username provided --> {{ username }} 
+      The user already exist on the system. Please redeploy the Marketplace app using a non-system user for the sudo user value.
+      {{ system_users }}
+  when: username in system_users
+
+# continue
+
 - name: generating sudo user password
   set_fact:
     password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
