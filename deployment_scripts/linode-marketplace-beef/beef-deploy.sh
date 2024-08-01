@@ -91,7 +91,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 
 }
 

@@ -1,0 +1,59 @@
+---
+# influxdb
+
+- name: config file setup
+  template:
+    src: templates/influxdb.service
+    dest: "/etc/systemd/system/influxdb.service"
+
+- name: create docker compose directory
+  file:
+    path: /etc/docker/compose/influxdb
+    state: directory
+
+- name: docker file setup
+  template:
+    src: templates/docker-compose.yaml
+    dest: "/etc/docker/compose/influxdb/docker-compose.yml"
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: enable influxdb service
+  systemd:
+    name: influxdb
+    enabled: yes
+
+- name: start influxdb service
+  systemd:
+    name: influxdb
+    state: started
+
+# nginx
+- name: install nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: templates/nginx.conf.j2
+      dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
