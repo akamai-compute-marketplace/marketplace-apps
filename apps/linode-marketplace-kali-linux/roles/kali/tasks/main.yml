@@ -44,6 +44,6 @@
     state: present
   when: kali_package is defined
 
-#- name: Set up VNC
-#  include_tasks: vnc_setup.yml
-#  when: vnc_enabled | bool
+- name: Set up VNC
+ include_tasks: vnc_setup.yml
+ when: vnc_enabled | bool
