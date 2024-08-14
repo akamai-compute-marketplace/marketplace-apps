@@ -48,6 +48,7 @@ function udf {
   vnc_password: "${VNC_PASSWORD}"
 
   # Other variables
+  username: "${USER_NAME}"
   disable_root: "{{ '${DISABLE_ROOT}' == 'Yes' }}"
   token_password: "${TOKEN_PASSWORD}"
   subdomain: "${SUBDOMAIN}"
