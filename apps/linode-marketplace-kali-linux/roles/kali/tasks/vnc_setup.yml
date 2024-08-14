@@ -1,0 +1,50 @@
+---
+- name: Install XFCE and VNC packages
+  apt:
+    name:
+      - xfce4
+      - xfce4-goodies
+      - dbus-x11
+      - tigervnc-standalone-server
+      - expect
+    state: present
+
+- name: Create VNC user
+  user:
+    name: "{{ vnc_username }}"
+    password: "{{ vnc_password | password_hash('sha512') }}"
+    shell: /bin/bash
+
+- name: Set up VNC password
+  expect:
+    command: vncserver
+    responses:
+      Password: "{{ vnc_password }}"
+      Verify: "{{ vnc_password }}"
+      "Would you like to enter a view-only password (y/n)?": "n"
+  become: yes
+  become_user: "{{ vnc_username }}"
+
+- name: Kill VNC process
+  shell: |
+    killall Xtigervnc
+  ignore_errors: yes
+
+- name: Create VNC service file
+  template:
+    src: vncserver@.service.j2
+    dest: /etc/systemd/system/vncserver@.service
+    mode: '0644'
+
+- name: Start and enable VNC service
+  systemd:
+    name: vncserver@1.service
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Create MOTD with VNC instructions
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0644'
