@@ -2,6 +2,8 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
+#github_endpoint: 'https://raw.githubusercontent.com/akamai-compute-marketplace/marketplace-apps/main/deployment_scripts/linode-marketplace-lemp/lemp-deploy.sh'
+
 ## LEMP Settings
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 

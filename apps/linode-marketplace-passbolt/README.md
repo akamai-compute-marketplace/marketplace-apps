@@ -1,6 +1,10 @@
-# Linode Passbolt Deployment One-Click APP
+# Linode Passbolt Community Edition Deployment One-Click APP
 
-Passbolt is an open-source password manager designed for teams and businesses. It allows users to securely store, share and manage passwords.
+This Marketplace App deploys the latest unmodified version of Passbolt Community Edition, an open-source password manager designed for teams and businesses. It allows users to securely store, share and manage passwords.
+
+Passbolt and the Passbolt logo are registered trademarks of Passbolt S.A.
+This service is provided by Akamai Connected Cloud and is not affiliated with Passbolt S.A.
+
 
 ## Software Included
 
@@ -8,7 +12,7 @@ Passbolt is an open-source password manager designed for teams and businesses. I
 | :---      | :----     | :---          |
 | PHP    | 8.1    | Server-side scripting language |
 | Nginx   | 1.18   | High-performance web server and reverse proxy server |  
-| Passbolt | Latest | Open-source password manager designed for teams and businesses. It allows users to securely store, share and manage passwords. |
+| Passbolt Community Edition | Latest (unmodified) | Open-source password manager designed for teams and businesses. |
 | MySQL | 8 | Open-source relational database management system |
 
 **Supported Distributions:**
@@ -25,7 +29,7 @@ Passbolt is an open-source password manager designed for teams and businesses. I
 
 ## Use our API
 
-Customers can choose to the deploy the Passbolt app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Passbolt Community Edition Marketplace App through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
