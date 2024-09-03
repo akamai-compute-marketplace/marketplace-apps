@@ -15,6 +15,13 @@ fi
 #<UDF name="token_password" label="Your Linode API token" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
+## Akamai Datasource
+# <UDF name="akamai_datasource" label="Akamai Datasource" header="Yes">
+# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: RAND_U+j/OgGhEplTw5/5mBCc=" />
+# <UDF name="akamai_host" label="Akamai host" example="Example:  akaa-ID.luna-dev.akamaiapis.net" />
+# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" />
+# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" />
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -41,36 +48,50 @@ function udf {
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
+    echo "disable_root: yes" >> ${group_vars}
+  else echo "Leaving root login enabled"
   fi
 
   # domain vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
   fi
 
   if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
+    echo "domain: ${DOMAIN}" >> ${group_vars}
   else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
+  else 
+    echo "subdomain: www" >> ${group_vars}
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
+  else echo "No API token entered"
+  fi
+
+  # akamai datasource
+  if [[ -n ${AKAMAI_CLIENT_SECRET} ]] && [[ -n ${AKAMAI_HOST} ]] &&\ 
+  [[ -n ${AKAMAI_ACCESS_TOKEN} ]] && [[ -n ${AKAMAI_CLIENT_TOKEN} ]]; then
+    echo "akamai_datasource: yes" >> ${group_vars}
+    echo "akamai_client_secret: ${AKAMAI_CLIENT_SECRET}" >> ${group_vars}
+    echo "akamai_host: ${AKAMAI_HOST}"  >> ${group_vars}
+    echo "akamai_access_token: ${AKAMAI_ACCESS_TOKEN}"  >> ${group_vars}
+    echo "akamai_client_token: ${AKAMAI_CLIENT_TOKEN}"  >> ${group_vars}
+  else
+    echo "[info] Missing variable in the Akamai datasource. Not configuring"
+    echo "akamai_datasource: no" >> ${group_vars}
   fi
 
   # prometheus vars
-  if [[ -n ${REMOTE_IPS} ]]; then
-    echo: "remote_ips: [${REMOTE_IPS}]" >> ${group_vars};
-  else echo "No remote IPs entered";
-  fi
+  #if [[ -n ${REMOTE_IPS} ]]; then
+  #  echo: "remote_ips: [${REMOTE_IPS}]" >> ${group_vars};
+  #else echo "No remote IPs entered";
+  #fi
 }
 
 function run {
