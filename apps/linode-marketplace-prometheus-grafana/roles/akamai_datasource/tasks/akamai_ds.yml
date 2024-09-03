@@ -3,11 +3,14 @@
 
 - name: create grafana plugin directory
   file:
-    path: '/var/lib/grafana/plugins'
+    path: '/var/lib/grafana/{{ item }}'
     owner: grafana
     group: grafana
     state: directory
     mode: 0755
+  loop:
+   - plugins
+   - akamai-insights-datasource-plugin
 
 - name: clone akamai datasource repo
   git:
