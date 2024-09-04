@@ -70,7 +70,7 @@
 
 - name: add client credentials to grafana.db
   command: >
-    sqlite3 grafana.db "update data_source set 
+    sqlite3 /var/lib/grafana/grafana.db "update data_source set 
     json_data='{\"accessToken\":\"{{ akamai_access_token }}\",
     \"clientSecret\":\"{{ akamai_client_secret }}\",
     \"clientToken\":\"{{ akamai_client_token }}\",
