@@ -30,6 +30,13 @@
     - plugin.json
     - gpx_akamai-insights-datasource-plugin_linux_amd64
 
+- name: make datasource binary executable
+  ansible.builtin.file:
+    path: /var/lib/grafana/plugins/akamai-insights-datasource-plugin/gpx_akamai-insights-datasource-plugin_linux_amd64
+    owner: grafana
+    group: grafana
+    mode: 0755
+
 - name: move /img to plugin directory
   copy:
     src: '/tmp/akamai-insights-datasource/dist/img/'
@@ -37,10 +44,10 @@
     owner: grafana
     group: grafana
   
-- name: clean up repository from /tmp
-  file:
-    path: '/tmp/akamai-insights-datasource'
-    state: absent
+#- name: clean up repository from /tmp
+#  file:
+#    path: '/tmp/akamai-insights-datasource'
+#    state: absent
 
 #- name: add plugins directory to grafana
 #  lineinfile:
@@ -68,11 +75,36 @@
     name: grafana-server
     state: restarted
 
-- name: add client credentials to grafana.db
-  command: >
-    sqlite3 /var/lib/grafana/grafana.db "update data_source set 
-    json_data='{\"accessToken\":\"{{ akamai_access_token }}\",
-    \"clientSecret\":\"{{ akamai_client_secret }}\",
-    \"clientToken\":\"{{ akamai_client_token }}\",
-    \"host\":\"{{ akamai_host }}\"}' 
-    where name='akamai-insights-datasource'"
+- name: create json payload file for datasource
+  template:
+    src: 'templates/datasource.json.j2'
+    dest: '/tmp/datasource.json'
+
+- name: add akamai datasource
+  uri:
+    url: 'http://localhost:3000/api/datasources'
+    method: POST
+    url_username: 'admin'
+    url_password: '{{ grafana_password }}'
+    force_basic_auth: true
+    headers:
+      Content-Type: application/json
+    src: /var/lib/grafana/datasource.json
+  no_log: true
+
+- name: clean up /tmp directory
+  file:
+    path: '/tmp/{{ item }}'
+    state: absent
+  loop:
+    - akamai-insights-datasource
+    - datasource.json
+
+#- name: add client credentials to grafana.db
+#  command: >
+#    sqlite3 /var/lib/grafana/grafana.db "update data_source set 
+#    json_data='{\"accessToken\":\"{{ akamai_access_token }}\",
+#    \"clientSecret\":\"{{ akamai_client_secret }}\",
+#    \"clientToken\":\"{{ akamai_client_token }}\",
+#    \"host\":\"{{ akamai_host }}\"}' 
+#    where name='akamai-insights-datasource'"
