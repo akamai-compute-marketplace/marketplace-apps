@@ -96,7 +96,7 @@ EOF
 function run {
   # install dependancies
   apt-get update
-  apt-get install -y git python3 python3-pip
+  apt-get install -y git python3 python3-pip sqlite
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
