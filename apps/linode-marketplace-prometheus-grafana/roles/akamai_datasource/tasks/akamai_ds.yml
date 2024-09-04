@@ -89,7 +89,7 @@
     force_basic_auth: true
     headers:
       Content-Type: application/json
-    src: /var/lib/grafana/datasource.json
+    src: /tmp/datasource.json
   no_log: true
 
 - name: clean up /tmp directory
