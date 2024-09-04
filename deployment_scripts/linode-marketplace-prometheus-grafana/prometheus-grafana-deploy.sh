@@ -16,11 +16,10 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Akamai Datasource
-# <UDF name="akamai_datasource" label="Akamai Datasource" header="Yes">
-# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: RAND_U+j/OgGhEplTw5/5mBCc=" />
-# <UDF name="akamai_host" label="Akamai host" example="Example:  akaa-ID.luna-dev.akamaiapis.net" />
-# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" />
-# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" />
+# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: RAND_U+j/OgGhEplTw5/5mBCc=" default="" />
+# <UDF name="akamai_host" label="Akamai host" example="Example:  akaa-ID.luna-dev.akamaiapis.net" default="" />
+# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" default="" />
+# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" default="" />
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -77,14 +76,14 @@ EOF
   # akamai datasource
   if [[ -n ${AKAMAI_CLIENT_SECRET} ]] && [[ -n ${AKAMAI_HOST} ]] &&\ 
   [[ -n ${AKAMAI_ACCESS_TOKEN} ]] && [[ -n ${AKAMAI_CLIENT_TOKEN} ]]; then
-    echo "akamai_datasource: yes" >> ${group_vars}
+    echo "akamai_datasource: True" >> ${group_vars}
     echo "akamai_client_secret: ${AKAMAI_CLIENT_SECRET}" >> ${group_vars}
     echo "akamai_host: ${AKAMAI_HOST}"  >> ${group_vars}
     echo "akamai_access_token: ${AKAMAI_ACCESS_TOKEN}"  >> ${group_vars}
     echo "akamai_client_token: ${AKAMAI_CLIENT_TOKEN}"  >> ${group_vars}
   else
     echo "[info] Missing variable in the Akamai datasource. Not configuring"
-    echo "akamai_datasource: no" >> ${group_vars}
+    echo "akamai_datasource: False" >> ${group_vars}
   fi
 
   # prometheus vars
@@ -125,4 +124,6 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup
+if [ "${DEBUG}" == "NO" ]; then
+  cleanup
+fi
