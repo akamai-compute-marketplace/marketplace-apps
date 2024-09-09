@@ -74,8 +74,7 @@ EOF
   fi
 
   # akamai datasource
-  if [[ -n ${AKAMAI_CLIENT_SECRET} ]] && [[ -n ${AKAMAI_HOST} ]] &&\ 
-  [[ -n ${AKAMAI_ACCESS_TOKEN} ]] && [[ -n ${AKAMAI_CLIENT_TOKEN} ]]; then
+  if [[ -n ${AKAMAI_CLIENT_SECRET} ]] && [[ -n ${AKAMAI_HOST} ]] && [[ -n ${AKAMAI_ACCESS_TOKEN} ]] && [[ -n ${AKAMAI_CLIENT_TOKEN} ]]; then
     echo "akamai_datasource: True" >> ${group_vars}
     echo "akamai_client_secret: ${AKAMAI_CLIENT_SECRET}" >> ${group_vars}
     echo "akamai_host: ${AKAMAI_HOST}"  >> ${group_vars}
@@ -85,18 +84,12 @@ EOF
     echo "[info] Missing variable in the Akamai datasource. Not configuring"
     echo "akamai_datasource: False" >> ${group_vars}
   fi
-
-  # prometheus vars
-  #if [[ -n ${REMOTE_IPS} ]]; then
-  #  echo: "remote_ips: [${REMOTE_IPS}]" >> ${group_vars};
-  #else echo "No remote IPs entered";
-  #fi
 }
 
 function run {
   # install dependancies
   apt-get update
-  apt-get install -y git python3 python3-pip sqlite
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
