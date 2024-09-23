@@ -105,6 +105,11 @@
     src: 'beef_config.yaml.j2'
     dest: '/home/beef/config.yaml'
 
+# update bundler gem
+- name: manually update bundler
+  shell: gem install bundler
+  args:
+    chdir: /home/beef
 # Bundler module doesn't support the config set so using command
 - name: bundle config setup
   command: bundle3.0 config set --local path /home/beef/.gem
