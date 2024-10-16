@@ -16,10 +16,10 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Akamai Datasource
-# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: RAND_U+j/OgGhEplTw5/5mBCc=" default="" />
-# <UDF name="akamai_host" label="Akamai host" example="Example:  akaa-ID.luna-dev.akamaiapis.net" default="" />
-# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" default="" />
-# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akaa-ID-lbuvktpi7on7hhfb" default="" />
+# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: abcdEcSnaAt123FNkBxy456z25qx9Yp5CPUxlEfQeTDkfh4QA=I" default="" />
+# <UDF name="akamai_host" label="Akamai host" example="Example:  akab-lmn789n2k53w7qrs10cxy-nfkxaa4lfk3kd6ym.luna.akamaiapis.net" default="" />
+# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akab-zyx987xa6osbli4k-e7jf5ikib5jknes3" default="" />
+# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akab-nomoflavjuc4422-fa2xznerxrm3teg7" default="" />
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
