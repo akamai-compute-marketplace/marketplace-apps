@@ -27,6 +27,16 @@
     dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
 
+- name: add connection upgrade to nginx config
+  blockinfile:
+    path: '/etc/nginx/nginx.conf'
+    insertafter: '^http {'
+    block: |2
+              map $http_upgrade $connection_upgrade {
+                 default upgrade;
+                 '' close;
+              }
+ 
 - name: remove default vhost
   file: 
     path: '/etc/nginx/sites-enabled/default'
