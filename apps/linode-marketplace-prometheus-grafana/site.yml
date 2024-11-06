@@ -13,4 +13,5 @@
     - common
     - grafana
     - prometheus
+    - akamai_datasource
     - post
