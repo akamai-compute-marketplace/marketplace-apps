@@ -1,12 +1,12 @@
-# Linode Jitsi Deployment One-Click APP
+# Linode Kali Deployment One-Click APP
 
-Jitsi is a free, open source video conferencing and communication platform. It provides a secure, stable, and free alternative to popular video conferencing services. Use built-in features to limit meeting access with passwords or stream on YouTube so anyone can attend. 
+
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Jitsi    | latest    | Video Conferencing Bridge |
+| Kali    | latest    |  |
 
 **Supported Distributions:**
 
@@ -23,7 +23,7 @@ Jitsi is a free, open source video conferencing and communication platform. It p
 
 ## Use our API
 
-Customers can choose to the deploy the Jitsi app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Kali app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
