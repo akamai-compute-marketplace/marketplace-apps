@@ -89,4 +89,3 @@ linode-cli linodes create \
 - [Stackscript reference](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
 - [Drupal Documentation](https://www.drupal.org/docs)
 - [Drupal Security Updates](https://www.drupal.org/security)
-EOF
