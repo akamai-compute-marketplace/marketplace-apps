@@ -1,1 +1,18 @@
- 
+Welcome to your Drupal installation on Linode!
+
+Your Drupal site has been installed in: /var/www/drupal
+MariaDB database name: drupaldb
+MariaDB username: drupal
+
+To complete the installation:
+1. Visit http://{{ ansible_fqdn }} in your browser
+2. Follow the Drupal installation wizard
+3. Use the database credentials from /root/.drupal_credentials
+
+For security:
+- Change the MariaDB root password
+- Remove /root/.drupal_credentials after installation
+- Keep your Drupal installation updated
+
+Documentation: https://www.drupal.org/docs
+Support: https://www.linode.com/docs/guides/ 

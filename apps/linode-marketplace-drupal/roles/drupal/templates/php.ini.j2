@@ -1,1 +1,22 @@
- 
+[PHP]
+memory_limit = 256M
+max_execution_time = 120
+max_input_time = 120
+max_input_vars = 2000
+post_max_size = 64M
+upload_max_filesize = 64M
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+error_log = /var/log/php/error.log
+date.timezone = UTC
+
+[opcache]
+opcache.enable=1
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=4000
+opcache.revalidate_freq=60
+opcache.fast_shutdown=1
+opcache.enable_cli=1 

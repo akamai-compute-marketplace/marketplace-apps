@@ -1,1 +1,21 @@
- 
+<VirtualHost *:80>
+    ServerAdmin webmaster@{{ ansible_fqdn }}
+    DocumentRoot /var/www/drupal
+    ServerName {{ ansible_fqdn }}
+    ServerAlias www.{{ ansible_fqdn }}
+
+    <Directory /var/www/drupal>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+        RewriteEngine on
+        RewriteBase /
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond %{REQUEST_URI} !=/favicon.ico
+        RewriteRule ^ index.php [L]
+    </Directory>
+
+    ErrorLog /var/log/apache2/drupal-error.log
+    CustomLog /var/log/apache2/drupal-access.log combined
+</VirtualHost> 

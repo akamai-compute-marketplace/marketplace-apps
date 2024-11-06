@@ -1,1 +1,33 @@
- 
+---
+# Set hostname
+- name: Setting up hostname
+  import_role:
+    name: hostname
+
+# Set SSH public key
+- name: Set SSH public key
+  import_role:
+    name: sshkey
+
+# Configure UFW
+- name: Import UFW rules
+  import_tasks: ufw_rules.yml
+
+# Update apt and install common packages
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install required system packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - unzip 

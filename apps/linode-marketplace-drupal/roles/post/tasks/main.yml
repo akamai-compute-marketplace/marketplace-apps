@@ -1,1 +1,33 @@
- 
+---
+# Final system configurations and cleanup
+- name: Ensure services are started and enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - apache2
+    - mariadb
+    - "php8.3-fpm"
+
+- name: Install certbot for SSL
+  apt:
+    name:
+      - certbot
+      - python3-certbot-apache
+    state: present
+
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Clean up temporary files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/drupal.tar.gz 

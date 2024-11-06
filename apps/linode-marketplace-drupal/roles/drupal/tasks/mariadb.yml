@@ -1,1 +1,34 @@
- 
+---
+- name: Import secure MySQL role
+  import_role:
+    name: securemysql
+
+- name: Install MariaDB
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql
+    state: present
+
+- name: Copy MariaDB configuration
+  template:
+    src: mariadb.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mariadb
+
+- name: Create Drupal database
+  mysql_db:
+    name: drupaldb
+    state: present
+
+- name: Create Drupal database user
+  mysql_user:
+    name: drupal
+    password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+    priv: 'drupaldb.*:ALL'
+    host: localhost
+    state: present 

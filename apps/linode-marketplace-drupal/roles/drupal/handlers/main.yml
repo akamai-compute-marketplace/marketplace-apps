@@ -1,1 +1,15 @@
- 
+---
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
+
+- name: restart mariadb
+  service:
+    name: mariadb
+    state: restarted
+
+- name: restart php-fpm
+  service:
+    name: "php8.3-fpm"
+    state: restarted 

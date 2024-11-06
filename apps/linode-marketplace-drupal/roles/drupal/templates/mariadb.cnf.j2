@@ -1,1 +1,24 @@
- 
+[mysqld]
+innodb_buffer_pool_size = 1G
+innodb_log_file_size = 256M
+innodb_file_per_table = 1
+innodb_open_files = 400
+innodb_io_capacity = 400
+innodb_flush_method = O_DIRECT
+max_allowed_packet = 128M
+
+character-set-server = utf8mb4
+collation-server = utf8mb4_general_ci
+transaction_isolation = READ-COMMITTED
+
+# Cache settings
+query_cache_type = 0
+query_cache_size = 0
+query_cache_limit = 1M
+
+# Connection settings
+max_connections = 100
+thread_cache_size = 50
+table_open_cache = 2000
+tmp_table_size = 64M
+max_heap_table_size = 64M 
