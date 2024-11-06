@@ -34,6 +34,7 @@ Make sure that the following values are updated at the top of the code block bef
 - TOKEN
 - ROOT_PASS
 
+```
 SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
@@ -81,7 +82,7 @@ linode-cli linodes create \
 --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
 --authorized_users "myUser"
 --authorized_users "secondaryUser"
-
+```
 ## Resources
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
