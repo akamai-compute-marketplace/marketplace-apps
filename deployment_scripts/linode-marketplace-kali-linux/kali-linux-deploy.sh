@@ -56,44 +56,56 @@ function udf {
 EOF
 
   if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars}
+    echo "domain: ${DOMAIN}" >> ${group_vars};
   else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -z ${SUBDOMAIN} ]]; then
-    echo "subdomain: www" >> ${group_vars}
+    echo "subdomain: www" >> ${group_vars};
   fi
 
-  if [[ -z ${TOKEN_PASSWORD} ]]; then
-    echo "No API token entered" >> ${group_vars}
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
   fi
 }
 
 function run {
-  # install dependancies
-  apt-get update
-  apt-get install -y git python3 python3-pip
-
+  # Set debconf to automatically handle service restarts
+  echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
+  echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
+  # install dependencies
+  DEBIAN_FRONTEND=noninteractive apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-full \
+    ansible
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  #git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # Create and activate virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  python3 -m venv env
   source env/bin/activate
-  pip install pip --upgrade
-  pip install -r requirements.txt
+  
+  # Install Python packages in the virtual environment
+  python3 -m pip install --upgrade pip
+  # Use --break-system-packages since we're in a virtual env
+  python3 -m pip install -r requirements.txt --break-system-packages
+  
+  # Install Ansible collections
   ansible-galaxy install -r collections.yml
   
   # populate group_vars
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-  
 }
 
 function installation_complete {
