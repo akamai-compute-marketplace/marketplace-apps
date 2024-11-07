@@ -74,7 +74,7 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install python3-venv
+  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
