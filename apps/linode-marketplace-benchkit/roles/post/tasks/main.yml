@@ -14,3 +14,9 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+
+- name: export jmeter path 
+  lineinfile:
+    path: '/home/{{ username }}/.bashrc'
+    line: "export PATH=\"$PATH:{{ jmeter_path }}\""
+    insertafter: EOF

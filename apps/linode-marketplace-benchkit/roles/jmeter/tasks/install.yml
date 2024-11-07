@@ -41,7 +41,7 @@
     dest: "/opt/apache-jmeter-{{ jmeter_version }}"
     extra_opts: [--strip-components=1]
  
-- name: export bin path 
+- name: export jmeter path 
   lineinfile:
     path: /root/.bashrc
     line: "export PATH=\"$PATH:{{ jmeter_path }}\""
