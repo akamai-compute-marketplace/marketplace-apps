@@ -10,6 +10,7 @@
     port: "{{ item }}"
     proto: tcp
   loop:
+    - "22"
     - "80"
     - "443"
 

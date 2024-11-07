@@ -66,18 +66,21 @@ EOF
 function run {
   # install dependencies
   apt-get update
-  apt-get install -y git python3 python3-pip
+  apt-get install -y git python3 python3-pip python3-venv python3-full ansible
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
-
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  
+  # Create required directories
+  mkdir -p ${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode
+  
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  python3 -m venv env
   source env/bin/activate
-  pip install pip --upgrade
-  pip install -r requirements.txt
+  pip install --break-system-packages pip --upgrade
+  pip install --break-system-packages -r requirements.txt
   ansible-galaxy install -r collections.yml
   
   # populate group_vars
