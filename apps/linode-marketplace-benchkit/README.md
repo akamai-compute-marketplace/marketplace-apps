@@ -1,13 +1,13 @@
 # Linode Benchkit Deployment One-Click APP
 
-Our benchmark Marketplace application provide a list tools designed to benchmark and analyze the performance of frontend applications under various loads and conditions. With these tools, developers and QA teams can conduct comprehensive stress, load, and endurance testing to ensure high-performance standards and resilience across web applications.
+Our benchmark Marketplace application provides a list tools designed to benchmark and analyze the performance of frontend applications under various loads and conditions. With these tools, developers and QA teams can conduct comprehensive stress, load, and endurance testing to ensure high-performance standards and resilience across web applications.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | Jmeter    | Latest    | A versatile, feature-rich tool designed for load testing and measuring web application performance, including support for complex test configurations. |
-| K6    | latest    |  modern load-testing tool optimized for scripting complex test scenarios and measuring system performance under simulated user loads |
+| K6    | Latest    |  A modern load-testing tool optimized for scripting complex test scenarios and measuring system performance under simulated user loads |
 | Apache Benchmark    | 2.3    | A tool for benchmarking your Apache Hypertext Transfer Protocol (HTTP) server. It is designed to give you an impression of how your current Apache installation performs. This especially shows you how many requests per second your Apache installation is capable of serving. |
 | Siege    | 4.0.7    | Siege is an open source regression test and benchmark utility. It can stress test a single URL with a user defined number of simulated users, or it can read many URLs into memory and stress them simultaneously. |
 | Docker Community Edition    | Latest    | Container Management tool. |
