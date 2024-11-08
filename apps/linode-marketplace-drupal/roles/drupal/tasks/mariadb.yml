@@ -1,14 +1,4 @@
 ---
-# generate mysql
-- name: Import securemysql passgen
-  import_role:
-    name: securemysql
-    tasks_from: passgen
-
-- name: Import secure MySQL role
-  import_role:
-    name: securemysql
-
 - name: Install MariaDB
   apt:
     name:
@@ -25,6 +15,22 @@
     group: root
     mode: '0644'
   notify: restart mariadb
+
+- name: Ensure MariaDB is started
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+# generate mysql
+- name: Import securemysql passgen
+  import_role:
+    name: securemysql
+    tasks_from: passgen
+
+- name: Import secure MySQL role
+  import_role:
+    name: securemysql
 
 - name: Create Drupal database
   mysql_db:
