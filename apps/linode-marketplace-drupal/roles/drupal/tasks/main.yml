@@ -9,27 +9,22 @@
 - name: Import Apache tasks
   import_tasks: apache.yml
 
-# Install Drupal
-- name: Download Drupal
-  get_url:
-    url: https://www.drupal.org/download-latest/tar.gz
-    dest: /tmp/drupal.tar.gz
+# Install Composer
+- name: Install Composer
+  shell: |
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+  args:
+    creates: /usr/local/bin/composer
 
-- name: Create Drupal directory
-  file:
-    path: /var/www/drupal
-    state: directory
-    owner: www-data
-    group: www-data
-
-- name: Extract Drupal
-  unarchive:
-    src: /tmp/drupal.tar.gz
-    dest: /var/www/
-    remote_src: yes
-    extra_opts: ["--strip-components=1"]
-    owner: www-data
-    group: www-data
+# Install Drupal using Composer
+- name: Create Drupal project using Composer
+  composer:
+    command: create-project
+    arguments: drupal/recommended-project:10.x-dev /var/www/drupal --no-interaction
+    working_dir: /tmp
+  become: yes
+  become_user: www-data
 
 - name: Create files directory
   file:
@@ -41,22 +36,18 @@
 
 - name: Copy default settings file
   copy:
-    src: /var/www/drupal/sites/default/default.settings.php
-    dest: /var/www/drupal/sites/default/settings.php
+    src: /var/www/drupal/web/sites/default/default.settings.php
+    dest: /var/www/drupal/web/sites/default/settings.php
     remote_src: yes
     owner: www-data
     group: www-data
     mode: '0644'
 
-- name: Install Composer
-  shell: |
-    curl -sS https://getcomposer.org/installer | php
-    mv composer.phar /usr/local/bin/composer
-  args:
-    creates: /usr/local/bin/composer
-
+# Install Drush last
 - name: Install Drush via Composer
   composer:
     command: require
-    global_command: yes
-    arguments: drush/drush 
+    arguments: drush/drush
+    working_dir: /var/www/drupal
+  become: yes
+  become_user: www-data
