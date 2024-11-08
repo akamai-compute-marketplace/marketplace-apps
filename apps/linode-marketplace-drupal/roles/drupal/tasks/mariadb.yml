@@ -36,6 +36,9 @@
   mysql_db:
     name: drupaldb
     state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
 
 - name: Create Drupal database user
   mysql_user:
@@ -43,4 +46,7 @@
     password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
     priv: 'drupaldb.*:ALL'
     host: localhost
-    state: present 
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
