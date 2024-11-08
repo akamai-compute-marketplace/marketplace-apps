@@ -9,7 +9,7 @@
 - name: Import Apache tasks
   import_tasks: apache.yml
 
-# Install Composer
+# Install Composer first
 - name: Install Composer
   shell: |
     curl -sS https://getcomposer.org/installer | php
@@ -17,18 +17,28 @@
   args:
     creates: /usr/local/bin/composer
 
+# Create Composer cache directory with correct permissions
+- name: Create Composer cache directory
+  file:
+    path: /var/www/.cache/composer
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
 # Install Drupal using Composer
 - name: Create Drupal project using Composer
   composer:
     command: create-project
-    arguments: drupal/recommended-project:10.x-dev /var/www/drupal --no-interaction
+    arguments: "drupal/recommended-project /var/www/drupal --stability dev --no-interaction"
     working_dir: /tmp
   become: yes
   become_user: www-data
 
 - name: Create files directory
   file:
-    path: /var/www/drupal/sites/default/files
+    path: /var/www/drupal/web/sites/default/files
     state: directory
     mode: '0755'
     owner: www-data
