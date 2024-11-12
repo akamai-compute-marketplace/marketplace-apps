@@ -27,11 +27,21 @@
     mode: '0755'
     recurse: yes
 
+# Ensure Composer cache directory and subdirectories are writable
+- name: Ensure Composer cache directory is writable
+  file:
+    path: /var/www/.cache/composer/repo/https---repo.packagist.org
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
 # Install Drupal using Composer
 - name: Create Drupal project using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project /var/www/drupal --stability dev --no-interaction"
+    arguments: "drupal/recommended-project /var/www/drupal --stability stable --no-interaction"
     working_dir: /tmp
   become: yes
   become_user: www-data
