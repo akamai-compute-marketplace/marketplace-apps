@@ -4,7 +4,7 @@
     ServerName {{ ansible_fqdn }}
     ServerAlias www.{{ ansible_fqdn }}
 
-    <Directory /var/www/drupal>
+    <Directory /var/www/drupal/web>
         Options FollowSymLinks
         AllowOverride All
         Require all granted
