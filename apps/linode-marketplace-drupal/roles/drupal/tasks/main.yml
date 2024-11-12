@@ -37,12 +37,21 @@
     mode: '0755'
     recurse: yes
 
+# Create target directory with correct permissions
+- name: Create Drupal directory
+  file:
+    path: /var/www/drupal
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
 # Install Drupal using Composer
 - name: Create Drupal project using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project /var/www/drupal --stability stable --no-interaction"
-    working_dir: /tmp
+    arguments: "drupal/recommended-project {{ drupal_docroot | default('/var/www/drupal') }} --stability stable --no-interaction"
+    working_dir: /var/www/drupal
   become: yes
   become_user: www-data
 
