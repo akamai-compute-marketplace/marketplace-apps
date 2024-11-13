@@ -6,7 +6,7 @@ Jenkins is an open source automation tool which can build, test, and deploy your
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Jenkins    | 2.464    | Open-source automation server |
+| Jenkins    | 2.479    | Open-source automation server |
 
 **Supported Distributions:**
 
