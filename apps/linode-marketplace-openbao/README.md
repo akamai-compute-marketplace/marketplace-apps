@@ -8,7 +8,7 @@ OpenBao is an open source solution to manage, store, and distribute sensitive da
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Openbao    | v2.0.0-alpha20240329    | Secrets Management tool |
+| Openbao    | v2.0.2    | Secrets Management tool |
 
 
 **Supported Distributions:**
