@@ -19,7 +19,7 @@ fi
 # <UDF name="ca_common_name" label="CA Common Name" example="Example: Valkey CA" />
 
 ## Valkey Version. Valkey is in early access, with only one stable version, and no beta branch established. 
-#<UDF name="valkey_version" label="Which version of Valkey to install" oneOf="7.2.5">
+#<UDF name="valkey_version" label="Which version of Valkey to install" oneOf="8.0.1">
 # Client Count
 # <UDF name="client_count" label="Number of clients connecting to Valkey">
 
