@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
-trap "cleanup $? $LINENO" EXIT
+if [ "${DEBUG}" == "NO" ]; then
+  trap "cleanup $? $LINENO" EXIT
+fi
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
@@ -66,7 +68,7 @@ EOF
 function run {
   # install dependencies
   apt-get update
-  apt-get install -y git python3 python3-pip python3-venv python3-full ansible
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
@@ -77,8 +79,8 @@ function run {
   
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
@@ -96,4 +98,6 @@ function installation_complete {
 
 # main
 run && installation_complete
-cleanup 
+if [ "${DEBUG}" == "NO" ]; then
+  cleanup
+fi

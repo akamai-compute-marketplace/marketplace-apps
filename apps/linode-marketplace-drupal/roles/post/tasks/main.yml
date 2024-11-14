@@ -10,12 +10,21 @@
     - mariadb
     - "php8.3-fpm"
 
+- name: restart Apache2
+  systemd:
+    name: apache2.service
+    state: restarted
+
 - name: Install certbot for SSL
   apt:
     name:
       - certbot
       - python3-certbot-apache
     state: present
+- name: configuring domain with certbot
+  import_role:
+    name: certbot_ssl
+  when: default_dns is not defined
 
 - name: Set up MOTD
   template:
