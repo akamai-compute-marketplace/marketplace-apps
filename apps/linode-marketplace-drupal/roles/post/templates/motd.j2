@@ -3,9 +3,10 @@ Welcome to your Drupal installation on Linode!
 Your Drupal site has been installed in: /var/www/drupal/web
 
 To complete the installation:
-1. Visit http://{{ ansible_fqdn }} in your browser
+1. Visit https://{{ ansible_fqdn }} in your browser
 2. Follow the Drupal installation wizard
-3. Use the database credentials from /root/.drupal_credentials
+3. Use the database credentials from /home/{{ username }}/.credentials
 
-Documentation: https://www.drupal.org/docs
-Support: https://www.linode.com/docs/guides/ 
+Documentation: 
+- https://www.drupal.org/docs
+- https://www.linode.com/marketplace/apps/linode/drupal/
