@@ -16,5 +16,4 @@
         insertafter: EOF
         path: group_vars/linode/vars
         block: | 
-          mariadb_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-          drupal_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }} 
+          mysql_drupal_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
