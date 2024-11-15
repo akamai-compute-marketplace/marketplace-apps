@@ -21,10 +21,10 @@
       - certbot
       - python3-certbot-apache
     state: present
+    
 - name: configuring domain with certbot
   import_role:
     name: certbot_ssl
-  when: default_dns is not defined
 
 - name: Set up MOTD
   template:
