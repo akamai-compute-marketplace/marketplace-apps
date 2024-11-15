@@ -43,9 +43,10 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      MariaDB database name: drupaldb
-      MariaDB username: drupal
-      MariaDB root password: {{ mysql_root_password }}
+      MariaDB Drupal database name: drupaldb
+      MariaDB Drupal username: drupal
+      MariaDB drupal user password: {{ mysql_drupal_password }}
+      MariaDB root user password: {{ mysql_root_password }}
 
 - name: Clean up temporary files
   file:
