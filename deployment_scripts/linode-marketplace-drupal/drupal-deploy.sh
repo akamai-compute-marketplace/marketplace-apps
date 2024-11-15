@@ -37,6 +37,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   soa_email_address: ${SOA_EMAIL_ADDRESS}
+  webserver_stack: lamp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
