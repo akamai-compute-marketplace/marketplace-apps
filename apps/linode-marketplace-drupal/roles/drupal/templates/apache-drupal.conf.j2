@@ -4,6 +4,17 @@
     ServerName {{ ansible_fqdn }}
     ServerAlias www.{{ ansible_fqdn }}
 
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerAdmin webmaster@{{ ansible_fqdn }}
+    DocumentRoot /var/www/drupal/web
+    ServerName {{ ansible_fqdn }}
+    ServerAlias www.{{ ansible_fqdn }}
+
     <Directory /var/www/drupal/web>
         Options FollowSymLinks
         AllowOverride All
@@ -18,4 +29,4 @@
 
     ErrorLog /var/log/apache2/drupal-error.log
     CustomLog /var/log/apache2/drupal-access.log combined
-</VirtualHost> 
+</VirtualHost>
