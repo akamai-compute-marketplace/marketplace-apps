@@ -7,15 +7,6 @@
       - python3-pymysql
     state: present
 
-# - name: Copy MariaDB configuration
-#   template:
-#     src: mariadb.cnf.j2
-#     dest: /etc/mysql/mariadb.conf.d/50-server.cnf
-#     owner: root
-#     group: root
-#     mode: '0644'
-#   notify: restart mariadb
-
 - name: Copy MariaDB configuration
   copy:
     src: mariadb.cnf
@@ -52,7 +43,7 @@
 - name: Create Drupal database user
   mysql_user:
     name: drupal
-    password: "{{ mysql_drupal_password }}"  # Using the stored Drupal password
+    password: "{{ mysql_drupal_password }}"
     priv: 'drupaldb.*:ALL'
     host: localhost
     state: present

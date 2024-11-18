@@ -10,11 +10,6 @@
     - mariadb
     - "php8.3-fpm"
 
-# - name: restart Apache2
-#   systemd:
-#     name: apache2.service
-#     state: restarted
-
 - name: Install certbot for SSL
   apt:
     name:
