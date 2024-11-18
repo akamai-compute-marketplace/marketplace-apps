@@ -6,7 +6,7 @@ Splunk is a powerful log analyzer that can be used to obtain insight into your i
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Splunk    | 9.1.2    | Application SIEM |
+| Splunk    | 9.3.2    | Application SIEM |
 | Akamai SIEM | 1.4.19 | The sample Splunk connector is a Splunk add-on that captures security events from the ​Akamai​ Security Events Collector, which exposes a RESTful API that lets the connector pull events in JSON format. Akamai's Splunk add-on converts security event data from JSON into CIM format. The resulting data can then be imported into and analyzed by Splunk. |
 
 **Supported Distributions:**
