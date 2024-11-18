@@ -1,0 +1,7 @@
+// Trusted host patterns
+$settings['trusted_host_patterns'] = [
+  '^localhost$',
+  '^127\.0\.0\.1$',
+  '^\[::1\]$',
+  '^{{ _domain | replace('.', '\.') }}$',
+];
