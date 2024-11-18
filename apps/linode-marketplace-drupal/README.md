@@ -41,6 +41,9 @@ export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
 export USERNAME="admin"
 export PASSWORD="aComplexP@ssword"
+export DOMAIN="example.com"
+export SUBDOMAIN="drupal"
+
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${TOKEN}" \
 -X POST -d '{
@@ -50,7 +53,7 @@ curl -H "Content-Type: application/json" \
 ],
 "backups_enabled": true,
 "booted": true,
-"image": "linode/ubuntu2204",
+"image": "linode/ubuntu22.04",
 "label": "drupal-server",
 "private_ip": true,
 "region": "us-southeast",
@@ -58,10 +61,13 @@ curl -H "Content-Type: application/json" \
 "stackscript_data": {
 "username": "${USERNAME}",
 "password": "${PASSWORD}",
-"soa_email_address": "${SOA_EMAIL_ADDRESS}"
+"soa_email_address": "${SOA_EMAIL_ADDRESS}",
+"domain": "${DOMAIN}",
+"subdomain": "${SUBDOMAIN}",
+"disable_root": "Yes"
 },
 "stackscript_id": 00000000000,
-"type": "g6-dedicated-4"
+"type": "g6-nanode-1"
 }' https://api.linode.com/v4/linode/instances
 
 CLI:
@@ -70,18 +76,21 @@ export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
 export USERNAME="admin"
 export PASSWORD="aComplexP@ssword"
+export DOMAIN="example.com"
+export SUBDOMAIN="drupal"
+
 linode-cli linodes create \
+--image 'linode/ubuntu22.04' \
 --label drupal-server \
 --root_pass ${ROOT_PASS} \
 --booted true \
 --stackscript_id 00000000000 \
---stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "disable_root": "no/yes",
-"username": "${USERNAME}", "password": "${PASSWORD}" }' \
+--stackscript_data '{"username": "${USERNAME}","disable_root":"Yes","token_password":"${TOKEN_PASSWORD}","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}"}'
 --region us-east \
---type g6-standard-2 \
+--type g6-nanode-1 \
 --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
---authorized_users "myUser"
---authorized_users "secondaryUser"
+--authorized_users "user1"
+--authorized_users "user2"
 ```
 ## Resources
 
