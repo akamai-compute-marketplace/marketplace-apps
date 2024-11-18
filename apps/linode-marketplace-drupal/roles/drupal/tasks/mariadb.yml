@@ -7,9 +7,18 @@
       - python3-pymysql
     state: present
 
+# - name: Copy MariaDB configuration
+#   template:
+#     src: mariadb.cnf.j2
+#     dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   notify: restart mariadb
+
 - name: Copy MariaDB configuration
-  template:
-    src: mariadb.cnf.j2
+  copy:
+    src: mariadb.cnf
     dest: /etc/mysql/mariadb.conf.d/50-server.cnf
     owner: root
     group: root

@@ -43,11 +43,20 @@
     group: www-data
     mode: '0755'
 
+# - name: Configure PHP
+#   template:
+#     src: php.ini.j2
+#     dest: /etc/php/8.3/apache2/php.ini
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   notify: restart apache 
+
 - name: Configure PHP
-  template:
-    src: php.ini.j2
+  copy:
+    src: php.ini
     dest: /etc/php/8.3/apache2/php.ini
     owner: root
     group: root
     mode: '0644'
-  notify: restart apache 
+  notify: restart apache2
