@@ -75,9 +75,6 @@ function run {
   git -C /tmp clone ${GIT_REPO}
   # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
   
-  # Create required directories
-  # mkdir -p ${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode
-  
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   apt install python3-venv -y
