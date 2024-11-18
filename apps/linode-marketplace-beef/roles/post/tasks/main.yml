@@ -8,6 +8,8 @@
     copy:
       dest: '/home/{{ username }}/.credentials'
       mode: '0600'
+      owner: '{{ username }}'
+      group: '{{ username }}'
       content: |
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
