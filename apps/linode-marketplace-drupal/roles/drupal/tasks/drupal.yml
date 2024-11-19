@@ -40,7 +40,7 @@
 - name: Install Drupal 10.3.8 using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project:10.3.8 /var/www/drupal --no-interaction --no-plugins --no-scripts"
+    arguments: "drupal/recommended-project:10.3.8 /var/www/drupal --no-interaction"
     working_dir: /var/www
   become: yes
   become_user: www-data
