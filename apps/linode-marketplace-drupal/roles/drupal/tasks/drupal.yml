@@ -20,7 +20,7 @@
 
 - name: Verify Composer installer
   command: >
-    php -r "if (hash_file('sha384', '/tmp/composer-setup.php') === trim(file_get_contents('/tmp/composer-setup.php.sig'))) { exit(0); } else { exit(1); }"
+    php -r "if (hash_file('sha384', '/tmp/composer-setup.php') === trim(file_get_contents('/tmp/composer-setup.sig'))) { exit(0); } else { exit(1); }"
   register: composer_verify
   failed_when: composer_verify.rc != 0
 
