@@ -1,11 +1,4 @@
 ---
-# - name: Install Composer
-#   shell: |
-#     curl -sS https://getcomposer.org/installer | php
-#     mv composer.phar /usr/local/bin/composer
-#   args:
-#     creates: /usr/local/bin/composer
-
 - name: Download Composer installer signature
   get_url:
     url: https://composer.github.io/installer.sig
@@ -29,17 +22,26 @@
   args:
     creates: /usr/local/bin/composer
 
-- name: Create Drupal project directory
+- name: Create Composer cache directory structure
   file:
-    path: /var/www/html/drupal
+    path: "{{ item }}"
     state: directory
+    owner: www-data
+    group: www-data
     mode: '0755'
+    recurse: yes
+  loop:
+    - /var/www/.cache/composer
+    - /var/www/.cache/composer/repo
+    - /var/www/.cache/composer/repo/https---repo.packagist.org
+    - /var/www/.cache/composer/vcs
+    - /var/www/drupal
 
 - name: Install Drupal 10.3.8 using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project:10.3.8 /var/www/html/drupal --no-interaction --no-plugins --no-scripts"
-    working_dir: /var/www/html
+    arguments: "drupal/recommended-project:10.3.8 /var/www/drupal --no-interaction --no-plugins --no-scripts"
+    working_dir: /var/www
   become: yes
   become_user: www-data
 
@@ -50,44 +52,6 @@
   loop:
     - /tmp/composer-setup.php
     - /tmp/composer-setup.sig
-
-# Create Composer cache directory with correct permissions
-- name: Create Composer cache directory
-  file:
-    path: /var/www/.cache/composer
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-    recurse: yes
-
-# Ensure Composer cache directory and subdirectories are writable
-- name: Ensure Composer cache directory is writable
-  file:
-    path: /var/www/.cache/composer/repo/https---repo.packagist.org
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-    recurse: yes
-
-# Create target directory with correct permissions
-- name: Create Drupal directory
-  file:
-    path: /var/www/drupal
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-
-# Install Drupal using Composer
-- name: Create Drupal project using Composer
-  composer:
-    command: create-project
-    arguments: "drupal/recommended-project {{ drupal_docroot | default('/var/www/drupal') }} --stability stable --no-interaction"
-    working_dir: /var/www/drupal
-  become: yes
-  become_user: www-data
 
 - name: Create files directory
   file:

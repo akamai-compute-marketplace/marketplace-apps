@@ -7,7 +7,7 @@ Drupal is a free and open-source content management system (CMS) written in PHP 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | Apache    | 2.4       | Web server |
-| MariaDB   | 11.2      | Open source database management system |
+| MariaDB   | 10.6      | Open source database management system |
 | PHP       | 8.3       | Server-side scripting language |
 | Drupal    | 10.3.8    | Content Management System |
 | Composer  | 2.8.3     | PHP dependency manager |
