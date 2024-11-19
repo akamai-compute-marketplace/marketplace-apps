@@ -112,7 +112,7 @@
     chdir: /home/beef
 # Bundler module doesn't support the config set so using command
 - name: bundle config setup
-  command: bundle3.0 config set --local path /home/beef/.gem
+  command: bundle config set --local path /home/beef/.gem
   become_user: beef
   become: true
   args:
@@ -120,7 +120,7 @@
 
 - name: install dependencies using bundle
   community.general.bundler:
-    executable: /usr/bin/bundle3.0
+    executable: bundle
     state: present
     chdir: /home/beef
   become_user: beef
