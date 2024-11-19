@@ -1,11 +1,11 @@
 ---
-- name: Install MariaDB
-  apt:
-    name:
-      - mariadb-server
-      - mariadb-client
-      - python3-pymysql
-    state: present
+# - name: Install MariaDB
+#   apt:
+#     name:
+#       - mariadb-server
+#       - mariadb-client
+#       - python3-pymysql
+#     state: present
 
 - name: Copy MariaDB configuration
   copy:

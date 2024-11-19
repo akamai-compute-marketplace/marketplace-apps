@@ -9,13 +9,14 @@ Drupal is a free and open-source content management system (CMS) written in PHP 
 | Apache    | 2.4       | Web server |
 | MariaDB   | 11.2      | Open source database management system |
 | PHP       | 8.3       | Server-side scripting language |
-| Drupal    | Latest    | Content Management System |
-| Composer  | Latest    | PHP dependency manager |
-| Drush     | Latest    | Drupal CLI tool |
+| Drupal    | 10.3.8    | Content Management System |
+| Composer  | 2.8.3     | PHP dependency manager |
+| Drush     | 13.3.3    | Drupal CLI tool |
 
 **Supported Distributions:**
 
 - Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

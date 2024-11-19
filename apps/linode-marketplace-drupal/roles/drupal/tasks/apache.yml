@@ -1,8 +1,8 @@
 ---
-- name: Install Apache
-  apt:
-    name: apache2
-    state: present
+# - name: Install Apache
+#   apt:
+#     name: apache2
+#     state: present
 
 - name: Enable Apache modules
   apache2_module:

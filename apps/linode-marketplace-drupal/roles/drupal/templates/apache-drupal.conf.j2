@@ -1,8 +1,8 @@
 <VirtualHost *:80>
-    ServerAdmin webmaster@{{ ansible_fqdn }}
+    ServerAdmin webmaster@{{ _domain }}
     DocumentRoot /var/www/drupal/web
-    ServerName {{ ansible_fqdn }}
-    ServerAlias www.{{ ansible_fqdn }}
+    ServerName {{ _domain }}
+    ServerAlias www.{{ _domain }}
 
     RewriteEngine On
     RewriteCond %{HTTPS} off
@@ -10,10 +10,10 @@
 </VirtualHost>
 
 <VirtualHost *:443>
-    ServerAdmin webmaster@{{ ansible_fqdn }}
+    ServerAdmin webmaster@{{ _domain }}
     DocumentRoot /var/www/drupal/web
-    ServerName {{ ansible_fqdn }}
-    ServerAlias www.{{ ansible_fqdn }}
+    ServerName {{ _domain }}
+    ServerAlias www.{{ _domain }}
 
     <Directory /var/www/drupal/web>
         Options FollowSymLinks

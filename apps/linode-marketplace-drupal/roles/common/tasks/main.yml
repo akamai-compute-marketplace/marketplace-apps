@@ -54,11 +54,22 @@
   apt:
     name: "{{ packages }}"
     state: present
+    update_cache: yes
   vars:
     packages:
+      # Existing common packages
       - apt-transport-https
       - ca-certificates
       - curl
       - software-properties-common
       - python3-pip
-      - unzip 
+      - unzip
+      # SSL packages
+      - certbot
+      - python3-certbot-apache
+      # MariaDB packages
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql
+      # Apache package
+      - apache2

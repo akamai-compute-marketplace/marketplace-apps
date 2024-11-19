@@ -10,17 +10,6 @@
     - mariadb
     - "php8.3-fpm"
 
-- name: Install certbot for SSL
-  apt:
-    name:
-      - certbot
-      - python3-certbot-apache
-    state: present
-    
-- name: configuring domain with certbot
-  import_role:
-    name: certbot_ssl
-
 - name: Set up MOTD
   template:
     src: motd.j2

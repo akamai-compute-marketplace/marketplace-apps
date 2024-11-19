@@ -1,0 +1,121 @@
+---
+# - name: Install Composer
+#   shell: |
+#     curl -sS https://getcomposer.org/installer | php
+#     mv composer.phar /usr/local/bin/composer
+#   args:
+#     creates: /usr/local/bin/composer
+
+- name: Download Composer installer signature
+  get_url:
+    url: https://composer.github.io/installer.sig
+    dest: /tmp/composer-setup.sig
+    mode: '0755'
+
+- name: Download Composer installer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: '0755'
+
+- name: Verify Composer installer
+  command: >
+    php -r "if (hash_file('sha384', '/tmp/composer-setup.php') === trim(file_get_contents('/tmp/composer-setup.php.sig'))) { exit(0); } else { exit(1); }"
+  register: composer_verify
+  failed_when: composer_verify.rc != 0
+
+- name: Install Composer 2.8.3 globally
+  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.8.3
+  args:
+    creates: /usr/local/bin/composer
+
+- name: Create Drupal project directory
+  file:
+    path: /var/www/html/drupal
+    state: directory
+    mode: '0755'
+
+- name: Install Drupal 10.3.8 using Composer
+  composer:
+    command: create-project
+    arguments: "drupal/recommended-project:10.3.8 /var/www/html/drupal --no-interaction"
+    working_dir: /var/www/html
+  become: yes
+
+- name: Clean up Composer installer files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/composer-setup.php
+    - /tmp/composer-setup.sig
+
+# Create Composer cache directory with correct permissions
+- name: Create Composer cache directory
+  file:
+    path: /var/www/.cache/composer
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
+# Ensure Composer cache directory and subdirectories are writable
+- name: Ensure Composer cache directory is writable
+  file:
+    path: /var/www/.cache/composer/repo/https---repo.packagist.org
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
+# Create target directory with correct permissions
+- name: Create Drupal directory
+  file:
+    path: /var/www/drupal
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+# Install Drupal using Composer
+- name: Create Drupal project using Composer
+  composer:
+    command: create-project
+    arguments: "drupal/recommended-project {{ drupal_docroot | default('/var/www/drupal') }} --stability stable --no-interaction"
+    working_dir: /var/www/drupal
+  become: yes
+  become_user: www-data
+
+- name: Create files directory
+  file:
+    path: /var/www/drupal/web/sites/default/files
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Copy default settings file
+  copy:
+    src: /var/www/drupal/web/sites/default/default.settings.php
+    dest: /var/www/drupal/web/sites/default/settings.php
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Append trusted host patterns to settings.php
+  blockinfile:
+    path: /var/www/drupal/web/sites/default/settings.php
+    block: "{{ lookup('template', 'settings-append.php.j2') }}"
+    marker: "// {mark} ANSIBLE MANAGED BLOCK - TRUSTED HOST PATTERNS"
+
+# Install Drush last
+- name: Install Drush 13.3.3 via Composer
+  composer:
+    command: require
+    arguments: "drush/drush:13.3.3"
+    working_dir: /var/www/drupal
+  become: yes
+  become_user: www-data
