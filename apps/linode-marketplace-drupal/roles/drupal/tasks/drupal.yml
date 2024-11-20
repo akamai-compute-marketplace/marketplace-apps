@@ -73,9 +73,15 @@
 - name: Append trusted host patterns to settings.php
   lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
-    line: "{{ lookup('template', 'settings-append.php.j2') }}"
+    line: |
+      // Trusted host patterns
+      $settings['trusted_host_patterns'] = [
+        '^localhost$',
+        '^127\.0\.0\.1$',
+        '^\[::1\]$',
+        '^{{ _domain | replace('.', '\.') }}$',
+      ];
 
-# Install Drush last
 - name: Install Drush 13.3.3 via Composer
   composer:
     command: require
