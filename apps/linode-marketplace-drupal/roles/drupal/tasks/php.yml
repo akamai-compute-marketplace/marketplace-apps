@@ -41,12 +41,13 @@
     owner: www-data
     group: www-data
     mode: '0755'
-
-- name: Configure PHP
-  copy:
-    src: php.ini
-    dest: /etc/php/8.3/apache2/php.ini
-    owner: root
-    group: root
-    mode: '0644'
   notify: restart apache
+
+# - name: Configure PHP
+#   copy:
+#     src: php.ini
+#     dest: /etc/php/8.3/apache2/php.ini
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   notify: restart apache
