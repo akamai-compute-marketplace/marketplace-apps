@@ -1,13 +1,4 @@
 ---
-# - name: Copy MariaDB configuration
-#   copy:
-#     src: mariadb.cnf
-#     dest: /etc/mysql/mariadb.conf.d/50-server.cnf
-#     owner: root
-#     group: root
-#     mode: '0644'
-#   notify: restart mariadb
-
 - name: Ensure MariaDB is started
   service:
     name: mariadb
