@@ -3,11 +3,11 @@
 
 - name: set facts for splunk
   set_fact:
-    splunk_version: 9.1.2
+    splunk_version: 9.3.2
 
 - name: installing splunk {{ splunk_version }}
   apt:
-    deb: "https://download.splunk.com/products/splunk/releases/{{ splunk_version }}/linux/splunk-{{ splunk_version }}-b6b9c8185839-linux-2.6-amd64.deb"
+    deb: "https://download.splunk.com/products/splunk/releases/{{ splunk_version }}/linux/splunk-{{ splunk_version }}-d8bb32809498-linux-2.6-amd64.deb"
     state: present
   
 - name: starting splunk {{ splunk_version }}
