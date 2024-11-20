@@ -8,7 +8,7 @@ Valkey natively supports a broad collection of datatypes, and supports extensibi
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Valkey    | 7.2.5    | Open-Source KV Database |
+| Valkey    | 8.0.1    | Open-Source KV Database |
 
 **Supported Distributions:**
 
