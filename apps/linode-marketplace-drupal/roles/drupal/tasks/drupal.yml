@@ -71,10 +71,9 @@
     mode: '0644'
 
 - name: Append trusted host patterns to settings.php
-  blockinfile:
+  lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
-    block: "{{ lookup('template', 'settings-append.php.j2') }}"
-    marker: "// {mark} ANSIBLE MANAGED BLOCK - TRUSTED HOST PATTERNS"
+    line: "{{ lookup('template', 'settings-append.php.j2') }}"
 
 # Install Drush last
 - name: Install Drush 13.3.3 via Composer

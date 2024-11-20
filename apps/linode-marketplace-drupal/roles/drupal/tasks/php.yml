@@ -33,8 +33,6 @@
       - php8.3-zip
       - php8.3-bcmath
       - libapache2-mod-php8.3
-      # - php8.3-fpm
-
 
 - name: Create PHP log directory
   file:
