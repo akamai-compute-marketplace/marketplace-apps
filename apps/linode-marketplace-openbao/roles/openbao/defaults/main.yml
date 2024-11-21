@@ -2,8 +2,8 @@
 ## OpenBao is still in active development, so the openbao_download_link and the openbao_deb_file will need to actively be monitored for latest released here https://openbao.org/downloads/
 
 # global vars
-openbao_version: v2.0.0
-openbao_download_link: https://github.com/openbao/openbao/releases/download/v2.0.0/bao_2.0.0_linux_amd64.deb
-openbao_deb_file: /tmp/bao_2.0.0_linux_amd64.deb
+openbao_version: v2.0.3
+openbao_download_link: https://github.com/openbao/openbao/releases/download/v2.0.3/bao_2.0.3_linux_amd64.deb
+openbao_deb_file: /tmp/bao_2.0.3_linux_amd64.deb
 openbao_config: /etc/openbao/openbao.hcl
 openbao_ssl_path: /opt/openbao/tls

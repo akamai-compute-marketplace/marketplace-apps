@@ -18,7 +18,7 @@ fi
 #<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
 ## Jenkins
-#<UDF name="jenkins_version" label="Jenkins Version" oneOf="2.452" default="2.452" >
+#<UDF name="jenkins_version" label="Jenkins Version" oneOf="2.479" default="2.479" >
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
