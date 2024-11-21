@@ -61,27 +61,6 @@
     group: www-data
     mode: 0644
 
-- name: dropping sample page
-  blockinfile:
-    path: "{{ document_root.path }}/index.html"
-    create: yes
-    owner: www-data
-    group: www-data
-    mode: 0644
-    block: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <style>
-      body {background-color: #32363B;}
-      h1   {color: #00B050;}
-      </style>
-      </head>
-      <body>
-      <h1>LEMP Stack: Powered by Linode Marketplace</h1>
-      </body>
-      </html>
-
 - name: moving vhost_default template
   template:
     src: templates/vhost.conf.j2
