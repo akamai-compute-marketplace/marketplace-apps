@@ -9,4 +9,6 @@ polling==0.3.2
 ansible-specdoc==0.0.14
 pyyaml==6.0.1
 dnspython==2.2.1
+pexpect==4.8
+passlib==1.7.4
 
