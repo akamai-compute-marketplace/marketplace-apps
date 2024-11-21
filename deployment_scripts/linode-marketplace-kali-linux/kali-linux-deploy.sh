@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
-trap "cleanup $? $LINENO" EXIT
+if [ "${DEBUG}" == "NO" ]; then
+  trap "cleanup $? $LINENO" EXIT
+fi
 
 ## Kali
 #<UDF name="everything" label="Would you like to Install the Kali Everything Package?" oneOf="Yes,No" default="Yes">
@@ -73,39 +75,36 @@ EOF
 
 function run {
   # Set debconf to automatically handle service restarts
-  echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
-  echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
+  # echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
+  # echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
   # install dependencies
-  DEBIAN_FRONTEND=noninteractive apt-get update
-  DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-    git \
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-full \
-    ansible
+  # DEBIAN_FRONTEND=noninteractive apt-get update
+  # DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+  #   git \
+  #   python3 \
+  #   python3-pip \
+  #   python3-venv \
+  #   python3-full \
+  #   ansible
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # Create and activate virtual environment
+    # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
+  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
-  
-  # Install Python packages in the virtual environment
-  python3 -m pip install --upgrade pip
-  # Use --break-system-packages since we're in a virtual env
-  python3 -m pip install -r requirements.txt --break-system-packages
-  
-  # Install Ansible collections
+  pip install pip --upgrade
+  pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   
   # populate group_vars
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
+  
 }
 
 function installation_complete {
@@ -113,4 +112,6 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup
+if [ "${DEBUG}" == "NO" ]; then
+  cleanup
+fi
