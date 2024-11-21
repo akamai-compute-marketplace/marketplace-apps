@@ -11,7 +11,7 @@
 - name: move index.html template
   template:
     src: templates/index.html
-    dest: "/etc/apache2/sites-available/{{ _domain }}.conf"
+    dest: "{{ document_root.path }}/index.html"
     owner: www-data
     group: www-data
     mode: 0644

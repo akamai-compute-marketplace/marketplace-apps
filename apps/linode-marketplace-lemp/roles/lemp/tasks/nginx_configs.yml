@@ -53,6 +53,14 @@
     group: www-data
     mode: '0644'
 
+- name: moving index.html template
+  template:
+    src: templates/index.html
+    dest: "{{ document_root.path }}/index.html"
+    owner: www-data
+    group: www-data
+    mode: 0644
+
 - name: dropping sample page
   blockinfile:
     path: "{{ document_root.path }}/index.html"
