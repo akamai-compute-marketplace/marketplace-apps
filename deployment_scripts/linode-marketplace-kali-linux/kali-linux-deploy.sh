@@ -74,18 +74,21 @@ EOF
 }
 
 function run {
+  # install dependancies
+  # apt-get update
+  # apt-get install -y git python3 python3-pip
   # Set debconf to automatically handle service restarts
-  # echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
-  # echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
+  echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
+  echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
   # install dependencies
-  # DEBIAN_FRONTEND=noninteractive apt-get update
-  # DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
-  #   git \
-  #   python3 \
-  #   python3-pip \
-  #   python3-venv \
-  #   python3-full \
-  #   ansible
+  DEBIAN_FRONTEND=noninteractive apt-get update
+  DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    python3-full \
+    ansible
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
   # for a single testing branch

@@ -43,8 +43,8 @@
     enabled: yes
     daemon_reload: yes
 
-- name: Create MOTD with VNC instructions
-  template:
-    src: motd.j2
-    dest: /etc/motd
-    mode: '0644'
+# - name: Create MOTD with VNC instructions
+#   template:
+#     src: motd.j2
+#     dest: /etc/motd
+#     mode: '0644'
