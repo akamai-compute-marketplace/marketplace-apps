@@ -17,10 +17,6 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
 
-- name: Debug kali_package variable
-  debug:
-    var: kali_package
-
 - name: Fix broken packages
   apt:
     clean: true
