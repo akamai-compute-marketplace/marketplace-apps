@@ -45,7 +45,7 @@ function udf {
   # Other variables
   username: "${USER_NAME}"
   disable_root: "{{ '${DISABLE_ROOT}' == 'Yes' }}"
-  default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}"
+  default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 EOF
 }
 
