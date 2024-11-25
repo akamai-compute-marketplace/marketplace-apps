@@ -15,13 +15,6 @@ fi
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is required for creating DNS records." default="">
-#<UDF name="subdomain" label="The subdomain for the Linode's DNS record (Requires API token)" default="">
-#<UDF name="domain" label="The domain for the Linode's DNS record (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for SOA records (Requires API token)" default="">
-
-
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -52,25 +45,8 @@ function udf {
   # Other variables
   username: "${USER_NAME}"
   disable_root: "{{ '${DISABLE_ROOT}' == 'Yes' }}"
-  token_password: "${TOKEN_PASSWORD}"
-  subdomain: "${SUBDOMAIN}"
-  soa_email_address: "${SOA_EMAIL_ADDRESS}"
+  default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}"
 EOF
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
-  fi
-
-  if [[ -z ${SUBDOMAIN} ]]; then
-    echo "subdomain: www" >> ${group_vars};
-  fi
-
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
 }
 
 function run {
