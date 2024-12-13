@@ -1,0 +1,4 @@
+--- 
+- name: Configure SSL with certbot
+  import_role:
+    name: certbot_ssl
