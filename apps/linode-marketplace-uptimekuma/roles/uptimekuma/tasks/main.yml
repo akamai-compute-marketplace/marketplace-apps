@@ -3,7 +3,7 @@
   docker_volume:
     name: "uptime-kuma"
 
-- name: run postgres docker container
+- name: run uptimekuma docker container
   docker_container:
     name: uptime-kuma
     image: louislam/uptime-kuma:1
@@ -12,7 +12,7 @@
     volumes:
       - "uptime-kuma:/app/data"
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
 
 # Nginx
 - name: install nginx
