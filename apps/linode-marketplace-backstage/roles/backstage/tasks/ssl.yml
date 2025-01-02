@@ -2,7 +2,8 @@
 # obtain ssl certs
 
 - name: get ssl certificates for "{{ _domain }}"
-  import_role: cetbot_ssl
+  import_role: 
+    name: cetbot_ssl
 
 - name: update cert directory permissions
   file:
