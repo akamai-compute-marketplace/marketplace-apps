@@ -1,0 +1,22 @@
+---
+# main
+
+# done
+- name: install required packages
+  import_tasks: install.yml
+
+# done
+- name: configure postgresql access
+  import_tasks: postgres.yml
+
+# done
+- name: configure backstage app
+  import_tasks: backstage.yml
+
+# done
+- name: install ssl certs
+  import_tasks: ssl.yml  
+
+# done
+- name: configure PM2 process manager
+  import_tasks: pm2.yml

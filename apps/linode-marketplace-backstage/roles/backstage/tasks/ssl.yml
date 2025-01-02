@@ -1,0 +1,45 @@
+---
+# obtain ssl certs
+
+- name: get ssl certificates for "{{ _domain }}"
+  import_role: cetbot_ssl
+
+- name: update cert directory permissions
+  file:
+    path: "{{ item }}"
+    mode: 0755
+    recurse: true
+    owner: '{{ username }}'
+    group: '{{ username }}'
+  loop:
+    - '/etc/letsencrypt/live/{{ _domain }}' 
+    - '/etc/letsencrypt/archive/{{ _domain }}'
+
+- name: update private key permission
+  file:
+    path: '/etc/letsencrypt/archive/{{ _domain }}/privkey1.pem'
+    mode: 0640 
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: create certs directory
+  file:
+    path: '{{ app_directory }}/certs'
+    state: directory
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: 0755
+
+- name: symlinking certficates to certs directory
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+    state: link
+  loop:
+    - {src: '/etc/letsencrypt/live/{{ _domain }}/fullchain.pem', 
+      dest: '{{ app_directory }}/certs/fullchain.pem'}
+    - {src: '/etc/letsencrypt/live/{{ _domain }}/privkey.pem', 
+      dest: '{{ app_directory }}/certs/privkey.pem'}

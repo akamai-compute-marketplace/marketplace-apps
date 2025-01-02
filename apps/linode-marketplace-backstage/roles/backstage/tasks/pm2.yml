@@ -1,0 +1,39 @@
+---
+# PM2 process manager
+
+- name: install pm2 globally
+  community.general.npm:
+    name: pm2
+    global: true
+
+- name: start backstage frontend
+  command: pm2 start "yarn start" --name backstage-frontend
+  args:
+    chdir: '{{ app_directory }}'
+  become: true
+  become_method: su
+  become_user: '{{ username }}'
+
+- name: start backstage backend
+  command: pm2 start "yarn start-backend" --name backstage-backend
+  args:
+    chdir: '{{ app_directory }}'
+  become: true
+  become_method: su
+  become_user: '{{ username }}'    
+
+- name: starting application on boot
+  command: pm2 startup
+  args:
+    chdir: '{{ app_directory }}'
+  become: true
+  become_method: su
+  become_user: '{{ username }}'    
+
+- name: saving application state
+  command: pm2 save
+  args:
+    chdir: '{{ app_directory }}'
+  become: true
+  become_method: su
+  become_user: '{{ username }}'

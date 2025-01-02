@@ -1,0 +1,5 @@
+---
+# default variables
+
+username_directory: '/home/{{ username }}'
+app_directory: '{{ username_directory }}/{{app_name }}'
