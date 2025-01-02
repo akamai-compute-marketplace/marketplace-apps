@@ -46,7 +46,8 @@
     state: absent
 
 - name: install docker latest
-  import_role: docker.yml
+  import_role: 
+    name: docker
 
 - name: stop docker service
   systemd:
