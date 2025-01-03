@@ -20,3 +20,6 @@
 # done
 - name: configure PM2 process manager
   import_tasks: pm2.yml
+
+- name: clean up
+  import_tasks: cleanup.yml

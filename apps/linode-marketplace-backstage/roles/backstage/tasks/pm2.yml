@@ -7,33 +7,40 @@
     global: true
 
 - name: start backstage frontend
-  command: pm2 start "yarn start" --name backstage-frontend
+  shell:
+    cmd: |
+      source ../.nvmvars
+      pm2 start "yarn start" --name backstage-frontend
   args:
     chdir: '{{ app_directory }}'
+    executable: /bin/bash
   become: true
-  become_method: su
+  become_method: sudo
+  become_flags: '-i'
   become_user: '{{ username }}'
 
 - name: start backstage backend
-  command: pm2 start "yarn start-backend" --name backstage-backend
+  shell:
+    cmd: |
+      source ../.nvmvars
+      pm2 start "yarn start-backend" --name backstage-backend
   args:
     chdir: '{{ app_directory }}'
+    executable: /bin/bash
   become: true
-  become_method: su
-  become_user: '{{ username }}'    
-
-- name: starting application on boot
-  command: pm2 startup
-  args:
-    chdir: '{{ app_directory }}'
-  become: true
-  become_method: su
-  become_user: '{{ username }}'    
+  become_method: sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'   
 
 - name: saving application state
-  command: pm2 save
+  shell:
+    cmd: |
+      source ../.nvmvars
+      pm2 save
   args:
     chdir: '{{ app_directory }}'
+    executable: /bin/bash
   become: true
-  become_method: su
+  become_method: sudo
+  become_flags: '-i'
   become_user: '{{ username }}'

@@ -2,7 +2,7 @@
 # install latest docker community edition
 
 - name: set distro release codename
-  set_facts:
+  set_fact:
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
 
 - name: remove conflicting packages
@@ -31,7 +31,6 @@
 - name: add docker gpg key
   apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
-    keyring: /etc/apt/keyrings/docker.asc
     state: present
 
 - name: add docker repository

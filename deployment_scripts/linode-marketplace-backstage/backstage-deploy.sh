@@ -90,7 +90,7 @@ EOF
     echo "github_oauth_client_id: ${GITHUB_OAUTH_CLIENT_ID}" >> ${group_vars}
   fi
 
-  if [[ -n ${GITHUB_CLIENT_SECRET} ]]; then
+  if [[ -n ${GITHUB_OAUTH_CLIENT_SECRET} ]]; then
     echo "github_oauth_client_secret: ${GITHUB_CLIENT_SECRET}" >> ${group_vars}
   fi
 
@@ -99,7 +99,7 @@ EOF
   fi
 
   if [[ -n ${BACKSTAGE_ORGNAME} ]]; then
-    echo "backstage_orgname: ${BACKSTAGE_ORGNAME}" >> ${group_vars}
+    echo "backstage_orgname: '${BACKSTAGE_ORGNAME}'" >> ${group_vars}
   fi
 
   if [[ -n ${GITHUB_PAT} ]]; then

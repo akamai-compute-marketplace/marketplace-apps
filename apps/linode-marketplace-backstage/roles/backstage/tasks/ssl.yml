@@ -1,11 +1,37 @@
 ---
 # obtain ssl certs
 
-- name: get ssl certificates for "{{ _domain }}"
-  import_role: 
-    name: cetbot_ssl
+- name: open http port for ACME
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
 
-- name: update cert directory permissions
+- name: get ssl certificates for backstage
+  import_role: 
+    name: certbot_ssl
+
+- name: closing http port
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+    delete: true
+
+- name: update directory permissions (1/2)
+  file:
+    path: "{{ item }}"
+    mode: 0755
+    #recurse: true
+    #owner: '{{ username }}'
+    #group: '{{ username }}'
+  loop:
+    #- '/etc/letsencrypt/live/{{ _domain }}' 
+    #- '/etc/letsencrypt/archive/{{ _domain }}'
+    - '/etc/letsencrypt/live' 
+    - '/etc/letsencrypt/archive'
+
+- name: update directory permissions (2/2)
   file:
     path: "{{ item }}"
     mode: 0755
@@ -16,14 +42,14 @@
     - '/etc/letsencrypt/live/{{ _domain }}' 
     - '/etc/letsencrypt/archive/{{ _domain }}'
 
-- name: update private key permission
-  file:
-    path: '/etc/letsencrypt/archive/{{ _domain }}/privkey1.pem'
-    mode: 0640 
-    owner: '{{ username }}'
-    group: '{{ username }}'
+#- name: update private key permission
+#  file:
+#    path: '/etc/letsencrypt/archive/{{ _domain }}/privkey1.pem'
+#    mode: 0640 
+#    owner: '{{ username }}'
+#    group: '{{ username }}'
 
-- name: create certs directory
+- name: create app certs directory
   file:
     path: '{{ app_directory }}/certs'
     state: directory
