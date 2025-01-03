@@ -40,7 +40,6 @@
   become_flags: '-i'
   become_user: '{{ username }}'
 
-
 - name: set yarn version
   shell:
     cmd: |
@@ -73,7 +72,7 @@
       source ../.nvmvars
       yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
   args:
-    chdir: '{{ username_directory }}'
+    chdir: '{{ app_directory }}'
     executable: /bin/bash
   become: true
   become_method: sudo
