@@ -22,12 +22,7 @@
   file:
     path: "{{ item }}"
     mode: 0755
-    #recurse: true
-    #owner: '{{ username }}'
-    #group: '{{ username }}'
   loop:
-    #- '/etc/letsencrypt/live/{{ _domain }}' 
-    #- '/etc/letsencrypt/archive/{{ _domain }}'
     - '/etc/letsencrypt/live' 
     - '/etc/letsencrypt/archive'
 
@@ -41,13 +36,6 @@
   loop:
     - '/etc/letsencrypt/live/{{ _domain }}' 
     - '/etc/letsencrypt/archive/{{ _domain }}'
-
-#- name: update private key permission
-#  file:
-#    path: '/etc/letsencrypt/archive/{{ _domain }}/privkey1.pem'
-#    mode: 0640 
-#    owner: '{{ username }}'
-#    group: '{{ username }}'
 
 - name: create app certs directory
   file:

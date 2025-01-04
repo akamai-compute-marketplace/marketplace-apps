@@ -91,7 +91,7 @@ EOF
   fi
 
   if [[ -n ${GITHUB_OAUTH_CLIENT_SECRET} ]]; then
-    echo "github_oauth_client_secret: ${GITHUB_CLIENT_SECRET}" >> ${group_vars}
+    echo "github_oauth_client_secret: ${GITHUB_OAUTH_CLIENT_SECRET}" >> ${group_vars}
   fi
 
   if [[ -n ${GITHUB_USERNAME} ]]; then

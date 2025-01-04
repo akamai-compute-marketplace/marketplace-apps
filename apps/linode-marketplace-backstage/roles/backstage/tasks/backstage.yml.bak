@@ -14,28 +14,50 @@
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-- name: configure backstage
-  block:
-    - name: install lts/iron
-      shell: 
-        cmd: |
-          source .nvmvars
-          nvm install lts/iron
-    - name: enable corepack
-      shell:
-        cmd: |
-          source .nvmvars
-          corepack enable
-    - name: set yarn version
-      shell:
-        cmd: |
-          source .nvmvars
-          yarn set version 4.4.1
-    - name: create {{ app_name }} backstage app
-      shell: 
-        cmd: |
-          source .nvmvars
-          echo {{ app_name }} | npx @backstage/create-app@latest    
+- name: install lts/iron
+  shell: 
+    cmd: |
+      source .nvmvars
+      nvm install lts/iron
+  args:
+    chdir: '{{ username_directory }}'
+    executable: /bin/bash
+  become: true
+  become_method: sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'
+
+- name: enable corepack
+  shell:
+    cmd: |
+      source .nvmvars
+      corepack enable
+  args:
+    chdir: '{{ username_directory }}'
+    executable: /bin/bash
+  become: true
+  become_method: sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'
+
+- name: set yarn version
+  shell:
+    cmd: |
+      source .nvmvars
+      yarn set version 4.4.1
+  args:
+    chdir: '{{ username_directory }}'
+    executable: /bin/bash
+  become: true
+  become_method: sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'
+
+- name: create {{ app_name }} backstage app
+  shell: 
+    cmd: |
+      source .nvmvars
+      echo {{ app_name }} | npx @backstage/create-app@latest
   args:
     chdir: '{{ username_directory }}'
     executable: /bin/bash
