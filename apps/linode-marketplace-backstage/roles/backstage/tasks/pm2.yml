@@ -52,21 +52,25 @@
         cmd: |
           source ../.nvmvars
           pm2 start "yarn start" --name backstage-frontend
-
+      args:
+        chdir: '{{ app_directory }}'
+        executable: /bin/bash
     - name: start backstage backend
       shell:
         cmd: |
           source ../.nvmvars
           pm2 start "yarn start-backend" --name backstage-backend
-
+      args:
+        chdir: '{{ app_directory }}'
+        executable: /bin/bash
     - name: saving application state
       shell:
         cmd: |
           source ../.nvmvars
           pm2 save  
-  args:
-    chdir: '{{ app_directory }}'
-    executable: /bin/bash
+      args:
+        chdir: '{{ app_directory }}'
+        executable: /bin/bash
   become: true
   become_method: sudo
   become_flags: '-i'

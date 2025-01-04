@@ -21,37 +21,41 @@
         cmd: |
           source .nvmvars
           nvm install lts/iron
+      args:
+        chdir: '{{ username_directory }}'
+        executable: /bin/bash
     - name: enable corepack
       shell:
         cmd: |
           source .nvmvars
           corepack enable
+      args:
+        chdir: '{{ username_directory }}'
+        executable: /bin/bash
     - name: set yarn version
       shell:
         cmd: |
           source .nvmvars
           yarn set version 4.4.1
+      args:
+        chdir: '{{ username_directory }}'
+        executable: /bin/bash
     - name: create {{ app_name }} backstage app
       shell: 
         cmd: |
           source .nvmvars
           echo {{ app_name }} | npx @backstage/create-app@latest    
-  args:
-    chdir: '{{ username_directory }}'
-    executable: /bin/bash
-  become: true
-  become_method: sudo
-  become_flags: '-i'
-  become_user: '{{ username }}'
-
-- name: add auth provider to backend
-  shell:
-    cmd: |
-      source ../.nvmvars
-      yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
-  args:
-    chdir: '{{ app_directory }}'
-    executable: /bin/bash
+      args:
+        chdir: '{{ username_directory }}'
+        executable: /bin/bash
+    - name: add auth provider to backend
+      shell:
+        cmd: |
+          source ../.nvmvars
+          yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
+      args:
+        chdir: '{{ app_directory }}'
+        executable: /bin/bash
   become: true
   become_method: sudo
   become_flags: '-i'

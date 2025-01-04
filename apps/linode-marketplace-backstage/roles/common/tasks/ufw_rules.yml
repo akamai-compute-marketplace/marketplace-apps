@@ -17,7 +17,6 @@
         proto: tcp
         src: '{{ item }}'
       loop: '{{ allowed_ips }}'
-
     - name: Allow access to tcp port 7007
       community.general.ufw:
         rule: allow
@@ -36,7 +35,6 @@
         rule: allow
         port: '3000'
         proto: tcp
-
     - name: Allow access to tcp port 7007
       community.general.ufw:
         rule: allow
