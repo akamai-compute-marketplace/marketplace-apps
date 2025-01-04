@@ -79,7 +79,7 @@ EOF
   if [[ -z ${ALLOWED_IPS} ]]; then
     echo "[info] No IP address provided for whitelisting"
   else
-    echo "allowed_ips: ${ALLOWED_IPS}" >> ${group_vars}
+    echo "allowed_ips: [${ALLOWED_IPS}]" >> ${group_vars}
   fi
 
   if [[ -n ${APP_NAME} ]]; then
