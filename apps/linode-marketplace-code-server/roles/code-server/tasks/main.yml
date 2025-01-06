@@ -42,9 +42,9 @@
 
 - name: secure code-server with htaccess
   htpasswd:
-    path: '/etc/nginx/.codeserver_htpasswd'
+    path: '/etc/nginx/.code_server_htpasswd'
     name: codeserver
-    password: '{{ codeserver_htpasswd }}'
+    password: '{{ code_server_htpasswd }}'
     state: present
     create: true  
 
