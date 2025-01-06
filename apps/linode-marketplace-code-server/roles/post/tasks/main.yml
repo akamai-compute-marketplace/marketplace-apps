@@ -14,4 +14,4 @@
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
         Code-Server Login: codeserver
-        Code-Server Password: {{ codeserver_htpasswd }}
+        Code-Server Password: {{ code_server_htpasswd }}
