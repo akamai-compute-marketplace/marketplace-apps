@@ -54,8 +54,8 @@
     mode: '0644'
 
 - name: moving index.html template
-  template:
-    src: templates/index.html
+  copy:
+    src: files/index.html
     dest: "{{ document_root.path }}/index.html"
     owner: www-data
     group: www-data
