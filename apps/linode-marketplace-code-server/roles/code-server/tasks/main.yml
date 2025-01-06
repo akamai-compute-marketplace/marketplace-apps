@@ -13,10 +13,11 @@
   get_url:
     url: "{{ code_download_link }}"
     dest: "/tmp/code-server_{{ code_server_version }}_amd64.deb"
+  register: code_server_deb
 
 - name: install code-server .deb package
   apt:
-    deb: "/tmp/code-server_{{ code_server_version }}_amd64.deb"
+    deb: "{{ code_server_deb.dst }}"
     state: present
 
 - name: enable and start code-server service
