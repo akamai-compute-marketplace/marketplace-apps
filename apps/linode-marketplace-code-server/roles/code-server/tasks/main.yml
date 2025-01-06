@@ -19,6 +19,12 @@
     deb: "/tmp/code-server_{{ code_server_version }}_amd64.deb"
     state: present
 
+- name: enable and start code-server service
+  systemd:
+    name: "code-server@{{ username }}"
+    enabled: yes
+    state: started
+
 - name: code-server config file 
   template:
     src: templates/config.yaml.j2
@@ -26,12 +32,6 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0644'
-
-- name: enable and start code-server service
-  systemd:
-    name: "code-server@{{ username }}"
-    enabled: yes
-    state: started
 
 # Nginx
 - name: install nginx
@@ -61,6 +61,13 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
+
+# restart code-server service
+- name: restart code-server service
+  systemd:
+    name: "code-server@{{ username }}"
+    enabled: yes
+    state: restarted
 
 
 
