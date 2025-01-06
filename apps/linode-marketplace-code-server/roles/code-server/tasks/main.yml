@@ -23,8 +23,8 @@
   template:
     src: templates/config.yaml.j2
     dest: "/home/{{ username }}/.config/code-server/config.yaml"  
-    owner: {{ username }}
-    group: {{ username }}
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: '0644'
 
 - name: enable and start code-server service
