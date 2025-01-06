@@ -11,7 +11,7 @@
 # code-server
 - name: download code-server .deb package
   get_url:
-    url: "{{ code_download_link }}"
+    url: "{{ code_server_download_link }}"
     dest: "/tmp/code-server_{{ code_server_version }}_amd64.deb"
   register: code_server_deb
 
