@@ -72,7 +72,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 68890 \
+  --stackscript_id 688903 \
   --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "code_server_version": "${CODE_SERVER_VERSION}"} \
   --region us-east \
   --type g6-standard-2 \
