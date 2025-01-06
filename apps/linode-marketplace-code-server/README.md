@@ -1,14 +1,12 @@
-# Linode BeEF Deployment One-Click APP
+# Linode Code-Server Deployment One-Click APP
 
-Amid growing concerns about web-borne attacks against clients, including mobile clients, BeEF allows the professional penetration tester to assess the actual security posture of a target environment by using client-side attack vectors.
+Visual Studio Code acts as a portable development environment to speed up quality assurance, downloads, and more. The optional IntelliSense feature performs word-based completions for many programming languages out-of-the-box, and even more available as extensions. Use a range of flexible extensions to add new languages and connect to the services you’re already using.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| BeEF    | Latest    | penetration testing tool that focuses on the web browser |
-| Ruby    | Latest    | A dynamic, open source programming language with a focus on simplicity and productivity |
-
+| code-server    | v4.96.1    | VSCode in a browser |
 
 **Supported Distributions:**
 
@@ -45,9 +43,10 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2404",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 913277,
+      "stackscript_id": 688903,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "code_server_version": "${CODE_SERVER_VERSION}"
       },
       "authorized_users": [
         "myUser",
@@ -73,8 +72,8 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 913277 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"} \
+  --stackscript_id 68890 \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "code_server_version": "${CODE_SERVER_VERSION}"} \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
