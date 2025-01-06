@@ -45,7 +45,7 @@
     src: templates/nginx.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}"  
 
-- name: secure prometheus with htaccess
+- name: secure code-server with htaccess
   htpasswd:
     path: '/etc/nginx/.codeserver_htpasswd'
     name: codeserver
