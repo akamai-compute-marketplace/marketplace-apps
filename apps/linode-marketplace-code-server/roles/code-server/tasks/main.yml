@@ -34,12 +34,6 @@
     group: "{{ username }}"
     mode: '0644'
 
-# Nginx
-- name: install nginx
-  apt:
-    pkg:
-      - nginx
-    state: present
 
 - name: config file setup
   template:
