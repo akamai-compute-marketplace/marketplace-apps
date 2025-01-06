@@ -13,5 +13,5 @@
       content: |
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
-        Code-Server Login: {{ username }}
-        Code-Server Password: {{ codepassword }}
+        Code-Server Login: codeserver
+        Code-Server Password: {{ codeserver_htpasswd }}

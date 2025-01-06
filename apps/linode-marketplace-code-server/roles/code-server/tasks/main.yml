@@ -43,7 +43,15 @@
 - name: config file setup
   template:
     src: templates/nginx.conf.j2
-    dest: "/etc/nginx/sites-available/{{ _domain }}"    
+    dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: secure prometheus with htaccess
+  htpasswd:
+    path: '/etc/nginx/.codeserver_htpasswd'
+    name: codeserver
+    password: '{{ codeserver_htpasswd }}'
+    state: present
+    create: true  
 
 - name: create a symbolic link for the nginx configuration
   file:

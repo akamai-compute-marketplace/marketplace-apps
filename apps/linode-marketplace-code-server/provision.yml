@@ -16,4 +16,4 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          codepassword: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          codeserver_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
