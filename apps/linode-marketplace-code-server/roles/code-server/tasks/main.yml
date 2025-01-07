@@ -26,6 +26,11 @@
     enabled: yes
     state: started
 
+- name: wait for config.yaml to exist
+  wait_for:
+    path: /home/{{ username }}/.config/code-server/config.yaml
+    timeout: 120
+
 - name: code-server config file 
   template:
     src: templates/config.yaml.j2
@@ -33,7 +38,6 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0644'
-
 
 - name: config file setup
   template:
