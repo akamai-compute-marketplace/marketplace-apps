@@ -17,7 +17,7 @@
 
 - name: install code-server .deb package
   apt:
-    deb: "{{ code_server_deb.dst }}"
+    deb: "{{ code_server_deb.dest }}"
     state: present
 
 - name: enable and start code-server service
