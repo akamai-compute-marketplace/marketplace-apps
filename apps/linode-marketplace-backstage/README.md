@@ -33,6 +33,17 @@ Customers can choose to the deploy the Backstage app through the Linode Marketpl
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
 - ROOT_PASS
+- USERNAME
+- SOA_EMAIL_ADDRESS
+- SUBDOMAIN
+- DOMAIN
+- ALLOW_IPS
+- APP_NAME
+- GITHUB_OAUTH_CLIENT_ID
+- GITHUB_OAUTH_CLIENT_SECRET
+- GITHUB_USERNAME
+- GITHUB_PAT
+- BACKSTAGE_ORGNAME
 
 SHELL:
 ```
@@ -40,29 +51,46 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export SUBDOMAIN=backstage-app""
+export DOMAIN="example.com"
+export ALLOW_IPS=""
+export APP_NAME="backstage-app"
+export GITHUB_OAUTH_CLIENT_ID=""
+export GITHUB_OAUTH_CLIENT_SECRET=""
+export GITHUB_USERNAME=""
+export GITHUB_PAT=""
+export BACKSTAGE_ORGNAME="Akamai Technologies"
 
 curl -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TOKEN}" \
-    -X POST -d '{
-      "backups_enabled": true,
-      "swap_size": 512,
-      "image": "linode/ubuntu2404",
-      "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 913277,
-      "stackscript_data": {
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
-      },
-      "authorized_users": [
-        "myUser",
-        "secondaryUser"
-      ],
-      "booted": true,
-      "label": "linode123",
-      "type": "g6-standard-2",
-      "region": "us-east",
-      "group": "Linode-Group"
-    }' \
-https://api.linode.com/v4/linode/instances
+-H "Authorization: Bearer $TOKEN" \
+-X POST -d '{
+    "image": "linode/ubuntu24.04",
+    "private_ip": true,
+    "region": "us-mia",
+    "stackscript_data": {
+        "user_name": "${USERNAME}",
+        "disable_root": "No",
+        "token_password": "${TOKEN}",
+        "subdomain": "${SUBDOMAIN}",
+        "domain": "${DOMAIN}",
+        "soa_email_address": "${SOA_EMAIL_ADDRESS}",
+        "allowed_ips": "${ALLOW_IPS}",
+        "app_name": "${APP_NAME}",
+        "github_oauth_client_id": "${GITHUB_OAUTH_CLIENT_ID}",
+        "github_oauth_client_secret": "$GITHUB_OAUTH_CLIENT_SECRET",
+        "github_username": "$GITHUB_USERNAME",
+        "backstage_orgname": "${BACKSTAGE_ORGNAME}",
+        "github_pat": "${GITHUB_PAT}"
+    },
+    "stackscript_id": 000000,
+    "type": "g6-dedicated-4",
+    "label": "backstage-server",
+    "root_pass": "${ROOT_PASS}",
+    "authorized_users": [
+        "user1"
+    ],
+    "disk_encryption": "enabled"
+}' https://api.linode.com/v4/linode/instances
 ```
 
 CLI:
@@ -70,22 +98,33 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
-export SOA_EMAIL_ADDRESS="email@domain.com"
+export SOA_EMAIL_ADDRESS="email@example.com"
+export SUBDOMAIN=backstage-app""
+export DOMAIN="example.com"
+export ALLOW_IPS=""
+export APP_NAME="backstage-app"
+export GITHUB_OAUTH_CLIENT_ID=""
+export GITHUB_OAUTH_CLIENT_SECRET=""
+export GITHUB_USERNAME=""
+export GITHUB_PAT=""
+export BACKSTAGE_ORGNAME="Akamai Technologies"
 
 linode-cli linodes create \
-  --label linode123 \
+  --image 'linode/ubuntu24.04' \
+  --private_ip true \
+  --region us-mia \
+  --stackscript_data '{"user_name": "{USERNAME}","disable_root":"No","token_password":"${TOKEN}","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","allowed_ips":"${ALLOW_IPS}","app_name":"${APP_NAME}","github_oauth_client_id":"${GITHUB_OAUTH_CLIENT_ID}","github_oauth_client_secret":"${GITHUB_OAUTH_CLIENT_SECRET}","github_username":"${GITHUB_USERNAME}","backstage_orgname":"${BACKSTAGE_ORGNAME}","github_pat":"${GITHUB_PAT}"}' \
+  --stackscript_id 000000 \
+  --type g6-dedicated-4 \
+  --label backstage-server \
   --root_pass ${ROOT_PASS} \
-  --booted true \
-  --stackscript_id 913277 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"} \
-  --region us-east \
-  --type g6-standard-2 \
-  --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
-  --authorized_users "myUser"
-  --authorized_users "secondaryUser"
+  --authorized_users user1 \
+  --disk_encryption enabled
 ```
 
 ## Resources
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
+- [Backstage - Getting Started](https://backstage.io/docs/getting-started/)
+- [Backstage - Create Github Oauth App](https://backstage.io/docs/getting-started/config/authentication/)
