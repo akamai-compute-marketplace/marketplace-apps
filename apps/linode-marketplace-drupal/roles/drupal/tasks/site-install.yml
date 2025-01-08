@@ -1,0 +1,62 @@
+---
+- name: Check if Drupal is already installed
+  command: /var/www/drupal/vendor/bin/drush status --field=bootstrap
+  args:
+    chdir: /var/www/drupal/web
+  register: drupal_status
+  changed_when: false
+  failed_when: false
+  become: yes
+  become_user: www-data
+
+- name: Install Drupal using Drush
+  command:
+    cmd: >
+      /var/www/drupal/vendor/bin/drush site:install standard
+      --db-url=mysql://drupal:{{ mysql_drupal_password }}@localhost/drupaldb
+      --site-name="{{ site_name }}"
+      --site-mail="{{ site_email }}"
+      --account-name="{{ admin_username }}"
+      --account-pass="{{ admin_password }}"
+      --account-mail="{{ site_email }}"
+      --locale="en"
+      --yes
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
+
+- name: Configure timezone
+  command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
+
+- name: Enable update module
+  command: /var/www/drupal/vendor/bin/drush pm:enable update -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
+
+- name: Configure update notifications
+  command: >
+    /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y &&
+    /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
+
+- name: Add trusted host pattern to settings.php
+  lineinfile:
+    path: /var/www/drupal/web/sites/default/settings.php
+    line: "$settings['trusted_host_patterns'][] = '^{{ _domain | replace('.', '\\.') }}$';"
+    insertafter: "^\\$settings\\['trusted_host_patterns'\\]"
+  become: yes
+  become_user: www-data 

@@ -17,6 +17,12 @@ fi
 ## Let's Encrypt Settings 
 #<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
+## Site Configuration Settings
+#<UDF name="site_name" label="Site name" default="My Drupal Site">
+#<UDF name="site_email" label="Site email address" example="admin@example.com">
+#<UDF name="admin_username" label="Site maintenance account username" default="admin">
+#<UDF name="admin_password" label="Site maintenance account password" example="A strong password">
+
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -39,6 +45,14 @@ function udf {
   username: ${USER_NAME}
   soa_email_address: ${SOA_EMAIL_ADDRESS}
   webserver_stack: lamp
+  
+  # drupal configuration
+  site_name: ${SITE_NAME}
+  site_email: ${SITE_EMAIL}
+  admin_username: ${ADMIN_USERNAME}
+  admin_password: ${ADMIN_PASSWORD}
+  site_language: "English"
+  site_timezone: "UTC"
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
