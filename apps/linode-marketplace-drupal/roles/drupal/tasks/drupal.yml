@@ -70,18 +70,6 @@
     group: www-data
     mode: '0644'
 
-- name: Append trusted host patterns to settings.php
-  lineinfile:
-    path: /var/www/drupal/web/sites/default/settings.php
-    line: |
-      // Trusted host patterns
-      $settings['trusted_host_patterns'] = [
-        '^localhost$',
-        '^127\.0\.0\.1$',
-        '^\[::1\]$',
-        '^{{ _domain | replace('.', '\.') }}$',
-      ];
-
 - name: Install Drush 13.3.3 via Composer
   composer:
     command: require
@@ -89,3 +77,6 @@
     working_dir: /var/www/drupal
   become: yes
   become_user: www-data
+
+- name: Import site installation tasks
+  import_tasks: site-install.yml
