@@ -27,31 +27,31 @@
   become_user: www-data
   when: drupal_status.stdout != "Successful"
 
-- name: Configure timezone
-  command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
+- block:
+    - name: Configure timezone
+      command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
+
+    - name: Enable update module
+      command: /var/www/drupal/vendor/bin/drush pm:enable update -y
+
+    - name: Configure update notification email
+      command: /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
+
+    - name: Configure update check interval
+      command: /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
   args:
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
   when: drupal_status.stdout != "Successful"
 
-- name: Enable update module
-  command: /var/www/drupal/vendor/bin/drush pm:enable update -y
-  args:
-    chdir: /var/www/drupal/web
+- name: Ensure default directory has correct permissions
+  file:
+    path: /var/www/drupal/web/sites/default
+    owner: www-data
+    group: www-data
+    mode: '0755'  # temporarily allow write for owner
   become: yes
-  become_user: www-data
-  when: drupal_status.stdout != "Successful"
-
-- name: Configure update notifications
-  command: >
-    /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y &&
-    /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
-  args:
-    chdir: /var/www/drupal/web
-  become: yes
-  become_user: www-data
-  when: drupal_status.stdout != "Successful"
 
 - name: Add trusted host pattern to settings.php
   lineinfile:
@@ -60,3 +60,11 @@
     insertafter: "^\\$settings\\['trusted_host_patterns'\\]"
   become: yes
   become_user: www-data 
+
+- name: Reset default directory permissions
+  file:
+    path: /var/www/drupal/web/sites/default
+    owner: www-data
+    group: www-data
+    mode: '0664'
+  become: yes
