@@ -3,13 +3,9 @@
 # generates a random password for mysql written
 # written to group_vars 
 
-- name: generating mysql root password
-  set_fact:
-    MYSQL_ROOT_PASSWORD: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
-
 - name: writing mysql root password to vars
   lineinfile:
     insertafter: EOF
     path: group_vars/linode/vars
     line: | 
-      mysql_root_password: {{ MYSQL_ROOT_PASSWORD }}
+      mysql_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
