@@ -6,7 +6,7 @@ Backstage is an open-source platform for building developer portals, designed to
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Backstage    | Latest    | penetration testing tool that focuses on the web browser |
+| Backstage    | Latest    | Platform for building developer portals |
 | Postgresql | 16.6 | Database management system | 
 | Yarn | 4.4.1 | Package manager for Javascript projects | 
 | NVM | latest | Node Version Manager to manage multiple versions of node on system | 

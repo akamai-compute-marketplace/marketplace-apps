@@ -17,7 +17,7 @@
       - runc
     state: absent
 
-- name: install docker dependancies
+- name: install docker dependencies
   apt:
     pkg:
       - apt-transport-https
