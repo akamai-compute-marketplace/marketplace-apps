@@ -14,3 +14,6 @@
 
 - name: Import Drupal tasks
   import_tasks: drupal.yml
+
+- name: Import site installation tasks
+  import_tasks: site-install.yml

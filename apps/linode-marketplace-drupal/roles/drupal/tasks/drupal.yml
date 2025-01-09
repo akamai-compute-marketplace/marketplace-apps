@@ -77,6 +77,3 @@
     working_dir: /var/www/drupal
   become: yes
   become_user: www-data
-
-- name: Import site installation tasks
-  import_tasks: site-install.yml
