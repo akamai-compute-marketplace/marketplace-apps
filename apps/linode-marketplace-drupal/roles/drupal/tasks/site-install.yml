@@ -22,7 +22,6 @@
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
-  when: drupal_status.stdout != "Successful"
 
 - name: Enable update module
   command: /var/www/drupal/vendor/bin/drush pm:enable update -y
@@ -30,7 +29,6 @@
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
-  when: drupal_status.stdout != "Successful"
 
 - name: Configure update notification email
   command: /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
@@ -38,7 +36,6 @@
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
-  when: drupal_status.stdout != "Successful"
 
 - name: Configure update check interval
   command: /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
@@ -46,7 +43,6 @@
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
-  when: drupal_status.stdout != "Successful"
 
 - name: Ensure default directory has correct permissions for writing
   file:
