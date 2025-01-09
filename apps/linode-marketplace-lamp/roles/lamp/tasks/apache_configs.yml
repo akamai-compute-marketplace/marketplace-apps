@@ -8,27 +8,13 @@
     state: directory
   register: document_root
 
-- name: adding test index page
-  lineinfile:
-    create: yes
-    insertafter: EOF
+- name: move index.html template
+  copy:
+    src: files/index.html
+    dest: "{{ document_root.path }}/index.html"
     owner: www-data
     group: www-data
     mode: 0644
-    path: "{{ document_root.path }}/index.html"
-    line: |
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <style>
-      body {background-color: #32363B;}
-      h1   {color: #00B050;}
-      </style>
-      </head>
-      <body>
-      <h1>LAMP Stack: Powered by Linode Marketplace</h1>
-      </body>
-      </html>
 
 - name: moving vhost template
   template:
