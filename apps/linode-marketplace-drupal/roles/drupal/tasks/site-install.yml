@@ -26,27 +26,50 @@
   become: yes
   become_user: www-data
   when: drupal_status.stdout != "Successful"
+  register: drupal_install
 
-- block:
-    - name: Configure timezone
-      command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
-      args:
-        chdir: /var/www/drupal/web
+- name: Set required Drupal states
+  command: "{{ item }}"
+  args:
+    chdir: /var/www/drupal/web
+  with_items:
+    - "/var/www/drupal/vendor/bin/drush state:set system.install_time $(date +%s)"
+    - "/var/www/drupal/vendor/bin/drush state:set system.install_profile standard"
+    - "/var/www/drupal/vendor/bin/drush state:set system.install_profile.locked 1"
+    - "/var/www/drupal/vendor/bin/drush state:set install_task finished"
+    - "/var/www/drupal/vendor/bin/drush cache:rebuild"
+  become: yes
+  become_user: www-data
+  when: drupal_install.changed
 
-    - name: Enable update module
-      command: /var/www/drupal/vendor/bin/drush pm:enable update -y
-      args:
-        chdir: /var/www/drupal/web
+- name: Configure timezone
+  command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
 
-    - name: Configure update notification email
-      command: /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
-      args:
-        chdir: /var/www/drupal/web
+- name: Enable update module
+  command: /var/www/drupal/vendor/bin/drush pm:enable update -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
 
-    - name: Configure update check interval
-      command: /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
-      args:
-        chdir: /var/www/drupal/web
+- name: Configure update notification email
+  command: /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+  when: drupal_status.stdout != "Successful"
+
+- name: Configure update check interval
+  command: /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
+  args:
+    chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
   when: drupal_status.stdout != "Successful"
@@ -59,13 +82,21 @@
     mode: '0755'  # temporarily allow write for owner
   become: yes
 
-- name: Add trusted host pattern to settings.php
-  lineinfile:
+- name: Set trusted host patterns in settings.php
+  blockinfile:
     path: /var/www/drupal/web/sites/default/settings.php
-    line: "$settings['trusted_host_patterns'][] = '^{{ _domain | replace('.', '\\.') }}$';"
-    insertafter: "^\\$settings\\['trusted_host_patterns'\\]"
+    block: |
+      $settings['trusted_host_patterns'] = [
+        '^localhost$',
+        '^127\.0\.0\.1$',
+        '^\[::1\]$',
+        '^{{ _domain | replace('.', '\\.') }}$',
+        '^.*\.ip\.linodeusercontent\.com$'  # Allow any Linode IP
+      ];
+    marker: "// {mark} ANSIBLE MANAGED BLOCK - TRUSTED HOSTS"
+    insertafter: "^<\?php"
   become: yes
-  become_user: www-data 
+  become_user: www-data
 
 - name: Reset default directory permissions
   file:
@@ -74,3 +105,50 @@
     group: www-data
     mode: '0664'
   become: yes
+
+- name: Display settings.php content
+  command: cat /var/www/drupal/web/sites/default/settings.php
+  register: settings_content
+  changed_when: false
+  become: yes
+  become_user: www-data
+
+- name: Debug settings.php
+  debug:
+    var: settings_content.stdout
+
+- name: Verify Drupal installation status
+  command: /var/www/drupal/vendor/bin/drush status
+  args:
+    chdir: /var/www/drupal/web
+  register: drupal_final_status
+  changed_when: false
+  become: yes
+  become_user: www-data
+
+- name: Debug Drupal status
+  debug:
+    var: drupal_final_status.stdout_lines
+
+- name: Ensure hash_salt is set in settings.php
+  lineinfile:
+    path: /var/www/drupal/web/sites/default/settings.php
+    line: "$settings['hash_salt'] = '{{ lookup('password', '/dev/null chars=ascii_letters,digits length=55') }}';"
+    insertafter: "^<\?php"
+  become: yes
+  become_user: www-data
+
+- name: Mark installation profile as complete
+  command: /var/www/drupal/vendor/bin/drush state:set system.install_profile.locked 1
+  args:
+    chdir: /var/www/drupal/web
+  become: yes
+  become_user: www-data
+
+- name: Set install_profile in settings.php
+  lineinfile:
+    path: /var/www/drupal/web/sites/default/settings.php
+    line: "$settings['install_profile'] = 'standard';"
+    insertafter: "^<\?php"
+  become: yes
+  become_user: www-data
