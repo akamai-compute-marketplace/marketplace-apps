@@ -17,7 +17,7 @@
     group: root
     mode: '0644'
 
-- name: writing sudo creds into file
+- name: writing creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
@@ -30,6 +30,11 @@
       MariaDB Drupal username: drupal
       MariaDB drupal user password: {{ mysql_drupal_password }}
       MariaDB root user password: {{ mysql_root_password }}
+      Site Name: {{ site_name }}
+      Site Mail: {{ site_email }}
+      Admin Username: {{ admin_username }}
+      Admin Password: {{ admin_password }}
+      Account Mail: {{ site_email }}
 
 - name: Clean up temporary files
   file:
