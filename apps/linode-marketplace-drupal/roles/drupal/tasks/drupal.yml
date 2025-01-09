@@ -37,10 +37,10 @@
     - /var/www/.cache/composer/vcs
     - /var/www/drupal
 
-- name: Install Drupal 10.3.8 using Composer
+- name: Install Drupal 10.4.1 using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project:10.3.8 /var/www/drupal --no-interaction"
+    arguments: "drupal/recommended-project:10.4.1 /var/www/drupal --no-interaction"
     working_dir: /var/www
   become: yes
   become_user: www-data
