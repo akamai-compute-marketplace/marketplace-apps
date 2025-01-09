@@ -17,28 +17,32 @@
   become_user: www-data
 
 - name: Configure timezone
-  command: /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
+  command: >
+    /var/www/drupal/vendor/bin/drush config:set system.date timezone.default UTC -y
   args:
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
 
 - name: Enable update module
-  command: /var/www/drupal/vendor/bin/drush pm:enable update -y
+  command: >
+    /var/www/drupal/vendor/bin/drush pm:enable update -y
   args:
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
 
 - name: Configure update notification email
-  command: /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
+  command: >
+    /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
   args:
     chdir: /var/www/drupal/web
   become: yes
   become_user: www-data
 
 - name: Configure update check interval
-  command: /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
+  command: >
+    /var/www/drupal/vendor/bin/drush config:set update.settings check.interval_days 1 -y
   args:
     chdir: /var/www/drupal/web
   become: yes
@@ -49,7 +53,7 @@
     path: /var/www/drupal/web/sites/default
     owner: www-data
     group: www-data
-    mode: '0755'  # temporarily allow write for owner
+    mode: '0755'
   become: yes
 
 - name: Set settings.php permissions to read/write
@@ -64,7 +68,7 @@
   lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
     line: |
-      $settings['trusted_host_patterns'] = ['^localhost$', '^127\.0\.0\.1$', '^\[::1\]$', '^{{ _domain | replace('.', '\\.') }}$', '^.*\.ip\.linodeusercontent\.com$'];
+      $settings['trusted_host_patterns'] = ['^localhost$', '^127\.0\.0\.1$', '^{{ _domain | replace('.', '\\.') }}$', '^.*\.ip\.linodeusercontent\.com$'];
     insertafter: EOF
   become: yes
   become_user: www-data
@@ -74,7 +78,7 @@
     path: /var/www/drupal/web/sites/default
     owner: www-data
     group: www-data
-    mode: '0664'
+    mode: '0755'
   become: yes
 
 - name: Set settings.php permissions to default
