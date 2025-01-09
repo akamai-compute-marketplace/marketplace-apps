@@ -83,18 +83,11 @@
   become: yes
 
 - name: Set trusted host patterns in settings.php
-  blockinfile:
+  lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
-    block: |
-      $settings['trusted_host_patterns'] = [
-        '^localhost$',
-        '^127\.0\.0\.1$',
-        '^\[::1\]$',
-        '^{{ _domain | replace('.', '\\.') }}$',
-        '^.*\.ip\.linodeusercontent\.com$'  # Allow any Linode IP
-      ];
-    marker: "// {mark} ANSIBLE MANAGED BLOCK - TRUSTED HOSTS"
-    insertafter: "^<\?php"
+    line: |
+      $settings['trusted_host_patterns'] = ['^localhost$', '^127\.0\.0\.1$', '^\[::1\]$', '^{{ _domain | replace('.', '\\.') }}$', '^.*\.ip\.linodeusercontent\.com$'];
+    insertafter: EOF
   become: yes
   become_user: www-data
 
@@ -134,7 +127,7 @@
   lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
     line: "$settings['hash_salt'] = '{{ lookup('password', '/dev/null chars=ascii_letters,digits length=55') }}';"
-    insertafter: "^<\?php"
+    insertafter: EOF
   become: yes
   become_user: www-data
 
@@ -149,6 +142,6 @@
   lineinfile:
     path: /var/www/drupal/web/sites/default/settings.php
     line: "$settings['install_profile'] = 'standard';"
-    insertafter: "^<\?php"
+    insertafter: EOF
   become: yes
   become_user: www-data
