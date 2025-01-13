@@ -4,7 +4,7 @@
     name: apache2
     state: restarted
 
-# - name: restart mariadb
-#   service:
-#     name: mariadb
-#     state: restarted
+- name: restart mariadb
+  service:
+    name: mariadb
+    state: restarted

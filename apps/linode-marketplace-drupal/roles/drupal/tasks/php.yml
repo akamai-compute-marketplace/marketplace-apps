@@ -1,13 +1,4 @@
 ---
-# - name: Install prerequisites for PHP repository
-#   apt:
-#     name:
-#       - software-properties-common
-#       - apt-transport-https
-#       - ca-certificates
-#     state: present
-#     update_cache: yes
-
 - name: Add PHP repository
   apt_repository:
     repo: "ppa:ondrej/php"
@@ -34,12 +25,3 @@
       - php8.3-bcmath
       - libapache2-mod-php8.3
   notify: restart apache
-
-# - name: Create PHP log directory
-#   file:
-#     path: /var/log/php
-#     state: directory
-#     owner: www-data
-#     group: www-data
-#     mode: '0755'
-#   notify: restart apache

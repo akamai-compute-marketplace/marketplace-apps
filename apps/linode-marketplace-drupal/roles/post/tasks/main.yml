@@ -35,10 +35,3 @@
       Admin Username: {{ admin_username }}
       Admin Password: {{ admin_password }}
       Account Mail: {{ site_email }}
-
-# - name: Clean up temporary files
-#   file:
-#     path: "{{ item }}"
-#     state: absent
-#   loop:
-#     - /tmp/drupal.tar.gz 
