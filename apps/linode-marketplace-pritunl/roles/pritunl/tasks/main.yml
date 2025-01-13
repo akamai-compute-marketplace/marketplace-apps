@@ -107,6 +107,11 @@
   import_role:
     name: certbot_ssl
 
+# restart pritunl
+- name: restarting pritunl
+  systemd:
+    name: pritunl
+    state: restarted
 
 
 
