@@ -15,13 +15,12 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## code-server setup
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="code_server_version" label="Which version of Code-Server to install" oneOf="4.96.1">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-code-server"
+export MARKETPLACE_APP="apps/linode-marketplace-pritunl-server"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1

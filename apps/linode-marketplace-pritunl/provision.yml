@@ -1,4 +1,4 @@
-# peppermint
+# pritunl
 - name: setting up environment 
   hosts: localhost
   connection: local
@@ -11,9 +11,3 @@
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
       
-    - name: writing code-server to vars
-      lineinfile: 
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
-          code_server_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
