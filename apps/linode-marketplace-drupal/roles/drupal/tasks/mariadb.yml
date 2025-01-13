@@ -19,7 +19,7 @@
   mysql_db:
     name: drupaldb
     state: present
-    # login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     login_user: root
     login_password: "{{ mysql_root_password }}" 
 
@@ -30,6 +30,6 @@
     priv: 'drupaldb.*:ALL'
     host: localhost
     state: present
-    # login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     login_user: root
     login_password: "{{ mysql_root_password }}"
