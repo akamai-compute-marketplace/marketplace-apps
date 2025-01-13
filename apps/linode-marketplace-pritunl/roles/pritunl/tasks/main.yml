@@ -1,21 +1,21 @@
 ---
-- name: add mongodb repository
-  apt_repository:
-    repo: "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse"
-    state: present
-    filename: mongodb-org
+- name: Add MongoDB repository
+  copy:
+    dest: /etc/apt/sources.list.d/mongodb-org.list
+    content: |
+      deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse
 
-- name: add openvpn repository
-  apt_repository:
-    repo: "deb [ signed-by=/usr/share/keyrings/openvpn-repo.gpg ] https://build.openvpn.net/debian/openvpn/stable noble main"
-    state: present
-    filename: openvpn
+- name: Add OpenVPN repository
+  copy:
+    dest: /etc/apt/sources.list.d/openvpn.list
+    content: |
+      deb [ signed-by=/usr/share/keyrings/openvpn-repo.gpg ] https://build.openvpn.net/debian/openvpn/stable noble main
 
-- name: add pritunl repository
-  apt_repository:
-    repo: "deb [ signed-by=/usr/share/keyrings/pritunl.gpg ] https://repo.pritunl.com/stable/apt noble main"
-    state: present
-    filename: pritunl
+- name: Add Pritunl repository
+  copy:
+    dest: /etc/apt/sources.list.d/pritunl.list
+    content: |
+      deb [ signed-by=/usr/share/keyrings/pritunl.gpg ] https://repo.pritunl.com/stable/apt noble main
 
 - name: install gnupg
   apt:
@@ -72,15 +72,44 @@
     state: started
     enabled: yes
 
+- name: set ui port 8080
+  shell: pritunl set app.server_port 8080
+
+- name: set pritunl redirect equal to true
+  shell: pritunl set app.redirect_server true
+
+- name: get login creds
+  shell: pritunl default-password
+  register: pritunl_credentials
+
 - name: start and enable mongodb
   systemd:
     name: mongod
     state: started
     enabled: yes
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"    
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
   
 # ssl_certbot
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
+
+
 
 
