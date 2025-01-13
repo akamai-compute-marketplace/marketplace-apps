@@ -88,8 +88,6 @@
   shell: pritunl default-password
   register: pritunl_credentials
 
-
-
 - name: config file setup
   template:
     src: templates/nginx.conf.j2

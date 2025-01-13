@@ -39,9 +39,8 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: nginx
+  webserver_stack: lemp
   # code-server version
-  code_server_version: ${CODE_SERVER_VERSION}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
