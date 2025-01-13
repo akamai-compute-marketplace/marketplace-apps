@@ -72,6 +72,12 @@
     state: started
     enabled: yes
 
+- name: start and enable mongodb
+  systemd:
+    name: mongod
+    state: started
+    enabled: yes
+
 - name: set ui port 8080
   shell: pritunl set app.server_port 8080
 
@@ -82,11 +88,7 @@
   shell: pritunl default-password
   register: pritunl_credentials
 
-- name: start and enable mongodb
-  systemd:
-    name: mongod
-    state: started
-    enabled: yes
+
 
 - name: config file setup
   template:
