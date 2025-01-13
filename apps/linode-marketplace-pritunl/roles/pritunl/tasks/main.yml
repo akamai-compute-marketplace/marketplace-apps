@@ -66,15 +66,15 @@
       src: 'templates/pritunl.conf.j2'
       dest: '/etc/pritunl.conf'
 
-- name: start and enable pritunl
-  systemd:
-    name: pritunl
-    state: started
-    enabled: yes
-
 - name: start and enable mongodb
   systemd:
     name: mongod
+    state: started
+    enabled: yes
+
+- name: start and enable pritunl
+  systemd:
+    name: pritunl
     state: started
     enabled: yes
 
