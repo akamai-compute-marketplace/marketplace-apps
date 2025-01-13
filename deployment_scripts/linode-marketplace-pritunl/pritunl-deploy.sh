@@ -40,7 +40,6 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
-  # code-server version
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

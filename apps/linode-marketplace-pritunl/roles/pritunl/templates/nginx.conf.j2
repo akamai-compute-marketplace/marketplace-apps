@@ -10,7 +10,7 @@ server  {
     access_log /var/log/nginx/{{ _domain }}.access;  
    {% endif %}                                                
     location / {
-      proxy_pass http://localhost:8080/;
+      proxy_pass https://localhost:8443/;
       proxy_set_header Host $http_host;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection upgrade;

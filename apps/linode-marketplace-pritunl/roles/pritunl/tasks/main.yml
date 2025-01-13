@@ -68,18 +68,15 @@
 
 - name: start and enable mongodb
   systemd:
-    name: mongod
+    name: "{{ item }}"
     state: started
     enabled: yes
-
-- name: start and enable pritunl
-  systemd:
-    name: pritunl
-    state: started
-    enabled: yes
+  with_items:
+    - mongod
+    - pritunls
 
 - name: set ui port 8080
-  shell: pritunl set app.server_port 8080
+  shell: pritunl set app.server_port 8443
 
 - name: set pritunl redirect equal to true
   shell: pritunl set app.redirect_server true

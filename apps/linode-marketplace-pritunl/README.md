@@ -1,12 +1,12 @@
-# Linode Code-Server Deployment One-Click APP
+# Linode Pritunl Deployment One-Click APP
 
-Visual Studio Code acts as a portable development environment to speed up quality assurance, downloads, and more. The optional IntelliSense feature performs word-based completions for many programming languages out-of-the-box, and even more available as extensions. Use a range of flexible extensions to add new languages and connect to the services you’re already using.
+User-friendly VPN for both individual and commercial use. Choose from three simple pricing plans to find the exact features you need, from a free single server to unlimited servers on the Enterprise plan. Paid plans include port forwarding, failover gateway links, and the ability to send user keys via email.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| code-server    | v4.96.1    | VSCode in a browser |
+| Pritunl    | latest    | VPN service |
 
 **Supported Distributions:**
 
@@ -23,7 +23,7 @@ Visual Studio Code acts as a portable development environment to speed up qualit
 
 ## Use our API
 
-Customers can choose to the deploy the Code-Server app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to the deploy the Pritunl app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN
@@ -43,10 +43,9 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2404",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 688903,
+      "stackscript_id": 925722,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
-        "code_server_version": "${CODE_SERVER_VERSION}"
       },
       "authorized_users": [
         "myUser",
@@ -72,8 +71,8 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 688903 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "code_server_version": "${CODE_SERVER_VERSION}"} \
+  --stackscript_id 925722 \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", 
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
