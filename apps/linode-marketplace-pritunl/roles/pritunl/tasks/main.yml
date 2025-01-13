@@ -73,7 +73,7 @@
     enabled: yes
   with_items:
     - mongod
-    - pritunls
+    - pritunl
 
 - name: set ui port 8080
   shell: pritunl set app.server_port 8443

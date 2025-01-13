@@ -1,4 +1,4 @@
-# nginc handlers
+# nginx handlers
 - name: reload nginx service
   systemd:
     name: nginx
