@@ -1,4 +1,12 @@
 ---
+- name: Install Drush 13.3.3 via Composer
+  composer:
+    command: require
+    arguments: "drush/drush:13.3.3"
+    working_dir: /var/www/drupal
+  become: yes
+  become_user: www-data
+
 - name: Configure Drupal using Drush
   command:
     cmd: >
@@ -24,7 +32,7 @@
   become: yes
   become_user: www-data
 
-- name: Enable update module
+- name: Enable update module using Drush
   command: >
     /var/www/drupal/vendor/bin/drush pm:enable update -y
   args:
@@ -70,6 +78,7 @@
     line: |
       $settings['trusted_host_patterns'] = ['^localhost$', '^127\.0\.0\.1$', '^{{ _domain | replace('.', '\\.') }}$', '^.*\.ip\.linodeusercontent\.com$'];
     insertafter: EOF
+    state: present
   become: yes
   become_user: www-data
 

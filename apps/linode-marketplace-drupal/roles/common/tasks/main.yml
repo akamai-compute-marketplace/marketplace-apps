@@ -61,8 +61,8 @@
       - ca-certificates
       - curl
       - software-properties-common
-      - python3-pip
-      - unzip
+      # - python3-pip
+      # - unzip
       - certbot
       - python3-certbot-apache
       - mariadb-server

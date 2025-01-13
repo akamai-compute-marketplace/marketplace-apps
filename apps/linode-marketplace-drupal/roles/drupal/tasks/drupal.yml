@@ -1,21 +1,36 @@
 ---
-- name: Download Composer installer signature
+- name: Download Composer files
   get_url:
-    url: https://composer.github.io/installer.sig
-    dest: /tmp/composer-setup.sig
-    mode: '0755'
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { url: "https://composer.github.io/installer.sig", dest: "/tmp/composer-setup.sig", mode: "0644" }
+    - { url: "https://getcomposer.org/installer", dest: "/tmp/composer-setup.php", mode: "0755" }
 
-- name: Download Composer installer
-  get_url:
-    url: https://getcomposer.org/installer
-    dest: /tmp/composer-setup.php
-    mode: '0755'
+- name: Verify Composer installer checksum
+  block:
+    - name: Calculate actual checksum of downloaded installer
+      command: php -r "echo hash_file('sha384', '/tmp/composer-setup.php');"
+      register: actual_checksum
 
-- name: Verify Composer installer
-  command: >
-    php -r "if (hash_file('sha384', '/tmp/composer-setup.php') === trim(file_get_contents('/tmp/composer-setup.sig'))) { exit(0); } else { exit(1); }"
-  register: composer_verify
-  failed_when: composer_verify.rc != 0
+    - name: Read expected checksum from file
+      slurp:
+        src: /tmp/composer-setup.sig
+      register: expected_checksum
+
+    - name: Compare checksums
+      assert:
+        that:
+          - actual_checksum.stdout == expected_checksum.content | b64decode | trim
+        fail_msg: "ERROR: Composer installer checksum verification failed."
+        success_msg: "SUCCESS: Composer installer checksum verified."
+
+  rescue:
+    - name: Cleanup invalid installer
+      file:
+        path: /tmp/composer-setup.php
+        state: absent
 
 - name: Install Composer 2.8.3 globally
   command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.8.3
@@ -24,18 +39,25 @@
 
 - name: Create Composer cache directory structure
   file:
-    path: "{{ item }}"
+    path: "/var/www/.cache/composer/{{ item }}"
     state: directory
     owner: www-data
     group: www-data
     mode: '0755'
     recurse: yes
   loop:
-    - /var/www/.cache/composer
-    - /var/www/.cache/composer/repo
-    - /var/www/.cache/composer/repo/https---repo.packagist.org
-    - /var/www/.cache/composer/vcs
-    - /var/www/drupal
+    - ""  # Creates the base composer directory
+    - "repo"
+    - "repo/https---repo.packagist.org"
+    - "vcs"
+
+- name: Create Drupal directory
+  file:
+    path: /var/www/drupal
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
 
 - name: Install Drupal 10.4.1 using Composer
   composer:
@@ -69,11 +91,3 @@
     owner: www-data
     group: www-data
     mode: '0644'
-
-- name: Install Drush 13.3.3 via Composer
-  composer:
-    command: require
-    arguments: "drush/drush:13.3.3"
-    working_dir: /var/www/drupal
-  become: yes
-  become_user: www-data
