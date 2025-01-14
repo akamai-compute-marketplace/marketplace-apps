@@ -28,7 +28,7 @@
   register: container_status
   retries: 20
   delay: 10
-  until: container_status.state == "started"
+  until: container_status.status == "running"
   timeout: 120  
 
 - name: execute SQL command in docker container
