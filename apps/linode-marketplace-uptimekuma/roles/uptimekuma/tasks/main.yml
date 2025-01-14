@@ -21,21 +21,15 @@
     ports:
       - "127.0.0.1:3001:3001"
 
-- name: wait for docker container to be fully started
-  docker_container:
-    name: uptime-kuma
-    state: started
-  register: container_status
-  retries: 20
-  delay: 10
-  until: container_status.status == "running"
-  timeout: 120  
+- name: give docker container time to start up
+  pause:
+    seconds: 30
 
 - name: execute SQL command in docker container
   docker_container:
     name: uptime-kuma
     command: >
-      sqlite3 /data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
+      sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
     detach: false
     tty: true
 
