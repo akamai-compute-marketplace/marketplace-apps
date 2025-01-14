@@ -30,8 +30,8 @@
       MariaDB Drupal username: drupal
       MariaDB drupal user password: {{ mysql_drupal_password }}
       MariaDB root user password: {{ mysql_root_password }}
-      Site Name: {{ site_name }}
-      Site Mail: {{ site_email }}
-      Admin Username: {{ admin_username }}
-      Admin Password: {{ admin_password }}
-      Account Mail: {{ site_email }}
+      Drupal Site Name: {{ drupal_site_name }}
+      Drupal Site Email: {{ drupal_site_email }}
+      Drupal Admin Username: {{ drupal_username }}
+      Drupal Admin Password: {{ drupal_password }}
+      Drupal Admin Email: {{ drupal_account_email }}

@@ -18,10 +18,11 @@ fi
 #<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
 ## Site Configuration Settings
-#<UDF name="site_name" label="Site name" default="My Drupal Site">
-#<UDF name="site_email" label="Site email address" example="admin@example.com">
-#<UDF name="admin_username" label="Site maintenance account username" default="admin">
-#<UDF name="admin_password" label="Site maintenance account password" example="A strong password">
+#<UDF name="drupal_site_name" label="Site name" default="My Drupal Site">
+#<UDF name="drupal_site_email" label="Site email address for system notifications" example="system@example.com">
+#<UDF name="drupal_account_email" label="Account email address for admin user" example="admin@example.com">
+#<UDF name="drupal_username" label="Site maintenance account username" default="admin">
+#<UDF name="drupal_password" label="Site maintenance account password" example="A strong password">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -47,12 +48,11 @@ function udf {
   webserver_stack: lamp
   
   # drupal configuration
-  site_name: ${SITE_NAME}
-  site_email: ${SITE_EMAIL}
-  admin_username: ${ADMIN_USERNAME}
-  admin_password: ${ADMIN_PASSWORD}
-  site_language: "English"
-  site_timezone: "UTC"
+  drupal_site_name: ${DRUPAL_SITE_NAME}
+  drupal_site_email: ${DRUPAL_SITE_EMAIL}
+  drupal_account_email: ${DRUPAL_ACCOUNT_EMAIL}
+  drupal_username: ${DRUPAL_USERNAME}
+  drupal_password: ${DRUPAL_PASSWORD}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

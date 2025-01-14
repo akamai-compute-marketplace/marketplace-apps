@@ -42,23 +42,25 @@ Make sure that the following values are updated at the top of the code block bef
 - SOA_EMAIL_ADDRESS - Email address for DNS records
 - DOMAIN - Domain name (optional)
 - SUBDOMAIN - Subdomain (optional)
-- SITE_NAME - Name of your Drupal site
-- SITE_EMAIL - Email address for Drupal site
-- ADMIN_USERNAME - Drupal admin username
-- ADMIN_PASSWORD - Drupal admin password
+- DRUPAL_SITE_NAME - Name of your Drupal site
+- DRUPAL_SITE_EMAIL - System email address for site notifications
+- DRUPAL_ACCOUNT_EMAIL - Admin account email address
+- DRUPAL_USERNAME - Drupal admin username
+- DRUPAL_PASSWORD - Drupal admin password
 
 ```
 SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export USERNAME="admin"
+export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="user@example.com"
 export DOMAIN="example.com"
 export SUBDOMAIN="www"
-export SITE_NAME="My Drupal Site"
-export SITE_EMAIL="user@example.com"
-export ADMIN_USERNAME="admin"
-export ADMIN_PASSWORD="aComplexP@ssword"
+export DRUPAL_SITE_NAME="My Drupal Site"
+export DRUPAL_SITE_EMAIL="system@example.com"
+export DRUPAL_ACCOUNT_EMAIL="admin@example.com"
+export DRUPAL_USERNAME="admin"
+export DRUPAL_PASSWORD="aComplexP@ssword"
 
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${TOKEN}" \
@@ -81,10 +83,11 @@ curl -H "Content-Type: application/json" \
 "subdomain": "${SUBDOMAIN}",
 "domain": "${DOMAIN}",
 "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-"site_name": "${SITE_NAME}",
-"site_email": "${SITE_EMAIL}",
-"admin_username": "${ADMIN_USERNAME}",
-"admin_password": "${ADMIN_PASSWORD}"
+"drupal_site_name": "${DRUPAL_SITE_NAME}",
+"drupal_site_email": "${DRUPAL_SITE_EMAIL}",
+"drupal_account_email": "${DRUPAL_ACCOUNT_EMAIL}",
+"drupal_username": "${DRUPAL_USERNAME}",
+"drupal_password": "${DRUPAL_PASSWORD}"
 },
 "stackscript_id": 00000000000,
 "type": "g6-nanode-1",
@@ -95,14 +98,15 @@ curl -H "Content-Type: application/json" \
 CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export USERNAME="joe"
+export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="user@example.com"
 export DOMAIN="example.com"
 export SUBDOMAIN="www"
-export SITE_NAME="My Drupal Site"
-export SITE_EMAIL="user@example.com"
-export ADMIN_USERNAME="admin"
-export ADMIN_PASSWORD="aComplexP@ssword"
+export DRUPAL_SITE_NAME="My Drupal Site"
+export DRUPAL_SITE_EMAIL="system@example.com"
+export DRUPAL_ACCOUNT_EMAIL="admin@example.com"
+export DRUPAL_USERNAME="admin"
+export DRUPAL_PASSWORD="aComplexP@ssword"
 
 linode-cli linodes create \
 --image 'linode/ubuntu24.04' \
@@ -111,7 +115,7 @@ linode-cli linodes create \
 --root_pass ${ROOT_PASS} \
 --booted true \
 --stackscript_id 00000000000 \
---stackscript_data '{"user_name": "${USERNAME}","disable_root":"Yes","token_password":"","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","site_name":"${SITE_NAME}","site_email":"${SITE_EMAIL}","admin_username":"${ADMIN_USERNAME}","admin_password":"${ADMIN_PASSWORD}"}' \
+--stackscript_data '{"user_name": "${USERNAME}","disable_root":"Yes","token_password":"","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","drupal_site_name":"${DRUPAL_SITE_NAME}","drupal_site_email":"${DRUPAL_SITE_EMAIL}","drupal_account_email":"${DRUPAL_ACCOUNT_EMAIL}","drupal_username":"${DRUPAL_USERNAME}","drupal_password":"${DRUPAL_PASSWORD}"}' \
 --region us-east \
 --type g6-nanode-1 \
 --tags mytag \

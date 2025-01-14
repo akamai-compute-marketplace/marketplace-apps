@@ -12,11 +12,11 @@
     cmd: >
       /var/www/drupal/vendor/bin/drush site:install standard
       --db-url=mysql://drupal:{{ mysql_drupal_password }}@localhost/drupaldb
-      --site-name="{{ site_name }}"
-      --site-mail="{{ site_email }}"
-      --account-name="{{ admin_username }}"
-      --account-pass="{{ admin_password }}"
-      --account-mail="{{ site_email }}"
+      --site-name="{{ drupal_site_name }}"
+      --site-mail="{{ drupal_site_email }}"
+      --account-name="{{ drupal_username }}"
+      --account-pass="{{ drupal_password }}"
+      --account-mail="{{ drupal_account_email }}"
       --locale="en"
       --yes
   args:
@@ -42,7 +42,7 @@
 
 - name: Configure update notification email
   command: >
-    /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ site_email }} -y
+    /var/www/drupal/vendor/bin/drush config:set update.settings notification.emails.0 {{ drupal_site_email }} -y
   args:
     chdir: /var/www/drupal/web
   become: yes
