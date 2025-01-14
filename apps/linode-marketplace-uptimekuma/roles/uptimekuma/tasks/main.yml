@@ -25,13 +25,11 @@
   pause:
     seconds: 30
 
-- name: execute SQL command in docker container
-  docker_container:
-    name: uptime-kuma
-    command: >
+- name: Execute SQL command in Docker container
+  docker_exec:
+    container: uptime-kuma
+    cmd: >
       sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-    detach: false
-    tty: true
 
 - name: run npm run reset-password for uptime kuma
   expect:
