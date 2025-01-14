@@ -1,7 +1,9 @@
 ---
 - name: install prereqs 
   apt:
-    name: expect
+    name: 
+      - expect
+      - sqlite3
     state: present
 
 - name: create docker volume
@@ -18,6 +20,14 @@
       - "uptime-kuma:/app/data"
     ports:
       - "127.0.0.1:3001:3001"
+
+- name: wait for docker container to be fully started
+  command: "docker inspect --format '{{.State.Running}}' uptime-kuma"
+  register: container_running_status
+  retries: 20     
+  delay: 10       
+  until: container_running_status.stdout == "true"  
+  timeout: 120   
 
 - name: execute SQL command in docker container
   docker_container:
