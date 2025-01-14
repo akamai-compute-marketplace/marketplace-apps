@@ -15,13 +15,13 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Let's Encrypt Settings 
-#<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
+#<UDF name="soa_email_address" label="Email address for Let's Encrypt SSL certificate">
 
 ## Site Configuration Settings
-#<UDF name="drupal_site_name" label="Site name" default="My Drupal Site">
+#<UDF name="drupal_site_name" label="Site name" example="My Drupal Site">
 #<UDF name="drupal_site_email" label="Site email address for system notifications" example="system@example.com">
 #<UDF name="drupal_account_email" label="Account email address for admin user" example="admin@example.com">
-#<UDF name="drupal_username" label="Site maintenance account username" default="admin">
+#<UDF name="drupal_username" label="Site maintenance account username" example="admin">
 #<UDF name="drupal_password" label="Site maintenance account password" example="A strong password">
 
 # git repo
