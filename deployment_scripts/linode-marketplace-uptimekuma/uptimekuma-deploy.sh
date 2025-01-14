@@ -13,6 +13,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## KUMA Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="kuma_user_name" label="The Uptime Kuma Username: *No Capital Letters or Special Characters*">
 
 
 # git repo
@@ -37,6 +38,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  kuma_user_name: ${KUMA_USER_NAME}
   webserver_stack: lemp
 EOF
 
