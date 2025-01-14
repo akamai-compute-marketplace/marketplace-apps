@@ -5,7 +5,6 @@
     state: started
     enabled: yes
 
-# generate mysql
 - name: Import securemysql passgen
   import_role:
     name: securemysql
