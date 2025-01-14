@@ -21,9 +21,13 @@
     ports:
       - "127.0.0.1:3001:3001"
 
-- name: give docker container time to start up
-  pause:
-    seconds: 30
+- name: wait for uptime-kuma container to be ready
+  community.docker.docker_container_info:
+    name: uptime-kuma
+  register: container_info
+  until: container_info.container.State.Status == 'running'
+  retries: 5
+  delay: 10
 
 #- name: execute SQL command in Docker container
 #  shell: docker exec uptime-kuma sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
@@ -31,9 +35,8 @@
   community.docker.docker_container:
     name: uptime-kuma
     command: >
-      sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-    restart: true
-    oom_killer: true
+      /bin/sh -c "sqlite3 /app/data/kuma.db \"INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);\" && tail -f /dev/null"
+    restart_policy: unless-stopped
 
 - name: run npm run reset-password for uptime kuma
   expect:
