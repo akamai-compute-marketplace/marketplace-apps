@@ -22,12 +22,14 @@
       - "127.0.0.1:3001:3001"
 
 - name: wait for docker container to be fully started
-  command: "docker inspect --format '{{.State.Running}}' uptime-kuma"
-  register: container_running_status
-  retries: 20     
-  delay: 10       
-  until: container_running_status.stdout == "true"  
-  timeout: 120   
+  docker_container:
+    name: uptime-kuma
+    state: started
+  register: container_status
+  retries: 20
+  delay: 10
+  until: container_status.state == "started"
+  timeout: 120  
 
 - name: execute SQL command in docker container
   docker_container:
