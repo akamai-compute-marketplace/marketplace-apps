@@ -1,0 +1,38 @@
+---
+- name: Create static and templates directories
+  file:
+    path: "/var/www/flask_project/{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  loop:
+    - static
+    - templates
+
+- name: Copy sample Flask application
+  copy:
+    src: sample_app.py
+    dest: /var/www/flask_project/app.py
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Copy static files
+  copy:
+    src: "{{ item }}"
+    dest: /var/www/flask_project/static/
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  loop:
+    - sample_app.css
+    - sample_app.js
+
+- name: Copy template files
+  copy:
+    src: index.html
+    dest: /var/www/flask_project/templates/
+    owner: www-data
+    group: www-data
+    mode: '0644'

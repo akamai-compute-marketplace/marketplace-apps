@@ -1,0 +1,24 @@
+---
+- name: Install Gunicorn in virtual environment
+  pip:
+    name: gunicorn
+    virtualenv: /var/www/flask_project/venv
+    state: present
+
+- name: Create gunicorn systemd service file
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start gunicorn service
+  systemd:
+    name: gunicorn
+    enabled: yes
+    state: started
