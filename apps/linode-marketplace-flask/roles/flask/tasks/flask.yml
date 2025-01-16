@@ -19,6 +19,7 @@
   pip:
     name: Flask
     virtualenv: /var/www/flask_project/venv
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
     state: present
 
 - name: Set virtualenv permissions

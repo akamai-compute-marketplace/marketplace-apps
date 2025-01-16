@@ -11,3 +11,6 @@
 
 - name: Import SSL tasks
   import_tasks: ssl.yml
+
+- name: Import sample flask app
+  import_tasks: sample_app.yml

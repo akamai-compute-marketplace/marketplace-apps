@@ -70,6 +70,8 @@ function run {
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
+  # for a single testing branch
+  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
