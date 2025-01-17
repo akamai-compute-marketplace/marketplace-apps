@@ -1,58 +1,58 @@
 --- 
+--- 
 #configure rabbitmq
 
 # add admin user 
 
-- name: create rabbitmq user
-  command:
-    cmd: rabbitmqctl add_user {{ rabbitmq_admin_username }} {{ rabbitmq_admin_password }}
+- name: create rabbitmq admin user
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_admin_username }}"
+    password: "{{ rabbitmq_admin_password }}"
+    tags: administrator
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present  
   no_log: true
 
-- name: making {{ rabbitmq_admin_username }} administrator
-  command:
-    cmd: rabbitmqctl set_user_tags {{ rabbitmq_admin_username }} administrator
-
-- name: set {{ rabbitmq_admin_username }} permissions
-  command:
-    cmd: rabbitmqctl set_permissions -p / {{ rabbitmq_admin_username }} ".*" ".*" ".*"
-
-# create vhost with username
+# add privileged user
 
 - name: create rabbitmq vhost
-  command: 
-    cmd: rabbitmqctl add_vhost {{ _domain }}
+  community.rabbitmq.rabbitmq_vhost:
+    name: "{{ _domain }}"
+    state: present
 
 - name: create rabbitmq user
-  command: 
-    cmd: rabbitmqctl add_user {{ rabbitmq_username }} {{ rabbitmq_password }}
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_username }}"
+    password: "{{ rabbitmq_password }}"
+    tags: management
+    permissions:
+      - vhost: "{{ _domain }}"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+    state: present  
   no_log: true
-
-- name: tag user for management access
-  command:
-    cmd: rabbitmqctl set_user_tags {{ rabbitmq_username }} management
-
-- name: set {{ rabbitmq_username }} permissions
-  command: 
-    cmd: rabbitmqctl set_permissions -p {{ _domain }} {{ rabbitmq_username }} ".*" ".*" ".*"
-
+      
 # remove default guest user
 
 - name: remove guest user
-  command:
-    cmd: rabbitmqctl delete_user guest
+  community.rabbitmq.rabbitmq_user:
+    user: guest
+    state: absent      
 
-- name: enable rabbitmq management ui
-  command:
-    cmd: rabbitmq-plugins enable rabbitmq_management
+- name: enable rabbitmq management ui      
+  community.rabbitmq.rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
 
 - name: update rabbitmq config
   template:
     src: templates/rabbitmq.conf.j2
     dest: '{{ rabbitmq_conf }}'
-    owner: rabbitmq
+    owner: root
     group: rabbitmq
     mode: 0644
   notify: restart rabbitmq
- 
-
-

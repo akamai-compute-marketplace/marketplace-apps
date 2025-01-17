@@ -20,3 +20,4 @@
         
         RabbitMQ Admin Username: {{ rabbitmq_admin_username }}
         RabbitMQ Admin Password: {{ rabbitmq_admin_password }}
+        

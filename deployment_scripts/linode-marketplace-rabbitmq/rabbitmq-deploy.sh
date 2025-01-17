@@ -12,13 +12,13 @@ fi
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)">
-#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## rabbitmq setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@example.com">
-#<UDF name="allowed_ips_amqp" label="IP addresses allowed to access the frontend" example="192.0.2.21, 198.51.100.17" default="">
+#<UDF name="allowed_ips_amqp" label="IP addresses allowed to access the Management UI" example="192.0.2.21, 198.51.100.17" default="">
 
 #<UDF name="rabbitmq_version" label="RabbitMQ version" oneOf="latest">
 #<UDF name="rabbitmq_admin_username" label="RabbitMQ admin username">
@@ -45,7 +45,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: nginx
+  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
