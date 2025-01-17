@@ -1,0 +1,13 @@
+---
+# handlers
+
+- name: restart rabbitmq
+  systemd:
+    name: rabbitmq-server
+    state: restarted
+    enabled: true
+
+- name: restart nginx
+  systemd:
+    name: nginx
+    enabled: true

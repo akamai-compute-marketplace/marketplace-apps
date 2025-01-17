@@ -1,0 +1,58 @@
+--- 
+#configure rabbitmq
+
+# add admin user 
+
+- name: create rabbitmq user
+  command:
+    cmd: rabbitmqctl add_user {{ rabbitmq_admin_username }} {{ rabbitmq_admin_password }}
+  no_log: true
+
+- name: making {{ rabbitmq_admin_username }} administrator
+  command:
+    cmd: rabbitmqctl set_user_tags {{ rabbitmq_admin_username }} administrator
+
+- name: set {{ rabbitmq_admin_username }} permissions
+  command:
+    cmd: rabbitmqctl set_permissions -p / {{ rabbitmq_admin_username }} ".*" ".*" ".*"
+
+# create vhost with username
+
+- name: create rabbitmq vhost
+  command: 
+    cmd: rabbitmqctl add_vhost {{ _domain }}
+
+- name: create rabbitmq user
+  command: 
+    cmd: rabbitmqctl add_user {{ rabbitmq_username }} {{ rabbitmq_password }}
+  no_log: true
+
+- name: tag user for management access
+  command:
+    cmd: rabbitmqctl set_user_tags {{ rabbitmq_username }} management
+
+- name: set {{ rabbitmq_username }} permissions
+  command: 
+    cmd: rabbitmqctl set_permissions -p {{ _domain }} {{ rabbitmq_username }} ".*" ".*" ".*"
+
+# remove default guest user
+
+- name: remove guest user
+  command:
+    cmd: rabbitmqctl delete_user guest
+
+- name: enable rabbitmq management ui
+  command:
+    cmd: rabbitmq-plugins enable rabbitmq_management
+
+- name: update rabbitmq config
+  template:
+    src: templates/rabbitmq.conf.j2
+    dest: '{{ rabbitmq_conf }}'
+    owner: rabbitmq
+    group: rabbitmq
+    mode: 0644
+  notify: restart rabbitmq
+ 
+
+
