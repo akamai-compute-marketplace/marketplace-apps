@@ -12,14 +12,3 @@
       # generate creds
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
-    - name: generating mysql root password
-      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
-
-    - name: Writing passwords to vars
-      blockinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        block: | 
-          mysql_drupal_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-          drupal_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
