@@ -22,7 +22,6 @@ fi
 #<UDF name="drupal_site_email" label="Site email address for system notifications" example="system@example.com">
 #<UDF name="drupal_account_email" label="Account email address for admin user" example="admin@example.com">
 #<UDF name="drupal_username" label="Site maintenance account username" example="admin">
-#<UDF name="drupal_password" label="Site maintenance account password" example="A strong password">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -52,7 +51,6 @@ function udf {
   drupal_site_email: ${DRUPAL_SITE_EMAIL}
   drupal_account_email: ${DRUPAL_ACCOUNT_EMAIL}
   drupal_username: ${DRUPAL_USERNAME}
-  drupal_password: ${DRUPAL_PASSWORD}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

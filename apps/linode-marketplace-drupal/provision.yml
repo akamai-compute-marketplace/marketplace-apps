@@ -17,3 +17,4 @@
         path: group_vars/linode/vars
         block: | 
           mysql_drupal_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          drupal_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
