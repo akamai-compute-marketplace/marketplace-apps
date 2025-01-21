@@ -1,0 +1,57 @@
+---
+#configure rabbitmq
+
+# add admin user 
+
+- name: create rabbitmq admin user
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_admin_username }}"
+    password: "{{ rabbitmq_admin_password }}"
+    tags: administrator
+    vhost: /
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present  
+  no_log: true
+
+# add privileged user
+
+- name: create rabbitmq vhost
+  community.rabbitmq.rabbitmq_vhost:
+    name: "{{ _domain }}"
+    state: present
+
+- name: create rabbitmq user
+  community.rabbitmq.rabbitmq_user:
+    user: "{{ rabbitmq_username }}"
+    password: "{{ rabbitmq_password }}"
+    tags: management
+    permissions:
+      - vhost: "{{ _domain }}"
+        configure_priv: .*
+        read_priv: .*
+        write_priv: .*
+    state: present  
+  no_log: true
+      
+# remove default guest user
+
+- name: remove guest user
+  community.rabbitmq.rabbitmq_user:
+    user: guest
+    state: absent      
+
+- name: enable rabbitmq management ui      
+  community.rabbitmq.rabbitmq_plugin:
+    names: rabbitmq_management
+    state: enabled
+
+- name: update rabbitmq config
+  template:
+    src: templates/rabbitmq.conf.j2
+    dest: '{{ rabbitmq_conf }}'
+    owner: root
+    group: rabbitmq
+    mode: 0644
+  notify: restart rabbitmq

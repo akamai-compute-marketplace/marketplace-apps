@@ -1,0 +1,14 @@
+## Provides modern Erlang/OTP releases
+##
+deb [arch=amd64 signed-by=/usr/share/keyrings/rabbitmq.{{ erlang_keyid }}] https://ppa1.rabbitmq.com/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ distribution_release }} main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.{{ erlang_keyid }}] https://ppa1.rabbitmq.com/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ distribution_release }} main
+# another mirror for redundancy
+deb [arch=amd64 signed-by=/usr/share/keyrings/rabbitmq.{{ erlang_keyid }}] https://ppa2.rabbitmq.com/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ distribution_release }} main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.{{ erlang_keyid }}] https://ppa2.rabbitmq.com/rabbitmq/rabbitmq-erlang/deb/ubuntu {{ distribution_release }} main
+## Provides RabbitMQ
+##
+deb [arch=amd64 signed-by=/usr/share/keyrings/rabbitmq.{{ server_keyid }} ] https://ppa1.rabbitmq.com/rabbitmq/rabbitmq-server/deb/ubuntu {{ distribution_release }} main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.{{ server_keyid }} ] https://ppa1.rabbitmq.com/rabbitmq/rabbitmq-server/deb/ubuntu {{ distribution_release }} main
+# another mirror for redundancy
+deb [arch=amd64 signed-by=/usr/share/keyrings/rabbitmq.{{ server_keyid }} ] https://ppa2.rabbitmq.com/rabbitmq/rabbitmq-server/deb/ubuntu {{ distribution_release }} main
+deb-src [signed-by=/usr/share/keyrings/rabbitmq.{{ server_keyid }} ] https://ppa2.rabbitmq.com/rabbitmq/rabbitmq-server/deb/ubuntu {{ distribution_release }} main
