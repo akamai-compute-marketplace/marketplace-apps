@@ -100,7 +100,7 @@ linode-cli linodes create \
   --private_ip true \
   --region us-mia \
   --stackscript_data '{"user_name": "{USERNAME}","disable_root":"No","token_password":"${TOKEN}","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","allowed_ips_amqp":"${ALLOWED_IPS_AMQP}","rabbitmq_admin_username":"${RABBITMQ_ADMIN_USERNAME}","rabbitmq_username":"${RABBITMQ_USERNAME}","rabbitmq_version":"${RABBITMQ_VERSION}"}' \
-  --stackscript_id 000000 \
+  --stackscript_id 688890 \
   --type g6-dedicated-4 \
   --label rabbitmq-server \
   --root_pass ${ROOT_PASS} \
