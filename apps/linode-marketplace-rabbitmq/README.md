@@ -71,7 +71,7 @@ curl -H "Content-Type: application/json" \
         "rabbitmq_username": "${RABBITMQ_USERNAME}",
         "rabbitmq_version": "${RABBITMQ_VERSION}"
     },
-    "stackscript_id": 000000,
+    "stackscript_id": 688890,
     "type": "g6-dedicated-4",
     "label": "rabbitmq-server",
     "root_pass": "${ROOT_PASS}",
