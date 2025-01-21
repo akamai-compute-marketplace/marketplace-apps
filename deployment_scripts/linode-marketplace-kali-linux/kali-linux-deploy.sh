@@ -31,14 +31,31 @@ function cleanup {
 }
 
 function udf {
+  # Translate UDF values to boolean variables
+  local EVERYTHING_BOOL=false
+  local HEADLESS_BOOL=false
+  local VNC_BOOL=false
+  local DISABLE_ROOT_BOOL=false
+
+  if [ "${EVERYTHING}" == "Yes" ]; then
+    EVERYTHING_BOOL=true
+  fi
+
+  if [ "${HEADLESS}" == "Yes" ]; then
+    HEADLESS_BOOL=true
+  fi
+
+  if [ "${VNC}" == "Yes" ]; then
+    VNC_BOOL=true
+  fi
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
   sed 's/  //g' <<EOF > ${group_vars}
   # Kali Linux settings
-  kali_package: "{{ 'kali-linux-everything' if '${EVERYTHING}' == 'Yes' else 'kali-linux-headless' if '${HEADLESS}' == 'Yes' else '' }}"
+  kali_package: "{{ 'kali-linux-everything' if ${EVERYTHING_BOOL} else 'kali-linux-headless' if ${HEADLESS_BOOL} else '' }}"
 
   # VNC settings
-  vnc_enabled: "{{ '${VNC}' == 'Yes' }}"
+  vnc_enabled: ${VNC_BOOL}
   vnc_username: "${VNC_USERNAME}"
   vnc_password: "${VNC_PASSWORD}"
 
@@ -50,9 +67,6 @@ EOF
 }
 
 function run {
-  # install dependancies
-  # apt-get update
-  # apt-get install -y git python3 python3-pip
   # Set debconf to automatically handle service restarts
   echo 'libc6:amd64 libraries/restart-without-asking boolean true' | debconf-set-selections
   echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
