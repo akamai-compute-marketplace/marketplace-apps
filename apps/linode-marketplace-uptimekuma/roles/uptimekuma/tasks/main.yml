@@ -29,29 +29,10 @@
   retries: 5
   delay: 10
 
-#- name: execute SQL command in Docker container
-#  shell: docker exec uptime-kuma sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-- name: execute sql command in Docker container using sqlite3
-  community.docker.docker_container:
-    name: uptime-kuma
-    command: >
-     sqlite3 /app/data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-    state: present
-
-#- name: wait for uptime-kuma container to be ready after insert
-#  community.docker.docker_container_info:
-#    name: uptime-kuma
-#  register: container_info
-#  until: container_info.container.State.Status == 'running'
-#  retries: 5
-#  delay: 10
-
-- name: ensure user is there debugging
-  shell: docker exec uptime-kuma sqlite3 /app/data/kuma.db "SELECT * FROM user;"
-
-- name: Pause for 5 seconds
-  pause:
-    seconds: 5
+- name: execute SQL commiand in Docker container
+  command:
+    cmd: |
+      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
 
 - name: run npm run reset-password for uptime kuma
   expect:
