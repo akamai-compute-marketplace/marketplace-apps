@@ -21,32 +21,6 @@
     ports:
       - "127.0.0.1:3001:3001"
 
-- name: wait for uptime-kuma container to be ready
-  community.docker.docker_container_info:
-    name: uptime-kuma
-  register: container_info
-  until: container_info.container.State.Status == 'running'
-  retries: 5
-  delay: 10
-
-- name: execute SQL commiand in Docker container
-  command:
-    cmd: |
-      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-
-- name: run npm run reset-password for uptime kuma
-  expect:
-    command: "docker exec -it uptime-kuma npm run reset-password"
-    responses:
-      'New Password': '{{ kuma_password }}'
-      'Confirm New Password': '{{ kuma_password }}' 
-    timeout: 30
-
-- name: restart the docker container
-  docker_container:
-    name: uptime-kuma
-    state: restarted 
-
 # Nginx
 - name: install nginx
   apt:
@@ -75,3 +49,22 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
+
+# uptime-kuma user creation
+- name: execute sql command in docker container
+  command:
+    cmd: |
+      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
+
+- name: run npm run reset-password for uptime kuma
+  expect:
+    command: "docker exec -it uptime-kuma npm run reset-password"
+    responses:
+      'New Password': '{{ kuma_password }}'
+      'Confirm New Password': '{{ kuma_password }}' 
+    timeout: 30
+
+- name: restart the docker container
+  docker_container:
+    name: uptime-kuma
+    restart: true

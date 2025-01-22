@@ -13,7 +13,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## KUMA Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-#<UDF name="kuma_user_name" label="The Uptime Kuma Username: *No Capital Letters or Special Characters*">
+#<UDF name="kuma_user_name" label="The Username to log into your Uptime Kuma dashboard: *No Capital Letters or Special Characters*">
 
 
 # git repo
@@ -91,7 +91,6 @@ function run {
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   
-
   # populate group_vars
   udf
   # run playbooks
