@@ -21,6 +21,46 @@
     ports:
       - "127.0.0.1:3001:3001"
 
+- name: gather docker logs to ensure app is created
+  command: 
+    cmd: |
+      docker logs uptime-kuma
+  register: docker_logs
+  until: "'[SERVER] INFO: Connected' in docker_logs.stdout"
+  retries: 5
+  delay: 10
+  failed_when: false
+  changed_when: false
+
+- name: fail if the app isn't connected
+  fail:
+    msg: "The log '[SERVER] INFO: Connected' was not found within the allowed retries."
+  when: "'[SERVER] INFO: Connected' not in docker_logs.stdout"
+
+- name: continue once app is ready
+  debug:
+    msg: "Found '[SERVER] INFO: Connected' in logs. Continuing with the next task."
+  when: "'[SERVER] INFO: Connected' in docker_logs.stdout"
+
+# uptime-kuma user creation
+- name: execute sql command in docker container
+  command:
+    cmd: |
+      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
+
+- name: run npm run reset-password for uptime kuma
+  expect:
+    command: "docker exec -it uptime-kuma npm run reset-password"
+    responses:
+      'New Password': '{{ kuma_password }}'
+      'Confirm New Password': '{{ kuma_password }}' 
+    timeout: 30
+
+- name: restart the docker container
+  docker_container:
+    name: uptime-kuma
+    restart: true
+
 # Nginx
 - name: install nginx
   apt:
@@ -49,22 +89,3 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
-
-# uptime-kuma user creation
-- name: execute sql command in docker container
-  command:
-    cmd: |
-      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
-
-- name: run npm run reset-password for uptime kuma
-  expect:
-    command: "docker exec -it uptime-kuma npm run reset-password"
-    responses:
-      'New Password': '{{ kuma_password }}'
-      'Confirm New Password': '{{ kuma_password }}' 
-    timeout: 30
-
-- name: restart the docker container
-  docker_container:
-    name: uptime-kuma
-    restart: true
