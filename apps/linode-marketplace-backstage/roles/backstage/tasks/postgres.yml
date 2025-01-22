@@ -1,0 +1,10 @@
+---
+# update postgresql access
+
+- name: update postgres password
+  postgresql_query:
+    db: postgres
+    query: "ALTER USER postgres PASSWORD '{{ postgres_password }}';"
+  become: true
+  become_method: su
+  become_user: postgres
