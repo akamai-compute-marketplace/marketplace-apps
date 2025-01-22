@@ -21,34 +21,22 @@
     ports:
       - "127.0.0.1:3001:3001"
 
-- name: gather docker logs to ensure app is created
-  command: 
-    cmd: |
-      docker logs uptime-kuma
-  register: docker_logs
-  until: "'[SERVER] INFO: Connected' in docker_logs.stdout"
-  retries: 5
-  delay: 10
-  failed_when: false
-  changed_when: false
-
-- name: fail if the app isn't connected
-  fail:
-    msg: "The log '[SERVER] INFO: Connected' was not found within the allowed retries."
-  when: "'[SERVER] INFO: Connected' not in docker_logs.stdout"
-
-- name: continue once app is ready
-  debug:
-    msg: "Found '[SERVER] INFO: Connected' in logs. Continuing with the next task."
-  when: "'[SERVER] INFO: Connected' in docker_logs.stdout"
+- name: wait uptime kuma to be ready
+  wait_for:
+    host: 127.0.0.1
+    port: 3001
+    state: started
+    timeout: 30  
+    delay: 5      
+    attempt: 6 
 
 # uptime-kuma user creation
-- name: execute sql command in docker container
+- name: insert uptime kuma user into db
   command:
     cmd: |
       docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
 
-- name: run npm run reset-password for uptime kuma
+- name: reset uptime kuma user password
   expect:
     command: "docker exec -it uptime-kuma npm run reset-password"
     responses:
