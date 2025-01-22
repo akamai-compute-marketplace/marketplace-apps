@@ -23,12 +23,9 @@
 
 - name: wait uptime kuma to be ready
   wait_for:
-    host: 127.0.0.1
+    host: localhost
     port: 3001
-    state: started
-    timeout: 30  
-    delay: 5      
-    attempt: 6 
+  timeout: 30      
 
 # uptime-kuma user creation
 - name: insert uptime kuma user into db
