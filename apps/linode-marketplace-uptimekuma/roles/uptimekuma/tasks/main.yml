@@ -21,11 +21,16 @@
     ports:
       - "127.0.0.1:3001:3001"
 
-- name: wait uptime kuma to be ready
-  wait_for:
-    host: localhost
-    port: 3001
-  timeout: 30      
+- name: check for uptime kuma to be ready on localhost
+  uri:
+    url: "http://127.0.0.1:3001/dashboard"
+    method: GET
+    return_content: yes
+  register: result
+  until: result.content is search("Uptime Kuma")
+  retries: 10
+  delay: 5
+  failed_when: result.status != 200    
 
 # uptime-kuma user creation
 - name: insert uptime kuma user into db
