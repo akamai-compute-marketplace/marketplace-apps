@@ -61,7 +61,7 @@
 
 - name: Create Drupal directory
   file:
-    path: /var/www/drupal
+    path: /var/www/{{ _domain }}
     state: directory
     owner: www-data
     group: www-data
@@ -70,7 +70,7 @@
 - name: Install Drupal 10.4.1 using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project:10.4.1 /var/www/drupal --no-interaction"
+    arguments: "drupal/recommended-project:10.4.1 /var/www/{{ _domain }} --no-interaction"
     working_dir: /var/www
   become: yes
   become_user: www-data
@@ -85,7 +85,7 @@
 
 - name: Create files directory
   file:
-    path: /var/www/drupal/web/sites/default/files
+    path: /var/www/{{ _domain }}/web/sites/default/files
     state: directory
     mode: '0755'
     owner: www-data
@@ -93,8 +93,8 @@
 
 - name: Copy default settings file
   copy:
-    src: /var/www/drupal/web/sites/default/default.settings.php
-    dest: /var/www/drupal/web/sites/default/settings.php
+    src: /var/www/{{ _domain }}/web/sites/default/default.settings.php
+    dest: /var/www/{{ _domain }}/web/sites/default/settings.php
     remote_src: yes
     owner: www-data
     group: www-data

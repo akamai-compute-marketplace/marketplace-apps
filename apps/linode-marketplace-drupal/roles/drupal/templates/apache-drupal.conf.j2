@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     ServerAdmin webmaster@{{ _domain }}
-    DocumentRoot /var/www/drupal/web
+    DocumentRoot /var/www/{{ _domain }}/web
     ServerName {{ _domain }}
     ServerAlias www.{{ _domain }}
 
@@ -11,11 +11,11 @@
 
 <VirtualHost *:443>
     ServerAdmin webmaster@{{ _domain }}
-    DocumentRoot /var/www/drupal/web
+    DocumentRoot /var/www/{{ _domain }}/web
     ServerName {{ _domain }}
     ServerAlias www.{{ _domain }}
 
-    <Directory /var/www/drupal/web>
+    <Directory /var/www/{{ _domain }}/web>
         Options FollowSymLinks
         AllowOverride All
         Require all granted
