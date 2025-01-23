@@ -38,3 +38,4 @@
     name: gunicorn
     enabled: yes
     state: started
+  notify: restart gunicorn
