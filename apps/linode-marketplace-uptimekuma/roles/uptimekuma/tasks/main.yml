@@ -1,9 +1,16 @@
 ---
+- name: install prereqs 
+  apt:
+    name: 
+      - expect
+      - sqlite3
+    state: present
+
 - name: create docker volume
   docker_volume:
     name: "uptime-kuma"
 
-- name: run postgres docker container
+- name: run uptimekuma docker container
   docker_container:
     name: uptime-kuma
     image: louislam/uptime-kuma:1
@@ -12,7 +19,38 @@
     volumes:
       - "uptime-kuma:/app/data"
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
+
+- name: check for uptime kuma to be ready on localhost
+  uri:
+    url: "http://127.0.0.1:3001/dashboard"
+    method: GET
+    return_content: yes
+  register: result
+  until: result.content is search("Uptime Kuma")
+  retries: 10
+  delay: 5
+  failed_when: result.status != 200    
+
+# uptime-kuma user creation
+- name: insert uptime kuma user into db
+  command:
+    cmd: |
+      docker exec uptime-kuma sqlite3 data/kuma.db "INSERT INTO user (id, username, password, active, timezone, twofa_secret, twofa_status, twofa_last_token) VALUES (1, '{{ kuma_user_name }}', NULL, 1, NULL, NULL, 0, NULL);"
+
+- name: reset uptime kuma user password
+  expect:
+    command: "docker exec -it uptime-kuma npm run reset-password"
+    responses:
+      'New Password': '{{ kuma_password }}'
+      'Confirm New Password': '{{ kuma_password }}' 
+    timeout: 30
+  no_log: true
+
+- name: restart the docker container
+  docker_container:
+    name: uptime-kuma
+    restart: true
 
 # Nginx
 - name: install nginx
