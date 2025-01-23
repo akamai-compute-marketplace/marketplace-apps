@@ -13,6 +13,14 @@
     group: root
     mode: '0644'
 
+- name: Create tmpfiles.d configuration for gunicorn
+  template:
+    src: gunicorn-tmpfiles.conf.j2
+    dest: /etc/tmpfiles.d/gunicorn.conf
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Create socket directory
   file:
     path: /run/gunicorn
