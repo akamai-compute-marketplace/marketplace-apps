@@ -3,7 +3,7 @@ server {
     server_name {{ _domain }};
 
     location / {
-        proxy_pass http://unix:/tmp/gunicorn.sock;
+        proxy_pass http://unix:/run/gunicorn/gunicorn.sock;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -11,6 +11,6 @@ server {
     }
 
     location /static/ {
-        alias /var/www/flask_project/static/;
+        alias /var/www/{{ _domain }}/static/;
     }
 }

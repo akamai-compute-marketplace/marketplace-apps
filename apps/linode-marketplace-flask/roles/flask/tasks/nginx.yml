@@ -4,27 +4,28 @@
     state: present
     update_cache: yes
 
+- name: Enable nginx service
+  systemd:
+    name: nginx
+    enabled: yes
+    state: started
+
 - name: Create nginx configuration
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/flask_app
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
     owner: root
     group: root
     mode: '0644'
 
 - name: Enable nginx site configuration
   file:
-    src: /etc/nginx/sites-available/flask_app
-    dest: /etc/nginx/sites-enabled/flask_app
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
 - name: Remove default nginx site
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-
-- name: Restart nginx
-  service:
-    name: nginx
-    state: restarted
-    enabled: yes 
+  notify: restart nginx

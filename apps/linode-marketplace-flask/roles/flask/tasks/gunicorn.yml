@@ -2,10 +2,26 @@
 - name: Install Gunicorn in virtual environment
   pip:
     name: gunicorn
-    virtualenv: /var/www/flask_project/venv
+    virtualenv: "/var/www/{{ _domain }}/venv"
     state: present
 
 - name: Create gunicorn systemd service file
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create socket directory
+  file:
+    path: /run/gunicorn
+    state: directory
+    owner: "{{ username }}"
+    group: www-data
+    mode: '0750'
+
+- name: Update gunicorn service socket path
   template:
     src: gunicorn.service.j2
     dest: /etc/systemd/system/gunicorn.service
