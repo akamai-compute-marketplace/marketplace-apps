@@ -45,6 +45,7 @@
       'New Password': '{{ kuma_password }}'
       'Confirm New Password': '{{ kuma_password }}' 
     timeout: 30
+  no_log: true
 
 - name: restart the docker container
   docker_container:
