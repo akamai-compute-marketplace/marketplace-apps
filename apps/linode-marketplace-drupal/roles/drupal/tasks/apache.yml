@@ -28,7 +28,7 @@
 - name: Configure Apache virtual host
   template:
     src: apache-drupal.conf.j2
-    dest: /etc/apache2/sites-available/drupal.conf
+    dest: /etc/apache2/sites-available/{{ _domain }}.conf
     owner: root
     group: root
     mode: '0644'
@@ -41,7 +41,7 @@
 
 - name: Enable Drupal site
   file:
-    src: /etc/apache2/sites-available/drupal.conf
-    dest: /etc/apache2/sites-enabled/drupal.conf
+    src: /etc/apache2/sites-available/{{ _domain }}.conf
+    dest: /etc/apache2/sites-enabled/{{ _domain }}.conf
     state: link
   notify: restart apache 
