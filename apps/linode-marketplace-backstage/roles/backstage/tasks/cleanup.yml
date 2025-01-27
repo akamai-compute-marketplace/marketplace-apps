@@ -1,0 +1,10 @@
+---
+# remove test nvm env vars and package.json
+
+- name: removing env vars and package.json
+  file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - '{{ username_directory }}/.nvmvars'
+    - '{{ username_directory }}/package.json'

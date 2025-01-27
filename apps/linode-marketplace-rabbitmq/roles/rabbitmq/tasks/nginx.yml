@@ -1,0 +1,25 @@
+---
+# install and configure nginx
+
+- name: install nginx
+  apt:
+    pkg:
+      - nginx-full
+    state: latest
+
+- name: add nginx config
+  template:
+    src: 'templates/vhost.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: enable rabbitmq vhost
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: remove default vhost
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: restart nginx

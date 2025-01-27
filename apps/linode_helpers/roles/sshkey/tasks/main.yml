@@ -5,7 +5,7 @@
   lineinfile:
     dest: '/home/{{ username }}/.ssh/authorized_keys'
     line: "{{ pubkey }}"
-    create: Yes
+    create: true
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0600'

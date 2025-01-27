@@ -1,0 +1,39 @@
+---
+# set app specific ufw rules 
+- name: Allow all access to tcp port 22
+  community.general.ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# allow public access to management ui
+
+- name: Allow public access to tcp port 80 (management ui)
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: Allow public access to tcp port 443 (management ui)
+  community.general.ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+
+# allow private when IPs defined (internal)
+
+- name: Allow internal access to tcp port 5672 (amqp)
+  community.general.ufw:
+    rule: allow
+    port: '5672'
+    proto: tcp
+    src: '{{ item }}'
+  loop: '{{ allowed_ips_amqp }}'
+  when: allowed_ips_amqp is defined
+
+- name: Allow public access to tcp port 5672 (amqp)
+  community.general.ufw:
+    rule: allow
+    port: '5672'
+    proto: tcp
+  when: allowed_ips_amqp is undefined

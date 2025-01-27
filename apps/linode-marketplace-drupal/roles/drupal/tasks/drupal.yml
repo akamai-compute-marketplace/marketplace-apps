@@ -1,0 +1,101 @@
+---
+- name: Download Composer files
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { url: "https://composer.github.io/installer.sig", dest: "/tmp/composer-setup.sig", mode: "0644" }
+    - { url: "https://getcomposer.org/installer", dest: "/tmp/composer-setup.php", mode: "0755" }
+
+- name: Verify Composer installer checksum
+  block:
+    - name: Calculate actual checksum of the downloaded installer
+      command: php -r "echo hash_file('sha384', '/tmp/composer-setup.php');"
+      register: actual_checksum
+
+    - name: Read expected checksum from file
+      slurp:
+        src: /tmp/composer-setup.sig
+      register: expected_checksum
+
+    - name: Compare checksums
+      assert:
+        that:
+          - actual_checksum.stdout == expected_checksum.content | b64decode | trim
+        fail_msg: |
+          SECURITY ERROR: Composer installer checksum verification failed!
+          Expected: {{ expected_checksum.content | b64decode | trim }}
+          Got: {{ actual_checksum.stdout }}
+          This could indicate a compromised installer file or download error.
+          Installation cannot continue.
+
+  rescue:
+    - name: Cleanup invalid installer
+      file:
+        path: /tmp/composer-setup.php
+        state: absent
+
+    - name: Fail the playbook gracefully
+      fail:
+        msg: "Checksum validation failed. Installation aborted."
+
+- name: Install Composer 2.8.3 globally
+  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.8.3
+  args:
+    creates: /usr/local/bin/composer
+
+- name: Create Composer cache directory structure
+  file:
+    path: "/var/www/.cache/composer/{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+  loop:
+    - ""  # Creates the base composer directory
+    - "repo"
+    - "repo/https---repo.packagist.org"
+    - "vcs"
+
+- name: Create Drupal directory
+  file:
+    path: /var/www/{{ _domain }}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Install Drupal 10.4.1 using Composer
+  composer:
+    command: create-project
+    arguments: "drupal/recommended-project:10.4.1 /var/www/{{ _domain }} --no-interaction"
+    working_dir: /var/www
+  become: yes
+  become_user: www-data
+
+- name: Clean up Composer installer files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /tmp/composer-setup.php
+    - /tmp/composer-setup.sig
+
+- name: Create files directory
+  file:
+    path: /var/www/{{ _domain }}/web/sites/default/files
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Copy default settings file
+  copy:
+    src: /var/www/{{ _domain }}/web/sites/default/default.settings.php
+    dest: /var/www/{{ _domain }}/web/sites/default/settings.php
+    remote_src: yes
+    owner: www-data
+    group: www-data
+    mode: '0644'

@@ -1,0 +1,43 @@
+---
+# set app specific ufw rules 
+- name: Allow all access to tcp port 22
+  community.general.ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# allow private when IPs defined (internal)
+
+- name: adding ufw rules for whitelist
+  block:
+    - name: Allow access to tcp port 3000
+      community.general.ufw:
+        rule: allow
+        port: '3000'
+        proto: tcp
+        src: '{{ item }}'
+      loop: '{{ allowed_ips }}'
+    - name: Allow access to tcp port 7007
+      community.general.ufw:
+        rule: allow
+        port: '7007'
+        proto: tcp
+        src: '{{ item }}'
+      loop: '{{ allowed_ips }}'
+  when: allowed_ips is defined
+
+# allow public access when IPs not defined (public)
+
+- name: adding ufw rules for whitelist
+  block:
+    - name: Allow access to tcp port 3000
+      community.general.ufw:
+        rule: allow
+        port: '3000'
+        proto: tcp
+    - name: Allow access to tcp port 7007
+      community.general.ufw:
+        rule: allow
+        port: '7007'
+        proto: tcp
+  when: allowed_ips is undefined

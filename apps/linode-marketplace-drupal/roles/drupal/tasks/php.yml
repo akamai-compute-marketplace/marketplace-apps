@@ -1,0 +1,27 @@
+---
+- name: Add PHP repository
+  apt_repository:
+    repo: "ppa:ondrej/php"
+    state: present
+    update_cache: yes
+
+- name: Install PHP and extensions
+  apt:
+    name: "{{ php_packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    php_packages:
+      - php8.3
+      - php8.3-cli
+      - php8.3-common
+      - php8.3-curl
+      - php8.3-gd
+      - php8.3-mbstring
+      - php8.3-mysql
+      - php8.3-opcache
+      - php8.3-xml
+      - php8.3-zip
+      - php8.3-bcmath
+      - libapache2-mod-php8.3
+  notify: restart apache
