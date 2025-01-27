@@ -1,0 +1,19 @@
+---
+# Main Drupal installation tasks
+- name: Import MariaDB tasks
+  import_tasks: mariadb.yml
+
+- name: Import PHP tasks
+  import_tasks: php.yml
+
+- name: Import Apache tasks
+  import_tasks: apache.yml
+
+- name: Import SSL tasks
+  import_tasks: ssl.yml
+
+- name: Import Drupal tasks
+  import_tasks: drupal.yml
+
+- name: Import Site Installation tasks
+  import_tasks: site-install.yml
