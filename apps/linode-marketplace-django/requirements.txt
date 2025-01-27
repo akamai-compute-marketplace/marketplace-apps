@@ -13,5 +13,5 @@ docker==6.1.3
 
 #for django
 psycopg2-binary==2.9.9
-django==5.0.3
+django==5.0.10
 gunicorn==22.0.0
