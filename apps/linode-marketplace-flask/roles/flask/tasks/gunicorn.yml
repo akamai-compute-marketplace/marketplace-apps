@@ -1,0 +1,49 @@
+---
+- name: Install Gunicorn in virtual environment
+  pip:
+    name: gunicorn
+    virtualenv: "/var/www/{{ _domain }}/venv"
+    state: present
+
+- name: Create gunicorn systemd service file
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create tmpfiles.d configuration for gunicorn to create socket directory on reboot
+  template:
+    src: gunicorn-tmpfiles.conf.j2
+    dest: /etc/tmpfiles.d/gunicorn.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create socket directory
+  file:
+    path: /run/gunicorn
+    state: directory
+    owner: "{{ username }}"
+    group: www-data
+    mode: '0750'
+
+- name: Update gunicorn service socket path
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start gunicorn service
+  systemd:
+    name: gunicorn
+    enabled: yes
+    state: started
+  notify: restart gunicorn

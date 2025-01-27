@@ -1,0 +1,13 @@
+---
+# Main Flask installation tasks
+- name: Import Flask tasks
+  import_tasks: flask.yml
+
+- name: Import Gunicorn tasks
+  import_tasks: gunicorn.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml
+
+- name: Import sample flask app
+  import_tasks: sample_app.yml
