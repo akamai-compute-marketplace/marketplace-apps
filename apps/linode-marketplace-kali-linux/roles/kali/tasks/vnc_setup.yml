@@ -1,13 +1,26 @@
 ---
-- name: Install XFCE and VNC packages
+- name: Install Kali XFCE and VNC packages
   apt:
     name:
-      - xfce4
-      - xfce4-goodies
+      - kali-desktop-xfce
       - dbus-x11
       - tigervnc-standalone-server
       - expect
+      - lightdm
     state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Configure lightdm as default display manager
+  debconf:
+    name: lightdm
+    question: shared/default-x-display-manager
+    value: lightdm
+    vtype: select
+
+- name: Set Xfce as default session manager
+  command: update-alternatives --set x-session-manager /usr/bin/xfce4-session
+  changed_when: true
 
 - name: Create VNC user
   user:
