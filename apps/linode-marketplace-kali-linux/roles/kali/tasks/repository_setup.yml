@@ -1,0 +1,22 @@
+---
+- name: Add non-free repository
+  apt_repository:
+    repo: deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
+    state: present
+    filename: kali-nonfree
+
+- name: Install firmware-misc-nonfree
+  apt:
+    name: firmware-misc-nonfree
+    state: present
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Fix broken packages
+  apt:
+    clean: true
+    autoclean: true
+    autoremove: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive 
