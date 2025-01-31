@@ -64,7 +64,7 @@ EOF
   if [[ -n ${SUBDOMAIN} ]]; then
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
   else 
-    echo "subdomain: stream" >> ${group_vars}
+    echo "subdomain: www" >> ${group_vars}
   fi
  
   if [[ -n ${TOKEN_PASSWORD} ]]; then
