@@ -5,12 +5,7 @@ map $http_upgrade $connection_upgrade {
 
 server {
     server_name {{ _domain }};
-
-    listen 443 ssl;
-    ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    listen 80;
 
     location / {
         proxy_set_header Host $host;
