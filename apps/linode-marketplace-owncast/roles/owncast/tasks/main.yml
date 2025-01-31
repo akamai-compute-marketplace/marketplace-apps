@@ -2,8 +2,8 @@
 - name: Download and install NGINX
   include_tasks: nginx.yml
 
-- name: Configure SSL
-  include_tasks: ssl.yml
+- name: Import SSL tasks
+  import_tasks: ssl.yml
   
 - name: Download and install Owncast
   include_tasks: owncast.yml 

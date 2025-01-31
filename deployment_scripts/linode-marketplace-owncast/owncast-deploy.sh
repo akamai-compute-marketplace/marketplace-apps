@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 DEBUG="NO"
-trap "cleanup $? $LINENO" EXIT
+if [ "${DEBUG}" == "NO" ]; then
+  trap "cleanup $? $LINENO" EXIT
+fi
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
