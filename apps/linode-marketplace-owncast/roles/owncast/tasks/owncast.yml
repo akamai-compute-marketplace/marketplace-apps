@@ -1,0 +1,71 @@
+---
+- name: Create temporary directory
+  tempfile:
+    state: directory
+    suffix: owncast
+  register: temp_dir
+
+- name: Download Owncast
+  get_url:
+    url: "https://github.com/owncast/owncast/releases/download/v0.2.1/Owncast-0.2.1-linux-64bit.zip"
+    dest: "{{ temp_dir.path }}/owncast.zip"
+    mode: '0644'
+
+- name: Create Owncast directory
+  file:
+    path: /opt/owncast
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Create Owncast data directory
+  file:
+    path: /opt/owncast/data
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Extract Owncast
+  unarchive:
+    src: "{{ temp_dir.path }}/owncast.zip"
+    dest: "{{ temp_dir.path }}"
+    remote_src: yes
+
+- name: Move Owncast files
+  copy:
+    src: "{{ temp_dir.path }}/owncast/"
+    dest: /opt/owncast/
+    remote_src: yes
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: preserve
+    directory_mode: '0755'
+
+- name: Ensure correct ownership of all Owncast files
+  file:
+    path: /opt/owncast
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    recurse: yes
+
+- name: Create Owncast service file
+  template:
+    src: owncast.service.j2
+    dest: /etc/systemd/system/owncast.service
+    mode: '0644'
+
+- name: Start and enable Owncast service
+  systemd:
+    name: owncast
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Set admin password
+  command: 
+    cmd: ./owncast --adminpassword {{ owncast_admin_password }}
+    chdir: /opt/owncast
+  notify:
+    - restart owncast

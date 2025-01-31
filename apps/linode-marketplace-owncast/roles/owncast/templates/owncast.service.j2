@@ -1,0 +1,14 @@
+[Unit]
+Description=Owncast Live Streaming Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/owncast/owncast
+WorkingDirectory=/opt/owncast
+User={{ username }}
+Group={{ username }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target 
