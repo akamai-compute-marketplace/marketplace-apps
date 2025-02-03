@@ -30,14 +30,14 @@
     mode: '0755'
     recurse: yes
 
-- name: Set admin password in config
-  copy:
-    dest: /opt/owncast/data/config.yaml
-    content: |
-      adminPassword: "{{ owncast_admin_password }}"
-    owner: "{{ username }}"
-    group: "{{ username }}"
-    mode: '0600'
+# - name: Set admin password in config
+#   copy:
+#     dest: /opt/owncast/data/config.yaml
+#     content: |
+#       adminPassword: "{{ owncast_admin_password }}"
+#     owner: "{{ username }}"
+#     group: "{{ username }}"
+#     mode: '0600'
 
 - name: Create Owncast service file
   template:
@@ -51,4 +51,6 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+
     
