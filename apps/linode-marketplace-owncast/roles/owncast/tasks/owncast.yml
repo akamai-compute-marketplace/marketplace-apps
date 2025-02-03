@@ -30,20 +30,18 @@
     mode: '0755'
     recurse: yes
 
-# - name: Set admin password in config
-#   copy:
-#     dest: /opt/owncast/data/config.yaml
-#     content: |
-#       adminPassword: "{{ owncast_admin_password }}"
-#     owner: "{{ username }}"
-#     group: "{{ username }}"
-#     mode: '0600'
-
 - name: Create Owncast service file
   template:
     src: owncast.service.j2
     dest: /etc/systemd/system/owncast.service
     mode: '0644'
+
+- name: Reset Owncast admin password using CLI
+  shell: "timeout 5 sudo -u {{ username }} ./owncast --adminpassword {{ owncast_admin_password }}"
+  args:
+    chdir: /opt/owncast
+  ignore_errors: yes
+  no_log: yes
 
 - name: Start and enable Owncast service
   systemd:
@@ -52,5 +50,3 @@
     enabled: yes
     daemon_reload: yes
 
-
-    
