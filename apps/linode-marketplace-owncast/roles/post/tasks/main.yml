@@ -18,3 +18,4 @@
       Sudo Password: {{ password }}
       Owncast Admin Username: admin
       Owncast Admin Password: {{ owncast_admin_password }}
+      
