@@ -1,17 +1,19 @@
 [Unit]
-Description=Owncast Live Streaming Server
-After=network.target
+Description=Owncast Service
 
 [Service]
 Type=simple
-ExecStart=/opt/owncast/owncast
 WorkingDirectory=/opt/owncast
+ReadWritePaths=/opt/owncast
+ExecStart=/opt/owncast/owncast
+Restart=always
+RestartSec=5
 User={{ username }}
 Group={{ username }}
-Restart=always
-RestartSec=10
-StandardOutput=journal
-StandardError=journal
+NoNewPrivileges=true
+SecureBits=noroot
+ProtectSystem=strict
+ProtectHome=read-only
 
 [Install]
-WantedBy=multi-user.target 
+WantedBy=multi-user.target

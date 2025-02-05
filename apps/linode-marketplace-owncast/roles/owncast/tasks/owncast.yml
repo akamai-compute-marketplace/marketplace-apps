@@ -36,13 +36,26 @@
     dest: /etc/systemd/system/owncast.service
     mode: '0644'
 
-# Note: When this task is run, it starts Owncast and does not exit. The timeout is there to exit the task after the password is successfully reset. The task will show a failure due to the timeout, however the password is successfully reset.
 - name: Reset Owncast admin password using CLI
-  shell: "timeout 5 sudo -u {{ username }} ./owncast --adminpassword {{ owncast_admin_password }}"
+  command: "./owncast --adminpassword {{ owncast_admin_password }}"
   args:
     chdir: /opt/owncast
-  ignore_errors: yes
   no_log: yes
+
+# - name: Reset Owncast admin password using CLI
+#   shell: "timeout 5 ./owncast --adminpassword {{ owncast_admin_password }}"
+#   args:
+#     chdir: /opt/owncast
+#   become: yes
+#   become_user: "{{ username }}"
+#   register: owncast_result
+#   no_log: yes
+#   failed_when: owncast_result.rc not in [0, 124]
+
+# Another option:
+# change service file to match owncast's recs
+# wait for port 8080 to be open
+# grep for owncast in process list
 
 - name: Start and enable Owncast service
   systemd:
