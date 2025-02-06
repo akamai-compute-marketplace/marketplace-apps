@@ -37,6 +37,15 @@
   import_role:
     name: update_pkgs
 
+# ufw_install
+- name: enabling ufw
+  import_role:
+    name: ufw
+
+# ufw rules 
+- name: apply ufw rules
+  import_tasks: ufw_rules.yml
+
 # fail2ban
 - name: enabling fail2ban
   import_role:
