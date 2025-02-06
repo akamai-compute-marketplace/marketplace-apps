@@ -18,4 +18,3 @@
         line: | 
           mongo_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           mongo_pritunl_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-          ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

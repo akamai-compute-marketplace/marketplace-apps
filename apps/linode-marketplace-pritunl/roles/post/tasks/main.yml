@@ -18,7 +18,6 @@
         Mongo Root User Password: {{ mongo_root_password }}
         Mongo Pritunl User: pritunl
         Mongo Pritunl User Password: {{ mongo_pritunl_password }}
-        CA Password: {{ ca_password}}
         # Pritunl
         Pritunl Username: pritunl
         Pritunl Password: {{ pritunl_credentials.stdout | regex_findall('password: \"(.*?)\"') | first }}

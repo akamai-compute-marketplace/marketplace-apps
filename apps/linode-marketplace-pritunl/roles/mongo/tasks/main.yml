@@ -30,13 +30,13 @@
     group: mongodb
     mode: '0644'
 
-- name: updating mongod.conf
-  template:
-    src: 'templates/mongod.conf.j2'
-    dest: "/etc/mongod.conf"
-    owner: mongodb
-    group: mongodb
-    mode: '0644'
+- name: enable authentication in mongod.conf
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^#?security:'
+    line: "security:\n  authorization: enabled"
+    state: present
+    backrefs: yes
 
 - name: restarting mongod 
   systemd:

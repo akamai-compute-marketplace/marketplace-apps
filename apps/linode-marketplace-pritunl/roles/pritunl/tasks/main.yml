@@ -1,78 +1,10 @@
 ---
 
-- name: add openvpn repository
-  copy:
-    dest: /etc/apt/sources.list.d/openvpn.list
-    content: |
-      deb [ signed-by=/usr/share/keyrings/openvpn-repo.gpg ] https://build.openvpn.net/debian/openvpn/stable noble main
-
-- name: add pritunl repository
-  copy:
-    dest: /etc/apt/sources.list.d/pritunl.list
-    content: |
-      deb [ signed-by=/usr/share/keyrings/pritunl.gpg ] https://repo.pritunl.com/stable/apt noble main
-
-- name: install gnupg
-  apt:
-    name: gnupg
-    state: present
-
-- name: add openvpn gpg key
-  get_url:
-    url: https://swupdate.openvpn.net/repos/repo-public.gpg
-    dest: /tmp/openvpn-repo.gpg
-
-- name: decrypt and store openvpn gpg key
-  shell: gpg --dearmor --yes -o /usr/share/keyrings/openvpn-repo.gpg /tmp/openvpn-repo.gpg
-
-- name: add pritunl gpg key
-  get_url:
-    url: https://raw.githubusercontent.com/pritunl/pgp/master/pritunl_repo_pub.asc
-    dest: /tmp/pritunl_repo_pub.asc
-
-- name: decrypt and store pritunl gpg key
-  shell: gpg --dearmor --yes -o /usr/share/keyrings/pritunl.gpg /tmp/pritunl_repo_pub.asc
-
-- name: apt update
-  apt:
-    update_cache: yes
-
 - name: install required packages
-  apt:
-    name:
-      - pritunl
-      - openvpn
-      - wireguard
-      - wireguard-tools
-    state: present
+  import_tasks: install.yml
 
-- name: start and enable pritunl
-  systemd:
-    name: pritunl
-    state: started
-    enabled: yes
-
-- name: set pritunl mongo uri
-  shell: "pritunl set-mongodb mongodb://pritunl:{{ mongo_pritunl_password }}@127.0.0.1:27017/pritunl?authSource=pritunl"
-  no_log: true
- 
-- name: restarting pritunl to create the db for app
-  systemd:
-    name: pritunl
-    state: restarted
-
-- name: set pritunl-web user to run the web service
-  shell: pritunl set app.web_systemd true
-
-- name: get login creds
-  shell: pritunl default-password
-  register: pritunl_credentials
-  no_log: true
-
-- name: restarting pritunl to pick up systemd change
-  systemd:
-    name: pritunl
-    state: restarted
+- name: configure pritunl
+  import_tasks: config.yml
 
 
 
