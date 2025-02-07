@@ -4,4 +4,10 @@ App URL: https://{{ _domain }}
 Credentials File: /home/{{ username }}/.credentials
 Documentation: https://www.linode.com/docs/marketplace-docs/guides/pritunl/
 *********************************************************
+Once you deploy Pritunl and setup your server within the Pritunl dashboard, you will need to add the VPN port to your firewall:
+
+    sudo ufw allow $VPNPORT/udp 
+
+**Update `$VPNPORT` with the port your VPN service is utilizing**
+*********************************************************
 To delete this message of the day: rm /etc/motd

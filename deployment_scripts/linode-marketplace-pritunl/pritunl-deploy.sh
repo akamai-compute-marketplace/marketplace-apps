@@ -15,9 +15,6 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address for SOA email" default="">
 
-# MongoDB
-#<UDF name="mongo_version" label="MongoDB version" oneOf="8.0">
-
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
@@ -40,8 +37,6 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  # mongo
-  mongo_version: ${MONGO_VERSION}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

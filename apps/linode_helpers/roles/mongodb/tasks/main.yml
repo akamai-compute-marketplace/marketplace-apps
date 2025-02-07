@@ -5,7 +5,8 @@
 - name: set distro release codename
   set_fact:
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
-
+    mongo_version: 8.0
+    
 - name: add mongodb repository
   copy:
     dest: /etc/apt/sources.list.d/mongodb-org.list
