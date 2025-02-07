@@ -37,10 +37,12 @@
     mode: '0644'
 
 - name: Reset Owncast admin password using CLI
-  shell: "timeout 5 sudo -u {{ username }} ./owncast --adminpassword {{ owncast_admin_password }}"
+  shell: " timeout 5 ./owncast --adminpassword {{ owncast_admin_password }}"
   args:
     chdir: /opt/owncast
   register: owncast_result
+  become: yes
+  become_user: "{{ username }}"
   no_log: yes
   failed_when: owncast_result.rc not in [0, 124]
 
