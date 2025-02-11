@@ -1,0 +1,18 @@
+---
+- name: Copy MOTD template to /etc/motd
+  ansible.builtin.template:
+    src: 'templates/motd.j2'
+    dest: '/etc/motd'
+    mode: '0644'
+- name: Writing creds into file
+  ansible.builtin.copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Plex Admin Username: {{ plex_admin_username }}
+      Plex Admin Password: {{ plex_admin_password }}

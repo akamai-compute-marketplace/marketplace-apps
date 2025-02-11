@@ -1,0 +1,52 @@
+---
+# set_hostname
+- name: Setting up hostname
+  ansible.builtin.import_role:
+    name: hostname
+
+# write _domain to vars.
+- name: Write _domain to vars
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+  when: _domain is defined
+
+# dns creation
+- name: Create dns A record
+  ansible.builtin.import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - default_dns is not defined
+
+# sets customer supplied ssh pubkey to limited user
+- name: Set ssh pubkey
+  ansible.builtin.import_role:
+    name: sshkey
+
+# disable root login w/wo pubkey
+- name: Secure ssh
+  ansible.builtin.import_role:
+    name: securessh
+  when: disable_root is defined
+
+# apt_setup_update
+- name: Update system packages
+  ansible.builtin.import_role:
+    name: update_pkgs
+
+# ufw_install
+- name: Enabling ufw
+  ansible.builtin.import_role:
+    name: ufw
+
+# ufw rules
+- name: Apply ufw rules
+  ansible.builtin.import_tasks: ufw_rules.yml
+
+# fail2ban
+- name: Enabling fail2ban
+  ansible.builtin.import_role:
+    name: fail2ban_install
