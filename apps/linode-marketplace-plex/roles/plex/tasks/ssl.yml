@@ -1,4 +1,4 @@
 ---
 - name: Install lets encrypt certs for plex
-  ansible.builtin.import_role: 
+  ansible.builtin.import_role:
     name: certbot_ssl

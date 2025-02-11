@@ -1,7 +1,7 @@
 ---
 - name: Install plex from repo
   ansible.builtin.apt:
-    pkg: 
+    pkg:
       - plexmediaserver
-    state: latest
+    state: present
     update_cache: true

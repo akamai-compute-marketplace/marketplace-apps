@@ -1,10 +1,10 @@
 ---
 - name: Install required packages
-  apt: 
+  ansible.builtin.apt:
     pkg:
-      - ca-certificates 
-      - software-properties-common 
-      - apt-transport-https 
+      - ca-certificates
+      - software-properties-common
+      - apt-transport-https
       - curl
-    state: latest
-    update_cache: true 
+    state: present
+    update_cache: true

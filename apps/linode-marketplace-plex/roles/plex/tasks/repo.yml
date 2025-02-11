@@ -1,8 +1,11 @@
 ---
-- name: download plex key
+- name: Download plex key
   ansible.builtin.get_url:
     url: https://downloads.plex.tv/plex-keys/PlexSign.key
     dest: '/tmp/PlexSign.key'
+    owner: root
+    group: root
+    mode: 0600
   register: plex_signing_key
 - name: Dearmoring signing key
   andisble.builtin.command:
@@ -15,5 +18,5 @@
     dest: '/etc/apt/sources.list.d/plexmediaserver.list'
     owner: root
     group: root
-    mode: 0644
+    mode: 0640
 
