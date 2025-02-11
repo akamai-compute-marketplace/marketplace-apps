@@ -61,8 +61,3 @@
       - ca-certificates
       - curl
       - software-properties-common
-      - certbot
-      - python3-certbot-nginx
-      - python3
-      - python3-pip
-      - python3-venv

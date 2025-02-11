@@ -1,4 +1,13 @@
 ---
+- name: Install system Python packages required for Flask app
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: yes
+    
 - name: Ensure Flask app directory exists
   file:
     path: "/var/www/{{ _domain }}"
