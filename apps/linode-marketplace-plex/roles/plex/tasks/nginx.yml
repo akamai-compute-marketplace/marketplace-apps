@@ -3,18 +3,19 @@
   ansible.builtin.apt:
     pkg:
       - nginx-full
-    state: latest
-- name: Add nginx config
-  template:
-    src: 'templates/vhost.conf.j2'
-    dest: '/etc/nginx/sites-available/{{ _domain }}'
-- name: enable plex vhost
-  file:
-    src: '/etc/nginx/sites-available/{{ _domain }}'
-    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
-    state: link
-- name: remove default vhost
-  file:
-    path: '/etc/nginx/sites-enabled/default'
-    state: absent
-  notify: restart nginx
+    state: present
+- name: Create nginx snippets dir
+  file: 
+    path: /etc/nginx/snippets
+    state: directory
+    owner: root
+    group: root
+- name: Move the snippets
+  copy: 
+    src: 'files/snippets/{{ item.src }}'
+    dest: '/etc/nginx/snippets/{{ item.dest }}'
+    owner: root
+    group: root
+  loop: 
+    - { src: 'restrictions.conf', dest: 'restrictions.conf' }
+    - { src: 'well-known', dest: 'well-known' }

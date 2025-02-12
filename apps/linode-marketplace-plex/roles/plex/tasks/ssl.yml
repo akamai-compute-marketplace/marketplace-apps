@@ -1,4 +1,48 @@
 ---
-- name: Install lets encrypt certs for plex
-  ansible.builtin.import_role:
-    name: certbot_ssl
+- name: install python3-certbot
+  apt:
+    name: python3-certbot
+    state: present
+
+- name: set certbot plugin
+  set_fact:
+    certbot_plugin: nginx
+    cacheable: yes
+  
+# dry run
+- name: run dry-run for domain
+  shell:
+    cmd: "certbot -n --nginx --agree-tos --dry-run certonly -d {{ _domain }} -m {{ email_address }}"
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+
+# assert that we can get valid certs. Otherwise fail - can't achieve final state
+- name: validate certbot dry-run
+  assert:
+    that: dry_run is not failed
+    fail_msg: "[Error] Certbot dry-run domain. Please check /var/log/letsencrypt/letsencrypt.log"
+    success_msg: "[Info] Certbot dry-run successful!"
+
+- name: installing let's encrypt certificate on provisioner
+  shell:
+    cmd: "certbot -n --nginx --agree-tos certonly -d {{ _domain }} -m {{ email_address }}" 
+
+- name: vhost file
+  template:
+    src: 'templates/vhost_ssl.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: Restart nginx

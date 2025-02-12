@@ -8,7 +8,7 @@
     mode: 0600
   register: plex_signing_key
 - name: Dearmoring signing key
-  andisble.builtin.command:
+  ansible.builtin.command:
     cmd: |
       gpg --dearmor --output
       /usr/share/keyrings/plex.gpg {{ plex_signing_key.dest }}
