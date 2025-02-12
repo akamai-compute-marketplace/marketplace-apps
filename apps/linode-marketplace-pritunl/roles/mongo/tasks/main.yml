@@ -1,0 +1,45 @@
+---
+# install 
+- name: install mongodb
+  import_role:
+    name: mongodb
+
+# user creation
+- name: creating mongo root user
+  community.mongodb.mongodb_user:
+    database: admin
+    name: mongo-root
+    password: "{{ mongo_root_password }}"
+    roles: root 
+    state: present
+
+- name: creating mongo pritunl user
+  community.mongodb.mongodb_user:
+    database: pritunl
+    name: pritunl
+    password: "{{ mongo_pritunl_password }}"
+    roles: dbOwner
+    state: present
+
+# config
+- name: creating mongo config backup
+  copy:
+    src: /etc/mongod.conf
+    dest: /etc/mongod.conf.bak
+    owner: mongodb
+    group: mongodb
+    mode: '0644'
+
+- name: enable authentication in mongod.conf
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^#?security:'
+    line: "security:\n  authorization: enabled"
+    state: present
+    backrefs: yes
+
+- name: restarting mongod 
+  systemd:
+    name: mongod
+    state: restarted
+    enabled: yes

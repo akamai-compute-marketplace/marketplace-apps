@@ -1,0 +1,22 @@
+---
+- name: set pritunl mongo uri
+  shell: "pritunl set-mongodb mongodb://pritunl:{{ mongo_pritunl_password }}@127.0.0.1:27017/pritunl?authSource=pritunl"
+  no_log: true
+ 
+- name: restarting pritunl to create the db for app
+  systemd:
+    name: pritunl
+    state: restarted
+
+- name: set pritunl-web user to run the web service
+  shell: pritunl set app.web_systemd true
+
+- name: get login creds
+  shell: pritunl default-password
+  register: pritunl_credentials
+  no_log: true
+
+- name: restarting pritunl to pick up systemd change
+  systemd:
+    name: pritunl
+    state: restarted
