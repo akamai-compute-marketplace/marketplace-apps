@@ -81,7 +81,7 @@ function run {
     git -C /tmp clone ${GIT_REPO} -b ${BRANCH}
   else
     git -C /tmp clone ${GIT_REPO}
-
+  fi
   # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   apt install python3-venv -y

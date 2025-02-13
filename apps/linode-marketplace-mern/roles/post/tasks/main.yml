@@ -7,6 +7,9 @@
     enabled: yes
   loop:
     - node
+    - nginx
+    - express
+    - mongod
 
 - name: Set up MOTD
   template:
