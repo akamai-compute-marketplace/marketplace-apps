@@ -15,6 +15,3 @@
 
 - name: Import NGINX tasks
   import_tasks: nginx.yml
-
-- name: Import SSL tasks
-  import_tasks: ssl.yml
