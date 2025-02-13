@@ -1,0 +1,20 @@
+---
+- name: restart node.js
+  service:
+    name: node
+    state: restarted
+
+- name: restart nginx
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: restart express
+  systemd:
+    name: express
+    state: restarted
+
+- name: restart mongodb
+  systemd:
+    name: mongod
+    state: restarted

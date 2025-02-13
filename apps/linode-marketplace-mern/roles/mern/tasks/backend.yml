@@ -1,0 +1,42 @@
+---
+- name: Create backend directory
+  file:
+    path: "/var/www/{{ _domain }}/backend"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Install Express backend dependencies
+  npm:
+    path: "/var/www/{{ _domain }}/backend"
+    name: "{{ item }}"
+    state: present
+  loop:
+    - express
+    - cors
+    - dotenv
+
+- name: Copy Express server file
+  copy:
+    src: server.js
+    dest: "/var/www/{{ _domain }}/backend/server.js"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Create Express systemd service
+  template:
+    src: express.conf.j2
+    dest: /etc/systemd/system/express.service
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Express service
+  systemd:
+    name: express
+    state: started
+    enabled: yes 

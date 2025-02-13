@@ -1,0 +1,16 @@
+---
+- name: Create Express systemd service
+  template:
+    src: express.conf.j2
+    dest: /etc/systemd/system/express.service
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Express service
+  systemd:
+    name: express
+    state: started
+    enabled: yes

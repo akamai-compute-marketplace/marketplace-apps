@@ -1,0 +1,13 @@
+---
+- name: Install Drupal
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+
+  roles:
+    - role: common
+    - role: mern
+    - role: post 

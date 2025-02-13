@@ -1,0 +1,19 @@
+---
+- name: Create web root directory for frontend
+  file:
+    path: "/var/www/{{ _domain }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Install Vite and React dependencies
+  npm:
+    path: "/var/www/{{ _domain }}"
+    state: present
+    global: no
+
+- name: Build Vite application
+  command:
+    cmd: npm run build
+    chdir: "/var/www/{{ _domain }}"
