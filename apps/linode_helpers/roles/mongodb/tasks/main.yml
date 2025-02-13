@@ -23,7 +23,7 @@
 
 - name: apt update
   apt:
-    update_cache: yes
+    update_cache: true
 
 - name: install required packages
   apt:
