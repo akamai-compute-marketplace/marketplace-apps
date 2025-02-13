@@ -1,9 +1,4 @@
 ---
-- name: restart node.js
-  service:
-    name: node
-    state: restarted
-
 - name: restart nginx
   systemd:
     name: nginx

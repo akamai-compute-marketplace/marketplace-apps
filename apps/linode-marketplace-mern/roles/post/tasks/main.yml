@@ -6,7 +6,6 @@
     state: started
     enabled: yes
   loop:
-    - node
     - nginx
     - express
     - mongod

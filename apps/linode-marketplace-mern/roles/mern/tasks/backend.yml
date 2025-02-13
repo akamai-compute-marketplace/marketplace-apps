@@ -7,6 +7,12 @@
     group: www-data
     mode: '0755'
 
+- name: Initialize npm project in backend
+  command:
+    cmd: npm init -y
+    chdir: "/var/www/{{ _domain }}/backend"
+    creates: "/var/www/{{ _domain }}/backend/package.json"
+
 - name: Install Express backend dependencies
   npm:
     path: "/var/www/{{ _domain }}/backend"

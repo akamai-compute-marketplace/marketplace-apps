@@ -1,5 +1,5 @@
 ---
-- name: Create web root directory for frontend
+- name: Create frontend directory
   file:
     path: "/var/www/{{ _domain }}"
     state: directory
@@ -7,13 +7,26 @@
     group: www-data
     mode: '0755'
 
-- name: Install Vite and React dependencies
-  npm:
-    path: "/var/www/{{ _domain }}"
-    state: present
-    global: no
-
-- name: Build Vite application
-  command:
-    cmd: npm run build
+- name: Create a new Vite + React project in the 'client' folder
+  command: npm create vite@latest client -- --template react
+  args:
     chdir: "/var/www/{{ _domain }}"
+
+- name: Install frontend dependencies
+  command: npm install
+  args:
+    chdir: "/var/www/{{ _domain }}/client"
+
+- name: Build the Vite application to generate static assets
+  command: npm run build
+  args:
+    chdir: "/var/www/{{ _domain }}/client"
+
+- name: Copy built frontend files from client/dist to the web root
+  copy:
+    src: "/var/www/{{ _domain }}/client/dist/"
+    dest: "/var/www/{{ _domain }}/"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    remote_src: yes
