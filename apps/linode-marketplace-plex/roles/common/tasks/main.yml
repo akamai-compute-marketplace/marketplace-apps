@@ -13,6 +13,12 @@
       _domain: {{ _domain }}
   when: _domain is defined
 
+- name: Add line to /etc/hosts
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      {{ _domain }} {{ ansible_default_ipv4.address }}
 # dns creation
 - name: Create dns A record
   ansible.builtin.import_role:

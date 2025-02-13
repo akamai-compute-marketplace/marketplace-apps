@@ -5,13 +5,13 @@
       - nginx-full
     state: present
 - name: Create nginx snippets dir
-  file: 
+  ansible.builtin.file: 
     path: /etc/nginx/snippets
     state: directory
     owner: root
     group: root
 - name: Move the snippets
-  copy: 
+  ansible.builtin.copy: 
     src: 'files/snippets/{{ item.src }}'
     dest: '/etc/nginx/snippets/{{ item.dest }}'
     owner: root
@@ -19,3 +19,17 @@
   loop: 
     - { src: 'restrictions.conf', dest: 'restrictions.conf' }
     - { src: 'well-known', dest: 'well-known' }
+- name: Set default vhost
+  ansible.builtin.template:
+    src: 'templates/vhost_default.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+- name: unlink the default nginx configuration
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: Restart nginx
