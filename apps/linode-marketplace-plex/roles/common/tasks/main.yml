@@ -15,10 +15,20 @@
 
 - name: Add line to /etc/hosts
   ansible.builtin.lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
+    insertafter: '^127.0.0.1	localhost'
+    path: /etc/hosts
     line: |
       {{ _domain }} {{ ansible_default_ipv4.address }}
+# disabled for testing
+- name: Remove ipv6 defaults from /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    state: absent
+    block: |
+      # The following lines are desirable for IPv6 capable hosts
+      ::1		localhost ip6-localhost ip6-loopback
+      ff02::1		ip6-allnodes
+      ff02::2		ip6-allrouters
 # dns creation
 - name: Create dns A record
   ansible.builtin.import_role:
