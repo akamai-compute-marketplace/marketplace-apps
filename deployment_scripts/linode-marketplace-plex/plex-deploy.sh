@@ -20,7 +20,6 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@example.com">
 
 #<UDF name="plex_version" label="plex version" oneOf="latest">
-#<UDF name="plex_admin_username" label="plex admin username">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -70,10 +69,6 @@ EOF
   # plex vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
-  fi
-
-  if [[ -n ${PLEX_ADMIN_USERNAME} ]]; then
-    echo "plex_admin_username: ${PLEX_ADMIN_USERNAME}" >> ${group_vars}
   fi
 
   if [[ -n ${PLEX_VERSION} ]]; then

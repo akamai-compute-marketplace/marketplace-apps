@@ -10,9 +10,3 @@
   # generate creds
     - name: Generating sudo user and password
       ansible.builtin.import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-    - name: Writing plex vars
-      ansible.builtin.lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: |
-          plex_admin_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

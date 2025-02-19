@@ -10,26 +10,31 @@
     state: directory
     owner: root
     group: root
+    mode: 0744
 - name: Move the snippets
-  ansible.builtin.copy: 
+  ansible.builtin.copy:
     src: 'files/snippets/{{ item.src }}'
     dest: '/etc/nginx/snippets/{{ item.dest }}'
     owner: root
     group: root
-  loop: 
+    mode: 0744
+  loop:
     - { src: 'restrictions.conf', dest: 'restrictions.conf' }
     - { src: 'well-known', dest: 'well-known' }
 - name: Set default vhost
   ansible.builtin.template:
     src: 'templates/vhost_default.conf.j2'
     dest: '/etc/nginx/sites-available/{{ _domain }}'
-- name: create a symbolic link for the nginx configuration
-  file:
+    owner: root
+    group: root
+    mode: 0744
+- name: Create a symbolic link for the nginx configuration
+  ansible.builtin.file:
     src: '/etc/nginx/sites-available/{{ _domain }}'
     dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
-- name: unlink the default nginx configuration
-  file:
+- name: Unlink the default nginx configuration
+  ansible.builtin.file:
     path: '/etc/nginx/sites-enabled/default'
     state: absent
   notify: Restart nginx

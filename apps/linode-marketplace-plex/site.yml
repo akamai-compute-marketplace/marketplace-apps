@@ -1,6 +1,6 @@
 # plex ansible playbook
 
-- name: plex setup
+- name: Plex setup
   hosts: localhost
   connection: local
   gather_facts: true

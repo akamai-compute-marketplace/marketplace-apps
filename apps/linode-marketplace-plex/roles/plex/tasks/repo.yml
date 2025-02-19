@@ -5,18 +5,19 @@
     dest: '/tmp/PlexSign.key'
     owner: root
     group: root
-    mode: 0600
+    mode: 0744
   register: plex_signing_key
 - name: Dearmoring signing key
   ansible.builtin.command:
     cmd: |
       gpg --dearmor --output
       /usr/share/keyrings/plex.gpg {{ plex_signing_key.dest }}
+  register: dearmor_result
+  changed_when: dearmor_result.rc == 0
 - name: Add plex repo to sources
   ansible.builtin.copy:
     src: 'files/plex_repo_list'
     dest: '/etc/apt/sources.list.d/plexmediaserver.list'
     owner: root
     group: root
-    mode: 0640
-
+    mode: 0744
