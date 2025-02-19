@@ -1,0 +1,23 @@
+# Backstage override configuration for your local development environment
+{% if github_pat  is defined %}
+integrations:
+  github:
+    - host: github.com
+      token: {{ github_pat }}
+{% endif %}
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  # esegura:
+  environment: development
+  providers:
+    # See https://backstage.io/docs/auth/guest/provider
+    guest: {}
+    github:
+      development:
+        clientId: {{ github_oauth_client_id }}
+        clientSecret: {{ github_oauth_client_secret }}
+        signIn:
+          resolvers:
+            # Matches the GitHub username with the Backstage user entity name.
+            # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
+            - resolver: usernameMatchingUserEntityName
