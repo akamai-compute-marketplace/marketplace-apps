@@ -13,6 +13,3 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-
-      Plex Admin Username: {{ plex_admin_username }}
-      Plex Admin Password: {{ plex_admin_password }}
