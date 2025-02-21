@@ -1,17 +1,16 @@
-# Linode MERN Deployment One-Click APP
+# Linode MERN Stack One-Click APP
 
-App description.
+Deploy a production-ready MERN (MongoDB, Express.js, React, Node.js) stack with built-in security and optimized performance. This setup includes Nginx as a reverse proxy with SSL termination, reducing the load on Node.js and improving security.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Apache    | 2.4       | Web server |
-| MariaDB   | 10.6      | Open source database management system |
-| PHP       | 8.3       | Server-side scripting language |
-| Drupal    | 10.4.1    | Content Management System |
-| Composer  | 2.8.3     | PHP dependency manager |
-| Drush     | 13.3.3    | Drupal CLI tool |
+| MongoDB   | 7.0       | NoSQL database |
+| Express.js| Latest    | Backend web application framework |
+| React     | Latest    | Frontend JavaScript library |
+| Node.js   | 20.x      | JavaScript runtime environment |
+| Nginx     | Latest    | Web server and reverse proxy |
 
 **Supported Distributions:**
 
@@ -28,12 +27,11 @@ App description.
 | Create DNS Record | The Create DNS Record module creates DNS records for domains and subdomains using the Linode API, including validation of DNS propagation. |
 | Secure SSH | The Secure SSH module configures SSH security settings including disabling root login and password authentication when appropriate. |
 | SSH Key | The SSH Key module manages SSH key deployment for the sudo user, supporting both custom public keys and account keys. |
-| Certbot SSL | The Certbot SSL module handles SSL/TLS certificate installation via Let's Encrypt, supporting Apache, Nginx, and standalone certificate issuance. |
-| Secure MySQL | The Secure MySQL module performs secure installation of MariaDB/MySQL including setting root password and removing test databases and anonymous users. |
+| Certbot SSL | The Certbot SSL module handles SSL/TLS certificate installation via Let's Encrypt, supporting Nginx certificate issuance. |
 
 ## Use our API
 
-Customers can choose to deploy the Drupal app through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
+Customers can choose to deploy the MERN stack through the Linode Marketplace or directly using API. Before using the commands below, you will need to create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/) on an environment.
 
 Make sure that the following values are updated at the top of the code block before running the commands:
 - TOKEN - Your Linode API token
@@ -42,11 +40,6 @@ Make sure that the following values are updated at the top of the code block bef
 - SOA_EMAIL_ADDRESS - Email address for DNS records
 - DOMAIN - Domain name (optional)
 - SUBDOMAIN - Subdomain (optional)
-- DRUPAL_SITE_NAME - Name of your Drupal site
-- DRUPAL_SITE_EMAIL - System email address for site notifications
-- DRUPAL_ACCOUNT_EMAIL - Admin account email address
-- DRUPAL_USERNAME - Drupal admin username
-- DRUPAL_PASSWORD - Drupal admin password
 
 ```
 SHELL:
@@ -56,12 +49,6 @@ export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="user@example.com"
 export DOMAIN="example.com"
 export SUBDOMAIN="www"
-export DRUPAL_SITE_NAME="My Drupal Site"
-export DRUPAL_SITE_EMAIL="system@example.com"
-export DRUPAL_ACCOUNT_EMAIL="admin@example.com"
-export DRUPAL_USERNAME="admin"
-export DRUPAL_PASSWORD="aComplexP@ssword"
-
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${TOKEN}" \
 -X POST -d '{
@@ -72,7 +59,7 @@ curl -H "Content-Type: application/json" \
 "backups_enabled": true,
 "booted": true,
 "image": "linode/ubuntu24.04",
-"label": "drupal-server",
+"label": "mern-server",
 "private_ip": true,
 "region": "us-southeast",
 "root_pass": "${ROOT_PASS}",
@@ -82,12 +69,7 @@ curl -H "Content-Type: application/json" \
 "token_password": "${TOKEN}",
 "subdomain": "${SUBDOMAIN}",
 "domain": "${DOMAIN}",
-"soa_email_address": "${SOA_EMAIL_ADDRESS}",
-"drupal_site_name": "${DRUPAL_SITE_NAME}",
-"drupal_site_email": "${DRUPAL_SITE_EMAIL}",
-"drupal_account_email": "${DRUPAL_ACCOUNT_EMAIL}",
-"drupal_username": "${DRUPAL_USERNAME}",
-"drupal_password": "${DRUPAL_PASSWORD}"
+"soa_email_address": "${SOA_EMAIL_ADDRESS}"
 },
 "stackscript_id": 00000000000,
 "type": "g6-nanode-1",
@@ -102,26 +84,21 @@ export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="user@example.com"
 export DOMAIN="example.com"
 export SUBDOMAIN="www"
-export DRUPAL_SITE_NAME="My Drupal Site"
-export DRUPAL_SITE_EMAIL="system@example.com"
-export DRUPAL_ACCOUNT_EMAIL="admin@example.com"
-export DRUPAL_USERNAME="admin"
-export DRUPAL_PASSWORD="aComplexP@ssword"
 
 linode-cli linodes create \
 --image 'linode/ubuntu24.04' \
 --private_ip true \
---label drupal-server \
+--label mern-server \
 --root_pass ${ROOT_PASS} \
 --booted true \
 --stackscript_id 00000000000 \
---stackscript_data '{"user_name": "${USERNAME}","disable_root":"Yes","token_password":"","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","drupal_site_name":"${DRUPAL_SITE_NAME}","drupal_site_email":"${DRUPAL_SITE_EMAIL}","drupal_account_email":"${DRUPAL_ACCOUNT_EMAIL}","drupal_username":"${DRUPAL_USERNAME}","drupal_password":"${DRUPAL_PASSWORD}"}' \
+--stackscript_data '{"user_name": "${USERNAME}","disable_root":"Yes","token_password":"","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}"}' \
 --region us-east \
 --type g6-nanode-1 \
 --tags mytag \
---authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
---authorized_users "user1"
---authorized_users "user2"
+--authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer" \
+--authorized_users "user1" \
+--authorized_users "user2" \
 --disk_encryption disabled
 ```
 
@@ -129,5 +106,7 @@ linode-cli linodes create \
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript reference](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
-- [Drupal Documentation](https://www.drupal.org/docs)
-- [Drupal Security Updates](https://www.drupal.org/security)
+- [MongoDB Documentation](https://docs.mongodb.com/)
+- [Express.js Documentation](https://expressjs.com/)
+- [React Documentation](https://react.dev/)
+- [Node.js Documentation](https://nodejs.org/docs/latest/api/)

@@ -8,7 +8,7 @@
   loop:
     - nginx
     - express
-    - mongod
+    - mongodb
 
 - name: Set up MOTD
   template:
@@ -27,3 +27,4 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      

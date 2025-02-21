@@ -1,10 +1,6 @@
 ---
-- name: Update apt cache
-  apt:
-    update_cache: yes
-
 - name: Download and execute NodeSource setup script
-  shell: curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  shell: curl -fsSL https://deb.nodesource.com/setup_23.x | bash -
   args:
     creates: /etc/apt/sources.list.d/nodesource.list
 

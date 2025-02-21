@@ -12,7 +12,7 @@
   args:
     chdir: "/var/www/{{ _domain }}"
 
-- name: Install frontend dependencies
+- name: Install frontend dependencies from package.json
   command: npm install
   args:
     chdir: "/var/www/{{ _domain }}/client"
@@ -29,4 +29,4 @@
     owner: www-data
     group: www-data
     mode: '0755'
-    remote_src: yes
+    # remote_src: yes
