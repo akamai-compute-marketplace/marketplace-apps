@@ -1,40 +1,32 @@
 ---
 - name: Install nginx
-  ansible.builtin.apt:
+  apt:
     pkg:
-      - nginx-full
+      - nginx-full=1.24
     state: present
-- name: Create nginx snippets dir
-  ansible.builtin.file: 
-    path: /etc/nginx/snippets
-    state: directory
-    owner: root
-    group: root
-    mode: 0744
-- name: Move the snippets
-  ansible.builtin.copy:
-    src: 'files/snippets/{{ item.src }}'
-    dest: '/etc/nginx/snippets/{{ item.dest }}'
-    owner: root
-    group: root
-    mode: 0744
-  loop:
-    - { src: 'restrictions.conf', dest: 'restrictions.conf' }
-    - { src: 'well-known', dest: 'well-known' }
+    allow_downgrade: true
+
 - name: Set default vhost
-  ansible.builtin.template:
+  template:
     src: 'templates/vhost_default.conf.j2'
     dest: '/etc/nginx/sites-available/{{ _domain }}'
     owner: root
     group: root
     mode: 0744
+
 - name: Create a symbolic link for the nginx configuration
-  ansible.builtin.file:
+  file:
     src: '/etc/nginx/sites-available/{{ _domain }}'
     dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
+
 - name: Unlink the default nginx configuration
-  ansible.builtin.file:
+  file:
     path: '/etc/nginx/sites-enabled/default'
     state: absent
   notify: Restart nginx
+
+- name: Run certbot helper
+  import_role:
+    name: certbot_ssl
+

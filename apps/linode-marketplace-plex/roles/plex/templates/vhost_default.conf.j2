@@ -7,5 +7,10 @@ server {
     location / {
       try_files $uri $uri/ /index.php?$args =404;
     }
-    include snippets/well-known;
-}
+    location ^~ /.well-known/acme-challenge/ {
+      allow all;
+      root /var/lib/letsencrypt/;
+      default_type "text/plain";
+      try_files $uri =404;
+    }
+  }

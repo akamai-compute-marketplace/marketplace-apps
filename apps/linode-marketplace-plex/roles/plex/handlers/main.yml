@@ -1,11 +1,7 @@
 ---
 - name: Restart nginx
-  ansible.builtin.systemd_service:
+  systemd_service:
     name: nginx.service
     state: restarted
     enabled: true
-- name: Restart plex
-  ansible.builtin.systemd_service:
-    name: plexmediaserver.service
-    state: restarted
-    enabled: true
+

@@ -1,11 +1,12 @@
 ---
 - name: Copy MOTD template to /etc/motd
-  ansible.builtin.template:
+  template:
     src: 'templates/motd.j2'
     dest: '/etc/motd'
     mode: '0644'
+
 - name: Writing creds into file
-  ansible.builtin.copy:
+  copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
     owner: '{{ username }}'

@@ -1,6 +1,12 @@
 server {
     listen 80;
     server_name {{ _domain }} www.{{ _domain }};
+        location ^~ /.well-known/acme-challenge/ {
+      allow all;
+      root /var/lib/letsencrypt/;
+      default_type "text/plain";
+      try_files $uri =404;
+      }
     return 301 https://$host$request_uri;    
     }
 
@@ -9,13 +15,28 @@ server {
     server_name {{ _domain }} www.{{ _domain }};
     ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
-    include snippets/well-known;
     include snippets/restrictions.conf;
 
-    location / {
-      proxy_pass   http://{{ ansible_default_ipv4.address }}:32400;
-      include proxy_params;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
+      location / {
+        proxy_pass   http://{{ ansible_default_ipv4.address }}:32400;
+        include proxy_params;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        }
+      
+      location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+        }
+  
+      location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+      }
+      # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).
+      # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)
+      location ~ /\. {
+        deny all;
       }
     }

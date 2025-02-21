@@ -9,4 +9,4 @@
   tasks:
   # generate creds
     - name: Generating sudo user and password
-      ansible.builtin.import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml

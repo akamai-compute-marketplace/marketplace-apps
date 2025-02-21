@@ -1,23 +1,24 @@
 ---
 - name: Download plex key
-  ansible.builtin.get_url:
+  get_url:
     url: https://downloads.plex.tv/plex-keys/PlexSign.key
     dest: '/tmp/PlexSign.key'
     owner: root
     group: root
     mode: 0744
   register: plex_signing_key
+
 - name: Dearmoring signing key
-  ansible.builtin.command:
+  command:
     cmd: |
       gpg --dearmor --output
       /usr/share/keyrings/plex.gpg {{ plex_signing_key.dest }}
   register: dearmor_result
   changed_when: dearmor_result.rc == 0
-- name: Add plex repo to sources
-  ansible.builtin.copy:
-    src: 'files/plex_repo_list'
-    dest: '/etc/apt/sources.list.d/plexmediaserver.list'
-    owner: root
-    group: root
-    mode: 0744
+
+- name: Add plex repo
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/plex.gpg] https://downloads.plex.tv/repo/deb public main'
+    filename: plexmediaserver
+    update_cache: true
+    state: present

@@ -1,6 +1,6 @@
 ---
 - name: Install required packages
-  ansible.builtin.apt:
+  apt:
     pkg:
       - ca-certificates
       - software-properties-common

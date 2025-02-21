@@ -1,14 +1,13 @@
 ---
 # plex tasks
 - name: Install required packages
-  ansible.builtin.import_tasks: packages.yml
+  import_tasks: packages.yml
+
 - name: Add plex repository
-  ansible.builtin.import_tasks: repo.yml
+  import_tasks: repo.yml
+
 - name: Install plex
-  ansible.builtin.import_tasks: install.yml
-# - name: Configure plex
-#   import_tasks: plex.yml
+  import_tasks: install.yml
+
 - name: Configure nginx reverse proxy
-  ansible.builtin.import_tasks: nginx.yml
-- name: Configure ssl
-  ansible.builtin.import_tasks: ssl.yml
+  import_tasks: nginx.yml

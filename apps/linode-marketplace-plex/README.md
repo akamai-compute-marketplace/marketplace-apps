@@ -46,7 +46,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2404",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": "00000",
+      "stackscript_id": "662119",
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "user_name": "${USERNAME}",
@@ -80,7 +80,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000 \
+  --stackscript_id 662119 \
   --stackscript_data '{"soa_email_address":"${SOA_EMAIL_ADDRESS}","user_name":"${USERNAME}","disable_root":"yes","token_password":"","subdomain":"","domain":"","plex_version":"latest"}' 
   --region us-east \
   --type g6-standard-2 \
