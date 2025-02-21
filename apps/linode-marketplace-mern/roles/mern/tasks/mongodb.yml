@@ -7,8 +7,8 @@
     roles:
       - userAdminAnyDatabase
       - dbAdminAnyDatabase
+      - readWriteAnyDatabase
     state: present
-  register: mongodb_user_result
 
 - name: Enable MongoDB authentication
   lineinfile:

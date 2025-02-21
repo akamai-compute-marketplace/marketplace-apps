@@ -27,4 +27,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
+      MongoDB Admin Password: {{ mongodb_admin_password }}
+      MongoDB Admin User: {{ mongodb_admin_user }}
