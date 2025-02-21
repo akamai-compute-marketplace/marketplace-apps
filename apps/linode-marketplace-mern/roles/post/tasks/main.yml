@@ -8,7 +8,7 @@
   loop:
     - nginx
     - express
-    - mongodb
+    - mongod
 
 - name: Set up MOTD
   template:
