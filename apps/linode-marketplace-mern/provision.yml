@@ -11,6 +11,9 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
     
-    - name: Generateing MongoDB admin password
-      set_fact:
-        mongodb_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+    - name: Writing MongoDB admin password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          mongodb_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
