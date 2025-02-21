@@ -43,6 +43,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
+  mongodb_admin_user: admin
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

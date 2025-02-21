@@ -15,3 +15,6 @@
 
 - name: Import NGINX tasks
   import_tasks: nginx.yml
+
+- name: Import MongoDB authentication tasks
+  import_tasks: mongodb.yml
