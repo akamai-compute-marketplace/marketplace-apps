@@ -1,0 +1,11 @@
+---
+- name: Install MySQL
+  apt:
+    pkg: 
+    - mysql-server
+    - python3-mysqldb
+  state: present
+
+- name: Secure MySQL
+  import_role:
+    name: securemysql
