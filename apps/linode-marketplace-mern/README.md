@@ -1,6 +1,6 @@
 # Linode MERN Stack One-Click APP
 
-Deploy a production-ready MERN (MongoDB, Express.js, React, Node.js) stack with built-in security and optimized performance. This setup includes Nginx as a reverse proxy with SSL termination, reducing the load on Node.js and improving security.
+Deploy a production-ready MERN (MongoDB, Express.js, React, Node.js) stack with built-in security and optimized performance. This setup includes Nginx as a reverse proxy with SSL termination, reducing the load on Node.js and improving security. MongoDB is secured with role-based authentication, featuring an admin user with controlled database access permissions. The Express.js backend comes pre-configured with essential dependencies including cors for cross-origin resource sharing, helmet for enhanced security headers, express-rate-limit for API protection, winston for logging, joi for input validation, and mongoose for MongoDB object modeling.
 
 ## Software Included
 
