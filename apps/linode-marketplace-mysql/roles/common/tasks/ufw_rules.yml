@@ -19,9 +19,3 @@
     port: '22'
     proto: tcp
 
-- name: Allow all access to UDP port 1194
-  community.general.ufw:
-    rule: allow
-    port: '1194'
-    proto: udp
-

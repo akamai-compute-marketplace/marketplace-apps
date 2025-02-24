@@ -1,3 +1,4 @@
 ---
 - name: Run install_sql helper
-  import_role: install_sql
+  import_role:
+    name: install_sql
