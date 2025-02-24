@@ -9,7 +9,6 @@ server {
     server_name {{ _domain }} www.{{ _domain }};
     ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
-    include snippets/restrictions.conf;
 
       location / {
         proxy_pass   http://localhost:32400;
