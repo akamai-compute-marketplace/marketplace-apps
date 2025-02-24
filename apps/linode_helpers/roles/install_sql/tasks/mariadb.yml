@@ -2,9 +2,9 @@
 - name: Install MariaDB
   apt:
     pkg:
-    - mariadb-server
-    - python3-mysqldb
-  state: present
+      - mariadb-server
+      - python3-mysqldb
+    state: present
 
 - name: Secure MariaDB
   import_role:

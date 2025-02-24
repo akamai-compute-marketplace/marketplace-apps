@@ -1,5 +1,5 @@
 # pritunl
-- name: Setting up environment 
+- name: Setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -8,7 +8,7 @@
     - group_vars/linode/vars
   tasks:
   # generate creds
-    - name: Generating sudo user and password 
+    - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: Generate mysql root password

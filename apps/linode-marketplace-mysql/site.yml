@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: mysql setup
+- name: Mysql setup
   hosts: localhost
   connection: local
   gather_facts: true
