@@ -2,9 +2,8 @@
 - name: Install nginx
   apt:
     pkg:
-      - nginx-full=1.24
+      - nginx-full
     state: present
-    allow_downgrade: true
 
 - name: Set default vhost
   template:
@@ -12,7 +11,7 @@
     dest: '/etc/nginx/sites-available/{{ _domain }}'
     owner: root
     group: root
-    mode: 0744
+    mode: 0755
 
 - name: Create a symbolic link for the nginx configuration
   file:

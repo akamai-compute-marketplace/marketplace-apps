@@ -17,11 +17,3 @@
     rule: allow
     port: '443'
     proto: tcp
-
-- name: Allow local access to plex (backend)
-  community.general.ufw:
-    rule: allow
-    port: '32400'
-    proto: tcp
-    from_ip: '{{ ansible_default_ipv4.address }}'
-    state: reloaded

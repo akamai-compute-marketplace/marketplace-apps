@@ -7,7 +7,7 @@ Plex is a feature-rich streaming platform that lets you organize and stream your
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | Plex    | Public latest    | Self hosted media streaming platform |
-| Nginx    | 1.24    | Open source web server. |
+| Nginx    | latest    | Open source web server. |
 | UFW | latest | Uncomplicated Firewall. Debian wrapper for iptables |
 | Fail2Ban | latest | SSH jail for brute force prevention |
 
