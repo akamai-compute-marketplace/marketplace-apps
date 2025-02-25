@@ -7,5 +7,5 @@
     state: present
 
 - name: Secure MySQL
-  import_role:
-    name: securemysql
+  include_task:
+    file: ../securemysql/tasks/mysql8.yml
