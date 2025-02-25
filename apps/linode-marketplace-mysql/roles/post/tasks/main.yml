@@ -1,10 +1,10 @@
 ---
-  - name: copy MOTD template to /etc/motd
+  - name: Copy MOTD template to /etc/motd
     template:
       src: 'templates/motd.j2'
       dest: '/etc/motd'
 
-  - name: writing creds into file
+  - name: Writing creds into file
     copy:
       dest: '/home/{{ username }}/.credentials'
       mode: '0600'
