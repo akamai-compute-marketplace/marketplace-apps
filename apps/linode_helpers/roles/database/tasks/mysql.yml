@@ -7,5 +7,5 @@
     state: present
 
 - name: Secure MySQL
-  include_task:
+  include_tasks:
     file: ../securemysql/tasks/mysql8.yml
