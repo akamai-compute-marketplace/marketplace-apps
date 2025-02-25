@@ -10,7 +10,7 @@ fi
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## MySQL settings
-#<UDF name="sql_db" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb"
+#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb"
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -35,7 +35,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   # database install option
-  sql_db: ${SQL_DB}
+  database: ${DATABASE}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
