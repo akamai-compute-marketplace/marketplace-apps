@@ -1,9 +1,4 @@
 ---
-- name: Install UFW
-  apt:
-    name: ufw
-    state: present
-
 - name: Configure UFW rules
   ufw:
     rule: allow

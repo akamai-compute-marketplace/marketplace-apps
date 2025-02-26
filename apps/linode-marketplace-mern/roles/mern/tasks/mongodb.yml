@@ -23,7 +23,7 @@
   systemd:
     name: mongod
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Wait for MongoDB to be available
   wait_for:

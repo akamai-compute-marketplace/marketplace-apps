@@ -3,13 +3,13 @@
   apt:
     name: nginx
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Enable and start Nginx service
   systemd:
     name: nginx
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Create web root directory
   file:

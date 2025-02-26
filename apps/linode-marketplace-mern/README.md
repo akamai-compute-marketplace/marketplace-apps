@@ -6,7 +6,7 @@ Deploy a production-ready MERN (MongoDB, Express.js, React, Node.js) stack with 
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| MongoDB   | 7.0       | NoSQL database |
+| MongoDB   | 8.0       | NoSQL database |
 | Express.js| Latest    | Backend web application framework |
 | React     | Latest    | Frontend JavaScript library |
 | Node.js   | 20.x      | JavaScript runtime environment |
