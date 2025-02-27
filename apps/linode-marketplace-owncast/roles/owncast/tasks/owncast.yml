@@ -14,9 +14,11 @@
   set_fact:
     owncast_version: "{{ github_response.json.tag_name | regex_replace('^v', '') if github_response.status == 200 else '0.2.1' }}"
     owncast_download_url: >-
-      {{ github_response.json.assets | selectattr('name', 'match', 'Owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | first 
-         if github_response.status == 200 
-         else 'https://github.com/owncast/owncast/releases/download/v0.2.1/Owncast-0.2.1-linux-64bit.zip' }}
+      {% if github_response.status == 200 %}
+      {{ (github_response.json.assets | selectattr('name', 'match', 'owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | list)[0] }}
+      {% else %}
+      https://github.com/owncast/owncast/releases/download/v0.2.1/owncast-0.2.1-linux-64bit.zip
+      {% endif %}
 
 - name: Download Owncast
   get_url:
