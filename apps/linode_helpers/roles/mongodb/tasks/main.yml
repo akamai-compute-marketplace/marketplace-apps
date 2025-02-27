@@ -32,4 +32,4 @@
   systemd:
     name: mongod
     state: started
-    enabled: yes
+    enabled: true
