@@ -1,9 +1,29 @@
 ---
+- name: Get latest Owncast release version from GitHub API
+  uri:
+    url: https://api.github.com/repos/owncast/owncast/releases/latest
+    method: GET
+    return_content: yes
+  register: github_response
+  ignore_errors: yes
+  # Adding delay and retries to handle potential API rate limits
+  retries: 3
+  delay: 10
+
+- name: Set Owncast version variables
+  set_fact:
+    owncast_version: "{{ github_response.json.tag_name | regex_replace('^v', '') if github_response.status == 200 else '0.2.1' }}"
+    owncast_download_url: >-
+      {{ github_response.json.assets | selectattr('name', 'match', 'Owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | first 
+         if github_response.status == 200 
+         else 'https://github.com/owncast/owncast/releases/download/v0.2.1/Owncast-0.2.1-linux-64bit.zip' }}
+
 - name: Download Owncast
   get_url:
-    url: "https://github.com/owncast/owncast/releases/download/v0.2.1/Owncast-0.2.1-linux-64bit.zip"
+    url: "{{ owncast_download_url }}"
     dest: "/tmp/owncast.zip"
     mode: '0644'
+  register: download_result
 
 - name: Create required Owncast directories
   file:
@@ -37,7 +57,7 @@
     mode: '0644'
 
 - name: Reset Owncast admin password using CLI
-  shell: " timeout 5 ./owncast --adminpassword {{ owncast_admin_password }}"
+  shell: "timeout 5 ./owncast --adminpassword {{ owncast_admin_password }}"
   args:
     chdir: /opt/owncast
   register: owncast_result
