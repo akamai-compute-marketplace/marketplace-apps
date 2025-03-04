@@ -28,9 +28,9 @@
   args:
     chdir: "/var/www/{{ _domain }}/client"
 
-- name: Copy built frontend files from client/dist/client to the web root
+- name: Copy built frontend files from client/dist/client/browser to the web root
   copy:
-    src: "/var/www/{{ _domain }}/client/dist/client/"
+    src: "/var/www/{{ _domain }}/client/dist/client/browser/"
     dest: "/var/www/{{ _domain }}/"
     owner: www-data
     group: www-data
