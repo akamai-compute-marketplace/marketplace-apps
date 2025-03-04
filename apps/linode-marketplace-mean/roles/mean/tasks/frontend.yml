@@ -18,6 +18,15 @@
   args:
     chdir: "/var/www/{{ _domain }}"
 
+- name: Ensure client directory is owned by www-data
+  file:
+    path: "/var/www/{{ _domain }}/client"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
 - name: Install frontend dependencies from package.json
   command: npm install
   args:
