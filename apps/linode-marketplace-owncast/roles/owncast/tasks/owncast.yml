@@ -1,31 +1,16 @@
 ---
-- name: Get latest Owncast release version from GitHub API
+- name: Get latest Owncast release version
   uri:
     url: https://api.github.com/repos/owncast/owncast/releases/latest
     method: GET
     return_content: yes
   register: github_response
-  ignore_errors: yes
-  # Adding delay and retries to handle potential API rate limits
-  retries: 3
-  delay: 10
 
-- name: Set Owncast version variables
-  set_fact:
-    owncast_version: "{{ github_response.json.tag_name | regex_replace('^v', '') if github_response.status == 200 else '0.2.1' }}"
-    owncast_download_url: >-
-      {% if github_response.status == 200 %}
-      {{ (github_response.json.assets | selectattr('name', 'match', 'owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | list)[0] }}
-      {% else %}
-      https://github.com/owncast/owncast/releases/download/v0.2.1/owncast-0.2.1-linux-64bit.zip
-      {% endif %}
-
-- name: Download Owncast
+- name: Download latest Owncast release version
   get_url:
-    url: "{{ owncast_download_url }}"
+    url: "{{ (github_response.json.assets | selectattr('name', 'match', 'owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | list)[0] }}"
     dest: "/tmp/owncast.zip"
     mode: '0644'
-  register: download_result
 
 - name: Create required Owncast directories
   file:
@@ -42,15 +27,10 @@
   unarchive:
     src: "/tmp/owncast.zip"
     dest: "/opt/owncast/"
-    remote_src: yes
-
-- name: Ensure correct ownership of all Owncast files
-  file:
-    path: /opt/owncast
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: '0755'
-    recurse: yes
+    mode: 0755
+    remote_src: yes
 
 - name: Create Owncast service file
   template:
