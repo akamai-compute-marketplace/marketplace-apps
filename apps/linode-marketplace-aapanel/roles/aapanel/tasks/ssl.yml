@@ -29,4 +29,4 @@
 
 - name: reeplace ip with domain
   set_fact:
-    aapanel_final_url: "{{ aapanel_internal_url | regex_replace('https://[\\d\\.]+', 'https://_domain') }}"
+    aapanel_final_url: "{{ aapanel_internal_url | regex_replace('https://[\\d\\.]+', 'https://{{ _domain }}') }}"
