@@ -3,6 +3,18 @@
   import_role:
     name: certbot_ssl
 
+- name: copy ssl certificate
+  copy:
+    src: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
+    dest: "/www/server/panel/ssl/certificate.pem"
+    mode: '0644'
+
+- name: copy ssl private key
+  copy:
+    src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem"
+    dest: "/www/server/panel/ssl/privateKey.pem"
+    mode: '0600'
+
 - name: adding ssl renew script
   template:
     src: 'ssl_cron_renew.bash.j2'
