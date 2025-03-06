@@ -31,6 +31,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
