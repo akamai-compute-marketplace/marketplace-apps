@@ -44,7 +44,6 @@
     mode: '0755'
 
 - name: Initialize NPM project
-  shell: npm init -y
+  command: npm init -y
   args:
     chdir: "/var/www/{{ _domain }}"
-    creates: "/var/www/{{ _domain }}/package.json"
