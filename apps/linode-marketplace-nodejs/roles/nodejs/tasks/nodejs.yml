@@ -44,9 +44,7 @@
     mode: '0755'
 
 - name: Initialize NPM project
-  community.general.npm:
-    path: "/var/www/{{ _domain }}"
-    state: present
-  become: yes
-  become_user: "{{ username }}"
-
+  shell: npm init -y
+  args:
+    chdir: "/var/www/{{ _domain }}"
+    creates: "/var/www/{{ _domain }}/package.json"
