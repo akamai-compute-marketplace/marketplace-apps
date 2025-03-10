@@ -1,0 +1,44 @@
+# install ssl
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: copy ssl certificate
+  copy:
+    src: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
+    dest: "/www/server/panel/ssl/certificate.pem"
+    mode: '0644'
+
+- name: copy ssl private key
+  copy:
+    src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem"
+    dest: "/www/server/panel/ssl/privateKey.pem"
+    mode: '0600'
+
+- name: adding ssl renew script
+  template:
+    src: 'ssl_cron_renew.bash.j2'
+    dest: '/root/certbot-aapanel-renewal.sh'
+    mode: '0775'
+
+- name: backup existing crontab
+  shell: crontab -l > /tmp/cron_backup || true
+  args:
+    creates: /tmp/cron_backup
+
+- name: add new cron job
+  cron:
+    name: 'certbot aapanel renewal'
+    minute: '*'
+    hour: '1'
+    weekday: '1'
+    job: 'bash /root/certbot-aapanel-renewal.sh'
+
+- name: remove temporary file
+  file:
+    path: '/tmp/cron_backup'
+    state: absent
+
+- name: replace ip with domain
+  set_fact:
+    aapanel_final_url: "{{ aapanel_internal_url | regex_replace('https://[\\d\\.]+', 'https://' ~ _domain) }}"
