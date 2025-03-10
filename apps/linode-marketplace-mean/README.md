@@ -9,7 +9,7 @@ Deploy a production-ready MEAN (MongoDB, Express.js, Angular, Node.js) stack wit
 | MongoDB   | 8.0       | NoSQL database |
 | Express.js| Latest    | Backend web application framework |
 | Angular   | Latest    | Frontend JavaScript framework |
-| Node.js   | 20.x      | JavaScript runtime environment |
+| Node.js   | 22.x      | JavaScript runtime environment |
 | Nginx     | Latest    | Web server and reverse proxy |
 
 **Supported Distributions:**
