@@ -1,0 +1,33 @@
+---
+- name: Install MySQL
+  apt:
+    pkg:
+      - mysql-server
+      - python3-mysqldb
+    state: present
+
+- name: Reset root password
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    state: present
+    update_password: always
+    password: '{{ mysql_root_password }}'
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Removes all anonymous user accounts
+  community.mysql.mysql_user:
+    name: ''
+    host_all: true
+    state: absent
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: remove test database
+  community.mysql.mysql_db:
+    login_user: root
+    login_password: '{{ mysql_root_password }}'
+    login_unix_socket: /run/mysqld/mysqld.sock
+    name: test
+    state: absent

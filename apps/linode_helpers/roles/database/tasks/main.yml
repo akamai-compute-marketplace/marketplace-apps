@@ -1,0 +1,11 @@
+# marketplace database helper
+---
+- name: Install MySQL
+  include_tasks:
+    file: mysql.yml
+  when: database == 'mysql'
+
+- name: Install MariaDB
+  include_tasks:
+    file: mariadb.yml
+  when: database == 'mariadb'
