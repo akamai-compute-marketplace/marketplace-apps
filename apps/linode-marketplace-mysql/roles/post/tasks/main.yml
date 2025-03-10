@@ -13,5 +13,4 @@
       content: |
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
-        ****
         MySQL Root Password: {{ mysql_root_password }}
