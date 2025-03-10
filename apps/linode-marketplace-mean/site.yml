@@ -8,6 +8,6 @@
     - group_vars/linode/vars
 
   roles:
-    - role: common
-    - role: mean
-    - role: post 
+    - common
+    - mean
+    - post 
