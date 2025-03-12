@@ -6,12 +6,12 @@
       - certbot
       - python3-certbot-nginx
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Enable nginx service
   systemd:
     name: nginx
-    enabled: yes
+    enabled: true
     state: started
 
 - name: Create nginx configuration

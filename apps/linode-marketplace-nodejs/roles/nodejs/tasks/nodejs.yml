@@ -17,23 +17,23 @@
     mode: '0644'
 
 - name: Import NodeSource GPG key
-  ansible.builtin.shell: |
+  shell: |
     cat /tmp/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
   args:
     creates: /etc/apt/keyrings/nodesource.gpg
 
 - name: Add NodeSource repository
-  ansible.builtin.apt_repository:
+  apt_repository:
     repo: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main"
     filename: nodesource
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Update apt and install Node.js
   apt:
     name: nodejs
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure Node.js app directory exists
   file:

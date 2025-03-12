@@ -17,11 +17,11 @@
 
 - name: Reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Enable and start Node.js service
   systemd:
     name: node
-    enabled: yes
+    enabled: true
     state: started
   notify: restart node
