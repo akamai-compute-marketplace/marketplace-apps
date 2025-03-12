@@ -1,0 +1,10 @@
+---
+# Main Node.js installation tasks
+- name: Import Node.js tasks
+  import_tasks: nodejs.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml
+
+- name: Import sample Node.js app
+  import_tasks: sample_app.yml
