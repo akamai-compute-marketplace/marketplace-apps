@@ -24,7 +24,7 @@
     password: "{{ postgresql_password }}"
     role_attr_flags: NOSUPERUSER,NOCREATEDB,NOCREATEROLE
     state: present
-  no_log: true
+  # no_log: true
 
 - name: Create PostgreSQL database with proper owner
   become: true
@@ -39,7 +39,7 @@
 # Secure PostgreSQL configuration to only allow localhost connections
 - name: Ensure PostgreSQL only listens on localhost
   lineinfile:
-    path: /etc/postgresql/*/main/postgresql.conf
+    path: /etc/postgresql/16/main/postgresql.conf
     regexp: '^listen_addresses\s*='
     line: "listen_addresses = 'localhost'"
     state: present

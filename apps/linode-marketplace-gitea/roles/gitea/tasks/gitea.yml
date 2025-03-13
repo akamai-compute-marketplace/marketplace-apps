@@ -31,12 +31,12 @@
     state: present
     update_cache: true
 
-# Create git user with restricted shell access
+# Create git user with a valid shell for initial setup
 - name: Create git user
   user:
     name: git
     system: true
-    shell: /bin/false
+    shell: /bin/bash
     comment: 'Git Version Control'
     home: /home/git
     createhome: true
@@ -49,7 +49,9 @@
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
+    recurse: true  # This ensures all subdirectories get proper permissions
   loop:
+    - { path: '/var/lib/gitea', owner: 'git', group: 'git', mode: '0750' }
     - { path: '/var/lib/gitea/custom', owner: 'git', group: 'git', mode: '0750' }
     - { path: '/var/lib/gitea/data', owner: 'git', group: 'git', mode: '0750' }
     - { path: '/var/lib/gitea/log', owner: 'git', group: 'git', mode: '0750' }
@@ -87,8 +89,20 @@
     state: started
     enabled: true
 
-# Create admin user
+# Initialize Gitea database
+- name: Initialize Gitea database
+  become: true
+  become_user: git
+  shell: gitea migrate --config /etc/gitea/app.ini
+  register: db_init
+  changed_when: db_init.rc == 0
+  failed_when: db_init.rc != 0 and "already initialized" not in db_init.stderr
+  notify: restart gitea
+
+# Create admin user (only after database is initialized)
 - name: Create Gitea admin user
+  become: true
+  become_user: git
   shell: >
     gitea admin user create 
     --config /etc/gitea/app.ini 
@@ -96,7 +110,15 @@
     --password {{ gitea_admin_password }} 
     --email user@linode.com 
     --admin
-  args:
-    creates: /var/lib/gitea/data/gitea.db
-  no_log: true
+  register: admin_user
+  changed_when: admin_user.rc == 0
+  failed_when: admin_user.rc != 0 and "already exists" not in admin_user.stderr
+  # no_log: true
   notify: restart gitea
+
+# Secure git user by removing shell access after setup
+- name: Remove shell access from git user
+  user:
+    name: git
+    shell: /bin/false
+  when: not ansible_check_mode
