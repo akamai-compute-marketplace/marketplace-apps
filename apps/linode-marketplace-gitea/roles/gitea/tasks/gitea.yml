@@ -67,7 +67,7 @@
     dest: /etc/gitea/app.ini
     owner: root
     group: git
-    mode: '0640'  # More restrictive permissions to prevent other users from reading credentials
+    mode: '0660'  # Requires rw access when starting gitea.service the first time, so it can write the JWT secret
 
 # Copy Gitea service file
 - name: Copy Gitea service file
@@ -88,6 +88,14 @@
     name: gitea
     state: started
     enabled: true
+
+# Update app.ini permissions after initialization
+- name: Update app.ini permissions
+  file:
+    path: /etc/gitea/app.ini
+    mode: '0640'
+    owner: root 
+    group: git
 
 # Initialize Gitea database
 - name: Initialize Gitea database
