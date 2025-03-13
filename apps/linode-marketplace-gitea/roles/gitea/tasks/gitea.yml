@@ -1,0 +1,102 @@
+---
+# Install required dependencies
+- name: Install dependencies
+  apt:
+    name:
+      - git
+      - gnupg
+    state: present
+    update_cache: true
+
+# Add Gitea GPG key
+- name: Add Gitea GPG key
+  get_url:
+    url: https://packaging.gitlab.io/gitea/gpg.key
+    dest: /etc/apt/trusted.gpg.d/morph027-gitea.asc
+    mode: '0644'
+
+# Add Gitea repository
+- name: Add Gitea repository
+  apt_repository:
+    repo: deb https://packaging.gitlab.io/gitea gitea main
+    state: present
+    filename: morph027-gitea
+
+# Install Gitea packages
+- name: Install Gitea packages
+  apt:
+    name:
+      - gitea
+      - morph027-keyring
+    state: present
+    update_cache: true
+
+# Create git user with restricted shell access
+- name: Create git user
+  user:
+    name: git
+    system: true
+    shell: /bin/false
+    comment: 'Git Version Control'
+    home: /home/git
+    createhome: true
+
+# Create required directories for Gitea
+- name: Create Gitea directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: '/var/lib/gitea/custom', owner: 'git', group: 'git', mode: '0750' }
+    - { path: '/var/lib/gitea/data', owner: 'git', group: 'git', mode: '0750' }
+    - { path: '/var/lib/gitea/log', owner: 'git', group: 'git', mode: '0750' }
+    - { path: '/etc/gitea', owner: 'root', group: 'git', mode: '0770' }
+
+- name: Import credentials
+  import_tasks: credentials.yml
+
+# Copy Gitea configuration file with restricted permissions
+- name: Create Gitea config file
+  template:
+    src: app.ini.j2
+    dest: /etc/gitea/app.ini
+    owner: root
+    group: git
+    mode: '0640'  # More restrictive permissions to prevent other users from reading credentials
+
+# Copy Gitea service file
+- name: Copy Gitea service file
+  copy:
+    src: gitea.service
+    dest: /etc/systemd/system/gitea.service
+    owner: root
+    group: root
+    mode: '0644'
+
+# Reload systemd and start Gitea
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start Gitea service
+  systemd:
+    name: gitea
+    state: started
+    enabled: true
+
+# Create admin user
+- name: Create Gitea admin user
+  shell: >
+    gitea admin user create 
+    --config /etc/gitea/app.ini 
+    --username admin 
+    --password {{ gitea_admin_password }} 
+    --email user@linode.com 
+    --admin
+  args:
+    creates: /var/lib/gitea/data/gitea.db
+  no_log: true
+  notify: restart gitea

@@ -1,0 +1,46 @@
+---
+# Install PostgreSQL
+- name: Install PostgreSQL and related packages
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+    state: present
+    update_cache: true
+
+# Enable and start PostgreSQL service
+- name: Enable and start PostgreSQL service
+  systemd:
+    name: postgresql
+    state: started
+    enabled: true
+
+# Create PostgreSQL database and user with restricted permissions
+- name: Create PostgreSQL user and database
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: gitea
+    password: "{{ postgresql_password }}"
+    role_attr_flags: NOSUPERUSER,NOCREATEDB,NOCREATEROLE
+    state: present
+  no_log: true
+
+- name: Create PostgreSQL database with proper owner
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: giteadb
+    owner: gitea
+    encoding: UTF8
+    template: template0
+    state: present
+
+# Secure PostgreSQL configuration to only allow localhost connections
+- name: Ensure PostgreSQL only listens on localhost
+  lineinfile:
+    path: /etc/postgresql/*/main/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses = 'localhost'"
+    state: present
+  notify: restart postgresql
