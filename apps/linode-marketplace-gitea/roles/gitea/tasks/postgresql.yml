@@ -1,10 +1,22 @@
 ---
+# Add PostgreSQL repository
+- name: Add PostgreSQL repository key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add PostgreSQL repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main
+    state: present
+    filename: pgdg
+
 # Install PostgreSQL
-- name: Install PostgreSQL and related packages
+- name: Install PostgreSQL 16 and related packages
   apt:
     name:
-      - postgresql
-      - postgresql-contrib
+      - postgresql-16
+      - postgresql-contrib-16
     state: present
     update_cache: true
 

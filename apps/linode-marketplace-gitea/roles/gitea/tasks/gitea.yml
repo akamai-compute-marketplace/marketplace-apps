@@ -98,13 +98,22 @@
     group: git
 
 # Initialize Gitea database
+- name: Check if Gitea database is already initialized
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_query:
+    db: giteadb
+    query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
+  register: db_initialized
+
 - name: Initialize Gitea database
   become: true
   become_user: git
   shell: gitea migrate --config /etc/gitea/app.ini
   register: db_init
   changed_when: db_init.rc == 0
-  failed_when: db_init.rc != 0 and "already initialized" not in db_init.stderr
+  failed_when: db_init.rc != 0 and "already exists" not in db_init.stderr and "already initialized" not in db_init.stderr
+  when: not db_initialized.query_result[0].exists
   notify: restart gitea
 
 # Create admin user (only after database is initialized)
