@@ -11,7 +11,7 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
     
-    - name: Writing MongoDB admin password to vars
+    - name: Writing PostgreSQL and Gitea admin password to vars
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
