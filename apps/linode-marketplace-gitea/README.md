@@ -7,7 +7,7 @@ Deploy a production-ready Gitea Git hosting platform with built-in security and 
 | Software   | Version   | Description                          |
 | :---       | :----     | :---                                 |
 | Gitea      | Latest    | Self-hosted Git service              |
-| PostgreSQL | Latest    | Relational database                  |
+| PostgreSQL | 16    | Relational database                  |
 | Nginx      | Latest    | Web server and reverse proxy         |
 | Git        | Latest    | Distributed version control system   |
 

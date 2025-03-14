@@ -74,23 +74,10 @@
   systemd:
     daemon_reload: true
 
-# - name: Check if Gitea database is already initialized
-#   become: true
-#   become_user: postgres
-#   community.postgresql.postgresql_query:
-#     db: giteadb
-#     query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
-#  register: db_initialized
-
 - name: Initialize Gitea database
   become: true
   become_user: git
   shell: gitea migrate --config /etc/gitea/app.ini
-#  register: db_init
-#  changed_when: db_init.rc == 0
-#  failed_when: db_init.rc != 0 and "already exists" not in db_init.stderr and "already initialized" not in db_init.stderr
-#  when: not db_initialized.query_result[0].exists
-#  notify: restart gitea
 
 - name: Create Gitea admin user
   become: true
@@ -102,9 +89,6 @@
     --password {{ gitea_admin_password }} 
     --email user@linode.com 
     --admin
-#  register: admin_user
-#  changed_when: admin_user.rc == 0
-#  failed_when: admin_user.rc != 0 and "already exists" not in admin_user.stderr
   no_log: true
   notify: restart gitea
 

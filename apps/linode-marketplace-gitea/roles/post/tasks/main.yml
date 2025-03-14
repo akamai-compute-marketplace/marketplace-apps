@@ -26,8 +26,9 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Gitea Admin Password: {{ gitea_admin_password }}
       Gitea Admin User: {{ gitea_admin_user }}
+      Gitea Admin Password: {{ gitea_admin_password }}
       PostgreSQL Password: {{ postgresql_password }}
       Gitea Secret Key: {{ gitea_secret_key }}
       Gitea Internal Token: {{ gitea_internal_token }}
+  
