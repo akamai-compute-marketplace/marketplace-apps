@@ -74,14 +74,6 @@
   systemd:
     daemon_reload: true
 
-
-- name: Update app.ini permissions after initialization
-  file:
-    path: /etc/gitea/app.ini
-    mode: '0640'
-    owner: root 
-    group: git
-
 # - name: Check if Gitea database is already initialized
 #   become: true
 #   become_user: postgres
@@ -100,12 +92,6 @@
 #  when: not db_initialized.query_result[0].exists
 #  notify: restart gitea
 
-- name: Enable and start Gitea service
-  systemd:
-    name: gitea
-    state: started
-    enabled: true
-
 - name: Create Gitea admin user
   become: true
   become_user: git
@@ -121,6 +107,19 @@
 #  failed_when: admin_user.rc != 0 and "already exists" not in admin_user.stderr
   no_log: true
   notify: restart gitea
+
+- name: Enable and start Gitea service
+  systemd:
+    name: gitea
+    state: started
+    enabled: true
+
+- name: Update app.ini permissions after initialization
+  file:
+    path: /etc/gitea/app.ini
+    mode: '0640'
+    owner: root 
+    group: git
 
 - name: Remove shell access from git user after setup
   user:
