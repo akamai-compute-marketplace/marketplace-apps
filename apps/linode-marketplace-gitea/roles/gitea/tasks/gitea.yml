@@ -74,11 +74,6 @@
   systemd:
     daemon_reload: true
 
-- name: Enable and start Gitea service
-  systemd:
-    name: gitea
-    state: started
-    enabled: true
 
 - name: Update app.ini permissions after initialization
   file:
@@ -87,12 +82,12 @@
     owner: root 
     group: git
 
-- name: Check if Gitea database is already initialized
-  become: true
-  become_user: postgres
-  community.postgresql.postgresql_query:
-    db: giteadb
-    query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
+# - name: Check if Gitea database is already initialized
+#   become: true
+#   become_user: postgres
+#   community.postgresql.postgresql_query:
+#     db: giteadb
+#     query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
 #  register: db_initialized
 
 - name: Initialize Gitea database
@@ -105,6 +100,11 @@
 #  when: not db_initialized.query_result[0].exists
 #  notify: restart gitea
 
+- name: Enable and start Gitea service
+  systemd:
+    name: gitea
+    state: started
+    enabled: true
 
 - name: Create Gitea admin user
   become: true
