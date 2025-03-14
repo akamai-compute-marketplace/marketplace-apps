@@ -87,13 +87,13 @@
     owner: root 
     group: git
 
-# - name: Check if Gitea database is already initialized
-#   become: true
-#   become_user: postgres
-#   community.postgresql.postgresql_query:
-#     db: giteadb
-#     query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
-#   register: db_initialized
+- name: Check if Gitea database is already initialized
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_query:
+    db: giteadb
+    query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
+#  register: db_initialized
 
 - name: Initialize Gitea database
   become: true
