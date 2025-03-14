@@ -11,7 +11,6 @@
     state: present
     filename: pgdg
 
-# Install PostgreSQL
 - name: Install PostgreSQL 16 and related packages
   apt:
     name:
@@ -20,14 +19,12 @@
     state: present
     update_cache: true
 
-# Enable and start PostgreSQL service
 - name: Enable and start PostgreSQL service
   systemd:
     name: postgresql
     state: started
     enabled: true
 
-# Create PostgreSQL database and user with restricted permissions
 - name: Create PostgreSQL user and database
   become: true
   become_user: postgres
@@ -36,7 +33,6 @@
     password: "{{ postgresql_password }}"
     role_attr_flags: NOSUPERUSER,NOCREATEDB,NOCREATEROLE
     state: present
-  # no_log: true
 
 - name: Create PostgreSQL database with proper owner
   become: true
@@ -48,8 +44,7 @@
     template: template0
     state: present
 
-# Secure PostgreSQL configuration to only allow localhost connections
-- name: Ensure PostgreSQL only listens on localhost
+- name: Make PostgreSQL only listens on localhost
   lineinfile:
     path: /etc/postgresql/16/main/postgresql.conf
     regexp: '^listen_addresses\s*='

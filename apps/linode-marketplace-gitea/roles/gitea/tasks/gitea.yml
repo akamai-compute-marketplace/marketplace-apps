@@ -1,5 +1,4 @@
 ---
-# Install required dependencies
 - name: Install dependencies
   apt:
     name:
@@ -8,21 +7,18 @@
     state: present
     update_cache: true
 
-# Add Gitea GPG key
 - name: Add Gitea GPG key
   get_url:
     url: https://packaging.gitlab.io/gitea/gpg.key
     dest: /etc/apt/trusted.gpg.d/morph027-gitea.asc
     mode: '0644'
 
-# Add Gitea repository
 - name: Add Gitea repository
   apt_repository:
     repo: deb https://packaging.gitlab.io/gitea gitea main
     state: present
     filename: morph027-gitea
 
-# Install Gitea packages
 - name: Install Gitea packages
   apt:
     name:
@@ -31,8 +27,7 @@
     state: present
     update_cache: true
 
-# Create git user with a valid shell for initial setup
-- name: Create git user
+- name: Create git user with a valid shell for initial setup
   user:
     name: git
     system: true
@@ -41,15 +36,14 @@
     home: /home/git
     createhome: true
 
-# Create required directories for Gitea
-- name: Create Gitea directories
+- name: Create requiredGitea directories
   file:
     path: "{{ item.path }}"
     state: directory
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
-    recurse: true  # This ensures all subdirectories get proper permissions
+    recurse: true
   loop:
     - { path: '/var/lib/gitea', owner: 'git', group: 'git', mode: '0750' }
     - { path: '/var/lib/gitea/custom', owner: 'git', group: 'git', mode: '0750' }
@@ -60,7 +54,6 @@
 - name: Import credentials
   import_tasks: credentials.yml
 
-# Copy Gitea configuration file with restricted permissions
 - name: Create Gitea config file
   template:
     src: app.ini.j2
@@ -69,7 +62,6 @@
     group: git
     mode: '0660'  # Requires rw access when starting gitea.service the first time, so it can write the JWT secret
 
-# Copy Gitea service file
 - name: Copy Gitea service file
   copy:
     src: gitea.service
@@ -78,7 +70,6 @@
     group: root
     mode: '0644'
 
-# Reload systemd and start Gitea
 - name: Reload systemd daemon
   systemd:
     daemon_reload: true
@@ -89,34 +80,32 @@
     state: started
     enabled: true
 
-# Update app.ini permissions after initialization
-- name: Update app.ini permissions
+- name: Update app.ini permissions after initialization
   file:
     path: /etc/gitea/app.ini
     mode: '0640'
     owner: root 
     group: git
 
-# Initialize Gitea database
-- name: Check if Gitea database is already initialized
-  become: true
-  become_user: postgres
-  community.postgresql.postgresql_query:
-    db: giteadb
-    query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
-  register: db_initialized
+# - name: Check if Gitea database is already initialized
+#   become: true
+#   become_user: postgres
+#   community.postgresql.postgresql_query:
+#     db: giteadb
+#     query: "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'user')"
+#   register: db_initialized
 
 - name: Initialize Gitea database
   become: true
   become_user: git
   shell: gitea migrate --config /etc/gitea/app.ini
-  register: db_init
-  changed_when: db_init.rc == 0
-  failed_when: db_init.rc != 0 and "already exists" not in db_init.stderr and "already initialized" not in db_init.stderr
-  when: not db_initialized.query_result[0].exists
-  notify: restart gitea
+#  register: db_init
+#  changed_when: db_init.rc == 0
+#  failed_when: db_init.rc != 0 and "already exists" not in db_init.stderr and "already initialized" not in db_init.stderr
+#  when: not db_initialized.query_result[0].exists
+#  notify: restart gitea
 
-# Create admin user (only after database is initialized)
+
 - name: Create Gitea admin user
   become: true
   become_user: git
@@ -127,14 +116,13 @@
     --password {{ gitea_admin_password }} 
     --email user@linode.com 
     --admin
-  register: admin_user
-  changed_when: admin_user.rc == 0
-  failed_when: admin_user.rc != 0 and "already exists" not in admin_user.stderr
-  # no_log: true
+#  register: admin_user
+#  changed_when: admin_user.rc == 0
+#  failed_when: admin_user.rc != 0 and "already exists" not in admin_user.stderr
+  no_log: true
   notify: restart gitea
 
-# Secure git user by removing shell access after setup
-- name: Remove shell access from git user
+- name: Remove shell access from git user after setup
   user:
     name: git
     shell: /bin/false
