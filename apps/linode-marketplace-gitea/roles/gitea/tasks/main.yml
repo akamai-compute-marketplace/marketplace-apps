@@ -1,0 +1,10 @@
+---
+# Main Gitea installation tasks
+- name: Import PostgreSQL tasks
+  import_tasks: postgresql.yml
+
+- name: Import Gitea tasks
+  import_tasks: gitea.yml
+
+- name: Import NGINX tasks
+  import_tasks: nginx.yml
