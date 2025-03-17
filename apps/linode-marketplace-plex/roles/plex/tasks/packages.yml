@@ -1,0 +1,10 @@
+---
+- name: Install required packages
+  apt:
+    pkg:
+      - ca-certificates
+      - software-properties-common
+      - apt-transport-https
+      - curl
+    state: present
+    update_cache: true

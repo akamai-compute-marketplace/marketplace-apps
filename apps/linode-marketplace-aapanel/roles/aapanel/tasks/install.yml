@@ -1,0 +1,30 @@
+---
+# install system packages
+
+- name: download aapanel install script using curl
+  get_url:
+    url: "{{ aapanel_script_url }}"
+    dest: "/tmp/install_7.0_en.sh"
+    mode: '0755'
+
+- name: run aaPanel installation script
+  shell: echo "y" | /tmp/install_7.0_en.sh aapanel
+
+- name: obtain credentials
+  command: bt 14
+  register: aapanel_credentials
+
+- name: gather deployment details
+  set_fact:
+    aapanel_internal_url: "{{ aapanel_credentials.stdout | regex_search('https?://[\\d\\.]+(:\\d+)?(/[\\S]*)?') }}"
+    aapanel_username: "{{ aapanel_credentials.stdout | regex_findall('username:\\s*(\\S+)') | first }}"
+    aapanel_password: "{{ aapanel_credentials.stdout | regex_findall('password:\\s*(\\S+)') | first }}"
+    aapanel_port: "{{ aapanel_credentials.stdout | regex_findall(':([0-9]+)(?=/)') | first }}"
+  no_log: true
+  
+# The port is randomized, so have to allow it after aapanel is installed
+- name: Allow all access to tcp port {{ aapanel_port }}
+  community.general.ufw:
+    rule: allow
+    port: '{{ aapanel_port }}'
+    proto: tcp

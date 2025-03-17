@@ -1,0 +1,23 @@
+---
+- name: Create NGINX vhost
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
+
+- name: Enable NGINX vhost
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: Remove default NGINX vhost
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Start and enable NGINX
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
