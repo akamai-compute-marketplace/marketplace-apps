@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{ _domain }};
+    root           /var/www/html;
+    index          index.html;
+    location / {
+      try_files $uri $uri/ /index.php?$args =404;
+    }
+    location ^~ /.well-known {
+     allow all;
+     auth_basic off;
+     alias /var/www/html/.well-known;
+    }
+  }

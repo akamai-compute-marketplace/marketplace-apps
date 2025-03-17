@@ -1,0 +1,46 @@
+---
+- name: Create frontend directory
+  file:
+    path: "/var/www/{{ _domain }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Install Angular CLI globally
+  npm:
+    name: "@angular/cli"
+    global: yes
+    state: present
+
+- name: Create a new Angular project in the 'client' folder
+  command: ng new client --skip-git --skip-tests --defaults
+  args:
+    chdir: "/var/www/{{ _domain }}"
+
+- name: Ensure client directory is owned by www-data
+  file:
+    path: "/var/www/{{ _domain }}/client"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    recurse: yes
+
+- name: Install frontend dependencies from package.json
+  command: npm install
+  args:
+    chdir: "/var/www/{{ _domain }}/client"
+
+- name: Build the Angular application to generate static assets
+  command: ng build --configuration production
+  args:
+    chdir: "/var/www/{{ _domain }}/client"
+
+- name: Copy built frontend files from client/dist/client/browser to the web root
+  copy:
+    src: "/var/www/{{ _domain }}/client/dist/client/browser/"
+    dest: "/var/www/{{ _domain }}/"
+    owner: www-data
+    group: www-data
+    mode: '0755'

@@ -1,0 +1,50 @@
+---
+- name: Create backend directory
+  file:
+    path: "/var/www/{{ _domain }}/backend"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Initialize npm project in backend
+  command:
+    cmd: npm init -y
+    chdir: "/var/www/{{ _domain }}/backend"
+
+- name: Install Express backend dependencies
+  npm:
+    path: "/var/www/{{ _domain }}/backend"
+    name: "{{ item }}"
+    state: present
+  loop:
+    - express    # Web framework for Node.js - handles routing, middleware, and HTTP requests
+    - cors       # Cross-Origin Resource Sharing - allows frontend to make requests to backend
+    - dotenv     # Loads environment variables from .env file into process.env
+    - mongodb    # Official MongoDB driver for Node.js - allows connection to MongoDB
+    - mongoose     # ODM for MongoDB, provides schemas and models
+    - helmet       # Security middleware
+    - express-rate-limit  # Rate limiting
+    - winston     # Logging
+    - joi         # Input validation
+
+- name: Copy Express server file
+  copy:
+    src: server.js
+    dest: "/var/www/{{ _domain }}/backend/server.js"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Create Express systemd service
+  template:
+    src: express.conf.j2
+    dest: /etc/systemd/system/express.service
+    mode: '0644'
+
+- name: Enable and start Express service
+  systemd_service:
+    name: express
+    state: started
+    daemon_reload: true
+    enabled: true 

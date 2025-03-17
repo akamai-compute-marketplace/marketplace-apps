@@ -1,0 +1,56 @@
+---
+- name: Get latest Owncast release version
+  uri:
+    url: https://api.github.com/repos/owncast/owncast/releases/latest
+    method: GET
+    return_content: yes
+  register: github_response
+
+- name: Download latest Owncast release version
+  get_url:
+    url: "{{ (github_response.json.assets | selectattr('name', 'match', 'owncast.*linux-64bit.zip$') | map(attribute='browser_download_url') | list)[0] }}"
+    dest: "/tmp/owncast.zip"
+    mode: '0644'
+
+- name: Create required Owncast directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+  loop:
+    - /opt/owncast
+    - /opt/owncast/data
+
+- name: Extract Owncast
+  unarchive:
+    src: "/tmp/owncast.zip"
+    dest: "/opt/owncast/"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0755
+    remote_src: yes
+
+- name: Create Owncast service file
+  template:
+    src: owncast.service.j2
+    dest: /etc/systemd/system/owncast.service
+    mode: '0644'
+
+- name: Reset Owncast admin password using CLI
+  shell: "timeout 5 ./owncast --adminpassword {{ owncast_admin_password }}"
+  args:
+    chdir: /opt/owncast
+  register: owncast_result
+  become: yes
+  become_user: "{{ username }}"
+  no_log: yes
+  failed_when: owncast_result.rc not in [0, 124]
+
+- name: Start and enable Owncast service
+  systemd:
+    name: owncast
+    state: started
+    enabled: yes
+    daemon_reload: yes

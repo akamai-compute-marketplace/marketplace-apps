@@ -1,0 +1,19 @@
+[Unit]
+Description=Owncast Service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/owncast
+ReadWritePaths=/opt/owncast
+ExecStart=/opt/owncast/owncast
+Restart=always
+RestartSec=5
+User={{ username }}
+Group={{ username }}
+NoNewPrivileges=true
+SecureBits=noroot
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target

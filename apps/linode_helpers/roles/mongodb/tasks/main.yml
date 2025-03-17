@@ -21,18 +21,15 @@
 - name: decrypt and store mongodb gpg key
   shell: gpg --dearmor --yes -o /usr/share/keyrings/mongodb-server-{{ mongo_version }}.gpg /tmp/mongodb-server-{{ mongo_version }}.asc
 
-- name: apt update
-  apt:
-    update_cache: yes
-
 - name: install required packages
   apt:
     name:
       - mongodb-org
     state: present
+    update_cache: true
 
 - name: start and enable mongodb
   systemd:
     name: mongod
     state: started
-    enabled: yes
+    enabled: true

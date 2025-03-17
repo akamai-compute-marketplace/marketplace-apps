@@ -1,0 +1,20 @@
+---
+# Main MERN installation tasks
+- name: Import MongoDB tasks
+  import_role:
+    name: mongodb
+
+- name: Import Node.js tasks
+  import_tasks: nodejs.yml
+
+- name: Import frontend tasks
+  import_tasks: frontend.yml
+
+- name: Import Express backend tasks
+  import_tasks: backend.yml
+
+- name: Import NGINX tasks
+  import_tasks: nginx.yml
+
+- name: Import MongoDB authentication tasks
+  import_tasks: mongodb.yml
