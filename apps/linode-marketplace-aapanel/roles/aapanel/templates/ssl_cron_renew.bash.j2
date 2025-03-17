@@ -1,0 +1,11 @@
+#!/bin/bash
+#
+# Script to handle Certbot renewal & aapanel
+export AAPANEL_CERT=/www/server/panel/ssl/certificate.pem
+export AAPANEL_PRIVKEY=/www/server/panel/ssl/privateKey.pem
+export FULLCHAIN=/etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+export PRIVKEY=/etc/letsencrypt/live/{{ _domain }}/privkey.pem
+certbot renew
+cat \$FULLCHAIN > \$AAPANEL_CERT
+cat \$PRIVKEY > \$AAPANEL_PRIVKEY
+bt reload

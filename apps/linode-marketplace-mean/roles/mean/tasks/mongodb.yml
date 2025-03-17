@@ -1,0 +1,31 @@
+---
+- name: Create MongoDB admin user
+  community.mongodb.mongodb_user:
+    database: admin
+    name: "{{ mongodb_admin_user }}"
+    password: "{{ mongodb_admin_password }}"
+    roles:
+      - userAdminAnyDatabase
+      - dbAdminAnyDatabase
+      - readWriteAnyDatabase
+    state: present
+
+- name: Enable MongoDB authentication
+  lineinfile:
+    path: /etc/mongod.conf
+    regexp: '^security:'
+    line: |
+      security:
+        authorization: enabled
+    state: present
+
+- name: Restart MongoDB service
+  systemd:
+    name: mongod
+    state: restarted
+    daemon_reload: true
+
+- name: Wait for MongoDB to be available
+  wait_for:
+    port: 27017
+    delay: 10
