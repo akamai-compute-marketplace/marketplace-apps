@@ -9,3 +9,8 @@
   include_tasks:
     file: mariadb.yml
   when: database == 'mariadb'
+
+- name: install redis
+  include_tasks:
+    file: redis.yml
+  when: database == 'redis'

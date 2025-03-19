@@ -1,0 +1,33 @@
+---
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+
+- name: install redis dependancies
+  apt:
+    pkg:
+      - lsb-release
+      - curl
+      - gpg
+    state: present
+    update_cache: true
+
+- name: add redis gpg key
+  apt_key:
+    url: https://packages.redis.io/gpg
+    keyring: /usr/share/keyrings/redis-archive-keyring.gpg
+    state: present
+
+- name: add redis repo
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main
+    state: present
+
+- name: install redis 
+  apt:
+    pkg:
+      - redis
+    state: present
+    update_cache: true
+
+
