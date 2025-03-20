@@ -26,8 +26,7 @@
 - name: install redis 
   apt:
     pkg:
-      - redis
+      - redis-server=6:7.2.7-1rl1~noble1
     state: present
     update_cache: true
-
 

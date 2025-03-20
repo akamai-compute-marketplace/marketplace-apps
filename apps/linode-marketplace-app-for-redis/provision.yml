@@ -11,9 +11,9 @@
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
       
-    - name: writing backstage vars
+    - name: writing redis vars
       lineinfile: 
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          postgres_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          redis_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
