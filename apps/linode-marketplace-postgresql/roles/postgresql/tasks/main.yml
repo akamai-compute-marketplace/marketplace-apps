@@ -3,4 +3,4 @@
   import_role:
     name: database
   vars: 
-    database: postgres
+    database: postgresql

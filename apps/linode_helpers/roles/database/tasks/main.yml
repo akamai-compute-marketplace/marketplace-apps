@@ -10,7 +10,7 @@
     file: mariadb.yml
   when: database == 'mariadb'
 
-- name: install postgres
+- name: install postgresql
   include_tasks:
-    file: postgres.yml
-  when: database == 'postgres'
+    file: postgresql.yml
+  when: database == 'postgresql'

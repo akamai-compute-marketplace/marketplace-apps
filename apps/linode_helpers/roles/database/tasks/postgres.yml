@@ -1,5 +1,5 @@
 ---
-- name: install postgres
+- name: install postgresql
   apt:
     pkg:
       - postgresql
@@ -11,3 +11,4 @@
   become: true
   become_method: su
   become_user: postgres
+  no_log: true
