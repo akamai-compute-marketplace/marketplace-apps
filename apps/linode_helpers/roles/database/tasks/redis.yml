@@ -6,7 +6,6 @@
 - name: install redis dependancies
   apt:
     pkg:
-      - lsb-release
       - curl
       - gpg
     state: present
@@ -20,13 +19,14 @@
 
 - name: add redis repo
   apt_repository:
-    repo: deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main
+    repo: deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ distribution_release }} main
     state: present
 
 - name: install redis 
   apt:
     pkg:
-      - redis-server=6:7.2.7-1rl1~noble1
+      - redis-tools=6:7.2.7-1rl1~{{ distribution_release }}1
+      - redis-server=6:7.2.7-1rl1~{{ distribution_release }}1
     state: present
     update_cache: true
 
