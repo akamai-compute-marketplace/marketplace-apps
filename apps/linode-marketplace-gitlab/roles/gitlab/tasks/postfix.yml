@@ -7,13 +7,13 @@
     - mailutils
     state: present
 
-- name: updating postfix inet_interfaces
+- name: update postfix inet_interfaces
   lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^inet_interfaces ='
     line: 'inet_interfaces = 127.0.0.1'
 
-- name: updating postfix mynetwork
+- name: update postfix mynetwork
   lineinfile:
     path: /etc/postfix/main.cf
     regexp: '^mynetworks ='

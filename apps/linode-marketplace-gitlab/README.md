@@ -81,7 +81,7 @@ linode-cli linodes create \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 401707 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}"}, \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
@@ -93,5 +93,4 @@ linode-cli linodes create \
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
-- [Backstage - Getting Started](https://backstage.io/docs/getting-started/)
-- [Backstage - Create Github Oauth App](https://backstage.io/docs/getting-started/config/authentication/)
+- [GitLab Documentation](https://docs.gitlab.com/)

@@ -15,15 +15,13 @@
     update_cache: true
 
 - name: add gitLab package repository install
-  shell: curl -fsSL https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
-  args:
-    executable: /bin/bash
+  command: curl -fsSL https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
 
 - name: install gitlab
   apt:
     name: gitlab-ce
     state: latest
-    update_cache: yes
+    update_cache: true
 
 - name: configure gitlab
   template:
@@ -31,7 +29,7 @@
     dest: /etc/gitlab/gitlab.rb
 
 - name: reconfigure gitlab
-  shell: gitlab-ctl reconfigure
+  command: gitlab-ctl reconfigure
   async: 600
   poll: 10
 

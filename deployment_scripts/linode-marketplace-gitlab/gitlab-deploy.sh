@@ -63,7 +63,7 @@ EOF
   else echo "No API token entered";
   fi
 
-  # backstage vars
+  # gitlab vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
   fi
@@ -72,7 +72,7 @@ EOF
 function run {
   # install dependancies
   apt-get update
-  apt-get install -y git python3 python3-pip  libpq-dev
+  apt-get install -y git python3 python3-pip libpq-dev
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
