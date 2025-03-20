@@ -1,0 +1,28 @@
+---
+# Postfix
+- name: install postfix MTA and mailutils
+  apt:
+    pkg:
+    - postfix
+    - mailutils
+    state: present
+
+- name: update postfix inet_interfaces
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces ='
+    line: 'inet_interfaces = 127.0.0.1'
+
+- name: update postfix mynetwork
+  lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^mynetworks ='
+    line: 'mynetworks = 127.0.0.0/8'
+
+- name: set smtpd_recipient_restrictions in /etc/postfix/main.cf
+  lineinfile:
+    path: /etc/postfix/main.cf
+    line: "smtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination"
+    create: no
+    state: present
+  notify: restart postfix
