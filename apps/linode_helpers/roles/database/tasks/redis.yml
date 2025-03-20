@@ -38,6 +38,12 @@
     group: redis
     mode: 0640
 
+- name: enable redis acls
+  lineinfile:
+    path: '/etc/redis/redis.conf'
+    regexp: '^# aclfile'
+    line: aclfile /etc/redis/users.acl
+
 - name: restart and enable redis
   systemd_service:
     name: redis-server
