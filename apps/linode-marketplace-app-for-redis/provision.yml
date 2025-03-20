@@ -16,4 +16,5 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          redis_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          redis_default_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          sudo_db_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

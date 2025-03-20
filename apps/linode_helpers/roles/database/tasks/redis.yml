@@ -30,3 +30,16 @@
     state: present
     update_cache: true
 
+- name: template redis acl file
+  template:
+    src: 'templates/redis_users.acl.j2'
+    dest: '/etc/redis/users.acl'
+    owner: redis
+    group: redis
+    mode: 0640
+
+- name: restart and enable redis
+  systemd_service:
+    name: redis-server
+    state: restarted
+    enabled: true
