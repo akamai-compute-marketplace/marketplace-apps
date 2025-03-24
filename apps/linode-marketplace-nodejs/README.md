@@ -55,7 +55,7 @@ curl -H "Content-Type: application/json" \
       "swap_size": 512,
       "image": "linode/ubuntu2204",
       "root_pass": "${ROOT_PASS}",
-      "stackscript_id": 00000000000,
+      "stackscript_id": 970561,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "domain": "${DOMAIN}"
@@ -85,7 +85,7 @@ linode-cli linodes create \
   --label nodejs-app \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --stackscript_id 00000000000 \
+  --stackscript_id 970561 \
   --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "domain": "${DOMAIN}"}' \
   --region us-east \
   --type g6-standard-2 \
