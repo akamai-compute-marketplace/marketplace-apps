@@ -25,23 +25,23 @@
     enabled: true
 
 - name: Create PostgreSQL user and database
-  become: true
-  become_user: postgres
   community.postgresql.postgresql_user:
     name: gitea
     password: "{{ postgresql_password }}"
     role_attr_flags: NOSUPERUSER,NOCREATEDB,NOCREATEROLE
     state: present
-
-- name: Create PostgreSQL database with proper owner
   become: true
   become_user: postgres
+
+- name: Create PostgreSQL database with proper owner
   community.postgresql.postgresql_db:
     name: giteadb
     owner: gitea
     encoding: UTF8
     template: template0
     state: present
+  become: true
+  become_user: postgres
 
 - name: Make PostgreSQL only listens on localhost
   lineinfile:

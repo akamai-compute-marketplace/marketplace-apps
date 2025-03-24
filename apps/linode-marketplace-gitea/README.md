@@ -70,7 +70,7 @@ curl -H "Content-Type: application/json" \
 "domain": "${DOMAIN}",
 "soa_email_address": "${SOA_EMAIL_ADDRESS}"
 },
-"stackscript_id": 00000000000,
+"stackscript_id": 688911,
 "type": "g6-nanode-1",
 "tags": ["mytag"],
 "disk_encryption": "disabled"
@@ -90,7 +90,7 @@ linode-cli linodes create \
 --label gitea-server \
 --root_pass ${ROOT_PASS} \
 --booted true \
---stackscript_id 00000000000 \
+--stackscript_id 688911 \
 --stackscript_data '{"user_name": "${USERNAME}","disable_root":"Yes","token_password":"","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}"}' \
 --region us-east \
 --type g6-nanode-1 \
