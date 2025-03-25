@@ -14,8 +14,14 @@
     state: latest
     update_cache: true
 
-- name: add gitLab package repository install
-  command: curl -fsSL https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh | bash
+- name: download gitLab install script
+  get_url:
+    url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh
+    dest: /tmp/gitlab_script.sh
+    mode: '0755'
+
+- name: run gitLab install script
+  command: bash /tmp/gitlab_script.sh
 
 - name: install gitlab
   apt:
