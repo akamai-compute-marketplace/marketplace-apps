@@ -1,0 +1,28 @@
+---
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    # generate creds
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Creating Grav user and password
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          grav_user: grav
+          grav_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+    
+    - name: Creating Grav admin credentials
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          grav_admin_user: admin
+          grav_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
