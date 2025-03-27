@@ -16,8 +16,8 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Grav Settings
-#<UDF name="administrator_name" label="Administrator Name" example="Jane Doe" default="">
-#<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld" default="">
+#<UDF name="administrator_name" label="Administrator Name" example="Jane Doe">
+#<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld">
 
 # git repo
 # setting up git repo vars

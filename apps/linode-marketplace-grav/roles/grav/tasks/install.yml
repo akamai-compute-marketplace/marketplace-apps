@@ -35,20 +35,11 @@
     append: true
 
 - name: Generate hashed password for Grav admin
-  community.crypto.password_hash:
-    name: "{{ grav_admin_password }}"
-    salt: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=16') }}"
-    hash: "bcrypt"
-    rounds: 10
-  register: password_hash_result
-  no_log: true
-
-- name: Set hashed password variable
   set_fact:
-    hashed_admin_password: "{{ password_hash_result.password }}"
+    hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt', lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
   no_log: true
 
-- name: Create web directory
+- name: Create web directory with proper ownership
   file:
     path: /var/www/grav
     state: directory
@@ -61,28 +52,19 @@
     depth: 1
 
 - name: Install Grav dependencies with Composer
-  community.general.composer:
-    command: install
-    arguments: --no-dev -o
-    working_dir: /var/www/grav
-  become: yes
-  become_user: grav
+  shell: composer install --no-dev -o
+  args:
+    chdir: /var/www/grav
 
 - name: Install Grav core
-  command: bin/grav install
+  shell: bin/grav install
   args:
     chdir: /var/www/grav
-    creates: /var/www/grav/user/config/system.yaml
-  become: yes
-  become_user: grav
 
 - name: Install Grav admin plugin
-  command: bin/gpm install admin
+  shell: bin/gpm install admin
   args:
     chdir: /var/www/grav
-    creates: /var/www/grav/user/plugins/admin/admin.php
-  become: yes
-  become_user: grav
 
 - name: Set directory permissions
   ansible.builtin.file:
@@ -92,21 +74,21 @@
     mode: '0755'
     owner: grav
     group: www-data
-    
+
 - name: Set file permissions
   ansible.builtin.find:
     paths: /var/www/grav
     file_type: file
-    recurse: yes
-  register: grav_files
+    # recurse: yes
+  # register: grav_files
 
-- name: Apply file permissions
-  ansible.builtin.file:
-    path: "{{ item.path }}"
-    mode: '0644'
-    owner: grav
-    group: www-data
-  with_items: "{{ grav_files.files }}"
+# - name: Apply file permissions
+#   ansible.builtin.file:
+#     path: "{{ item.path }}"
+#     mode: '0644'
+#     owner: grav
+#     group: www-data
+#   with_items: "{{ grav_files.files }}"
 
 - name: Make bin files executable
   ansible.builtin.file:
