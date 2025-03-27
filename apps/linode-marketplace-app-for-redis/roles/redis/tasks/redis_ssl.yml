@@ -72,7 +72,7 @@
     locality_name: '{{ locality_name }}'
     organization_name: '{{ organization_name }}'
     email_address: '{{ soa_email_address }}'
-    common_name: 'redis Server'
+    common_name: 'Redis Server'
     use_common_name_for_san: false
     key_usage:
       - digitalSignature
@@ -89,8 +89,8 @@
     state_or_province_name: '{{ state_or_province_name }}'
     locality_name: '{{ locality_name }}'
     organization_name: '{{ organization_name }}'
-    email_address: '{{ email_address }}'
-    common_name: 'redis Client {{ item }}'
+    email_address: '{{ soa_email_address }}'
+    common_name: 'Redis Client {{ item }}'
     use_common_name_for_san: false
     key_usage:
       - digitalSignature
