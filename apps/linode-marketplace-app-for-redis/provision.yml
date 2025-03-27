@@ -8,13 +8,21 @@
     - group_vars/linode/vars
   tasks:
   # generate creds
+    - name: handle bad input for client_count
+      lineinfile:
+        path: ./group_vars/linode/vars
+        regexp: '^client_count:'
+        line: 'client_count: 1'
+      when: client_count | int <= 1
+
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-      
-    - name: writing redis vars
-      lineinfile: 
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
+
+    - name: writing deployment variables to vars file
+      blockinfile:
+        path: ./group_vars/linode/vars
+        marker: "# {mark} INSTANCE VARS"
+        block: |
           redis_default_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           sudo_db_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

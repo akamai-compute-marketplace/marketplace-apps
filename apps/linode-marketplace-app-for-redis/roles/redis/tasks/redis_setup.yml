@@ -1,0 +1,30 @@
+---
+- name: create redis group
+  group:
+    name: redis
+    state: present
+    system: true
+
+- name: create redis user
+  user:
+    name: redis
+    group: redis
+    shell: /sbin/nologin
+    expires: -1
+    create_home: false
+    system: true
+    state: present
+
+- name: create redis directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: redis
+    group: redis
+  loop:
+    - '{{ redis_conf_directory }}'
+    - '{{ redis_ssl_directory }}'
+    - '{{ redis_ssl_ca_directory}}'
+    - '{{ redis_ssl_reqs_directory}}'
+    - '{{ redis_ssl_keys_directory}}'
+    - '{{ redis_ssl_certs_directory}}'
