@@ -62,24 +62,18 @@
     chdir: /var/www/grav
 
 - name: Install Grav admin plugin
-  shell: bin/gpm install admin
+  shell: echo 'y' | bin/gpm install admin
   args:
     chdir: /var/www/grav
 
 - name: Set ownership of Grav directory
   shell: chown -R grav:www-data /var/www/grav
-  args:
-    warn: false
 
 - name: Set directory permissions
   shell: find /var/www/grav -type d -exec chmod 755 {} \;
-  args:
-    warn: false
 
 - name: Set file permissions
   shell: find /var/www/grav -type f -exec chmod 644 {} \;
-  args:
-    warn: false
 
 - name: Set writable directory permissions
   shell: |
@@ -93,13 +87,9 @@
     chmod -R 775 /var/www/grav/backup
     chmod -R 775 /var/www/grav/assets
     chmod -R 775 /var/www/grav/user/accounts
-  args:
-    warn: false
 
 - name: Make bin files executable
   shell: chmod +x /var/www/grav/bin/*
-  args:
-    warn: false
 
 - name: Clear Grav cache
   shell: sudo -u grav bin/grav clearcache
