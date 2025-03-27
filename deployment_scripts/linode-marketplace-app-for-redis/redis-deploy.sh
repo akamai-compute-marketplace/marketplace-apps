@@ -15,7 +15,7 @@ fi
 # <UDF name="state_or_province_name" label="State or Province" example="Example: Pennsylvania" />
 # <UDF name="locality_name" label="Locality" example="Example: Philadelphia" />
 # <UDF name="organization_name" label="Organization" example="Example: Akamai Technologies" />
-# <UDF name="email_address" label="Email Address" example="Example: webmaster@example.com" />
+# <UDF name="soa_email_address" label="Email Address" example="Example: webmaster@example.com" />
 # <UDF name="ca_common_name" label="CA Common Name" example="Example: Redis CA" />
 
 # Client Count
