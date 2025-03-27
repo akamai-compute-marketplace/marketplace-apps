@@ -66,38 +66,45 @@
   args:
     chdir: /var/www/grav
 
+- name: Set ownership of Grav directory
+  shell: chown -R grav:www-data /var/www/grav
+  args:
+    warn: false
+
 - name: Set directory permissions
-  ansible.builtin.file:
-    path: /var/www/grav
-    state: directory
-    recurse: yes
-    mode: '0755'
-    owner: grav
-    group: www-data
+  shell: find /var/www/grav -type d -exec chmod 755 {} \;
+  args:
+    warn: false
 
 - name: Set file permissions
-  ansible.builtin.find:
-    paths: /var/www/grav
-    file_type: file
-    # recurse: yes
-  # register: grav_files
+  shell: find /var/www/grav -type f -exec chmod 644 {} \;
+  args:
+    warn: false
 
-# - name: Apply file permissions
-#   ansible.builtin.file:
-#     path: "{{ item.path }}"
-#     mode: '0644'
-#     owner: grav
-#     group: www-data
-#   with_items: "{{ grav_files.files }}"
+- name: Set writable directory permissions
+  shell: |
+    chmod -R 775 /var/www/grav/cache
+    chmod -R 775 /var/www/grav/logs
+    chmod -R 775 /var/www/grav/images
+    chmod -R 775 /var/www/grav/user/data
+    chmod -R 775 /var/www/grav/user/config
+    chmod -R 775 /var/www/grav/user/pages
+    chmod -R 775 /var/www/grav/tmp
+    chmod -R 775 /var/www/grav/backup
+    chmod -R 775 /var/www/grav/assets
+    chmod -R 775 /var/www/grav/user/accounts
+  args:
+    warn: false
 
 - name: Make bin files executable
-  ansible.builtin.file:
-    path: "{{ item }}"
-    mode: '0755'
-    owner: grav
-    group: www-data
-  with_fileglob:
-    - "/var/www/grav/bin/*"
+  shell: chmod +x /var/www/grav/bin/*
+  args:
+    warn: false
+
+- name: Clear Grav cache
+  shell: sudo -u grav bin/grav clearcache
+  args:
+    chdir: /var/www/grav
 
 - name: Create admin account directory
   file:
