@@ -1,0 +1,13 @@
+---
+- name: copy config file
+  template:
+    src: 'templates/redis.conf.j2'
+    dest: '{{ redis_conf_directory }}/redis.conf'
+    owner: redis
+    group: redis
+
+- name: install redis
+  import_role:
+    name: database
+  vars:
+    database: redis

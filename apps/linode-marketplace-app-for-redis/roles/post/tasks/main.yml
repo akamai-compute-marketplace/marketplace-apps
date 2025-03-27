@@ -14,4 +14,4 @@
         Sudo Username: {{ username }}
         Sudo Password: {{ password }}
         Redis Default User Password: {{ redis_default_user_password }}
-        {{ username }} Redis Password: {{ sudo_db_user_password }}
+        Redis CA Password (required to generate new certs): {{ ca_password }}
