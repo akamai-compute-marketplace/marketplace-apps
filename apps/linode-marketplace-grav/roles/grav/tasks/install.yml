@@ -12,11 +12,9 @@
       - php-apcu
       - php-intl
       - php8.3-yaml
-      - php8.3-redis
-      - redis-server
       - php8.3-memcached
+      - php8.3-memcache
       - memcached
-      - memcache
       - git
     state: present
     update_cache: yes
@@ -60,31 +58,28 @@
         dest: /tmp/composer-setup.php
         mode: '0755'
 
-    - name: Create .local/bin directory if it doesn't exist
+    - name: Create .local/bin directory
       file:
         path: /home/grav/.local/bin
         state: directory
         mode: '0755'
 
     - name: Install Composer locally
-      shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
+      # shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
+      command: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
       args:
+        creates: /home/grav/.local/bin/composer
+        
+    # - name: Add Composer to grav user's PATH
+    #   lineinfile:
+    #     path: /home/grav/.bashrc
+    #     line: 'export PATH="$HOME/.local/bin:$PATH"'
+    #     state: present
 
-    - name: Add Composer to grav user's PATH
-      lineinfile:
-        path: /home/grav/.bashrc
-        line: 'export PATH="$HOME/.local/bin:$PATH"'
-        state: present
-
-    - name: Source bashrc for current session
-      shell: . /home/grav/.bashrc
-      args:
-        executable: /bin/bash
-
-# - name: Ensure www-data group exists
-#   group:
-#     name: www-data
-#     state: present
+    # - name: Source bashrc for current session
+    #   shell: . /home/grav/.bashrc
+    #   args:
+    #     executable: /bin/bash
 
 - name: Clone and install Grav as grav user
   become: yes
@@ -97,17 +92,20 @@
         depth: 1
 
     - name: Install Grav dependencies with Composer
-      shell: /home/grav/.local/bin/composer install --no-dev -o
+      # shell: /home/grav/.local/bin/composer install --no-dev -o
+      command: /home/grav/.local/bin/composer install --no-dev -o
       args:
         chdir: /var/www/grav
 
     - name: Install Grav core
-      shell: bin/grav install
+      # shell: bin/grav install
+      command: bin/grav install
       args:
         chdir: /var/www/grav
 
     - name: Install Grav admin plugin
-      shell: echo 'y' | bin/gpm install admin
+      # shell: echo 'y' | bin/gpm install admin
+      command: echo 'y' | bin/gpm install admin
       args:
         chdir: /var/www/grav
 
@@ -119,11 +117,6 @@
         - gpm
         - grav
         - plugin
-
-    - name: Clear Grav cache
-      shell: bin/grav clearcache
-      args:
-        chdir: /var/www/grav
 
 - name: Ensure Grav directories have correct group permissions
   become: yes
@@ -164,121 +157,20 @@
     group: www-data
     mode: '0644'
 
+- name: Update cache driver to Redis in system.yaml
+  lineinfile:
+    path: /var/www/grav/user/config/system.yaml
+    regexp: '^\s*driver: auto'
+    line: '  driver: redis'
+    state: present
+    backrefs: yes
+  become: yes
+  become_user: grav
+  notify: restart php8.3-fpm
 
-
-
-
-# ---
-# - name: Install required packages for Grav
-#   apt:
-#     name:
-#       - php-fpm
-#       - php-cli
-#       - php-gd
-#       - php-curl
-#       - php-mbstring
-#       - php-xml
-#       - php-zip
-#       - php-apcu
-#       - php8.3-yaml
-#       - php8.3-redis
-#       - redis-server
-#       - php8.3-memcached
-#       - memcached
-#       - git
-#       - composer
-#     state: present
-#     update_cache: yes
-
-# - name: Configure PHP settings
-#   lineinfile:
-#     path: /etc/php/8.3/fpm/php.ini
-#     regexp: ';cgi.fix_pathinfo=1'
-#     line: 'cgi.fix_pathinfo=0'
-#   notify: restart php8.3-fpm
-
-# - name: Create grav user
-#   user:
-#     name: grav
-#     shell: /bin/bash
-#     groups: sudo
-#     append: true
-
-# - name: Generate hashed password for Grav admin
-#   set_fact:
-#     hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt', lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
-#   no_log: true
-
-# - name: Create web directory with proper ownership
-#   file:
-#     path: /var/www/grav
-#     state: directory
-#     mode: '0755'
-
-# - name: Clone Grav repository
-#   git:
-#     repo: https://github.com/getgrav/grav.git
-#     dest: /var/www/grav
-#     depth: 1
-
-# - name: Install Grav dependencies with Composer
-#   shell: composer install --no-dev -o
-#   args:
-#     chdir: /var/www/grav
-
-# - name: Install Grav core
-#   shell: bin/grav install
-#   args:
-#     chdir: /var/www/grav
-
-# - name: Install Grav admin plugin
-#   shell: echo 'y' | bin/gpm install admin
-#   args:
-#     chdir: /var/www/grav
-
-# - name: Set ownership of Grav directory
-#   shell: chown -R grav:www-data /var/www/grav
-
-# - name: Set directory permissions
-#   shell: find /var/www/grav -type d -exec chmod 755 {} \;
-
-# - name: Set file permissions
-#   shell: find /var/www/grav -type f -exec chmod 644 {} \;
-
-# - name: Set writable directory permissions
-#   shell: |
-#     chmod -R 775 /var/www/grav/cache
-#     chmod -R 775 /var/www/grav/logs
-#     chmod -R 775 /var/www/grav/images
-#     chmod -R 775 /var/www/grav/user/data
-#     chmod -R 775 /var/www/grav/user/config
-#     chmod -R 775 /var/www/grav/user/pages
-#     chmod -R 775 /var/www/grav/tmp
-#     chmod -R 775 /var/www/grav/backup
-#     chmod -R 775 /var/www/grav/assets
-#     chmod -R 775 /var/www/grav/user/accounts
-
-# - name: Make bin files executable
-#   shell: chmod +x /var/www/grav/bin/*
-
-# - name: Clear Grav cache
-#   shell: sudo -u grav bin/grav clearcache
-#   args:
-#     chdir: /var/www/grav
-
-# - name: Create admin account directory
-#   file:
-#     path: /var/www/grav/user/accounts
-#     state: directory
-#     mode: '0775'
-#     owner: grav
-#     group: www-data
-
-# - name: Deploy admin account configuration
-#   template:
-#     src: admin.yaml.j2
-#     dest: /var/www/grav/user/accounts/admin.yaml
-#     owner: grav
-#     group: www-data
-#     mode: '0644'
-
+- name: Clear Grav cache
+  command: bin/grav clearcache
+  args:
+    chdir: /var/www/grav
+  become: yes
+  become_user: grav

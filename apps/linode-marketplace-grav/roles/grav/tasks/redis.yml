@@ -1,24 +1,14 @@
 ---
-- name: Install and enable Redis
+- name: Install required packages for Redis
+  apt:
+    name:
+      - php8.3-redis
+      - redis-server
+    state: present
+    update_cache: yes
+
+- name: Start and enable Redis
   systemd_service:
     name: redis-server
     state: started
     enabled: true
-
-- name: Update cache driver to Redis in system.yaml
-  lineinfile:
-    path: /var/www/grav/user/config/system.yaml
-    regexp: '^\s*driver: auto'
-    line: '  driver: redis'
-    state: present
-    backrefs: yes
-  become: yes
-  become_user: grav
-  notify: restart php8.3-fpm
-
-- name: Clear Grav cache
-  command: bin/grav clearcache
-  args:
-    chdir: /var/www/grav
-  become: yes
-  become_user: grav
