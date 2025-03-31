@@ -65,8 +65,8 @@
         mode: '0755'
 
     - name: Install Composer locally
-      # shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
-      command: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
+      shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
+      # command: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
       args:
         creates: /home/grav/.local/bin/composer
         
@@ -92,20 +92,17 @@
         depth: 1
 
     - name: Install Grav dependencies with Composer
-      # shell: /home/grav/.local/bin/composer install --no-dev -o
-      command: /home/grav/.local/bin/composer install --no-dev -o
+      shell: /home/grav/.local/bin/composer install --no-dev -o
       args:
         chdir: /var/www/grav
 
     - name: Install Grav core
-      # shell: bin/grav install
-      command: bin/grav install
+      shell: bin/grav install
       args:
         chdir: /var/www/grav
 
     - name: Install Grav admin plugin
-      # shell: echo 'y' | bin/gpm install admin
-      command: echo 'y' | bin/gpm install admin
+      shell: echo 'y' | bin/gpm install admin
       args:
         chdir: /var/www/grav
 
