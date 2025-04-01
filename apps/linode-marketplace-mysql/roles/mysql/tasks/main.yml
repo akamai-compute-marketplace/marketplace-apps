@@ -1,4 +1,0 @@
----
-- name: Run database helper
-  import_role:
-    name: database
