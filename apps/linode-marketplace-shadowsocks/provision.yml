@@ -10,6 +10,7 @@
   # generate creds
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
     - name: writing shadowsocks vars
       lineinfile:
         insertafter: EOF

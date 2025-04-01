@@ -13,14 +13,6 @@
       _domain: {{ _domain }}
   when: _domain is defined 
 
-# dns creation
-- name: create dns A record
-  import_role:
-    name: create_dns_record
-  when: 
-    - token_password is defined
-    - default_dns is not defined
-
 # sets customer supplied ssh pubkey to limited user
 - name: set ssh pubkey
   import_role:
