@@ -1,4 +1,4 @@
-# Linode MySQL/MariaDB Deployment One-Click APP
+# Linode PostgreSQL Deployment One-Click APP
 
 PostgreSQL is a popular open source relational database system that provides many advanced configuration options that can help optimize your database’s performance in a production environment.
 
