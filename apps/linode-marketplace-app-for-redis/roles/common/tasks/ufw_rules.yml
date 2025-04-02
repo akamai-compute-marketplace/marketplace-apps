@@ -5,3 +5,9 @@
     rule: allow
     port: '22'
     proto: tcp
+
+- name: Allow all access to tcp port 6379
+  community.general.ufw:
+    rule: allow
+    port: '6379'
+    proto: tcp

@@ -19,7 +19,7 @@ fi
 # <UDF name="ca_common_name" label="CA Common Name" example="Example: Redis CA" />
 
 # Client Count
-# <UDF name="client_count" label="Number of clients connecting to Redis">
+# <UDF name="client_count" label="Number of clients connecting to Redis" oneOf="1,2,3,4,5,6,7,8,9,10" default="1">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
