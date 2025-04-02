@@ -57,6 +57,7 @@
         url: https://getcomposer.org/installer
         dest: /tmp/composer-setup.php
         mode: '0755'
+        remote_tmp: /tmp/ansible-grav-tmp
 
     - name: Create .local/bin directory
       file:
@@ -66,20 +67,8 @@
 
     - name: Install Composer locally
       shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
-      # command: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
       args:
         creates: /home/grav/.local/bin/composer
-        
-    # - name: Add Composer to grav user's PATH
-    #   lineinfile:
-    #     path: /home/grav/.bashrc
-    #     line: 'export PATH="$HOME/.local/bin:$PATH"'
-    #     state: present
-
-    # - name: Source bashrc for current session
-    #   shell: . /home/grav/.bashrc
-    #   args:
-    #     executable: /bin/bash
 
 - name: Clone and install Grav as grav user
   become: yes
