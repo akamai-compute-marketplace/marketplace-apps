@@ -39,6 +39,10 @@
     state: present
     filename: "gitlab_gitlab-ce"
 
+- name: apt update
+  apt:
+    update_cache: yes
+
 - name: install gitlab
   apt:
     name: gitlab-ce
