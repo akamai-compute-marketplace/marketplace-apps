@@ -1,6 +1,11 @@
 ---
 # install system packages
 
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+    os: "ubuntu"
+
 - name: install required packages
   apt:
     pkg:
@@ -10,18 +15,29 @@
       - tzdata
       - perl
       - gnupg
-      - apt-transport-https
+      - ap
     state: latest
     update_cache: true
 
-- name: download gitLab install script
+- name: add gitlab gpg key
   get_url:
-    url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh
-    dest: /tmp/gitlab_script.sh
-    mode: '0755'
+    url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
+    dest: /tmp/gitlab-key.gpg
 
-- name: run gitLab install script
-  command: bash /tmp/gitlab_script.sh
+- name: dearmouring gitlab key
+  shell: gpg --dearmor < /tmp/gitlab-key.gpg > //etc/apt/trusted.gpg.d/gitlab_gitlab-ce.gpg
+
+- name: add gitlab deb repository to sources list
+  apt_repository:
+    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
+    state: present
+    filename: "gitlab_gitlab-ce"
+
+- name: add gitlab deb-source repository to sources list
+  apt_repository:
+    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
+    state: present
+    filename: "gitlab_gitlab-ce"
 
 - name: install gitlab
   apt:
