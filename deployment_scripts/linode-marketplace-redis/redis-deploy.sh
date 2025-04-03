@@ -24,7 +24,7 @@ fi
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-app-for-redis"
+export MARKETPLACE_APP="apps/linode-marketplace-redis"
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
