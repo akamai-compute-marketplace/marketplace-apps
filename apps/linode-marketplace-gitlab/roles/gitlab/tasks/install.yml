@@ -15,7 +15,7 @@
       - tzdata
       - perl
       - gnupg
-      - ap
+      - apt-transport-https
     state: latest
     update_cache: true
 
