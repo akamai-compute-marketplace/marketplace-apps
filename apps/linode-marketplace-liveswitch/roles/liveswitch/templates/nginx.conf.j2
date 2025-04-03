@@ -2,8 +2,6 @@ server {
     listen 80;
     server_name {{ _domain }};
 
-    return 301 https://$host$request_uri;
-
     location / {
         proxy_pass http://localhost:8080;
         proxy_http_version 1.1;

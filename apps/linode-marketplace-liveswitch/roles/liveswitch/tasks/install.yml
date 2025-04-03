@@ -22,22 +22,17 @@
 - name: Add Docker GPG apt key
   get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
-    dest: /etc/apt/keyrings/docker.gpg.asc
+    dest: /etc/apt/keyrings/docker.asc
     mode: '0644'
-
-- name: Dearmor GPG key
-  shell: gpg --dearmor -o /etc/apt/keyrings/docker.gpg < /etc/apt/keyrings/docker.gpg.asc
-  args:
-    creates: /etc/apt/keyrings/docker.gpg
 
 - name: Set permissions on GPG key
   file:
-    path: /etc/apt/keyrings/docker.gpg
+    path: /etc/apt/keyrings/docker.asc
     mode: '0644'
 
 - name: Add Docker repository
   apt_repository:
-    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu noble stable"
     state: present
     filename: docker
     update_cache: yes
@@ -52,6 +47,7 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
+      - docker-buildx-plugin
       - docker-compose-plugin
 
 - name: Create Docker network
