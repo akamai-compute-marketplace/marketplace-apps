@@ -1,0 +1,68 @@
+---
+# Install dependencies for LiveSwitch
+- name: Install required system packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker GPG apt key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.gpg.asc
+    mode: '0644'
+
+- name: Dearmor GPG key
+  shell: gpg --dearmor -o /etc/apt/keyrings/docker.gpg < /etc/apt/keyrings/docker.gpg.asc
+  args:
+    creates: /etc/apt/keyrings/docker.gpg
+
+- name: Set permissions on GPG key
+  file:
+    path: /etc/apt/keyrings/docker.gpg
+    mode: '0644'
+
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    filename: docker
+    update_cache: yes
+
+- name: Update apt and install Docker packages
+  apt:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+
+- name: Create Docker network
+  community.docker.docker_network:
+    name: liveswitch
+    state: present
+
+- name: Create LiveSwitch secure directory
+  file:
+    path: /home/{{ username }}/liveswitch-secure
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
