@@ -8,4 +8,4 @@ polling==0.3.2
 ansible-specdoc==0.0.14
 pyyaml==6.0.1
 passlib==1.7.4
-docker==7.1.0
+docker==6.1.3
