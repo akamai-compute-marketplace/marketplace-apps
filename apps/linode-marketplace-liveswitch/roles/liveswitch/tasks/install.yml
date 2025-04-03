@@ -12,6 +12,7 @@
       - curl
       - gnupg
       - lsb-release
+      - python3-pip
 
 - name: Create keyrings directory
   file:
@@ -49,11 +50,6 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
-
-- name: Create Docker network
-  community.docker.docker_network:
-    name: liveswitch
-    state: present
 
 - name: Create LiveSwitch secure directory
   file:

@@ -32,12 +32,6 @@
   delay: 2
   changed_when: false
 
-# - name: Create Recording database
-#   shell: |
-#     docker-compose -f /home/{{ username }}/liveswitch-secure/docker-compose.yml exec -T postgres psql -U postgres -c "CREATE DATABASE recording;"
-#     docker-compose -f /home/{{ username }}/liveswitch-secure/docker-compose.yml exec -T postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE recording TO postgres;"
-#   register: recording_db_creation
-
 - name: Create Recording database
   command: docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE recording;"
   args:
