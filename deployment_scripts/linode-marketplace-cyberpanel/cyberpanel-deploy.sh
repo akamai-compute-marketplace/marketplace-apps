@@ -75,11 +75,12 @@ function run {
   # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
-  cd ${WORK_DIR}/${MARKETPLACE_APP}
+  cd /root/
   pip3 install virtualenv
   python3 -m virtualenv env
   source env/bin/activate
   pip install pip --upgrade
+  cd ${WORK_DIR}/${MARKETPLACE_APP}
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
 

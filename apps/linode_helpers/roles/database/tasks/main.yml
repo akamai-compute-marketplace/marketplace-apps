@@ -14,3 +14,8 @@
   include_tasks:	
     file: postgresql.yml	
   when: database == 'postgresql'	
+
+- name: install redis
+  include_tasks:
+    file: redis.yml
+  when: database == 'redis'
