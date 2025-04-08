@@ -1,0 +1,6 @@
+---
+- name: run database helper
+  import_role:
+    name: database
+  vars:
+    database: postgresql
