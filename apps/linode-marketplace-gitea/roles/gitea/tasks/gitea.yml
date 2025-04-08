@@ -36,7 +36,6 @@
     mode: 0750
     recurse: true
   loop:
-    - '/home/gitea'
     - '/var/lib/gitea'
     - '/var/lib/gitea/custom'
     - '/var/lib/gitea/data'
