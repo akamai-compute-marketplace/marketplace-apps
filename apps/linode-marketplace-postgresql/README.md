@@ -6,7 +6,7 @@ PostgreSQL is a popular open source relational database system that provides man
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| PostgreSQL |   latest | database |
+| PostgreSQL |   16.8 | Database Management System |
 
 **Supported Distributions:**
 
