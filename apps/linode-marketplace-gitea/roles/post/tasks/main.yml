@@ -1,0 +1,33 @@
+---
+# Final system configurations and cleanup
+- name: Ensure services are started and enabled
+  systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - nginx
+    - gitea
+
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Gitea Admin User: {{ gitea_admin_user }}
+      Gitea Admin Password: {{ gitea_admin_password }}
+      PostgreSQL Password: {{ postgresql_password }}
+
+  

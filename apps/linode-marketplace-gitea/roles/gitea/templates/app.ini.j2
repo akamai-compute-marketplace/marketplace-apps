@@ -1,0 +1,62 @@
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ; General Settings
+; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+APP_NAME = Gitea
+RUN_USER = gitea
+RUN_MODE = prod
+WORK_PATH = /var/lib/gitea
+
+[database]
+DB_TYPE = postgres
+; Using loopback for security
+HOST = 127.0.0.1:5432
+NAME = giteadb
+USER = gitea
+; Change this to your actual password
+PASSWD = {{ postgresql_password }}
+SCHEMA = public
+; Change if using SSL for PostgreSQL
+SSL_MODE = disable
+
+[server]
+PROTOCOL = http
+DOMAIN = {{ _domain }}
+ROOT_URL = https://{{ _domain }}/
+; Prevents external direct access
+HTTP_ADDR = 127.0.0.1
+HTTP_PORT = 3000
+DISABLE_SSH = false
+SSH_PORT = 22
+SSH_LISTEN_PORT = 22
+
+[security]
+INSTALL_LOCK = true
+SECRET_KEY = {{ gitea_secret_key }}
+INTERNAL_TOKEN = {{ gitea_internal_token }}
+
+[service]
+DISABLE_REGISTRATION = true
+REQUIRE_SIGNIN_VIEW = true
+
+[log]
+MODE = file
+LEVEL = Info
+ROOT_PATH = /var/lib/gitea/log
+
+[repository]
+ROOT = /var/lib/gitea/data/repos
+
+[session]
+PROVIDER = db
+
+[picture]
+AVATAR_UPLOAD_PATH = data/avatars
+GRAVATAR_SOURCE = gravatar
+DISABLE_GRAVATAR = true
+
+[attachment]
+ENABLED = true
+PATH = attachments
+ALLOWED_TYPES = .zip,.pdf,.png,.jpg,.txt,.tar.gz
+MAX_SIZE = 2048
+MAX_FILES = 5
