@@ -19,6 +19,13 @@ fi
 #<UDF name="administrator_name" label="Administrator Name" example="Jane Doe">
 #<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld">
 
+# Validate user_name UDF
+if [ "${USER_NAME}" = "grav" ]; then
+  echo "Error: 'grav' cannot be used as the sudo username as it conflicts with the Grav CMS system user."
+  echo "Please choose a different username."
+  exit 1
+fi
+
 # git repo
 # setting up git repo vars
 export TEST_REPO=""
