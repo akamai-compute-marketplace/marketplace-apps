@@ -51,6 +51,8 @@
 
     - name: Install Composer globally
       shell: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+      args:
+
 
 - name: Clone and install Grav as www-data user
   become: yes
@@ -63,38 +65,19 @@
         depth: 1
 
     - name: Install Grav dependencies with Composer
-      expect:
-        command: /usr/local/bin/composer install --no-dev -o
+      shell: /home/grav/.local/bin/composer install --no-dev -o
+      args:
         chdir: /var/www/grav
-        responses:
-          (?i)Do you want to continue: "yes"
-        timeout: 300
-        
-    - name: Install Grav core
-      expect:
-        command: bin/grav install
-        chdir: /var/www/grav
-        responses:
-          (?i)Do you want to continue: "yes"
-        timeout: 300
-    - name: Install Grav admin plugin
-      expect:
-        command: bin/gpm install admin
-        chdir: /var/www/grav
-        responses:
-          (?i)Install these packages\? \[Y\|n\]\s*\(yes/no\)\s*\[yes\]: "yes"
-          (?i)Do you want to continue: "yes"
-        echo_stdout: yes
-        timeout: 300
-      become: yes
-      become_user: www-data
 
-    # - name: Install Grav admin plugin
-    #   shell: yes | bin/gpm install admin
-    #   args:
-    #     chdir: /var/www/grav
-    #   become: yes
-    #   become_user: www-data
+    - name: Install Grav core
+      shell: bin/grav install
+      args:
+        chdir: /var/www/grav
+
+    - name: Install Grav admin plugin
+      shell: echo 'y' | bin/gpm install admin
+      args:
+        chdir: /var/www/grav
 
 - name: Make bin files executable
   file:
