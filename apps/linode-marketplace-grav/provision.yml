@@ -11,7 +11,7 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    - name: Creating Grav user and admin credentials
+    - name: Creating Grav credentials
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
@@ -20,4 +20,10 @@
           grav_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           grav_admin_user: admin
           grav_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+
+    - name: Creating hashed admin password
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
           grav_hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt', lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
