@@ -65,19 +65,25 @@
         depth: 1
 
     - name: Install Grav dependencies with Composer
-      shell: /home/grav/.local/bin/composer install --no-dev -o
+      shell: /usr/local/bin/composer install --no-dev -o
       args:
         chdir: /var/www/grav
+      become: yes
+      become_user: www-data
 
     - name: Install Grav core
       shell: bin/grav install
       args:
         chdir: /var/www/grav
+      become: yes
+      become_user: www-data
 
     - name: Install Grav admin plugin
       shell: echo 'y' | bin/gpm install admin
       args:
         chdir: /var/www/grav
+      become: yes
+      become_user: www-data
 
 - name: Make bin files executable
   file:
