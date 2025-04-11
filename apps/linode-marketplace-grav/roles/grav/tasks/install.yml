@@ -68,22 +68,24 @@
         chdir: /var/www/grav
         responses:
           (?i)Do you want to continue: "yes"
-
+        timeout: 300
+        
     - name: Install Grav core
       expect:
         command: bin/grav install
         chdir: /var/www/grav
         responses:
           (?i)Do you want to continue: "yes"
-
+        timeout: 300
     - name: Install Grav admin plugin
       expect:
         command: bin/gpm install admin
         chdir: /var/www/grav
         responses:
-          (?i)Install these packages: "yes"
+          (?i)Install these packages\? \[Y\|n\]\s*\(yes/no\)\s*\[yes\]: "yes"
           (?i)Do you want to continue: "yes"
         echo_stdout: yes
+        timeout: 300
       become: yes
       become_user: www-data
 
