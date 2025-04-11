@@ -26,31 +26,26 @@
     line: 'cgi.fix_pathinfo=0'
   notify: restart php8.3-fpm
 
-- name: Create grav user
-  user:
-    name: grav
-    shell: /bin/bash
-    groups: sudo
-    append: true
-    home: /home/grav
-    create_home: yes
-
-- name: Generate hashed password for Grav admin
-  set_fact:
-    hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt', lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
-  no_log: true
+# - name: Create grav user
+#   user:
+#     name: grav
+#     shell: /bin/bash
+#     groups: sudo
+#     append: true
+#     home: /home/grav
+#     create_home: yes
 
 - name: Create web directory with proper ownership
   file:
     path: /var/www/grav
     state: directory
     mode: '0755'
-    owner: grav
+    owner: www-data
     group: www-data
 
-- name: Install Composer for the grav user
+- name: Install Composer for www-data user
   become: yes
-  become_user: grav
+  become_user: www-data
   block:
     - name: Download Composer installer
       get_url:
@@ -60,18 +55,16 @@
 
     - name: Create .local/bin directory
       file:
-        path: /home/grav/.local/bin
+        path: /home/www-data/.local/bin
         state: directory
         mode: '0755'
 
     - name: Install Composer locally
-      shell: php /tmp/composer-setup.php --install-dir=/home/grav/.local/bin --filename=composer
+      shell: php /tmp/composer-setup.php --install-dir=/home/www-data/.local/bin --filename=composer
       args:
-        creates: /home/grav/.local/bin/composer
 
-- name: Clone and install Grav as grav user
-  become: yes
-  become_user: grav
+
+- name: Clone and install Grav as www-data user
   block:
     - name: Clone Grav repository
       git:
@@ -79,40 +72,68 @@
         dest: /var/www/grav
         depth: 1
 
+    # - name: Install Grav dependencies with Composer
+    #   shell: /home/grav/.local/bin/composer install --no-dev -o
+    #   args:
+    #     chdir: /var/www/grav
+
+    # - name: Install Grav core
+    #   shell: bin/grav install
+    #   args:
+    #     chdir: /var/www/grav
+
+    # - name: Install Grav admin plugin
+    #   shell: echo 'y' | bin/gpm install admin
+    #   args:
+    #     chdir: /var/www/grav
+
     - name: Install Grav dependencies with Composer
-      shell: /home/grav/.local/bin/composer install --no-dev -o
-      args:
+      expect:
+        command: /home/www-data/.local/bin/composer install --no-dev -o
         chdir: /var/www/grav
+        responses:
+          (?i)Do you want to continue: "yes"
+        timeout: 300
 
     - name: Install Grav core
-      shell: bin/grav install
-      args:
+      expect:
+        command: bin/grav install
         chdir: /var/www/grav
+        responses:
+          (?i)Do you want to continue: "yes"
+        timeout: 300
 
     - name: Install Grav admin plugin
-      shell: echo 'y' | bin/gpm install admin
-      args:
+      expect:
+        command: bin/gpm install admin
         chdir: /var/www/grav
-
-    - name: Make bin files executable
-      file:
-        path: "/var/www/grav/bin/{{ item }}"
-        mode: '0755'
-      with_items:
-        - gpm
-        - grav
-        - plugin
-
-- name: Ensure Grav directories have correct group permissions
+        responses:
+          (?i)Do you want to continue: "yes"
+          (?i)Do you want to install: "yes"
+        timeout: 300
   become: yes
+  # become_user: grav
+  become_user: www-data
+        
+- name: Make bin files executable
+  file:
+    path: "/var/www/grav/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - gpm
+    - grav
+    - plugin
+
+- name: Ensure Grav directories have correct permissions
   file:
     path: "/var/www/grav/{{ item }}"
     state: directory
     mode: '0775'
-    owner: grav
+    # owner: grav
+    owner: www-data
     group: www-data
     recurse: yes
-  with_items:
+  loop:
     - cache
     - logs
     - images
@@ -125,20 +146,22 @@
     - user/accounts
 
 - name: Create admin account directory
-  become: yes
+  # become: yes
   file:
     path: /var/www/grav/user/accounts
     state: directory
     mode: '0775'
-    owner: grav
+    # owner: grav
+    owner: www-data
     group: www-data
 
 - name: Deploy admin account configuration
-  become: yes
+  # become: yes
   template:
     src: admin.yaml.j2
     dest: /var/www/grav/user/accounts/admin.yaml
-    owner: grav
+    # owner: grav
+    owner: www-data
     group: www-data
     mode: '0644'
 
@@ -149,13 +172,13 @@
     line: '  driver: redis'
     state: present
     backrefs: yes
-  become: yes
-  become_user: grav
-  notify: restart php8.3-fpm
+  # become: yes
+  # become_user: grav
+  # notify: restart php8.3-fpm
 
 - name: Clear Grav cache
   command: bin/grav clearcache
   args:
     chdir: /var/www/grav
   become: yes
-  become_user: grav
+  become_user: www-data

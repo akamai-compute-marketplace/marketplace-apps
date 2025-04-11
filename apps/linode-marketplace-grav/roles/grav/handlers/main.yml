@@ -8,8 +8,3 @@
   systemd_service:
     name: nginx
     state: restarted
-
-- name: restart redis
-  systemd_service:
-    name: redis-server
-    state: restarted 
