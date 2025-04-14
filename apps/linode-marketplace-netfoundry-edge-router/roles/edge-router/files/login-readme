@@ -1,0 +1,4 @@
+To register this VM with your NetFoundry network run the following command:\n
+  \033[0;31msudo router-registration <registration key>\033[0m\n
+
+
