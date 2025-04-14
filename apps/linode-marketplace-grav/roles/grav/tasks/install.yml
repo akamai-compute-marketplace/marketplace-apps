@@ -108,13 +108,13 @@
         responses:
           (?i)Do you want to continue: "yes"
 
-      - name: Install Grav admin plugin
-      expect:
-        command: bin/gpm install admin
-        chdir: /var/www/grav
-        responses:
-          (?i)^.*Install these packages: "y"
-          (?i)^.*continue: "y"
+    - name: Install Grav admin plugin
+    expect:
+      command: bin/gpm install admin
+      chdir: /var/www/grav
+      responses:
+        (?i)^.*Install these packages: "y"
+        (?i)^.*continue: "y"
 
 - name: Make bin files executable
   file:
