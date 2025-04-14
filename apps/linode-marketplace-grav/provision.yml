@@ -16,8 +16,6 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: |
-          grav_user: grav
-          grav_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           grav_admin_user: admin
           grav_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
 

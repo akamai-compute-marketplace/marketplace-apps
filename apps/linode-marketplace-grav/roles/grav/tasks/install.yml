@@ -52,37 +52,6 @@
     - name: Install Composer globally
       shell: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
       args:
-
-    # - name: Clone and install Grav as www-data user
-    # become: yes
-    # become_user: www-data
-    # block:
-    #   - name: Clone Grav repository
-    #     git:
-    #       repo: https://github.com/getgrav/grav.git
-    #       dest: /var/www/grav
-    #       depth: 1
-  
-    #   - name: Install Grav dependencies with Composer
-    #     shell: /usr/local/bin/composer install --no-dev -o
-    #     args:
-    #       chdir: /var/www/grav
-    #     become: yes
-    #     become_user: www-data
-  
-    #   - name: Install Grav core
-    #     shell: bin/grav install
-    #     args:
-    #       chdir: /var/www/grav
-    #     become: yes
-    #     become_user: www-data
-  
-    #   - name: Install Grav admin plugin
-    #     shell: echo 'y' | bin/gpm install admin
-    #     args:
-    #       chdir: /var/www/grav
-    #     become: yes
-    #     become_user: www-data
     
 - name: Clone and install Grav as www-data user
   become: yes
