@@ -35,6 +35,9 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export ADMIN_USERNAME="admin"
+export DB_USERNAME="dba"
+
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -46,7 +49,8 @@ curl -H "Content-Type: application/json" \
       "stackscript_id": 688903,
       "stackscript_data": {
         "soa_email_address": "${SOA_EMAIL_ADDRESS}"
-        "code_server_version": "${CODE_SERVER_VERSION}"
+        "admin_username": "${ADMIN_USERNAME}"
+        "db_username": "${db_USERNAME}"
       },
       "authorized_users": [
         "myUser",
@@ -67,13 +71,15 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export ADMIN_USERNAME="admin"
+export DB_USERNAME="dba"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 688903 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "code_server_version": "${CODE_SERVER_VERSION}"} \
+  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "admin_username": "${ADMIN_USERNAME}", "db_username": "${DB_USERNAME}"} \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"
