@@ -1,0 +1,51 @@
+---
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+
+- name: install redis dependancies
+  apt:
+    pkg:
+      - curl
+      - gpg
+    state: present
+    update_cache: true
+
+- name: add redis gpg key
+  apt_key:
+    url: https://packages.redis.io/gpg
+    keyring: /usr/share/keyrings/redis-archive-keyring.gpg
+    state: present
+
+- name: add redis repo
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb {{ distribution_release }} main
+    state: present
+
+- name: install redis 
+  apt:
+    pkg:
+      - redis-tools=6:7.2.7-1rl1~{{ distribution_release }}1
+      - redis-server=6:7.2.7-1rl1~{{ distribution_release }}1
+    state: present
+    update_cache: true
+
+- name: template redis acl file
+  template:
+    src: 'templates/redis_users.acl.j2'
+    dest: '/etc/redis/users.acl'
+    owner: redis
+    group: redis
+    mode: 0640
+
+- name: enable redis acls
+  lineinfile:
+    path: '/etc/redis/redis.conf'
+    regexp: '^# aclfile'
+    line: aclfile /etc/redis/users.acl
+
+- name: restart and enable redis
+  systemd_service:
+    name: redis-server
+    state: restarted
+    enabled: true
