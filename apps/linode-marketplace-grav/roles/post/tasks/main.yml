@@ -27,8 +27,6 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Grav Username: {{ grav_user }}
-      Grav Password: {{ grav_password }}
       Grav Admin Username: {{ grav_admin_user }}
       Grav Admin Password: {{ grav_admin_password }}
       Grav Admin Email: {{ administrator_email_address }}

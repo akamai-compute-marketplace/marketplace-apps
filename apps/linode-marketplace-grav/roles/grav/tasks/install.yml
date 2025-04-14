@@ -12,9 +12,6 @@
       - php-apcu
       - php-intl
       - php8.3-yaml
-      # - php8.3-memcached
-      # - php8.3-memcache
-      # - memcached
       - git
     state: present
     update_cache: yes
