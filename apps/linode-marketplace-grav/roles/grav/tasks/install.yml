@@ -54,6 +54,37 @@
       args:
 
 
+# - name: Clone and install Grav as www-data user
+#   become: yes
+#   become_user: www-data
+#   block:
+#     - name: Clone Grav repository
+#       git:
+#         repo: https://github.com/getgrav/grav.git
+#         dest: /var/www/grav
+#         depth: 1
+
+#     - name: Install Grav dependencies with Composer
+#       shell: /usr/local/bin/composer install --no-dev -o
+#       args:
+#         chdir: /var/www/grav
+#       become: yes
+#       become_user: www-data
+
+#     - name: Install Grav core
+#       shell: bin/grav install
+#       args:
+#         chdir: /var/www/grav
+#       become: yes
+#       become_user: www-data
+
+#     - name: Install Grav admin plugin
+#       shell: echo 'y' | bin/gpm install admin
+#       args:
+#         chdir: /var/www/grav
+#       become: yes
+#       become_user: www-data
+
 - name: Clone and install Grav as www-data user
   become: yes
   become_user: www-data
@@ -64,26 +95,43 @@
         dest: /var/www/grav
         depth: 1
 
+    - name: Set non-interactive environment
+      set_fact:
+        noninteractive_env:
+          DEBIAN_FRONTEND: noninteractive
+          COMPOSER_ALLOW_SUPERUSER: 1
+          COMPOSER_NO_INTERACTION: 1
+
     - name: Install Grav dependencies with Composer
-      shell: /usr/local/bin/composer install --no-dev -o
-      args:
+      expect:
+        command: /usr/local/bin/composer install --no-dev -o
         chdir: /var/www/grav
-      become: yes
-      become_user: www-data
+        environment: "{{ noninteractive_env }}"
+        responses:
+          (?i)Do you want to continue: "yes"
+        timeout: 600
+        echo_stdout: yes
 
     - name: Install Grav core
-      shell: bin/grav install
-      args:
+      expect:
+        command: bin/grav install
         chdir: /var/www/grav
-      become: yes
-      become_user: www-data
+        environment: "{{ noninteractive_env }}"
+        responses:
+          (?i)Do you want to continue: "yes"
+        timeout: 600
+        echo_stdout: yes
 
     - name: Install Grav admin plugin
-      shell: echo 'y' | bin/gpm install admin
-      args:
+      expect:
+        command: bin/gpm install admin
         chdir: /var/www/grav
-      become: yes
-      become_user: www-data
+        environment: "{{ noninteractive_env }}"
+        responses:
+          (?i)Install these packages\? \[Y\|n\]\s*\(yes/no\)\s*\[yes\]: "yes"
+          (?i)Do you want to continue: "yes"
+        timeout: 600
+        echo_stdout: yes
 
 - name: Make bin files executable
   file:
