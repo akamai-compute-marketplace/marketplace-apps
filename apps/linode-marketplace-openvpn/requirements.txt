@@ -10,7 +10,7 @@ linode_api4==5.5.0
 polling==0.3.2
 ansible-specdoc==0.0.14
 dnspython==2.2.1
-certbot==2.8.0
+certbot==4.0.0
 #
 # OpenVPN Access Server Dependancies 
 # the following packages are required in the venv to touch OpenVPN python scripts // functions
