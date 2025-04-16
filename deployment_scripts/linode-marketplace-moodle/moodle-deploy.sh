@@ -63,7 +63,8 @@ function provision_failed {
      -H "Authorization: ${token}" \
      -H "Content-Type: application/json" \
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
-        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\" }"
+        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\" }"
   
   exit $?
 }
