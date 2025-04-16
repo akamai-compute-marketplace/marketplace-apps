@@ -19,7 +19,7 @@
 - name: secure ssh
   import_role:
       name: securessh
-  when: disable_root is defined
+  when: disable_root is defined and disable_root | bool
 
 - name: update system packages
   import_role:

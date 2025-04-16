@@ -48,6 +48,11 @@ function udf {
   if [ "${VNC}" == "Yes" ]; then
     VNC_BOOL=true
   fi
+
+  if [ "${DISABLE_ROOT}" == "Yes" ]; then
+    DISABLE_ROOT_BOOL=true
+  fi
+
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
   sed 's/  //g' <<EOF > ${group_vars}
@@ -61,7 +66,7 @@ function udf {
 
   # Other variables
   username: "${USER_NAME}"
-  disable_root: "{{ '${DISABLE_ROOT}' == 'Yes' }}"
+  disable_root: ${DISABLE_ROOT_BOOL}
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 EOF
 }
