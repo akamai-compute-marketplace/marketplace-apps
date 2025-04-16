@@ -1,0 +1,21 @@
+# moodle
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+  # generate creds
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      
+    - name: writing moodle to vars
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          mysql_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          db_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          admin_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

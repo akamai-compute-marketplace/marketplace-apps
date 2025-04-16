@@ -1,0 +1,12 @@
+---
+# installation tasks
+- name: import apache
+  import_tasks: apache.yml
+
+- name: import database
+  import_tasks: database.yml
+
+- name: import moodle 
+  import_tasks: moodle.yml
+
+

@@ -1,0 +1,40 @@
+<VirtualHost *:80>
+   {% if subdomain != "www" %}
+   ServerName {{ _domain }}
+   {% elif subdomain == "www" %}
+   ServerName {{ _domain }}
+   ServerAlias www.{{ _domain }} 
+   {% elif default_dns is defined %}
+   ServerName {{ _domain }}
+   {% endif %}
+    Redirect permanent / https://{{ _domain }}
+</VirtualHost>
+
+<VirtualHost *:443>
+   {% if subdomain != "www" %}
+   ServerName {{ _domain }}
+   {% elif subdomain == "www" %}
+   ServerName {{ _domain }}
+   ServerAlias www.{{ _domain }} 
+   {% elif default_dns is defined %}
+   ServerName {{ _domain }}
+   {% endif %}
+
+    DocumentRoot {{ moodle_app }}
+
+    ErrorLog ${APACHE_LOG_DIR}/{{ _domain }}_error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ _domain }}_access.log combined
+
+    SSLEngine on
+    SSLCertificateFile /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/{{ _domain }}/privkey.pem
+
+    <Directory {{ moodle_app }}>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    # Optional: Add security headers
+    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+</VirtualHost>
