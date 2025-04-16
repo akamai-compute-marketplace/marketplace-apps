@@ -1,0 +1,28 @@
+# install ssl
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: config file setup
+  template:
+      src: 'templates/nginx.conf.j2'
+      dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: reload nginx service
+
+
