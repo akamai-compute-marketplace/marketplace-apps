@@ -1,0 +1,10 @@
+---
+- name: restart php8.3-fpm
+  systemd_service:
+    name: php8.3-fpm
+    state: restarted
+
+- name: restart nginx
+  systemd_service:
+    name: nginx
+    state: restarted

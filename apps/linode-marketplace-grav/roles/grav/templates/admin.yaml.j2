@@ -1,0 +1,11 @@
+state: enabled
+email: {{ administrator_email_address }}
+fullname: '{{ administrator_name }}'
+title: Administrator
+access:
+  admin:
+    login: true
+    super: true
+  site:
+    login: true
+hashed_password: {{ grav_hashed_admin_password }}

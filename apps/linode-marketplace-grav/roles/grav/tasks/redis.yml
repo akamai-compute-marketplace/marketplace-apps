@@ -1,0 +1,14 @@
+---
+- name: Install required packages for Redis
+  apt:
+    name:
+      - php8.3-redis
+      - redis-server
+    state: present
+    update_cache: true
+
+- name: Start and enable Redis
+  systemd_service:
+    name: redis-server
+    state: started
+    enabled: true

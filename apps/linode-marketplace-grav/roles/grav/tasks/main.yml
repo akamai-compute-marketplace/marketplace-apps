@@ -1,0 +1,11 @@
+---
+# Main Grav installation tasks
+
+- name: Import NGINX tasks
+  import_tasks: nginx.yml
+
+- name: Import Redis tasks
+  import_tasks: redis.yml
+
+- name: Import Grav tasks
+  import_tasks: install.yml
