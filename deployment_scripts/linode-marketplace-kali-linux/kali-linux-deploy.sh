@@ -79,6 +79,7 @@ function run {
   DEBIAN_FRONTEND=noninteractive apt-get update
   DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" \
     git \
+    gnupg \
     python3 \
     python3-pip \
     python3-venv \
