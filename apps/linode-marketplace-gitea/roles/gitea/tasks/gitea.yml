@@ -29,18 +29,18 @@
 
 - name: Create required Gitea directories
   file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     owner: "gitea"
     group: "gitea"
     mode: 0750
     recurse: true
   loop:
-    - '/var/lib/gitea'
-    - '/var/lib/gitea/custom'
-    - '/var/lib/gitea/data'
-    - '/var/lib/gitea/log'
-    - '/etc/gitea'
+    - { path: '/var/lib/gitea' }
+    - { path: '/var/lib/gitea/custom' }
+    - { path: '/var/lib/gitea/data' }
+    - { path: '/var/lib/gitea/log' }
+    - { path: '/etc/gitea' }
 
 - name: Import credentials
   import_tasks: credentials.yml
