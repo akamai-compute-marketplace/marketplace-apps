@@ -5,7 +5,7 @@
       - php8.3-redis
       - redis-server
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Start and enable Redis
   systemd_service:

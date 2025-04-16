@@ -14,7 +14,7 @@
       - php8.3-yaml
       - git
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Configure PHP settings
   lineinfile:
@@ -31,27 +31,26 @@
     owner: www-data
     group: www-data
 
-- name: Install Composer for www-data user
-  become: yes
-  block:
-    - name: Create Composer directory
-      file:
-        path: /usr/local/bin
-        state: directory
-        mode: '0755'
+- name: Create Composer directory
+  become: true
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: '0755'
 
-    - name: Download Composer installer
-      get_url:
-        url: https://getcomposer.org/installer
-        dest: /tmp/composer-setup.php
-        mode: '0755'
+- name: Download Composer installer
+  become: true
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: '0755'
 
-    - name: Install Composer globally
-      shell: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-      args:
-    
+- name: Install Composer globally
+  become: true
+  shell: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
 - name: Clone and install Grav as www-data user
-  become: yes
+  become: true
   become_user: www-data
   block:
     - name: Clone Grav repository
@@ -98,7 +97,7 @@
     mode: '0775'
     owner: www-data
     group: www-data
-    recurse: yes
+    recurse: true
   loop:
     - cache
     - logs
@@ -133,11 +132,11 @@
     regexp: '^\s*driver: auto'
     line: '  driver: redis'
     state: present
-    backrefs: yes
+    backrefs: true
 
 - name: Clear Grav cache
   command: bin/grav clearcache
   args:
     chdir: /var/www/grav
-  become: yes
+  become: true
   become_user: www-data
