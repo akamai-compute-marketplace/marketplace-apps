@@ -10,4 +10,4 @@ pyyaml==6.0.1
 dnspython==2.2.1
 pexpect==4.8
 passlib==1.7.4
-#PyMySQL==1.1.1
+PyMySQL==1.0.2
