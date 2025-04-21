@@ -36,3 +36,4 @@
         - common
         - mysql
         - post
+      when: "mode == 'production'"
