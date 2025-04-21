@@ -33,4 +33,5 @@
       loop:
         - common
         - mern
-        - post    
+        - post
+      when: "mode == 'production'" 

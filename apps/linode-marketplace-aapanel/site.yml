@@ -36,3 +36,4 @@
         - common
         - aapanel
         - post
+      when: "mode == 'production'"

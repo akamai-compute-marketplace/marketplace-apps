@@ -33,4 +33,5 @@
       loop:
         - common
         - mean
-        - post    
+        - post
+      when: "mode == 'production'"

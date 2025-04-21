@@ -36,3 +36,4 @@
         - common
         - backstage
         - post
+      when: "mode == 'production'"

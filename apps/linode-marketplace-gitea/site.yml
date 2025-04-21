@@ -34,3 +34,4 @@
         - common
         - gitea
         - post
+      when: "mode == 'production'"

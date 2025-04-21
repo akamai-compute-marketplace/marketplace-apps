@@ -34,3 +34,4 @@
         - common
         - drupal
         - post
+      when: "mode == 'production'"

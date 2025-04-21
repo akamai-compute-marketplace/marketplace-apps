@@ -36,3 +36,4 @@
         - common
         - gitlab
         - post
+      when: "mode == 'production'"
