@@ -36,4 +36,5 @@
         - common
         - moodle
         - post
+      when: "mode == 'production'"
 
