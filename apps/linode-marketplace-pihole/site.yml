@@ -36,3 +36,4 @@
         - common
         - pihole
         - post
+      when: "mode == 'production'"
