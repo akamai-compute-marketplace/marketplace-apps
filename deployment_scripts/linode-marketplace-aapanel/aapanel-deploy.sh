@@ -143,4 +143,12 @@ function installation_complete {
 }
 # main
 run
-installation_complete && reboot
+installation_complete
+
+# only reboot on production
+if [[ "${MODE}" == "staging" ]]; then
+  echo "[info] not rebooting in staging"
+else
+  echo "[info] running in production mode...rebooting"
+  reboot
+fi
