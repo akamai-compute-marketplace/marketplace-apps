@@ -39,7 +39,7 @@ else
 fi
 
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-backstage"
+export MARKETPLACE_APP="apps/linode-marketplace-owncast"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
