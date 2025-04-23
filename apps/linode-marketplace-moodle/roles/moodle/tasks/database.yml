@@ -11,7 +11,7 @@
     name: moodle
     state: present
     login_user: root
-    login_unix_socket: /run/mysqld/mysqld.sock
+    login_unix_socket: /var/run/mysqld/mysqld.sock
 
 - name: create moodle db user
   mysql_user:
@@ -21,4 +21,4 @@
     host: "localhost"
     state: present
     login_user: root
-    login_unix_socket: /run/mysqld/mysqld.sock
+    login_unix_socket: /var/run/mysqld/mysqld.sock
