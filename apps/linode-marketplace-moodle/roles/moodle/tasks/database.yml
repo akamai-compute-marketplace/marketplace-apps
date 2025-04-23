@@ -1,8 +1,5 @@
 ---
 # database
-- name: set database to mariadb
-  set_fact:
-    database: "mariadb"
     
 - name: install mariadb helper
   import_role:
