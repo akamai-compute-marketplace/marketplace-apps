@@ -26,7 +26,7 @@
 
 - name: update max_input_vars in php.ini files
   lineinfile:
-    path: "{{ item }}"
+    path: "{{ item.max_input_vars }}"
     regexp: '^[; ]*max_input_vars\s*='
     line: 'max_input_vars = 5000'
     backup: yes
@@ -36,7 +36,7 @@
 
 - name: update post_max_size in php.ini files
   lineinfile:
-    path: "{{ item }}"
+    path: "{{ item.post_max_size }}"
     regexp: '^[; ]*post_max_size\s*='
     line: 'post_max_size = 256M'
     backup: yes
@@ -46,7 +46,7 @@
 
 - name: update upload_max_filesize in php.ini files
   lineinfile:
-    path: "{{ item }}"
+    path: "{{ item.upload_max_filesize }}"
     regexp: '^[; ]*upload_max_filesize\s*='
     line: 'upload_max_filesize = 256M'
     backup: yes
