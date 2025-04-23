@@ -29,7 +29,7 @@
     path: "{{ php_ini_path }}"
     regexp: '^[; ]*max_input_vars\s*='
     line: 'max_input_vars = 5000'
-    backup: yes
+    backup: true
   loop:
     - /etc/php/8.3/cli/php.ini
     - /etc/php/8.3/apache2/php.ini
