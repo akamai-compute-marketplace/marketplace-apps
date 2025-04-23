@@ -14,7 +14,6 @@
     single_branch: yes
     version: "{{ moodle_branch }}"
 
-   #removed for testing --chmod=755
 - name: configure moodle 
   shell: >
     /usr/bin/php admin/cli/install.php
