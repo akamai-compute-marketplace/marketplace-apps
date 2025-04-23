@@ -1,0 +1,7 @@
+---
+
+- name: install phpmyadmin
+  apt:
+    name: phpmyadmin
+    update_cache: true
+    state: present

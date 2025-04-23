@@ -11,4 +11,5 @@
   roles:
     - common
     - lamp
+    - phpmyadmin
     - post
