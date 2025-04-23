@@ -59,27 +59,3 @@
     month: "*"
     weekday: "*"
     job: "/usr/bin/php /var/www/html/moodle/admin/cli/cron.php >/dev/null"
-    
-- name: find directories in moodle
-  find:
-    paths: /var/www/html/moodle
-    file_type: directory
-  register: moodle_dirs
-
-- name: set directory perms to 755
-  file:
-    path: "{{ item.path }}"
-    mode: "0755"
-  loop: "{{ moodle_dirs.files }}"
-
-- name: find all files in moodle
-  find:
-    paths: /var/www/html/moodle
-    file_type: file
-  register: moodle_files
-
-- name: set file perms to 644
-  file:
-    path: "{{ item.path }}"
-    mode: "0644"
-  loop: "{{ moodle_files.files }}"
