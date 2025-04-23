@@ -1,5 +1,9 @@
 ---
 # database
+- name: set database to mariadb
+  set_fact:
+    database: "mariadb"
+    
 - name: install mariadb helper
   import_role:
     name: database
@@ -10,6 +14,7 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}" 
+    login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: create moodle db user
   mysql_user:
@@ -20,3 +25,4 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}" 
+    login_unix_socket: /run/mysqld/mysqld.sock

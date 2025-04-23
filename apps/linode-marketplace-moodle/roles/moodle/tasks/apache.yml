@@ -24,12 +24,35 @@
       - unzip
     state: present
 
-- name: update max_input_vars for php
+- name: update max_input_vars in php.ini files
   lineinfile:
-    path: /etc/php/8.3/cli/php.ini
+    path: "{{ item }}"
     regexp: '^[; ]*max_input_vars\s*='
     line: 'max_input_vars = 5000'
     backup: yes
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
+
+- name: update post_max_size in php.ini files
+  lineinfile:
+    path: "{{ item }}"
+    regexp: '^[; ]*post_max_size\s*='
+    line: 'post_max_size = 256M'
+    backup: yes
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
+
+- name: update upload_max_filesize in php.ini files
+  lineinfile:
+    path: "{{ item }}"
+    regexp: '^[; ]*upload_max_filesize\s*='
+    line: 'upload_max_filesize = 256M'
+    backup: yes
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
 
 - name: start and enable apache
   systemd:
@@ -79,7 +102,7 @@
 - name: enabling apache on boot
   service:
     name: apache2
-    enabled: yes
+    enabled: true
 
 - name: disable apache default site
   file:

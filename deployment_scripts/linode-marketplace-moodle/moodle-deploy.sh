@@ -85,7 +85,6 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: standalone
-  database: mariadb
   db_user: ${DB_USER}
   admin_user: ${ADMIN_USER}
 EOF
@@ -155,4 +154,3 @@ function installation_complete {
 # main
 run 
 installation_complete
-cleanup
