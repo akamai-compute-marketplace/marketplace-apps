@@ -44,7 +44,7 @@
 - name: set permissions for moodle
   file:
     path: "{{ moodle_dir }}"
-    recurse: yes
+    recurse: true
     owner: www-data
     group: www-data
 
