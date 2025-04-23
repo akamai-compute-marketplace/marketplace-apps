@@ -53,7 +53,7 @@
     path: "{{ php_ini_path }}"
     regexp: '^[; ]*upload_max_filesize\s*='
     line: 'upload_max_filesize = 256M'
-    backup: yes
+    backup: true
   loop:
     - /etc/php/8.3/cli/php.ini
     - /etc/php/8.3/apache2/php.ini
