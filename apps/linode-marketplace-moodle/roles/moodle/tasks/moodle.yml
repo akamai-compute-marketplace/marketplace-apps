@@ -11,7 +11,7 @@
   git:
     repo: https://github.com/moodle/moodle.git
     dest: "{{ moodle_app }}"
-    single_branch: yes
+    single_branch: true
     version: "{{ moodle_branch }}"
 
 - name: configure moodle 
