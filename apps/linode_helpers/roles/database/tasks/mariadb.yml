@@ -1,5 +1,5 @@
 ---
-- name: Install MariaDB
+- name: install MariaDB
   apt:
     pkg:
       - mariadb-server
@@ -12,30 +12,17 @@
     login_db: mysql
     query: "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('{{ mysql_root_password }}') OR unix_socket;"
 
-#- name: Reset root password
-#  community.mysql.mysql_user:
-#    name: root
-#    host: localhost
-#    state: present
-#    update_password: always
-#    password: '{{ mysql_root_password }}'
-#    login_unix_socket: /run/mysqld/mysqld.sock
-
-- name: Removes all anonymous user accounts
-  community.mysql.mysql_user:
+- name: removes all anonymous user accounts
+  mysql_user:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: ''
     host_all: true
     state: absent
     login_user: root
-#    login_password: '{{ mysql_root_password }}'
-#    login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: remove test database
-  community.mysql.mysql_db:
+  mysql_db:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     login_user: root
-#    login_password: '{{ mysql_root_password }}'
-#    login_unix_socket: /run/mysqld/mysqld.sock
     name: test
     state: absent
