@@ -4,6 +4,8 @@
 - name: install mariadb helper
   import_role:
     name: database
+  vars:
+    database: "mariadb"
 
 - name: create moodle database
   mysql_db:
