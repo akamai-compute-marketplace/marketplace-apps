@@ -14,10 +14,10 @@
     single_branch: yes
     version: "{{ moodle_branch }}"
 
-- name: configure moodle
+   #removed for testing --chmod=755
+- name: configure moodle 
   shell: >
     /usr/bin/php admin/cli/install.php
-    --chmod=755
     --lang=en_us
     --wwwroot=https://{{ _domain }}
     --dataroot=/var/moodledata
