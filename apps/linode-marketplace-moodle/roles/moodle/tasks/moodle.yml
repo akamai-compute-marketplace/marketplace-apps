@@ -40,6 +40,7 @@
   args:
     chdir: "{{ moodle_app }}"
   become_user: www-data
+  no_log: true
 
 - name: set permissions for moodle
   file:
