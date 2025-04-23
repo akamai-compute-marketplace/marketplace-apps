@@ -1,6 +1,5 @@
 ---
 # database
-    
 - name: install mariadb helper
   import_role:
     name: database
@@ -12,7 +11,6 @@
     name: moodle
     state: present
     login_user: root
-    login_password: "{{ mysql_root_password }}" 
     login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: create moodle db user
@@ -23,5 +21,4 @@
     host: "localhost"
     state: present
     login_user: root
-    login_password: "{{ mysql_root_password }}" 
     login_unix_socket: /run/mysqld/mysqld.sock
