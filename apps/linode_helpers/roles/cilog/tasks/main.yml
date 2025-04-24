@@ -15,8 +15,8 @@
     type: "{{ lookup('env', 'TYPE') }}"
     region: "{{ lookup('env', 'REGION') }}"
     env: "{{ lookup('env', 'ENV') }}"
-  no_log: true
-  
+  #no_log: true
+
 - name: obtain temp token from auth server
   uri:
     url: "{{ kc_server }}"
