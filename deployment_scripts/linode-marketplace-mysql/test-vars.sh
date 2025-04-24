@@ -18,7 +18,7 @@ UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
-UDF_VARS["ENV"]=""
+UDF_VARS["ENV"]="${ENV}"
 
 
 # dynamic variables
