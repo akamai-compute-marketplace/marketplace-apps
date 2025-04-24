@@ -14,7 +14,9 @@
     image: "{{ lookup('env', 'IMAGE') }}"
     type: "{{ lookup('env', 'TYPE') }}"
     region: "{{ lookup('env', 'REGION') }}"
-    
+    env: "{{ lookup('env', 'ENV') }}"
+  no_log: true
+  
 - name: obtain temp token from auth server
   uri:
     url: "{{ kc_server }}"
@@ -48,6 +50,7 @@
       image: '{{ image }}'
       type: '{{ type }}'
       region: '{{ region }}'
+      env: '{{ env }}'
     headers:
       Content-Type: 'application/json'
       Authorization: "{{ auth_token.json.token }}"
