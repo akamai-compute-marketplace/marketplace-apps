@@ -2,6 +2,10 @@
 
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 
+echo "instance env --> ${INSTANCE_ENV}"
+echo "db --> ${DATABASE}"
+env
+
 # custom env variables from cli
 if [[ -n ${INSTANCE_ENV} ]]; then
   custom_vars=(${INSTANCE_ENV})
