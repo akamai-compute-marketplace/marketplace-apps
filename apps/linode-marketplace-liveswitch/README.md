@@ -2,8 +2,8 @@
 
 The Linode Marketplace One-Click App for LiveSwitch provides everything you need to get started with hosting real-time communication applications. This stack includes LiveSwitch (a real-time communications platform), Docker, and everything needed to run LiveSwitch in Docker containers. After deployment, you can access the LiveSwitch admin console and start building your own real-time communication applications.
 
-* The Docker Compose files can be found in ~/liveswitch-secure/
-* The NGINX configuration for LiveSwitch can be found in /etc/nginx/sites-available/{{ _domain }}
+* The Docker Compose files can be found in /home/$USER/liveswitch-secure/
+* The NGINX configuration for LiveSwitch can be found in /etc/nginx/sites-available/domain.tld
 * LiveSwitch is accessible via HTTPS on your domain
 
 ## Software Included
