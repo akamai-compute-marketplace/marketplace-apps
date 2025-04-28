@@ -94,7 +94,7 @@
   file:
     path: "/var/www/grav/{{ item }}"
     state: directory
-    mode: '0775'
+    mode: '0755'
     owner: www-data
     group: www-data
     recurse: true
