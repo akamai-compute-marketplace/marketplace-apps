@@ -1,0 +1,6 @@
+# pihole handlers
+- name: reload nginx service
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: true

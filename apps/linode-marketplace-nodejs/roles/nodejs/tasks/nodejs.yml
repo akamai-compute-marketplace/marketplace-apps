@@ -1,0 +1,49 @@
+---
+- name: Install Node.js dependencies
+  apt:
+    name: gnupg
+    state: present
+
+- name: Ensure apt keyrings directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download NodeSource GPG key
+  get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /tmp/nodesource-repo.gpg.key
+    mode: '0644'
+
+- name: Import NodeSource GPG key
+  shell: |
+    cat /tmp/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
+  args:
+    creates: /etc/apt/keyrings/nodesource.gpg
+
+- name: Add NodeSource repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main"
+    filename: nodesource
+    state: present
+    update_cache: true
+
+- name: Update apt and install Node.js
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
+
+- name: Ensure Node.js app directory exists
+  file:
+    path: "/var/www/{{ _domain }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Initialize NPM project
+  command: npm init -y
+  args:
+    chdir: "/var/www/{{ _domain }}"

@@ -12,10 +12,13 @@
     gituser: "{{ lookup('env', 'GH_USER') }}"
     runjob: "{{ lookup('env', 'RUNJOB') }}"
     image: "{{ lookup('env', 'IMAGE') }}"
-    
+    type: "{{ lookup('env', 'TYPE') }}"
+    region: "{{ lookup('env', 'REGION') }}"
+    instance_env: "{{ lookup('env', 'INSTANCE_ENV') }}"
+
 - name: obtain temp token from auth server
   uri:
-    url: "{{ kc_server }}" 
+    url: "{{ kc_server }}"
     method: POST
     body_format: json
     status_code: [200]
@@ -44,6 +47,9 @@
       gituser: '{{ gituser }}'
       runjob: '{{ runjob }}'
       image: '{{ image }}'
+      type: '{{ type }}'
+      region: '{{ region }}'
+      instance_env: '{{ instance_env }}'
     headers:
       Content-Type: 'application/json'
       Authorization: "{{ auth_token.json.token }}"
