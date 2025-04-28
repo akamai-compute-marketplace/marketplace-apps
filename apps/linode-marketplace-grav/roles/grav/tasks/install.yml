@@ -114,7 +114,7 @@
   file:
     path: /var/www/grav/user/accounts
     state: directory
-    mode: '0775'
+    mode: '0755'
     owner: www-data
     group: www-data
 
