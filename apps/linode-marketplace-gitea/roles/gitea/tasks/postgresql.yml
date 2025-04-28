@@ -1,0 +1,52 @@
+---
+- name: Add PostgreSQL repository key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add PostgreSQL repository
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main
+    state: present
+    filename: pgdg
+
+- name: Install PostgreSQL 16 and related packages
+  apt:
+    name:
+      - postgresql-16
+      - postgresql-contrib-16
+    state: present
+    update_cache: true
+
+- name: Enable and start PostgreSQL service
+  systemd:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Create PostgreSQL user and database
+  community.postgresql.postgresql_user:
+    name: gitea
+    password: "{{ postgresql_password }}"
+    role_attr_flags: NOSUPERUSER,NOCREATEDB,NOCREATEROLE
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Create PostgreSQL database with proper owner
+  community.postgresql.postgresql_db:
+    name: giteadb
+    owner: gitea
+    encoding: UTF8
+    template: template0
+    state: present
+  become: true
+  become_user: postgres
+
+- name: Make PostgreSQL only listens on localhost
+  lineinfile:
+    path: /etc/postgresql/16/main/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses = 'localhost'"
+    state: present
+  notify: restart postgresql

@@ -1,0 +1,134 @@
+---
+- name: generate ca key
+  community.crypto.openssl_privatekey:
+    path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
+    passphrase: '{{ ca_password }}'
+    cipher: auto
+    return_content: true
+    owner: redis
+    group: redis
+  no_log: true
+  register: ca_key
+
+- name: generate ca csr
+  community.crypto.openssl_csr:
+    path: '{{ redis_ssl_ca_directory }}/ca-csr'
+    privatekey_path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
+    privatekey_passphrase: '{{ ca_password }}'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ soa_email_address }}'
+    common_name: '{{ ca_common_name }}'
+    use_common_name_for_san: false
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: true
+    create_subject_key_identifier: true
+    owner: redis
+    group: redis
+  register: ca_csr
+  
+- name: generate ca crt
+  community.crypto.x509_certificate:
+    path: '{{ redis_ssl_ca_directory }}/ca.crt'
+    privatekey_path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
+    privatekey_passphrase: '{{ ca_password }}'
+    csr_path: '{{ redis_ssl_ca_directory }}/ca-csr'
+    selfsigned_not_after: +3650d
+    provider: selfsigned
+    owner: redis
+    group: redis
+    mode: '0640'
+    return_content: true
+  register: ca_crt
+
+# gen ssl keys
+
+- name: generate server key
+  community.crypto.openssl_privatekey:
+    path: '{{ redis_ssl_server_key }}'
+    owner: redis
+    group: redis
+    mode: '0600'
+ 
+- name: generate client key
+  community.crypto.openssl_privatekey:
+    path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'
+    owner: redis
+    group: redis
+    mode: '0600'
+  with_sequence: count="{{ client_count }}"
+
+# gen csrs
+
+- name: generate server csr
+  community.crypto.openssl_csr:
+    path: '{{ redis_ssl_reqs_directory }}/redis.csr'
+    privatekey_path: '{{ redis_ssl_server_key }}'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ soa_email_address }}'
+    common_name: 'Redis Server'
+    use_common_name_for_san: false
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    create_subject_key_identifier: true
+    owner: redis
+    group: redis
+  
+- name: generate client csr
+  community.crypto.openssl_csr:
+    path: '{{ redis_ssl_reqs_directory }}/client{{ item }}.csr'
+    privatekey_path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ soa_email_address }}'
+    common_name: 'Redis Client {{ item }}'
+    use_common_name_for_san: false
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    create_subject_key_identifier: true
+    owner: redis
+    group: redis
+  with_sequence: count="{{ client_count }}"
+
+# sign cert with ca and get client cert
+
+- name: generate server cert signed with ca cert
+  community.crypto.x509_certificate:
+    path: '{{ redis_ssl_server_cert }}'
+    privatekey_path: '{{ redis_ssl_server_key }}'
+    csr_path: '{{ redis_ssl_reqs_directory }}/redis.csr'
+    ownca_content: '{{ ca_crt.certificate }}'
+    ownca_privatekey_content: '{{ ca_key.privatekey }}'
+    ownca_privatekey_passphrase: '{{ ca_password }}'
+    ownca_not_after: +3650d
+    ownca_create_authority_key_identifier: true
+    provider: ownca
+    owner: redis
+    group: redis
+    mode: '0640'
+
+- name: generate client cert signed with ca cert
+  community.crypto.x509_certificate:
+    path: '{{ redis_ssl_certs_directory }}/client{{ item }}.crt'
+    privatekey_path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'
+    csr_path: '{{ redis_ssl_reqs_directory }}/client{{ item }}.csr'
+    ownca_content: '{{ ca_crt.certificate }}'
+    ownca_privatekey_content: '{{ ca_key.privatekey }}'
+    ownca_privatekey_passphrase: '{{ ca_password }}'
+    ownca_not_after: +3650d
+    ownca_create_authority_key_identifier: true
+    provider: ownca
+    owner: redis
+    group: redis
+    mode: '0640'
+  with_sequence: count="{{ client_count }}"
