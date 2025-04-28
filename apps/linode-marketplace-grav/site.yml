@@ -7,7 +7,31 @@
   vars_files:
     - group_vars/linode/vars
 
-  roles:
-    - common
-    - grav
-    - post 
+  tasks:
+    - block:
+        - name: run roles
+          include_role:
+            name: "{{ item }}"
+          loop:
+            - common
+            - grav
+            - post
+        - name: deployment passed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'successful'
+      rescue:
+        - name: deployment failed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'failed'
+      when: "mode == 'staging'"
+
+    - name: running app normally
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - common
+        - grav
+        - post
+      when: "mode == 'production'"
