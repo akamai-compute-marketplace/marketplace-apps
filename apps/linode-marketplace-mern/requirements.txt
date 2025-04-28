@@ -1,5 +1,4 @@
 ansible==10.6.0
-PyMySQL==1.0.2
 yamllint==1.30.0
 ansible-lint==24.6.0
 flake8==7.0.0
