@@ -1,8 +1,18 @@
 #!/bin/bash
-set -e
+
+# enable logging
+exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+
+# modes
 DEBUG="NO"
 if [ "${DEBUG}" == "NO" ]; then
   trap "cleanup $? $LINENO" EXIT
+fi
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
 fi
 
 ## Linode/SSH security settings
@@ -19,28 +29,44 @@ fi
 #<UDF name="administrator_name" label="Administrator Name" example="Jane Doe">
 #<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld">
 
-# Validate user_name UDF
-if [ "${USER_NAME}" = "grav" ]; then
-  echo "Error: 'grav' cannot be used as the sudo username as it conflicts with the Grav CMS system user."
-  echo "Please choose a different username."
-  exit 1
-fi
 
-# git repo
-# setting up git repo vars
-export TEST_REPO=""
-export BRANCH=""
+#GH_USER=""
+#BRANCH=""
+# git user and branch
+if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+        echo "[info] git user and branch set.."
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 
-if [ "${TEST_REPO}" != "" ] && [ "${BRANCH}" != "" ]; then
-  export GIT_REPO="https://github.com/${TEST_REPO}/marketplace-apps.git"
 else
-  export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+        export GH_USER="akamai-compute-marketplace"
+        export BRANCH="main"
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-grav"
 
-# enable logging
-exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+function provision_failed {
+  echo "[info] Provision failed. Sending status.."
+
+  # dep
+  apt install jq -y
+
+  # set token
+  local token=($(curl -ks -X POST ${KC_SERVER} \
+     -H "Content-Type: application/json" \
+     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
+
+  # send pre-provision failure
+  curl -sk -X POST ${DATA_ENDPOINT} \
+     -H "Authorization: ${token}" \
+     -H "Content-Type: application/json" \
+     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
+        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"env\":\"${ENV}\" }"
+  
+  exit $?
+}
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -82,6 +108,22 @@ EOF
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
+
+  # validate user_name UDF
+  if [[ "${USER_NAME}" == "grav" ]]; then
+    echo "[error] 'grav' cannot be used as the sudo username as it conflicts with the Grav CMS system user."
+    echo "Please choose a different username."
+    exit 1
+  fi  
+
+  # staging or production mode (ci)
+  if [[ "${MODE}" == "staging" ]]; then
+    echo "[info] running in staging mode..."
+    echo "mode: ${MODE}" >> ${group_vars}
+  else
+    echo "[info] running in production mode..."
+    echo "mode: production" >> ${group_vars}
+  fi  
 }
 
 function run {
@@ -90,11 +132,8 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  if [ "${TEST_REPO}" != "" ] && [ "${BRANCH}" != "" ]; then
-    git -C /tmp clone ${GIT_REPO} -b ${BRANCH}
-  else
-    git -C /tmp clone ${GIT_REPO}
-  fi
+  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+
   # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   apt install python3-venv -y
@@ -115,7 +154,5 @@ function installation_complete {
 }
 
 # main
-run && installation_complete
-if [ "${DEBUG}" == "NO" ]; then
-  cleanup
-fi
+run
+installation_complete
