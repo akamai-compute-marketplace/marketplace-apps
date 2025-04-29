@@ -1,4 +1,10 @@
 ---
+- name: install redis
+  import_role:
+    name: database
+  vars:
+    database: redis
+    
 - name: Install PHP Redis extension
   apt:
     name: php8.3-redis

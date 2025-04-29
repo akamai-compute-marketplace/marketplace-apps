@@ -134,6 +134,35 @@
     state: present
     backrefs: true
 
+- name: Configure Redis authentication in Grav
+  lineinfile:
+    path: /var/www/grav/user/config/system.yaml
+    insertafter: '^\s*driver: redis'
+    line: |2
+        redis:
+          server: '127.0.0.1'
+          port: 6379
+          username: 'default'
+          password: '{{ redis_default_user_password }}'
+          database: 0
+          prefix: 'g'
+          persistent: true
+          timeout: 0
+          retry_interval: 0
+    state: present
+
+- name: Create Redis plugin directory structure
+  file:
+    path: "/var/www/grav/user/plugins/redis/{{ item }}"
+    state: directory
+    mode: '0644'
+    owner: www-data
+    group: www-data
+  loop:
+    - classes
+    - blueprints
+    - templates
+
 - name: Clear Grav cache
   command: bin/grav clearcache
   args:

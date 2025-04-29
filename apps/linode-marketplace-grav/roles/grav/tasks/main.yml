@@ -5,10 +5,7 @@
   import_tasks: nginx.yml
 
 - name: Import Redis tasks
-  import_tasks: ../../linode_helpers/roles/database/tasks/redis.yml
-
-- name: Import PHP tasks
-  import_tasks: php.yml
+  import_tasks: redis.yml
 
 - name: Import Grav tasks
   import_tasks: install.yml
