@@ -18,11 +18,6 @@ WordPress is a popular dynamic content management system focused on blogs. WordP
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | Wordpress | Latest    | Wordpress Content Management System |
-| MariaDB   | 10.11      | Relational database |
-| PHP       | 8.3       | General-purpose scripting language |
-| Fail2ban  | 0.11.2    | Provides protection against brute force and authentication attempts |
-| UFW       | 0.36      | Easy-to-use firewall wrapper used to allow HTTP/S and SSH ports |
-| Certbot   | 1.12      | Is used to obtain HTTPS/TLS/SSL certificate for the provided domain |
 
 
 **Supported Distributions:**
