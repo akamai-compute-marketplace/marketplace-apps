@@ -18,12 +18,13 @@ UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
+UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
 # dynamic variables
-if [[ -n "${DATABASE}" ]]; then
-        UDF_VARS["DATABASE"]="${DATABASE}"
+if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
+        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
 else
-        UDF_VARS["DATABASE"]="mysql" # default
+        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
 fi
 
 set_vars() {
