@@ -6,7 +6,7 @@ UTunnel VPN is a secure, easy-to-manage VPN solution built for businesses and te
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| UTunnel   | Latest    |  kjkfdklafl|
+| UTunnel   | 2.0.1     |  OpenVPN Strongswan Unbound|
 
 
 **Supported Distributions:**
