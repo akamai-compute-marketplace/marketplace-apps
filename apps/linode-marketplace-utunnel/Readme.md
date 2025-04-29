@@ -1,36 +1,14 @@
-## App Information
-**App Name**
+Linode UTunnel VPN Deployment One-Click APP
 
-UTunnel VPN
+UTunnel VPN is a secure, easy-to-manage VPN solution built for businesses and teams. It supports both cloud and on-premise deployments with quick setup, encrypted tunnels, and centralized web-based management. Features include two-factor authentication, role-based access control, IPSec site-to-site VPN, and SSO integration. Scalable pricing plans make it ideal for small and medium businesses.
 
+## Software Included
 
-**App Description**
-
-
-Easy-to-setup virtual private network application supporting multiple protocols.
-
-
-UTunnel lets you set up your own private VPN server quickly and easily; no technical expertise is required. It is well suited for small and medium businesses to set up easy and secure remote access for their employees, or for anyone who wants to keep their data private using their own VPN. UTunnel VPN supports multiple VPN protocols and comes with a server management console, secure 256-bit encryption, easy team management, single sign-on, 2-factor authentication, and an inbuilt firewall.
+| Software  | Version   | Description   |
+| :---      | :----     |          |
+| UTunnel   | Latest    | Easy-to-setup virtual private network application supporting multiple protocols. |
 
 
-Setup your private VPN server on Linode in a few simple steps with the UTunnel VPN One-Click App.
+**Supported Distributions:**
 
-
-**Version Number**
-
-1.0.1
-
-
-**Support URL**
-
-https://help.utunnel.io/
-
-
-**Operating System**
-
-Ubuntu 20.04 LTS
-
-
-**Documentation**
-
-https://help.utunnel.io/article/About-UTunnel-VPN/Server-Configuration/How-to-setup-UTunnel-VPN-Server-with-Linode
+- Ubuntu 24.04 LTS
