@@ -6,7 +6,7 @@ UTunnel VPN is a secure, easy-to-manage VPN solution built for businesses and te
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| UTunnel   | Latest    | Wordpress Content Management System |
+| UTunnel   | Latest    |  kjkfdklafl|
 
 
 **Supported Distributions:**
