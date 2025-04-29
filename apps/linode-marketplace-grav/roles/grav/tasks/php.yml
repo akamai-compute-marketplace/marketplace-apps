@@ -1,8 +1,4 @@
 ---
-- name: Install and secure Redis
-  include_tasks:
-    file: ../../linode_helpers/roles/database/tasks/redis.yml
-
 - name: Install PHP Redis extension
   apt:
     name: php8.3-redis
