@@ -41,7 +41,7 @@
     path: "{{ php_ini_path }}"
     regexp: '^[; ]*post_max_size\s*='
     line: 'post_max_size = 256M'
-    backup: yes
+    backup: true
   loop:
     - /etc/php/8.3/cli/php.ini
     - /etc/php/8.3/apache2/php.ini
