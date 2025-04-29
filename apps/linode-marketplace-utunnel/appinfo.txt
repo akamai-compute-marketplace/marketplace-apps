@@ -1,4 +1,4 @@
-App Name
+﻿App Name
  
 UTunnel VPN
  
@@ -6,12 +6,11 @@ App Description
  
 UTunnel VPN is a secure, cloud-delivered VPN solution built for businesses that need reliable and easy-to-manage remote access. It supports flexible deployment options—cloud, on-premise, or bring-your-own-server—and offers essential security features like multi-factor authentication, access control based on device trust, and Single Sign-On (SSO) integration. With an intuitive dashboard, centralized access management, and support for OpenVPN and IPSec protocols, UTunnel makes it simple for teams to securely connect to internal resources.
  
-A standout feature of UTunnel VPN is its IPSec site-to-site tunneling, which enables seamless and secure interconnection between multiple office locations or remote networks. 
-This allows businesses to build a private network across distributed environments without complex configurations. Combined with features like split tunneling, customizable DNS, and agentless application access, UTunnel provides a complete solution for modern, secure connectivity.
+A standout feature of UTunnel VPN is its IPSec site-to-site tunneling, which enables seamless and secure interconnection between multiple office locations or remote networks. This allows businesses to build a private network across distributed environments without complex configurations. Combined with features like split tunneling, customizable DNS, and agentless application access, UTunnel provides a complete solution for modern, secure connectivity.
  
 Version Number
  
-Check with Leeno
+2.0.1
  
 Support URL
  
