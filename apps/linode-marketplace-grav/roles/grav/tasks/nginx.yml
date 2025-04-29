@@ -1,0 +1,46 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Enable and start Nginx service
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Create web root directory
+  file:
+    path: "/var/www/grav"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Create Nginx site configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
+
+- name: Enable Nginx site configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: Remove default Nginx site configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restart Nginx service
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: Configure SSL with certbot
+  import_role:
+    name: certbot_ssl
