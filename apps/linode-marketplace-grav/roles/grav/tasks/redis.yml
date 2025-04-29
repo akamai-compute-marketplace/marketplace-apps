@@ -1,14 +1,11 @@
 ---
-- name: Install required packages for Redis
+- name: Install and secure Redis
+  include_tasks:
+    file: ../../linode_helpers/roles/database/tasks/redis.yml
+
+- name: Install PHP Redis extension
   apt:
-    name:
-      - php8.3-redis
-      - redis-server
+    name: php8.3-redis
     state: present
     update_cache: true
-
-- name: Start and enable Redis
-  systemd_service:
-    name: redis-server
-    state: started
-    enabled: true
+  notify: restart php8.3-fpm
