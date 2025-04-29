@@ -5,7 +5,6 @@ UTunnel VPN is a secure, easy-to-manage VPN solution built for businesses and te
 ## Software Included
 
 | Software  | Version   | Description   |
-| :---      | :----     |          |
 | UTunnel   | Latest    | Easy-to-setup virtual private network application supporting multiple protocols. |
 
 
