@@ -7,9 +7,9 @@ UTunnel VPN is a secure, easy-to-manage VPN solution built for businesses and te
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | utnservice   | 10115     |  UTunnel Access Gateway manager service|
-| OpenVPN   | 2.0.1     |  OpenVPN Package|
-| Strongswan   | 2.0.1     |  Strongswan package for IPSec support|
-| Unbound   | 2.0.1     |  Unbound for DNS service|
+| OpenVPN   | 2.6.12     |  OpenVPN Package|
+| Strongswan   | 5.9.14     |  Strongswan package for IPSec support|
+| Unbound   | 1.19.0     |  Unbound for DNS service|
 
 **Supported Distributions:**
 
