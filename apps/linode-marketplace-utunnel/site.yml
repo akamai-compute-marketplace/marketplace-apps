@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: UTUNNEL DEPLOY
+- name: Deploy UTunnel Access Gateway
   hosts: localhost
   connection: local
   gather_facts: true
