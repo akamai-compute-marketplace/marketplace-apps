@@ -16,3 +16,4 @@
       Postgres Password: {{ postgres_password }}
       RabbitMQ User: liveswitch
       RabbitMQ Password: {{ rabbitmq_password }}
+      

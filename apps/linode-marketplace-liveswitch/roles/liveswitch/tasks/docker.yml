@@ -17,63 +17,46 @@
     group: "{{ username }}"
     mode: '0600'
 
-- name: Start LiveSwitch containers first
+- name: Start LiveSwitch containers
   community.docker.docker_compose_v2:
     project_src: /home/{{ username }}/liveswitch-secure
     state: present
+  register: compose_result
+
+- name: Wait for containers to be running
+  wait_for:
+    timeout: 30
+  when: compose_result.changed
+
+- name: Check PostgreSQL readiness
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: pg_isready -h localhost -p 5432
 
 - name: Wait for PostgreSQL to be ready
   community.docker.docker_container_exec:
-    container: postgres
-    command: pg_isready
-  register: pg_ready
-  until: pg_ready.ExitCode == 0
+    container: liveswitch-secure-postgres-1
+    command: pg_isready -h localhost -p 5432
+  register: pg_ready_result
+  until: pg_ready_result.rc == 0
   retries: 30
   delay: 2
   changed_when: false
 
 - name: Create Recording database
   community.docker.docker_container_exec:
-    container: postgres
+    container: liveswitch-secure-postgres-1
     command: psql -U postgres -c "CREATE DATABASE recording;"
   register: create_db
-  changed_when: create_db.ExitCode == 0
+  changed_when: create_db.rc == 0
   failed_when: 
-    - create_db.ExitCode != 0
+    - create_db.rc != 0
     - '"already exists" not in create_db.stderr'
 
 - name: Grant privileges on Recording database
   community.docker.docker_container_exec:
-    container: postgres
+    container: liveswitch-secure-postgres-1
     command: psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE recording TO postgres;"
   register: grant_privs
-  changed_when: grant_privs.ExitCode == 0
+  changed_when: grant_privs.rc == 0
   failed_when: false
-  
-# - name: Wait for PostgreSQL to be ready
-#   command: docker compose exec -T postgres pg_isready
-#   args:
-#     chdir: /home/{{ username }}/liveswitch-secure
-#   register: pg_ready
-#   until: pg_ready.rc == 0
-#   retries: 30
-#   delay: 2
-#   changed_when: false
-
-# - name: Create Recording database
-#   command: docker compose exec -T postgres psql -U postgres -c "CREATE DATABASE recording;"
-#   args:
-#     chdir: /home/{{ username }}/liveswitch-secure
-#   register: create_db
-#   changed_when: create_db.rc == 0
-#   failed_when: 
-#     - create_db.rc != 0
-#     - '"already exists" not in create_db.stderr'
-
-# - name: Grant privileges on Recording database
-#   command: docker compose exec -T postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE recording TO postgres;"
-#   args:
-#     chdir: /home/{{ username }}/liveswitch-secure
-#   register: grant_privs
-#   changed_when: grant_privs.rc == 0
-#   failed_when: false
