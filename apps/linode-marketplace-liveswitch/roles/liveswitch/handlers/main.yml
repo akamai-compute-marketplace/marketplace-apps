@@ -3,8 +3,3 @@
   service:
     name: nginx
     state: restarted
-
-- name: restart gunicorn
-  service:
-    name: gunicorn
-    state: restarted

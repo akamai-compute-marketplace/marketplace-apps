@@ -1,17 +1,15 @@
 ---
-- name: Install required packages for nginx and certbot
+- name: Install required packages for nginx
   apt:
     name:
       - nginx
-      - certbot
-      - python3-certbot-nginx
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Enable nginx service
   systemd:
     name: nginx
-    enabled: yes
+    enabled: true
     state: started
 
 - name: Create nginx configuration

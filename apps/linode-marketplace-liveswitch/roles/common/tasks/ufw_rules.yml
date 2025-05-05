@@ -17,34 +17,3 @@
     rule: allow
     port: '443'
     proto: tcp
-
-# Block direct access to internal Docker service ports
-- name: block direct access to postgres
-  community.general.ufw:
-    rule: deny
-    port: '5432'
-    proto: tcp
-
-- name: block direct access to redis
-  community.general.ufw:
-    rule: deny
-    port: '6379'
-    proto: tcp
-
-- name: block direct access to rabbitmq
-  community.general.ufw:
-    rule: deny
-    port: '5672'
-    proto: tcp
-
-- name: block direct access to liveswitch gateway http
-  community.general.ufw:
-    rule: deny
-    port: '8080'
-    proto: tcp
-
-- name: block direct access to liveswitch admin console
-  community.general.ufw:
-    rule: deny
-    port: '9090'
-    proto: tcp
