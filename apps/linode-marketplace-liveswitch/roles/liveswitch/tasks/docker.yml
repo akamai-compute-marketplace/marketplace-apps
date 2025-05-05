@@ -27,7 +27,7 @@
     container: postgres
     command: pg_isready
   register: pg_ready
-  until: pg_ready.rc == 0
+  until: pg_ready.ExitCode == 0
   retries: 30
   delay: 2
   changed_when: false
@@ -37,9 +37,9 @@
     container: postgres
     command: psql -U postgres -c "CREATE DATABASE recording;"
   register: create_db
-  changed_when: create_db.rc == 0
+  changed_when: create_db.ExitCode == 0
   failed_when: 
-    - create_db.rc != 0
+    - create_db.ExitCode != 0
     - '"already exists" not in create_db.stderr'
 
 - name: Grant privileges on Recording database
@@ -47,7 +47,7 @@
     container: postgres
     command: psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE recording TO postgres;"
   register: grant_privs
-  changed_when: grant_privs.rc == 0
+  changed_when: grant_privs.ExitCode == 0
   failed_when: false
   
 # - name: Wait for PostgreSQL to be ready
