@@ -1,0 +1,4 @@
+- name: restart edge-router
+  service:
+    name: ziti-edge-router
+    state: restarted

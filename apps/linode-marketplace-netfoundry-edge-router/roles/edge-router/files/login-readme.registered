@@ -1,0 +1,4 @@
+This VM is \033[0;31mREGISTERED\033[0m\n
+To re-register this VM with your NetFoundry network run the following command:\n
+  sudo router-registration <registration key> --force\n
+
