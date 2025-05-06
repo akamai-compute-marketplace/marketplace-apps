@@ -76,6 +76,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
+  docker_host: unix://var/run/docker.sock
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
