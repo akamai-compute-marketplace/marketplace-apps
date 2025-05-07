@@ -21,10 +21,10 @@ UDF_VARS["DOMAIN"]=""
 UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
 # dynamic variables
-if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
-        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
+if [[ -n "${REGISTRATION_KEY}" ]]; then
+        UDF_VARS["REGISTRATION_KEY"]="${REGISTRATION_KEY}"
 else
-        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
+        UDF_VARS["REGISTRATION_KEY"]="none" # default
 fi
 
 set_vars() {
