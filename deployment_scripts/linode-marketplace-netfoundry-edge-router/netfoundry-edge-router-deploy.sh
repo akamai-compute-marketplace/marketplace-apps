@@ -34,6 +34,8 @@ else
         export BRANCH="main"
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
+
+export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-netfoundry-edge-router"
 
 function provision_failed {
