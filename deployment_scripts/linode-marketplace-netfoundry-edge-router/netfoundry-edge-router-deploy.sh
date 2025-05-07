@@ -95,18 +95,20 @@ EOF
 function run {
   # install dependancies
   apt-get update
-  apt-get install -y git python3 python3-pip python3-virtualenv
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
- 
+  ansible-galaxy install -r collections.yml
+
   # populate group_vars
   udf
 
