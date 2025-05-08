@@ -1,0 +1,18 @@
+# wazuh handlers
+  - name: restart wazuh dashboard
+    systemd:
+      name: wazuh-dashboard
+      state: restarted
+      enabled: yes
+  
+  - name: reload nginx service
+    systemd:
+      name: nginx
+      state: reloaded
+      enabled: yes
+  
+  - name: stop nginx service
+    systemd:
+      name: nginx
+      state: stopped
+      enabled: no

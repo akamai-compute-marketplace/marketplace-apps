@@ -1,0 +1,217 @@
+---
+ # django
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-venv
+    - python3-dev
+    - libpq-dev
+    - postgresql
+    - postgresql-contrib
+    - nginx
+    - certbot
+
+- name: setting facts for deployment
+  set_fact:
+    enable_venv: "source /var/www/django_app/djangoenv/bin/activate"
+    project_directory: "/var/www/django_app"
+
+# postgres
+- name: configure PostgreSQL
+  postgresql_db:
+    name: django
+    state: present
+  become: true
+  become_user: postgres
+
+- name: create PostgreSQL user
+  postgresql_user:
+    name: django
+    password: "{{ postgres_db_password }}"
+    encrypted: yes
+    state: present
+  become: true
+  become_user: postgres
+
+- name: set client_encoding for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    login_unix_socket: /var/run/postgresql
+    query:
+      - "ALTER ROLE django SET client_encoding TO 'utf8';"
+  become: true
+  become_user: postgres
+
+- name: set default_transaction_isolation for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    query:
+      - "ALTER ROLE django SET default_transaction_isolation TO 'read committed';"
+  become: true
+  become_user: postgres
+
+- name: set timezone for django
+  postgresql_query:
+    db: django
+    login_user: postgres
+    login_password: "{{ postgres_db_password }}"
+    query:
+      - "ALTER ROLE django SET timezone TO 'UTC';"
+  become: true
+  become_user: postgres
+
+- name: create project directory
+  file:
+    path: "{{ project_directory }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: create and activate virtual environment
+  command: python3 -m venv djangoenv
+  args:
+    chdir: "{{ project_directory }}"
+  become: true
+  become_user: "{{ username }}"
+
+- name: install Django and Gunicorn
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ project_directory}}/djangoenv"
+  loop:
+    - django
+    - gunicorn
+    - psycopg2-binary
+  become: true
+  become_user: "{{ username }}"
+
+- name: start django project
+  shell:
+    cmd: "{{ enable_venv }} && django-admin startproject django_sample"
+  args:
+    executable: /bin/bash
+    chdir: "{{ project_directory }}"
+  become: true
+  become_user: "{{ username }}"
+
+- name: set ownership for django_app
+  file:
+    path: "{{ project_directory }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    recurse: yes
+
+- name: copy settings template
+  template:
+    src: "templates/settings.py.j2"
+    dest: "{{ project_directory }}/django_sample/django_sample/settings.py"
+    force: yes
+  become: true  
+  become_user: "{{ username }}"
+
+- name: generate a new SECRET_KEY
+  command: 'django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
+  register: new_secret_key
+
+- name: replace SECRET_KEY line in Django settings
+  lineinfile:
+    path: "{{ project_directory }}/django_sample/django_sample/settings.py"
+    regexp: "^SECRET_KEY = "
+    line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
+  become: true
+  become_user: "{{ username }}"
+
+- name: django migrate
+  community.general.django_manage:
+    command: "migrate"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"
+
+- name: create an initial superuser
+  community.general.django_manage:
+    command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+
+- name: set django admin password
+  shell:
+    cmd: | 
+      {{ enable_venv }}  && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+    executable: /bin/bash
+    chdir: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"
+  no_log: true
+
+- name: collect static files
+  shell: 
+    cmd: "{{ enable_venv }} && python manage.py collectstatic --noinput"
+    executable: /bin/bash
+  args:
+    chdir: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"
+
+# gunicorn
+- name: configure gunicorn socket
+  copy:
+    src: "files/gunicorn.socket"
+    dest: "/etc/systemd/system/gunicorn.socket"
+
+- name: configure Gunicorn systemd service
+  template:
+    src: "gunicorn.service.j2"
+    dest: "/etc/systemd/system/gunicorn.service"
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: start and enable Gunicorn service
+  systemd:
+    name: "gunicorn"
+    state: started
+    enabled: yes
+
+# nginx
+- name: update default config file 
+  template:
+    src: "templates/default.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: stop nginx to run certbot standalone
+  systemd:
+    name: nginx
+    state: stopped
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: vhost file 
+  template:
+    src: "templates/vhost.j2"
+    dest: "/etc/nginx/sites-available/{{ _domain }}"   
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+
+- name: start nginx after certbot gen
+  systemd:
+    name: nginx
+    state: started

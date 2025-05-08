@@ -1,0 +1,8 @@
+---
+# main
+
+- name: install required packages
+  import_tasks: install.yml
+
+- name: install ssl
+  import_tasks: ssl.yml

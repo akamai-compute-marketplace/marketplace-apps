@@ -7,19 +7,21 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="webserver_stack" label="The stack you are looking to deploy Wordpress on" oneOf="LAMP,LEMP">
 
 #<UDF name="site_title" label="Website title" example="My Blog">
-#<UDF name="wp_admin_user" label="Admin username" example="admin">
+#<UDF name="wp_admin_user" label="Wordpress admin username" example="admin">
 #<UDF name="wp_db_user" label="Wordpress database user" example="wordpress">
 #<UDF name="wp_db_name" label="Wordpress database name" example="wordpress">
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+
+## Misc
+#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter,none"  default="">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -50,12 +52,9 @@ function udf {
   wp_db_name: ${WP_DB_NAME}
   # sudo username
   username: ${USER_NAME}
+  # misc
+  prometheus_exporter: [${PROMETHEUS_EXPORTER}]  
 EOF
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
@@ -90,8 +89,8 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
@@ -100,7 +99,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 }
 
 function installation_complete {

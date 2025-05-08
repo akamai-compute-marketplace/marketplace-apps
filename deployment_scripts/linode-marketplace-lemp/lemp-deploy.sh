@@ -2,13 +2,14 @@
 set -e
 trap "cleanup $? $LINENO" EXIT
 
+#github_endpoint: 'https://raw.githubusercontent.com/akamai-compute-marketplace/marketplace-apps/main/deployment_scripts/linode-marketplace-lemp/lemp-deploy.sh'
+
 ## LEMP Settings
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
@@ -41,11 +42,6 @@ function udf {
   webserver_stack: lemp
   soa_email_address: ${SOA_EMAIL_ADDRESS}
 EOF
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
@@ -80,8 +76,8 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
@@ -90,7 +86,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 }
 
 function installation_complete {

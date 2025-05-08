@@ -1,0 +1,26 @@
+---
+# configure prometheus
+
+- name: adding prometheus configuration
+  copy: 
+    src: 'files/prometheus.yml'
+    dest: '/etc/prometheus/prometheus.yml'
+    mode: 0644
+    group: prometheus
+    owner: prometheus
+
+- name: add local target file
+  copy:
+    src: 'files/local_prometheus_scrape.yml'
+    dest: '/etc/prometheus/file_sd_targets/local_prometheus.yml'
+    mode: 0755
+    owner: prometheus
+    group: prometheus
+ 
+- name: add prometheus service file
+  template:
+    src: 'templates/prometheus.service.j2'
+    dest: '/etc/systemd/system/prometheus.service'
+  notify: 
+    - reload daemon
+    - start prometheus

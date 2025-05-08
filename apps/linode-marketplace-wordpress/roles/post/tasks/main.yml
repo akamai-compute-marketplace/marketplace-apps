@@ -24,19 +24,29 @@
     state: restarted
   when: webserver_stack == 'lemp'
 
+# data exporter
+
+- name: adding prometheus exporters
+  import_role:
+    name: data_exporter
+  when: prometheus_exporter != 'none'
+
 # motd and creds gen
 - name: copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing creds into file
+- name: writing sudo creds into file
   copy:
-    dest: /root/.credentials
+    dest: '/home/{{ username }}/.credentials'
     mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Mysql root Password: {{ mysql_root_password }}
       Wordpress DB User: {{ wp_db_user }}
       Wordpress DB Password: {{ wp_db_pass }}
       Wordpress Admin User: {{ wp_admin_user }}

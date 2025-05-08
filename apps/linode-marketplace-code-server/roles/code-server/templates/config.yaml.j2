@@ -1,0 +1,8 @@
+bind-addr: 127.0.0.1:8080
+auth: none
+password: {{ code_server_htpasswd }}
+cert: false
+proxy-domain: {{ _domain }}
+log: info
+user-data-dir: /home/{{ username }}/.code-server
+extensions-dir: /home/{{ username }}/.vscode/extensions

@@ -1,0 +1,21 @@
+---
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
+
+- name: Configure UFW rules
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "22"   # SSH
+    - "80"   # HTTP
+    - "443"  # HTTPS
+    - "1935" # RTMP for streaming
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny 

@@ -11,3 +11,10 @@
   tasks:
     - name: generating sudo user password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: writing filecloud_admin_password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          filecloud_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}

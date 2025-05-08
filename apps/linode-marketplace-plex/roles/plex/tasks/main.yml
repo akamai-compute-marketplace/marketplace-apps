@@ -1,0 +1,13 @@
+---
+# plex tasks
+- name: Install required packages
+  import_tasks: packages.yml
+
+- name: Add plex repository
+  import_tasks: repo.yml
+
+- name: Install plex
+  import_tasks: install.yml
+
+- name: Configure nginx reverse proxy
+  import_tasks: nginx.yml

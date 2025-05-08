@@ -1,0 +1,15 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{ _domain }};
+    root /var/www/certs;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+# allow .well-known
+    location ^~ /.well-known {
+      allow all;
+      auth_basic off;
+      alias /var/www/certs/.well-known;
+    }
+}

@@ -1,0 +1,165 @@
+---
+ # openbao
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - wget
+    - unzip
+
+- name: download openbao {{ openbao_version }}
+  get_url: 
+    url: "{{ openbao_download_link }}"
+    dest: "{{ openbao_deb_file }}"
+
+- name: install the .deb package
+  apt:
+    deb: "{{ openbao_deb_file }}"
+
+- name: add VAULT_ADDR to .bashrc
+  lineinfile:
+    path: "{{ item }}"
+    line: 'export VAULT_ADDR=https://{{ privateip }}:8200'
+    insertbefore: EOF
+  with_items:
+    - "~/.bashrc"
+    - "/home/{{ username }}/.bashrc"
+
+# create root ca for signing
+- name: generate ca key
+  community.crypto.openssl_privatekey:
+    path: "{{ openbao_ssl_path }}/ca.key"
+    passphrase: '{{ ca_password }}'
+    cipher: auto
+    return_content: true
+    owner: openbao
+    group: openbao
+  no_log: true
+  register: ca_key
+
+- name: generate ca csr
+  community.crypto.openssl_csr:
+    path: "{{ openbao_ssl_path }}/ca.csr"
+    privatekey_path: "{{ openbao_ssl_path }}/ca.key"
+    privatekey_passphrase: '{{ ca_password }}'
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ email_address }}'
+    common_name: 'openbao'
+    basic_constraints:
+      - 'CA:TRUE'
+    basic_constraints_critical: yes
+    key_usage:
+      - keyCertSign
+    key_usage_critical: true
+    subject_alt_name:
+          - IP:{{ privateip }}
+          - IP:{{ ansible_default_ipv4.address }}
+    owner: openbao
+    group: openbao
+    mode: '0644'
+  register: ca_csr
+
+- name: generate ca crt
+  community.crypto.x509_certificate:
+    path: "{{ openbao_ssl_path }}/ca.crt"
+    privatekey_path: "{{ openbao_ssl_path }}/ca.key"
+    privatekey_passphrase: '{{ ca_password }}'
+    csr_path: "{{ openbao_ssl_path }}/ca.csr"
+    selfsigned_not_after: +3650d
+    provider: selfsigned
+    owner: openbao
+    group: openbao
+    mode: 0640
+    return_content: true
+  register: ca_crt
+
+# generate ssl keys
+- name: generate server key
+  community.crypto.openssl_privatekey:
+    path: "{{ openbao_ssl_path }}/openbao.key"
+    owner: openbao
+    group: openbao
+    mode: 0600
+    return_content: true
+
+# generate csrs
+- name: generate server csr
+  community.crypto.openssl_csr:
+    path: "{{ openbao_ssl_path }}/openbao.csr"
+    privatekey_path: "{{ openbao_ssl_path }}/openbao.key"
+    country_name: '{{ country_name }}'
+    state_or_province_name: '{{ state_or_province_name }}'
+    locality_name: '{{ locality_name }}'
+    organization_name: '{{ organization_name }}'
+    email_address: '{{ email_address }}'
+    common_name: 'openbao'
+    subject_alt_name:
+          - IP:{{ privateip }}
+          - IP:{{ ansible_default_ipv4.address }}
+    owner: openbao
+    group: openbao
+
+# sign cert with ca and get client cert
+- name: generate server cert signed with ca cert
+  community.crypto.x509_certificate:
+    path: "{{ openbao_ssl_path }}/openbao.crt"
+    privatekey_path: "{{ openbao_ssl_path }}/openbao.key"
+    csr_path: "{{ openbao_ssl_path }}/openbao.csr"
+    ownca_content: '{{ ca_crt.certificate }}'
+    ownca_privatekey_content: '{{ ca_key.privatekey }}'
+    ownca_privatekey_passphrase: '{{ ca_password }}'
+    ownca_not_after: +3650d
+    provider: ownca
+    owner: openbao
+    group: openbao
+    mode: 0640
+    return_content: true
+  register: server_certs
+
+- name: copy ca certificate
+  copy:
+    src: "{{ openbao_ssl_path }}/ca.crt"
+    dest: /usr/local/share/ca-certificates/ca.crt
+    mode: '0644'
+
+- name: update ca certificates
+  command: update-ca-certificates
+
+# make backup of default
+- name: creating openbao config backup
+  copy:
+    src: "{{ openbao_config }}"
+    dest: "{{ openbao_config }}.bak"
+    owner: openbao
+    group: openbao
+    mode: '0644'
+
+# update openbao config
+- name: update openbao config
+  template:
+    src: "templates/openbao.hcl.j2"
+    dest: "{{ openbao_config }}"  
+
+# update systemd file openbao 
+- name: update openbao config
+  template:
+    src: "templates/openbao.service"
+    dest: "/lib/systemd/system/openbao.service" 
+
+- name: enable openbao service
+  systemd:
+    name: openbao
+    enabled: yes
+    daemon_reload: true
+    state: started
+
+- name: bao operator init command and capture output
+  shell: "bao operator init -address=https://{{ privateip }}:8200 -key-shares=3 -key-threshold=2"
+  args:
+    executable: /bin/bash
+  register: bao_output
+

@@ -1,0 +1,100 @@
+---
+# add repo
+
+# latest
+
+- name: get rabbitmq latest version
+  uri:
+    url: https://api.github.com/repos/rabbitmq/signing-keys/releases/latest
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_release
+
+# return list of dicts
+- name: get json output for assets
+  set_fact:
+    rabbitmq_assets: "{{ latest_release.json.assets }}"
+
+- name: set erlang url
+  set_fact:
+    erlang_url: "{{ item.browser_download_url }}"
+  loop: "{{ rabbitmq_assets }}"
+  when: item.browser_download_url is search('cloudsmith.rabbitmq-erlang.[A-Z0-9]+.key')
+
+- name: set server url
+  set_fact:
+    server_url: "{{ item.browser_download_url }}"
+  loop: "{{ rabbitmq_assets }}"
+  when: item.browser_download_url is search('cloudsmith.rabbitmq-server.[A-Z0-9]+.key')
+
+## grab key IDs
+
+# This parses out the url and gets the key id. We use this later for writing the gpg key
+# Example: https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
+# output: E495BB49CC4BBE5B.key
+
+- name: setting key id for writing
+  set_fact:
+    "{{ item.name }}": "{{ item.var }}"
+  loop:
+    - { name: 'erlang_keyid', var: "{{ erlang_url | regex_search('[A-Z0-9]+.key') | replace('.key', '.gpg') }}" }
+    - { name: 'server_keyid', var: "{{ server_url | regex_search('[A-Z0-9]+.key') | replace('.key', '.gpg') }}" }
+
+## dearmor
+
+# signing key
+
+- name: download rabbitmq signing key
+  get_url:
+    url: "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA"
+    dest: "/tmp/com.rabbitmq.team.asc"
+  register: rabbitmq_signing_key
+
+- name: dearmoring signing key
+  command:
+    cmd: |
+      gpg --dearmor --output
+      /usr/share/keyrings/com.rabbitmq.team.gpg {{ rabbitmq_signing_key.dest }}
+
+# erlang repository
+
+- name: download rabbitmq erlang key
+  get_url:
+    url: "{{ erlang_url }}"
+    dest: "/tmp/cloudsmith.rabbitmq-erlang.asc"
+  register: rabbitmq_erlang_key
+
+- name: dearmoring erlang key
+  command:
+    cmd: |
+      gpg --dearmor --output
+      /usr/share/keyrings/rabbitmq.{{ erlang_keyid }} {{ rabbitmq_erlang_key.dest }}
+
+# rabbitmq repository
+
+- name: download rabbitmq signing key
+  get_url:
+    url: "{{ server_url }}"
+    dest: "/tmp/cloudsmith.rabbitmq-server.asc"
+  register: rabbitmq_server_key
+
+- name: dearmoring signing key
+  command:
+    cmd: |
+      gpg --dearmor --output
+      /usr/share/keyrings/rabbitmq.{{ server_keyid }} {{ rabbitmq_server_key.dest }}
+
+# add sources.list.d/rabbitmq.list
+
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+
+- name: add apt repository
+  template:
+    src: templates/rabbitmq.list.j2
+    dest: /etc/apt/sources.list.d/rabbitmq.list
+    group: root
+    owner: root
+    mode: 0644

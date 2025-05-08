@@ -1,0 +1,20 @@
+---
+# k6
+
+- name: add k6 signing key to keyring file
+  apt_key:
+    id: C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+    url: https://dl.k6.io/key.gpg
+    keyring: /usr/share/keyrings/k6-archive-keyring.gpg
+
+- name: add k6 repository
+  apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main
+    filename: k6
+    state: present 
+
+- name: install k6
+  apt:
+    name: k6 
+    update_cache: yes
+    state: present

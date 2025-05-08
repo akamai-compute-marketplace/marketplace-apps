@@ -1,0 +1,36 @@
+---
+- name: Install nginx
+  apt:
+    pkg:
+      - nginx-full
+    state: present
+
+- name: Set default vhost
+  template:
+    src: 'templates/vhost_default.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create a symbolic link for the nginx configuration
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: Unlink the default nginx configuration
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: Restart nginx
+
+- name: Run certbot helper
+  import_role:
+    name: certbot_ssl
+
+- name: set ssl vhost file
+  template:
+    src: 'templates/vhost_ssl.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+  notify: Restart nginx

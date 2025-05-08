@@ -1,0 +1,23 @@
+# zabbix
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    - name: generating sudo user and password 
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+  
+    - name: generating MySQL password
+      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
+
+    - name: writing zabbix passwords to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          zabbix_db_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          zabbix_gui_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+      no_log: true

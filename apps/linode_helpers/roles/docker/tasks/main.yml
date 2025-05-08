@@ -1,0 +1,45 @@
+---
+# install latest docker community edition
+
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+
+- name: remove conflicting packages
+  apt:
+    pkg:
+      - docker.io
+      - docker-doc
+      - docker-compose
+      - docker-compose-v2
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+
+- name: install docker dependencies
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - gnupg2
+    state: latest
+    update_cache: true
+
+- name: add docker gpg key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: add docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ distribution_release }} stable
+    state: present
+
+- name: install docker community edition
+  apt:
+    name: docker-ce
+    update_cache: yes
+    state: present

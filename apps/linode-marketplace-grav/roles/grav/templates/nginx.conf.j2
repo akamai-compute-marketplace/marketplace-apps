@@ -1,0 +1,37 @@
+server {
+    listen 80;
+    server_name {{ _domain }};
+    root /var/www/grav;
+    index index.html index.php;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+    }
+    
+    # Deny access to .htaccess files
+    location ~ /\.ht {
+        deny all;
+    }
+    
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    
+    # Block access to sensitive directories
+    location ~* /(\.git|cache|bin|logs|backup|tests)/.*$ { return 403; }
+    # Block access to sensitive files
+    location ~ /(LICENSE|composer\.lock|composer\.json|nginx\.conf|web\.config|htaccess\.txt|\.htaccess) { return 403; }
+    
+    # Cache control for static assets
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+    }
+}

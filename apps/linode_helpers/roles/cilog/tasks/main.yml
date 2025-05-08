@@ -1,0 +1,55 @@
+---
+# set ci variables for logging
+
+- name: setting staging env
+  set_fact:
+    kc_username: "{{ lookup('env', 'KC_USERNAME') }}"
+    kc_password: "{{ lookup('env', 'KC_PASSWORD') }}"
+    kc_server: "{{ lookup('env', 'KC_SERVER') }}"
+    data_endpoint: "{{ lookup('env', 'DATA_ENDPOINT') }}"
+    app_label: "{{ lookup('env', 'APP_LABEL') }}"
+    branch: "{{ lookup('env', 'BRANCH') }}"
+    gituser: "{{ lookup('env', 'GH_USER') }}"
+    runjob: "{{ lookup('env', 'RUNJOB') }}"
+    image: "{{ lookup('env', 'IMAGE') }}"
+    type: "{{ lookup('env', 'TYPE') }}"
+    region: "{{ lookup('env', 'REGION') }}"
+    instance_env: "{{ lookup('env', 'INSTANCE_ENV') }}"
+
+- name: obtain temp token from auth server
+  uri:
+    url: "{{ kc_server }}"
+    method: POST
+    body_format: json
+    status_code: [200]
+    return_content: true
+    body:
+      username: "{{ kc_username }}"
+      password: "{{ kc_password }}"
+    headers:
+      Content-Type: 'application/json'
+  register: auth_token
+  
+- name: status check
+  debug: 
+    msg: 'the request failed with {{ auth_token.json }}'
+  when: auth_token.status == 401
+
+- name: sending deployment status
+  uri:
+    url: "{{ data_endpoint }}"
+    method: POST
+    body_format: json
+    body:
+      app_label: '{{ app_label }}'
+      status: '{{ deploy_status }}'
+      branch: '{{ branch }}'
+      gituser: '{{ gituser }}'
+      runjob: '{{ runjob }}'
+      image: '{{ image }}'
+      type: '{{ type }}'
+      region: '{{ region }}'
+      instance_env: '{{ instance_env }}'
+    headers:
+      Content-Type: 'application/json'
+      Authorization: "{{ auth_token.json.token }}"

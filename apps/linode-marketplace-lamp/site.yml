@@ -8,7 +8,34 @@
   user: root
   vars_files:
     - group_vars/linode/vars
-  roles:
-    - common
-    - lamp
-    - post
+
+  tasks:
+    - block:
+        - name: run roles
+          include_role:
+            name: "{{ item }}"
+          loop:
+            - common
+            - lamp
+            - phpmyadmin
+            - post
+        - name: deployment passed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'successful'
+      rescue:
+        - name: deployment failed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'failed'
+      when: "mode == 'staging'"
+
+    - name: running app normally
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - common
+        - lamp
+        - phpmyadmin
+        - post
+      when: "mode == 'production'"

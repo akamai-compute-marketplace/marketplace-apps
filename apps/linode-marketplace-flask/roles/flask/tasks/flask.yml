@@ -1,0 +1,46 @@
+---
+- name: Install system Python packages required for Flask app
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: yes
+    
+- name: Ensure Flask app directory exists
+  file:
+    path: "/var/www/{{ _domain }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Create Flask app subdirectories
+  file:
+    path: "/var/www/{{ _domain }}/static"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Create virtual environment
+  pip:
+    name: Flask
+    virtualenv: "/var/www/{{ _domain }}/venv"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+    state: present
+
+- name: Set virtualenv permissions
+  file:
+    path: "/var/www/{{ _domain }}/venv"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    recurse: yes
+
+- name: Install Flask in virtual environment
+  pip:
+    name: Flask
+    virtualenv: "/var/www/{{ _domain }}/venv"
+    state: present

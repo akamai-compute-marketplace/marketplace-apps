@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Sample App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sample_app.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Your Flask App</h1>
+        <p class="subtitle">Your application is running successfully!</p>
+        <div class="info-box">
+            <p>This is a sample Flask application deployed using the Linode Marketplace.</p>
+            <button id="learnMore">Learn More</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='sample_app.js') }}"></script>
+</body>
+</html>

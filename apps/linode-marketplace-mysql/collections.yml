@@ -1,0 +1,5 @@
+collections:
+ - name: linode.cloud
+   version: 0.32.0
+ - name: community.mysql
+   version: 3.7.1

@@ -12,7 +12,7 @@ trap "cleanup $? $LINENO" EXIT
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="SOA Email" example="user@domain.tld" default="">
+#<UDF name="soa_email_address" label="Email for SSL Generation" example="user@domain.tld">
 
 # git repo
 export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
@@ -35,6 +35,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: standalone
 EOF
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
@@ -86,7 +87,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 }
 
 function installation_complete {

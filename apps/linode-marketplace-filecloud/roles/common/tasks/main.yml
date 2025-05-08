@@ -24,6 +24,7 @@
 - name: set ssh pubkey
   import_role:
       name: sshkey
+
 # disable root login w/wo pubkey
 - name: secure ssh
   import_role:

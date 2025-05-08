@@ -1,0 +1,17 @@
+---
+- name: download nodesource setup script
+  get_url:
+    url: https://deb.nodesource.com/setup_22.x
+    dest: /tmp/nodesource_setup.sh
+    mode: '0755'
+  register: nodesource_script
+
+- name: execute nodesource setup script
+  command:
+    cmd: "bash {{ nodesource_script.dest }}"
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
