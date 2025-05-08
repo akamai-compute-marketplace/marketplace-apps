@@ -1,0 +1,32 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Create Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/rocketchat
+    mode: '0644'
+
+- name: Enable Nginx site
+  file:
+    src: /etc/nginx/sites-available/rocketchat
+    dest: /etc/nginx/sites-enabled/rocketchat
+    state: link
+
+- name: Remove default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restart Nginx
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: Configure SSL with certbot
+  import_role:
+    name: certbot_ssl 

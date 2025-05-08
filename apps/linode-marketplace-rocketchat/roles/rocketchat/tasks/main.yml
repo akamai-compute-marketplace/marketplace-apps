@@ -1,0 +1,14 @@
+---
+# Main Rocket.Chat installation tasks
+
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import MongoDB tasks
+  import_tasks: mongodb.yml
+
+- name: Import Nginx tasks
+  import_tasks: nginx.yml
+
+- name: Import Rocket.Chat tasks
+  import_tasks: install.yml 
