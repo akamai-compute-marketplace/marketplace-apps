@@ -1,0 +1,54 @@
+- name: checking if fccore is deleted
+  file: 
+    path: /opt/solrfcdata/var/solr/data/fccore
+    state: absent
+
+- name: copying fcskel into dest
+  copy:
+    src: /var/www/html/thirdparty/overrides/solarium/Solarium/fcskel
+    dest: /opt/solrfcdata/var/solr/data/
+
+- name: renaming fcskel to fccore
+  shell:
+    cmd: mv /opt/solrfcdata/var/solr/data/fcskel /opt/solrfcdata/var/solr/data/fccore
+
+- name: changing owner of fccore
+  file:
+    path: /opt/solrfcdata/var/solr/data/fccore
+    owner: solr
+    state: directory
+    recurse: yes
+
+- name: logging into filecloud
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/adminlogin?adminuser=admin&adminpassword=password
+    method: POST
+    body_format: form-urlencoded
+    status_code: 200
+    force_basic_auth: yes
+  register: login_cookies
+
+- name: saving cookies to variable
+  set_fact:
+    login: "{{ login_cookies.cookies }}"
+
+- name: extracting tonidocloud_ah value
+  set_fact:
+    tonidocloud_ah: "{{ login['tonidocloud-ah'] }}"
+
+- name: extracting tonidocloud_as value
+  set_fact:
+    tonidocloud_as: "{{ login['tonidocloud-as'] }}"
+
+- name: extracting x_xsrf_token value
+  set_fact:
+    x_xsrf_token: "{{ login['X-XSRF-TOKEN'] }}"
+
+- name: Configuring Solr
+  uri:
+    url: http://{{ ansible_default_ipv4.address }}/admin/confcreate
+    method: POST
+    headers:
+      Cookie: X-XSRF-TOKEN={{ x_xsrf_token }}; X-XSRF-TOKEN-admin={{ x_xsrf_token }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-au=admin
+    body_format: form-urlencoded
+    force_basic_auth: yes
