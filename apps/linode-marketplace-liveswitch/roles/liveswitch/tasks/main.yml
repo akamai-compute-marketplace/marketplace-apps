@@ -6,5 +6,8 @@
 - name: Import Docker tasks
   import_tasks: docker.yml
 
+- name: Import PostgreSQL security tasks
+  import_tasks: secure_postgres.yml
+
 - name: Import nginx tasks
   import_tasks: nginx.yml

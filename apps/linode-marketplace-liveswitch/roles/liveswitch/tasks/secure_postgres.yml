@@ -1,0 +1,49 @@
+---
+# Secure PostgreSQL configuration
+
+- name: Wait for PostgreSQL container to be running
+  wait_for:
+    timeout: 10
+  when: compose_result.changed
+
+- name: Create custom pg_hba.conf file
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      bash -c "cat > /tmp/pg_hba.conf << 'EOF'
+      # TYPE  DATABASE        USER            ADDRESS                 METHOD
+      
+      # "local" is for Unix domain socket connections only
+      local   all             all                                     trust
+      # IPv4 local connections:
+      host    all             all             127.0.0.1/32            trust
+      # IPv6 local connections:
+      host    all             all             ::1/128                 trust
+      # Allow replication connections from localhost, by a user with the
+      # replication privilege.
+      local   replication     all                                     trust
+      host    replication     all             127.0.0.1/32            trust
+      host    replication     all             ::1/128                 trust
+      # Container network connections:
+      host    all             all             172.16.0.0/12           scram-sha-256
+      EOF"
+
+- name: Move pg_hba.conf to data directory
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      bash -c "cp /tmp/pg_hba.conf /var/lib/postgresql/data/pg_hba.conf && 
+      chown postgres:postgres /var/lib/postgresql/data/pg_hba.conf && 
+      chmod 600 /var/lib/postgresql/data/pg_hba.conf"
+
+- name: Set listen_addresses to localhost
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      bash -c "sed -i \"s/listen_addresses = '.*'/listen_addresses = 'localhost'/g\" /var/lib/postgresql/data/postgresql.conf"
+
+- name: Restart PostgreSQL to apply changes
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      bash -c "pg_ctl -D /var/lib/postgresql/data restart" 

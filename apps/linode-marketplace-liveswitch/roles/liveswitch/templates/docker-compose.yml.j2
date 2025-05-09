@@ -4,7 +4,7 @@ networks:
 
 services:
   redis:
-    image: redis
+    image: redis:8.0.0
     restart: always
     networks:
       - liveswitch
@@ -12,7 +12,7 @@ services:
       - "127.0.0.1:6379:6379"  # Local only
 
   postgres:
-    image: postgres
+    image: postgres:17.5
     restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -24,7 +24,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4.1.0
     restart: always
     networks:
       - liveswitch
