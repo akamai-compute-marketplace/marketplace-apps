@@ -1,15 +1,7 @@
 ---
 - name: Start Rocket.Chat container
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /opt/rocketchat
     state: present
     services:
       - rocketchat
-  become: true
-  become_user: "{{ username }}"
-
-- name: Wait for Rocket.Chat to be ready
-  wait_for:
-    port: 3000
-    host: localhost
-    timeout: 300 

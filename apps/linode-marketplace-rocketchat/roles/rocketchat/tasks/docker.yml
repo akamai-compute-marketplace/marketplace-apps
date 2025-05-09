@@ -2,8 +2,6 @@
 - name: Install Docker dependencies
   apt:
     name:
-      - apt-transport-https
-      - ca-certificates
       - curl
       - gnupg
       - lsb-release
