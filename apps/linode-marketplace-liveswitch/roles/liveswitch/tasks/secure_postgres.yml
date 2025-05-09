@@ -1,11 +1,4 @@
 ---
-# Secure PostgreSQL configuration
-
-- name: Wait for PostgreSQL container to be running
-  wait_for:
-    timeout: 10
-  when: compose_result.changed
-
 - name: Create custom pg_hba.conf file
   community.docker.docker_container_exec:
     container: liveswitch-secure-postgres-1
@@ -24,7 +17,7 @@
       local   replication     all                                     trust
       host    replication     all             127.0.0.1/32            trust
       host    replication     all             ::1/128                 trust
-      # Container network connections:
+      # Container network connections - allow Docker network only:
       host    all             all             172.16.0.0/12           scram-sha-256
       EOF"
 
@@ -36,14 +29,8 @@
       chown postgres:postgres /var/lib/postgresql/data/pg_hba.conf && 
       chmod 600 /var/lib/postgresql/data/pg_hba.conf"
 
-- name: Set listen_addresses to localhost
-  community.docker.docker_container_exec:
-    container: liveswitch-secure-postgres-1
-    command: >
-      bash -c "sed -i \"s/listen_addresses = '.*'/listen_addresses = 'localhost'/g\" /var/lib/postgresql/data/postgresql.conf"
-
-- name: Restart PostgreSQL to apply changes
-  community.docker.docker_container_exec:
-    container: liveswitch-secure-postgres-1
-    command: >
-      bash -c "pg_ctl -D /var/lib/postgresql/data restart" 
+- name: Restart PostgreSQL container
+  community.docker.docker_container:
+    name: liveswitch-secure-postgres-1
+    state: started
+    restart: true

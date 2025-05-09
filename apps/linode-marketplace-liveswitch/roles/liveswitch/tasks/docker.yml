@@ -21,17 +21,6 @@
   community.docker.docker_compose_v2:
     project_src: /home/{{ username }}/liveswitch-secure
     state: present
-  register: compose_result
-
-- name: Wait for containers to be running
-  wait_for:
-    timeout: 30
-  when: compose_result.changed
-
-- name: Wait for PostgreSQL to be ready
-  community.docker.docker_container_exec:
-    container: liveswitch-secure-postgres-1
-    command: pg_isready
 
 - name: Create Recording database
   community.docker.docker_container_exec:
