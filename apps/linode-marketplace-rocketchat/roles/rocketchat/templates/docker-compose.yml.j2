@@ -20,13 +20,13 @@ services:
       MONGODB_REPLICA_SET_NAME: rs0
       MONGODB_REPLICA_SET_KEY: {{ mongodb_replica_set_key }}
       MONGODB_ROOT_PASSWORD: {{ mongodb_root_password }}
-      MONGODB_DATABASE: {{ mongodb_database }}
+      MONGODB_DATABASE: rocketchat
       MONGODB_USERNAME: {{ mongodb_username }}
       MONGODB_PASSWORD: {{ mongodb_password }}
       ALLOW_EMPTY_PASSWORD: "no"
 
   rocketchat:
-    image: registry.rocket.chat/rocketchat/rocket.chat:{{ rocketchat_release }}
+    image: registry.rocket.chat/rocketchat/rocket.chat:7.5.1
     restart: always
     depends_on:
       mongodb:
@@ -36,10 +36,16 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@mongodb:27017/{{ mongodb_database }}?replicaSet=rs0"
+      MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@mongodb:27017/rocketchat?replicaSet=rs0"
       MONGO_OPLOG_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@mongodb:27017/local?replicaSet=rs0&authSource=admin"
       ROOT_URL: "http://localhost:3000"
       PORT: 3000
       DEPLOY_METHOD: docker
       DEPLOY_PLATFORM:
       REG_TOKEN: 
+      OVERWRITE_SETTING_Show_Setup_Wizard: "completed"
+      INITIAL_USER: "yes"
+      ADMIN_USERNAME: "admin"
+      ADMIN_NAME: "{{ rocketchat_admin_name }}"
+      ADMIN_EMAIL: "{{ rocketchat_admin_email }}"
+      ADMIN_PASS: "{{ rocketchat_admin_password }}"

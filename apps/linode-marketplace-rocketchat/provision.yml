@@ -19,6 +19,6 @@
           mongodb_root_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           mongodb_username: rocketchat
           mongodb_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
-          mongodb_database: rocketchat
           mongodb_replica_set_key: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
-          rocketchat_release: 7.5.1
+          rocketchat_admin_email: "{{ rocketchat_admin_email }}" 
+          rocketchat_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}

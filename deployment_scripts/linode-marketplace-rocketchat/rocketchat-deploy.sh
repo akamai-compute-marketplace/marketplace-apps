@@ -26,8 +26,8 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Rocket.Chat Settings
-#<UDF name="administrator_name" label="Administrator Name" example="Jane Doe">
-#<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld">
+#<UDF name="rocketchat_admin_name" label="Administrator Name" example="Jane Doe">
+#<UDF name="rocketchat_admin_email" label="Administrator Email Address" example="user@domain.tld">
 
 
 #GH_USER=""
@@ -80,8 +80,8 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
-  administrator_name: ${ADMINISTRATOR_NAME}
-  administrator_email_address: ${ADMINISTRATOR_EMAIL_ADDRESS}
+  rocketchat_admin_name: ${ROCKETCHAT_ADMIN_NAME}
+  rocketchat_admin_email: ${ROCKETCHAT_ADMIN_EMAIL}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

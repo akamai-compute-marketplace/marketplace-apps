@@ -2,11 +2,9 @@
 # Final system configurations and cleanup
 - name: Ensure services are started and enabled
   systemd_service:
-    name: "{{ item }}"
+    name: nginx
     state: started
     enabled: true
-  loop:
-    - nginx
 
 - name: Set up MOTD
   template:
@@ -22,4 +20,7 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
+      Rocket.Chat Admin Username: admin
+      Rocket.Chat Admin Name: {{ rocketchat_admin_name }}
+      Rocket.Chat Admin Email: {{ rocketchat_admin_email }}
+      Rocket.Chat Admin Password: {{ rocketchat_admin_password }}
