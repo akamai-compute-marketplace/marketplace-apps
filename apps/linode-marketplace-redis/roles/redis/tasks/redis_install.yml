@@ -1,0 +1,23 @@
+---
+- name: install redis
+  import_role:
+    name: database
+  vars:
+    database: redis
+
+- name: create backup of redis configurations
+  copy: 
+    src: /etc/redis/redis.conf
+    dest: /etc/redis/redis.conf.bak
+    remote_src: yes
+    owner: redis
+    group: redis
+    mode: 0644
+
+- name: template modified config file
+  template:
+    src: 'templates/redis.conf.j2'
+    dest: '{{ redis_conf_directory }}/redis.conf'
+    owner: redis
+    group: redis
+  notify: restart redis

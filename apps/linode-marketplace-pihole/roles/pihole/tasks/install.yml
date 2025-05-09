@@ -1,0 +1,48 @@
+---
+# install system packages
+- name: install required dependencies
+  apt:
+    name:
+      - curl
+      - sudo
+      - git
+    state: present
+
+- name: create pihole directory
+  file:
+    path: /etc/pihole
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: create setupVars.conf
+  template:
+      src: 'templates/setupVars.conf.j2'
+      dest: '/etc/pihole/setupVars.conf'
+
+- name: download pihole install script
+  get_url:
+    url: https://install.pi-hole.net
+    dest: /tmp/pihole-install.sh
+    mode: '0755'
+
+- name: install pihole
+  shell: bash pihole-install.sh --unattended
+  args:
+    chdir: /tmp
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: update config to listen on 8080/8443
+  replace:
+    path: /etc/pihole/pihole.toml
+    regexp: 'port = "80o,443os,\[::\]:80o,\[::\]:443os"'
+    replace: 'port = "8080o,[::]:8080o"'
+
+- name: reconfig pihole
+  command: pihole -r
+
+- name: set pihole password
+  command: pihole setpassword {{ pihole_password }}
+  no_log: true

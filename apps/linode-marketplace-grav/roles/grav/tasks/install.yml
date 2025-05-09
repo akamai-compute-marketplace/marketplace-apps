@@ -1,0 +1,171 @@
+---
+- name: Install required packages for Grav
+  apt:
+    name:
+      - php-fpm
+      - php-cli
+      - php-gd
+      - php-curl
+      - php-mbstring
+      - php-xml
+      - php-zip
+      - php-apcu
+      - php-intl
+      - php8.3-yaml
+      - git
+    state: present
+    update_cache: true
+
+- name: Configure PHP settings
+  lineinfile:
+    path: /etc/php/8.3/fpm/php.ini
+    regexp: ';cgi.fix_pathinfo=1'
+    line: 'cgi.fix_pathinfo=0'
+  notify: restart php8.3-fpm
+
+- name: Create web directory with proper ownership
+  file:
+    path: /var/www/grav
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Create Composer directory
+  become: true
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: '0755'
+
+- name: Download Composer installer
+  become: true
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: '0755'
+
+- name: Install Composer globally
+  become: true
+  shell: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+- name: Clone and install Grav as www-data user
+  become: true
+  become_user: www-data
+  block:
+    - name: Clone Grav repository
+      git:
+        repo: https://github.com/getgrav/grav.git
+        dest: /var/www/grav
+        depth: 1
+
+    - name: Install Grav dependencies with Composer
+      expect:
+        command: /usr/local/bin/composer install --no-dev -o
+        chdir: /var/www/grav
+        responses:
+          (?i)Do you want to continue: "yes"
+
+    - name: Install Grav core
+      expect:
+        command: bin/grav install
+        chdir: /var/www/grav
+        responses:
+          (?i)Do you want to continue: "yes"
+
+    - name: Install Grav admin plugin
+      expect:
+        command: bin/gpm install admin
+        chdir: /var/www/grav
+        responses:
+          (?i)^.*Install these packages: "y"
+          (?i)^.*continue: "y"
+
+- name: Make bin files executable
+  file:
+    path: "/var/www/grav/bin/{{ item }}"
+    mode: '0755'
+  loop:
+    - gpm
+    - grav
+    - plugin
+
+- name: Ensure Grav directories have correct permissions
+  file:
+    path: "/var/www/grav/{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+    recurse: true
+  loop:
+    - cache
+    - logs
+    - images
+    - user/data
+    - user/config
+    - user/pages
+    - tmp
+    - backup
+    - assets
+    - user/accounts
+
+- name: Create admin account directory
+  file:
+    path: /var/www/grav/user/accounts
+    state: directory
+    mode: '0755'
+    owner: www-data
+    group: www-data
+
+- name: Deploy admin account configuration
+  template:
+    src: admin.yaml.j2
+    dest: /var/www/grav/user/accounts/admin.yaml
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Update cache driver to Redis in system.yaml
+  lineinfile:
+    path: /var/www/grav/user/config/system.yaml
+    regexp: '^\s*driver: auto'
+    line: '  driver: redis'
+    state: present
+    backrefs: true
+
+- name: Configure Redis authentication in Grav
+  lineinfile:
+    path: /var/www/grav/user/config/system.yaml
+    insertafter: '^\s*driver: redis'
+    line: |2
+        redis:
+          server: '127.0.0.1'
+          port: 6379
+          username: 'default'
+          password: '{{ redis_default_user_password }}'
+          database: 0
+          prefix: 'g'
+          persistent: true
+          timeout: 0
+          retry_interval: 0
+    state: present
+
+- name: Create Redis plugin directory structure
+  file:
+    path: "/var/www/grav/user/plugins/redis/{{ item }}"
+    state: directory
+    mode: '0644'
+    owner: www-data
+    group: www-data
+  loop:
+    - classes
+    - blueprints
+    - templates
+
+- name: Clear Grav cache
+  command: bin/grav clearcache
+  args:
+    chdir: /var/www/grav
+  become: true
+  become_user: www-data

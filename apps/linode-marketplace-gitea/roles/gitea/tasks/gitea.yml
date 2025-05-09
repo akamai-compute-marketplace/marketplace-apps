@@ -1,0 +1,97 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - git
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Add Gitea GPG key
+  get_url:
+    url: https://packaging.gitlab.io/gitea/gpg.key
+    dest: /etc/apt/trusted.gpg.d/morph027-gitea.asc
+    mode: '0644'
+
+- name: Add Gitea repository
+  apt_repository:
+    repo: deb https://packaging.gitlab.io/gitea gitea main
+    state: present
+    filename: morph027-gitea
+
+- name: Install Gitea packages
+  apt:
+    name:
+      - gitea
+      - morph027-keyring
+    state: present
+    update_cache: true
+
+- name: Create required Gitea directories
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "gitea"
+    group: "gitea"
+    mode: 0750
+    recurse: true
+  loop:
+    - { path: '/var/lib/gitea' }
+    - { path: '/var/lib/gitea/custom' }
+    - { path: '/var/lib/gitea/data' }
+    - { path: '/var/lib/gitea/log' }
+    - { path: '/etc/gitea' }
+
+- name: Import credentials
+  import_tasks: credentials.yml
+
+- name: Create Gitea config file
+  template:
+    src: app.ini.j2
+    dest: /etc/gitea/app.ini
+    owner: root
+    group: gitea
+    mode: '0660'  # Requires rw access when starting gitea.service the first time, so it can write the JWT secret
+
+- name: Copy Gitea service file
+  copy:
+    src: gitea.service
+    dest: /etc/systemd/system/gitea.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: Initialize Gitea database
+  become: true
+  become_user: gitea
+  shell: gitea migrate --config /etc/gitea/app.ini
+
+- name: Create Gitea admin user
+  become: true
+  become_user: gitea
+  shell: >
+    gitea admin user create 
+    --config /etc/gitea/app.ini 
+    --username admin 
+    --password {{ gitea_admin_password }} 
+    --email user@linode.com 
+    --admin
+  no_log: true
+  notify: restart gitea
+
+- name: Enable and start Gitea service
+  systemd:
+    name: gitea
+    state: started
+    enabled: true
+
+- name: Update app.ini permissions after initialization
+  file:
+    path: /etc/gitea/app.ini
+    mode: '0640'
+    owner: root 
+    group: gitea

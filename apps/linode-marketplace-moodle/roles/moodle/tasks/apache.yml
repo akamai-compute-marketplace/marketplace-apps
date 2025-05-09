@@ -1,0 +1,113 @@
+---
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+- name: install required packages
+  apt:
+    name:
+      - apache2
+      - php
+      - php-mysql
+      - php-xml
+      - php-curl
+      - php-gd
+      - php-intl
+      - php-zip
+      - php-mbstring
+      - php-soap
+      - php-bcmath
+      - php-cli
+      - php-xmlrpc
+      - git
+      - unzip
+    state: present
+
+- name: update max_input_vars in php.ini files
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^[; ]*max_input_vars\s*='
+    line: 'max_input_vars = 5000'
+    backup: true
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
+  loop_control:
+    loop_var: php_ini_path
+
+- name: update post_max_size in php.ini files
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^[; ]*post_max_size\s*='
+    line: 'post_max_size = 256M'
+    backup: true
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
+  loop_control:
+    loop_var: php_ini_path
+
+- name: update upload_max_filesize in php.ini files
+  lineinfile:
+    path: "{{ php_ini_path }}"
+    regexp: '^[; ]*upload_max_filesize\s*='
+    line: 'upload_max_filesize = 256M'
+    backup: true
+  loop:
+    - /etc/php/8.3/cli/php.ini
+    - /etc/php/8.3/apache2/php.ini
+  loop_control:
+    loop_var: php_ini_path
+
+- name: start and enable apache
+  systemd:
+    name: apache2
+    state: started
+    enabled: true
+
+- name: enable required apache modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ssl
+    - headers
+    - rewrite
+
+- name: restart apache to pick up changes
+  service:
+    name: apache2
+    state: restarted
+
+- name: creating document root
+  file:
+    path: "{{ moodle_dir }}"
+    owner: www-data
+    group: www-data
+    mode: 0755
+    state: directory
+
+- name: moving vhost template
+  template:
+    src: templates/vhost.conf.j2
+    dest: "/etc/apache2/sites-available/{{ _domain }}.conf"
+    owner: www-data
+    group: www-data
+    mode: 0644
+
+- name: symlinking our vhost
+  file:
+    src: "/etc/apache2/sites-available/{{ _domain }}.conf"
+    dest: "/etc/apache2/sites-enabled/{{ _domain }}.conf"
+    owner: www-data
+    group: www-data
+    mode: 0644
+    state: link
+
+
+- name: disable apache default site
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: reload apache2

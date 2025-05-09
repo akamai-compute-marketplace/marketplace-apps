@@ -1,0 +1,20 @@
+---
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    # generate creds
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+    
+    - name: Writing PostgreSQL and Gitea admin password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          gitea_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+          postgresql_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}

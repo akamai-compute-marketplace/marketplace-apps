@@ -1,0 +1,14 @@
+---
+- name: install postgresql
+  apt:
+    pkg:
+      - postgresql
+
+- name: update postgresql password
+  postgresql_query:
+    db: postgres
+    query: "ALTER USER postgres PASSWORD '{{ postgresql_password }}';"
+  become: true
+  become_method: su
+  become_user: postgres
+  no_log: true
