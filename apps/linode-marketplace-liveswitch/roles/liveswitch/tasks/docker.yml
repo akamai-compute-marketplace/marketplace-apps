@@ -22,6 +22,13 @@
     project_src: /home/{{ username }}/liveswitch-secure
     state: present
 
+- name: Ensure Postgresql container is running
+  community.docker.docker_container_info:
+    name: liveswitch-secure-postgres-1
+  register: pgcontainer_status
+  until: pgcontainer_status.container.State.Status == 'running'
+  retries: 10
+  delay: 2
 - name: Create Recording database
   community.docker.docker_container_exec:
     container: liveswitch-secure-postgres-1
