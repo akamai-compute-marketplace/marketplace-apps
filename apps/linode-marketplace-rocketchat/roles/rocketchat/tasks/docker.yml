@@ -50,11 +50,3 @@
     mode: '0644'
     owner: "{{ username }}"
     group: "{{ username }}"
-
-- name: Create .env file
-  template:
-    src: env.j2
-    dest: /opt/rocketchat/.env
-    mode: '0600'
-    owner: "{{ username }}"
-    group: "{{ username }}" 

@@ -20,7 +20,7 @@ services:
       MONGODB_ROOT_PASSWORD: {{ mongodb_root_password }}
       MONGODB_DATABASE: rocketchat
       MONGODB_USERNAME: {{ mongodb_username }}
-      MONGODB_PASSWORD: {{ mongodb_password }}
+      MONGODB_PASSWORD: {{ mongodb_rocketchat_password }}
       ALLOW_EMPTY_PASSWORD: "no"
 
   rocketchat:
@@ -34,8 +34,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@mongodb:27017/rocketchat?replicaSet=rs0"
-      MONGO_OPLOG_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_password }}@mongodb:27017/local?replicaSet=rs0&authSource=admin"
+      MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/rocketchat?replicaSet=rs0"
+      MONGO_OPLOG_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/local?replicaSet=rs0&authSource=admin"
       ROOT_URL: "http://localhost:3000"
       PORT: 3000
       DEPLOY_METHOD: docker

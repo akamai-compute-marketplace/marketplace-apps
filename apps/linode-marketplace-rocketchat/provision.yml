@@ -18,7 +18,7 @@
         line: |
           mongodb_root_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           mongodb_username: rocketchat
-          mongodb_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+          mongodb_rocketchat_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           mongodb_replica_set_key: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           rocketchat_admin_email: "{{ rocketchat_admin_email }}" 
           rocketchat_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
