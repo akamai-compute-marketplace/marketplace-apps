@@ -60,5 +60,3 @@
       - apt-transport-https
       - ca-certificates
       - software-properties-common
-      - certbot
-      - python3-certbot-nginx

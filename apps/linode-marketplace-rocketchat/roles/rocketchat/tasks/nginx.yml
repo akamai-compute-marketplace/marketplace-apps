@@ -5,19 +5,25 @@
     state: present
     update_cache: true
 
-- name: Create Nginx configuration
+- name: Enable and start Nginx service
+  systemd:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Create Nginx site configuration
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/rocketchat
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
     mode: '0644'
 
-- name: Enable Nginx site
+- name: Enable Nginx site configuration
   file:
-    src: /etc/nginx/sites-available/rocketchat
-    dest: /etc/nginx/sites-enabled/rocketchat
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: Remove default Nginx site
+- name: Remove default Nginx site configuration
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent

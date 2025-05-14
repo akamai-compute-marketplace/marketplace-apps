@@ -1,11 +1,5 @@
 ---
 # Final system configurations and cleanup
-- name: Ensure services are started and enabled
-  systemd_service:
-    name: nginx
-    state: started
-    enabled: true
-
 - name: Set up MOTD
   template:
     src: motd.j2

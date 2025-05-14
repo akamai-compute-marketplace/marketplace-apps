@@ -1,7 +1,0 @@
----
-- name: Start MongoDB container
-  community.docker.docker_compose_v2:
-    project_src: /opt/rocketchat
-    state: present
-    services:
-      - mongodb

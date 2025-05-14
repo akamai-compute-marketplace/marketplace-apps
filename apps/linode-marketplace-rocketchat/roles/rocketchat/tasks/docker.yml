@@ -1,39 +1,43 @@
 ---
-- name: Install Docker dependencies
-  apt:
-    name:
-      - curl
-      - gnupg
-      - lsb-release
-    state: present
-    update_cache: true
+# - name: Install Docker dependencies
+#   apt:
+#     name:
+#       - curl
+#       - gnupg
+#       - lsb-release
+#     state: present
+#     update_cache: true
 
-- name: Add Docker GPG key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+# - name: Add Docker GPG key
+#   apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
 
-- name: Add Docker repository
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_facts['lsb']['codename'] }} stable"
-    state: present
-    filename: docker.list
+# - name: Add Docker repository
+#   apt_repository:
+#     repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_facts['lsb']['codename'] }} stable"
+#     state: present
+#     filename: docker.list
 
-- name: Install Docker packages
-  apt:
-    name:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-compose-plugin
-    state: present
-    update_cache: true
+# - name: Install Docker packages
+#   apt:
+#     name:
+#       - docker-ce
+#       - docker-ce-cli
+#       - containerd.io
+#       - docker-compose-plugin
+#     state: present
+#     update_cache: true
 
-- name: Enable and start Docker service
-  systemd:
+# - name: Enable and start Docker service
+#   systemd:
+#     name: docker
+#     state: started
+#     enabled: true
+
+- name: install docker latest
+  import_role: 
     name: docker
-    state: started
-    enabled: true
 
 - name: Create Rocket.Chat directory
   file:
