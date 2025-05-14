@@ -72,9 +72,11 @@
 - name: wait for DNS propagation domain
   debug:
     msg: waiting for DNS propagation
-  until: "{{ lookup('community.general.dig', domain) == ip_address }}"
-  retries: 30
-  delay: 10
+  until: "{{ lookup('community.general.dig', domain) }}"
+  register: dig_result
+  until: ip_address.msg in dig_result.msg
+  retries: 50
+  delay: 15
   when:
     - domain is defined
     - subdomain == "www"
@@ -83,8 +85,10 @@
   debug:
     msg: waiting for DNS propagation
   until: "{{ lookup('community.general.dig', subdomain + '.' + domain) }}"
-  retries: 30
-  delay: 10
+  register: dig_result
+  until: ip_address.msg in dig_result.msg
+  retries: 50
+  delay: 15
   when: subdomain is defined
 
 # Double check to make sure it propogated elsewhere (using google's DNS servers)
