@@ -32,7 +32,7 @@ fi
 #BRANCH=""
 
 # git user and branch
-if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+if [[ -n ${GH_USER} && -n ${GIT_BRANCH} ]]; then
         echo "[info] git user and branch set.."
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 
