@@ -1,17 +1,17 @@
 ---
 # jitsi
 
-- name: add prosody apt repository
-  apt_repository:
-    repo: "deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
-    filename: prosody
-    state: present
-
 - name: download prosody gpg key
   get_url:
     url: https://prosody.im/files/prosody-debian-packages.key
     dest: /etc/apt/trusted.gpg.d/prosody.gpg
     mode: '0644'
+
+- name: add prosody apt repository
+  apt_repository:
+    repo: "deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
+    filename: prosody
+    state: present
 
 - name: add jitsi GPG key
   get_url:
