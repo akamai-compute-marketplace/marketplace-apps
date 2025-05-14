@@ -29,7 +29,11 @@ fi
 
 # repo
 #GH_USER=""
-#BRANCH=""
+#GIT_BRANCH=""
+
+export GIT_BRANCH="${BRANCH}"
+unset BRANCH
+
 
 # git user and branch
 if [[ -n ${GH_USER} && -n ${GIT_BRANCH} ]]; then
