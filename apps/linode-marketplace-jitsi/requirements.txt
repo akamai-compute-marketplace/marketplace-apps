@@ -8,3 +8,4 @@ polling==0.3.2
 ansible-specdoc==0.0.19
 pyyaml==6.0.2
 pexpect==4.9.0
+passlib==1.7.4
