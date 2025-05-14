@@ -38,7 +38,7 @@ if [[ -n ${GH_USER} && -n ${GIT_BRANCH} ]]; then
 
 else
         export GH_USER="akamai-compute-marketplace"
-        export BRANCH="main"
+        export GIT_BRANCH="main"
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
 
