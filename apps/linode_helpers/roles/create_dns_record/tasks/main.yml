@@ -69,11 +69,27 @@
     state: present
   when: subdomain is defined
 
-- name: wait for DNS propogation
-  ansible.builtin.pause: 
-    minutes: 3
+- name: Check for DNS propogation locally if using domain
+  debug:
+    msg: "{{ lookup('community.general.dig', domain) }}"
+  register: dig_result
+  until: ip_address.msg in dig_result.msg
+  retries: 10
+  delay: 10
+  when:
+    - domain is defined
+    - subdomain == "www"
 
-# it is recommended to use an external DNS resolver for domain validation
+- name: Check for DNS propogation locally if using subdomain
+  debug:
+    msg: "{{ lookup('community.general.dig', subdomain + '.' + domain) }}"
+  register: dig_result
+  until: ip_address.msg in dig_result.msg
+  retries: 10
+  delay: 10
+  when: subdomain is defined
+
+# Double check to make sure it propogated elsewhere (using google's DNS servers)
 - name: A record lookup for domain
   debug:
     msg: "{{ lookup('community.general.dig', domain, '@8.8.8.8') }}"
