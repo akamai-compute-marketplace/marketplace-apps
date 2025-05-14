@@ -72,7 +72,7 @@ EOF
 function run {
   # install dependancies
   apt-get update
-  apt-get install -y git python3 python3-pip
+  apt-get install -y git python3 python3-pip python3-venv
 
   # clone repo and set up ansible environment
   git -C /tmp clone ${GIT_REPO}
@@ -81,8 +81,7 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
