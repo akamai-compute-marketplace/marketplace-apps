@@ -11,13 +11,10 @@
     repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.asc ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse"
     state: present
 
-- name: Installing MongoDB
+- name: Installing MongoDB and updating cache
   apt:
     name: mongodb-org
     state: present
-
-- name: running apt-get update
-  apt:
     update_cache: yes
 
 - name: Adding Keys for FileCloud
@@ -73,9 +70,8 @@
     - libapache2-mod-security2
     
 - name: Installing FileCloud! :)
-  apt:
-    name: filecloud
-    state: present
+  shell:
+    cmd: ACCEPT_EULA=Y  apt-get install filecloud -y  
 
 # reset admin password
 - name: run PHP script to reset admin password
@@ -112,7 +108,7 @@
 - name: configuring GEO IP
   uri:
     url: http://{{ ansible_default_ipv4.address }}/admin/
-    method: GET
+    method: POST
     headers:
       Content-Type: application/x-www-form-urlencoded
       Cookie: X-XSRF-TOKEN-admin={{ x_xsrf_token }}; X-XSRF-TOKEN={{ x_xsrf_token }}; tonidocloud-au=admin; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-au=admin
