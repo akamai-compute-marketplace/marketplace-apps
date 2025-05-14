@@ -5,6 +5,3 @@
 
 - name: Import NGINX tasks
   import_tasks: nginx.yml
-
-- name: Import systemd service tasks
-  import_tasks: systemd.yml 

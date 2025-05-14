@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name {{ arangodb_domain }};
+    server_name {{ _domain }};
 
     location / {
         proxy_pass http://127.0.0.1:8529;

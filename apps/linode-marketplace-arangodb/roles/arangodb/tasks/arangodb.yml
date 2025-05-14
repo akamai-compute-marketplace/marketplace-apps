@@ -35,7 +35,7 @@
     group: arangodb
     recurse: yes
 
-- name: Create data and log directories
+- name: Create ArangoDB directories
   file:
     path: "{{ item }}"
     state: directory
@@ -45,6 +45,7 @@
   loop:
     - "/var/lib/arangodb3"
     - "/var/log/arangodb3"
+    - "/opt/arangodb3/etc/arangodb3"
 
 - name: Generate arangod.conf
   template:
@@ -53,12 +54,6 @@
     owner: arangodb
     group: arangodb
     mode: '0644'
-
-- name: Set ArangoDB root password
-  command:
-    cmd: "echo 'require(\"@arangodb/users\").update(\"root\", \"{{ arangodb_root_password }}\");' | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 --server.username root --server.password '' --configuration none --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js"
-  become: true
-  become_user: arangodb
 
 - name: Create ArangoDB systemd service file
   template:
@@ -75,3 +70,8 @@
     name: arangodb3
     state: started
     enabled: true 
+
+- name: Set ArangoDB root password
+  command:
+    cmd: "echo 'require(\"@arangodb/users\").update(\"root\", \"{{ arangodb_root_password }}\");' | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 --server.username root --server.password '' --configuration none --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js"
+  become: true
