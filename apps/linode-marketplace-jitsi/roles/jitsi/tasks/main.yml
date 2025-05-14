@@ -3,7 +3,7 @@
 
 - name: add prosody apt repository
   apt_repository:
-    repo: "deb http://packages.prosody.im/debian {{ distro_codename.stdout }} main"
+    repo: "deb http://packages.prosody.im/debian {{ ansible_distribution_release }} main"
     filename: prosody
     state: present
 
