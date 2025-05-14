@@ -1,0 +1,10 @@
+---
+# Main ArangoDB installation tasks
+- name: Import ArangoDB install and config tasks
+  import_tasks: arangodb.yml
+
+- name: Import NGINX tasks
+  import_tasks: nginx.yml
+
+- name: Import systemd service tasks
+  import_tasks: systemd.yml 

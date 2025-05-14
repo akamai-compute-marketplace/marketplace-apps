@@ -1,0 +1,77 @@
+---
+- name: Create ArangoDB install directory
+  file:
+    path: "/opt/arangodb3"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Download ArangoDB tarball
+  get_url:
+    url: "https://download.arangodb.com/arangodb312/Community/Linux/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
+    dest: "/tmp/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
+    mode: '0644'
+
+- name: Extract ArangoDB tarball
+  unarchive:
+    src: "/tmp/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
+    dest: "/opt/arangodb3"
+    remote_src: yes
+    extra_opts: ["--strip-components=1"]
+
+- name: Create arangodb system user
+  user:
+    name: arangodb
+    system: yes
+    home: "/opt/arangodb3"
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Set permissions for ArangoDB install dir
+  file:
+    path: "/opt/arangodb3"
+    owner: arangodb
+    group: arangodb
+    recurse: yes
+
+- name: Create data and log directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: arangodb
+    group: arangodb
+    mode: '0755'
+  loop:
+    - "/var/lib/arangodb3"
+    - "/var/log/arangodb3"
+
+- name: Generate arangod.conf
+  template:
+    src: arangod.conf.j2
+    dest: "/opt/arangodb3/etc/arangodb3/arangod.conf"
+    owner: arangodb
+    group: arangodb
+    mode: '0644'
+
+- name: Set ArangoDB root password
+  command:
+    cmd: "echo 'require(\"@arangodb/users\").update(\"root\", \"{{ arangodb_root_password }}\");' | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 --server.username root --server.password '' --configuration none --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js"
+  become: true
+  become_user: arangodb
+
+- name: Create ArangoDB systemd service file
+  template:
+    src: arangodb.service.j2
+    dest: /etc/systemd/system/arangodb3.service
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start ArangoDB service
+  systemd:
+    name: arangodb3
+    state: started
+    enabled: true 
