@@ -2,14 +2,13 @@
 
 A Marketplace App leverages the Linode API and Ansible to deploy and configure a single node service. The end-user’s Linode API token must be scoped with appropriate permissions to add and remove the necessary platform resources, such as compute, DNS, storage, etc. In additon, please adhere to the following guidelines for Marketplace apps:
 
-  - We recommend Marketplace applications use Ubuntu 22.04 LTS images when possible. 
-  - Required Linode plans for Marketplace applications should be no more than 16GB shared CPU or 8GB dedicated  CPU. This is the default instance size limit for new user accounts. Deployments designed for larger instance sizes can be accepted on a case-by-case basis where required. 
+  - We recommend Marketplace applications use Ubuntu 24.04 LTS images when possible. 
   - The deployment of the service should be “hands-off,” requiring no command-line intervention from the user before reaching its initial state. The end user should provide all necessary details via User Defined Variables (UDF) defined in the StackScript, so that Ansible can fully automate the deployment.
-  - There is not currently password strength validation for StackSctript UDFs, therefore, whenever possible credentials should be generated and provided to the end-user.
+  - There is not currently password validation for StackSctript UDFs, therefore, whenever possible credentials should be generated in the [provision.yml](../apps/linode-marketplace-beef/provision.yml) and provided to the end-user via the credentials file generated in the [post role](../apps/linode-marketplace-beef/roles/post/tasks/main.yml) .
   - At no time should billable services that will not be used in the final deployment be present on the customer’s account.
-  - To whatever extent possible all Marketplace applications should use fully maintained packages and automated updates. 
+  - All Marketplace applications should use fully maintained packages and pinned to the latest stable package per application/service. 
   - All Marketplace applications should include Linux server best practices such as a sudo-user, SSH hardening and basic firewall configurations. 
-  - All Marketplace applications should generally adhere to the best practices for the deployed service, and include security such as SSL whenever possible. 
+  - All Marketplace applications should adhere to the best practices for the deployed service, and include security such as SSL whenever possible. 
   - All Marketplace service installations should be minimal, providing no more than dependencies and removing deployment artifacts. 
 
 ## Deployment Scripts
@@ -34,47 +33,48 @@ Marketplace App playbooks should align with the following sample directory trees
 
 ```
 linode-marketplace-$APP/
-  ansible.cfg
-  collections.yml
-  provision.yml
-  requirements.txt
+  ansible.cfg 
+  collections.yml # Ensure to pin to specific version
+  provision.yml # Where any credentials should be generated
+  requirements.txt # Ensure to pin to specific version
   site.yml
   .ansible-lint
   .yamllint
   .gitignore
 
   group_vars/
-    $APP/
+    $APP/ # Replace with app name
       vars 
-      secret_vars
   
   roles/
-    $APP/
+    $APP/ # Replace with app name
       handlers/
         main.yml
       tasks/
-        main.yml
+        main.yml # Break the install into it's different segments/services 
+        install.yml # Install's main application
+        ssl.yml # Configures ssl
+        nginx.yml # Installs & configures nginx
       templates/
         $FILE.j2
     common/ 
       handlers/ 
         main.yml
       tasks/ 
-        main.yml
+        main.yml # Includes all the helper functions
     post/ 
      handlers/ 
         main.yml
       tasks/ 
-        main.yml
+        main.yml # Creates the credentials file & sets the MOTD
       templates/
         MOTD.j2  
    
 ```
 As general guidelines: 
-  - The secrets in the `secret_vars` file should be encrypted with Ansible Vault
   - The `roles` should general conform to the following standards:
     - `common` - including preliminary configurations and Linux best practices.
-    - `$app` - including all necessary plays for service/app deployment and configuration.
+    - `$app` - including all necessary plays for service/app deployment and configuration. Within the app role, the the installation should be broken down into seperate tasks. For example, the '$app' install should only include the steps to install the app, ssl.yml should handle the ssl generation, and nginx(or any other services installed) should have it's own task.
     - `post` - any post installation tasks such as clean up operations and generating additonal user credentials. This should include the creation of a credentials file in `/home/$SUDO_USER/.credentials` and a MOTD (Message of the Day) file to display after login to provide some additional direction after the deployment. 
 
 ## Helper Functions
