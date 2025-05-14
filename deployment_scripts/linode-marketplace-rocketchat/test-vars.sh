@@ -19,6 +19,8 @@ UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
 UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
+UDF_VARS["ROCKETCHAT_ADMIN_NAME"]="admin" 
+UDF_VARS["ROCKETCHAT_ADMIN_EMAIL"]="admin@${DEFAULT_DNS}"
 
 # dynamic variables
 #if [[ -n "${CHANGE_ME}" ]]; then
