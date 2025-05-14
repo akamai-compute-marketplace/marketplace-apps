@@ -74,7 +74,7 @@ linode-marketplace-$APP/
 As general guidelines: 
   - The `roles` should general conform to the following standards:
     - `common` - including preliminary configurations and Linux best practices.
-    - `$app` - including all necessary plays for service/app deployment and configuration. Within the app role, the the installation should be broken down into seperate tasks. For example, the '$app' install should only include the steps to install the app, ssl.yml should handle the ssl generation, and nginx(or any other services installed) should have it's own task.
+    - `$app` - including all necessary plays for service/app deployment and configuration. Within the app role, the installation should be broken down into seperate tasks. For example, the '$app' install should only include the steps to install the app, ssl.yml should handle the ssl generation, and nginx(or any other services installed) should have it's own task.
     - `post` - any post installation tasks such as clean up operations and generating additonal user credentials. This should include the creation of a credentials file in `/home/$SUDO_USER/.credentials` and a MOTD (Message of the Day) file to display after login to provide some additional direction after the deployment. 
 
 ## Helper Functions
