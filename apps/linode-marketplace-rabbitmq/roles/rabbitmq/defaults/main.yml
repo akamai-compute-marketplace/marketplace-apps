@@ -1,0 +1,2 @@
+---
+rabbitmq_conf: '/etc/rabbitmq/rabbitmq.conf'

@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
-trap "cleanup $? $LINENO" EXIT
+DEBUG="NO"
+if [ "${DEBUG}" == "NO" ]; then
+  trap "cleanup $? $LINENO" EXIT
+fi
+
 
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Domain Settings
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
@@ -14,6 +17,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## KUMA Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="kuma_user_name" label="The Username to log into your Uptime Kuma dashboard: *No Capital Letters or Special Characters*">
 
 
 # git repo
@@ -38,17 +42,13 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  kuma_user_name: ${KUMA_USER_NAME}
   webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
@@ -88,18 +88,17 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   
-
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
   
 }
 
@@ -108,4 +107,6 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup
+if [ "${DEBUG}" == "NO" ]; then
+  cleanup
+fi

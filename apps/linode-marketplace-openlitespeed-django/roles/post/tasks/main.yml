@@ -1,0 +1,22 @@
+-
+# motd and creds gen
+- name: copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: /home/{{ username }}/.credentials
+    mode: '0600'
+    content: |
+      OpenLiteSpeed admin password: {{ litespeed_decoded_password }}
+      Django admin user: {{ django_superuser_username }}
+      Django admin password: {{ django_password }}
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+- name: Remove /root/.litespeed_password
+  ansible.builtin.file:
+    path: /root/.litespeed_password
+    state: absent

@@ -1,0 +1,32 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@{{ _domain }}
+    DocumentRoot /var/www/{{ _domain }}/web
+    ServerName {{ _domain }}
+    ServerAlias www.{{ _domain }}
+
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerAdmin webmaster@{{ _domain }}
+    DocumentRoot /var/www/{{ _domain }}/web
+    ServerName {{ _domain }}
+    ServerAlias www.{{ _domain }}
+
+    <Directory /var/www/{{ _domain }}/web>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+        RewriteEngine on
+        RewriteBase /
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteCond %{REQUEST_URI} !=/favicon.ico
+        RewriteRule ^ index.php [L]
+    </Directory>
+
+    ErrorLog /var/log/apache2/drupal-error.log
+    CustomLog /var/log/apache2/drupal-access.log combined
+</VirtualHost>

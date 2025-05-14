@@ -1,0 +1,44 @@
+# configure
+- name: setting up environment 
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+  # generate creds
+    - name: generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      
+    - name: writing rabbitmq vars
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          rabbitmq_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          rabbitmq_admin_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+  
+  # write ips to vars
+
+    - name: writting private ip
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          rabbitmq_private_ip: {{ item }}
+      loop: "{{ ansible_all_ipv4_addresses }}"
+      loop_control:
+        index_var: count
+      when: ansible_all_ipv4_addresses[count] | regex_search('^(192.168).*')
+
+    - name: writing public ip
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          rabbitmq_public_ip: {{ item }}
+      loop: "{{ ansible_all_ipv4_addresses }}"
+      loop_control:
+        index_var: count
+      when: ansible_all_ipv4_addresses[count] | regex_search('^(?!192.168).*')

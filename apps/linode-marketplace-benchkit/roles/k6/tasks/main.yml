@@ -1,0 +1,4 @@
+---
+# install k6
+- name: install k6
+  import_tasks: install.yml

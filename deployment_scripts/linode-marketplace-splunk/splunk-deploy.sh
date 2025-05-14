@@ -112,12 +112,6 @@ EOF
     echo "Leaving root login enabled"
   fi
 
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars}
-  else 
-    echo "No pubkey entered"
-  fi
-
   # vars
   
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
@@ -151,9 +145,9 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  #git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone -b akamai-siem ${GIT_REPO}
+  #git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -167,7 +161,7 @@ function run {
   # populate group_vars
   udf
   # run playbooks
-  for playbook in provision.yml site.yml; do ansible-playbook -v $playbook; done
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
   
 }
 

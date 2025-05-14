@@ -3,6 +3,6 @@
 - name: installing docker docker-compose
   apt:
     pkg:
-    - docker
+    - docker.io
     - docker-compose
     state: present

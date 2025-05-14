@@ -13,7 +13,7 @@ Uptime Kuma is self-hosted alternative to Uptime Robot. Get real-time performanc
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

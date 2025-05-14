@@ -11,5 +11,5 @@
   roles:
     - common
     - filecloud
-    - solr
     - post
+    

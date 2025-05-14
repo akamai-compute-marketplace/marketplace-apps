@@ -1,0 +1,48 @@
+---
+# jmeter
+
+# install dependancy
+
+- name: install default-jdk
+  apt:
+    pkg: default-jdk
+    state: present
+
+- name: get the latest version of jmeter
+  uri:
+    method: GET
+    url: https://api.github.com/repos/apache/jmeter/releases/latest
+    return_content: true
+    body_format: json
+  register: version_output
+
+- name: set jmeter version
+  set_fact:
+    jmeter_version: "{{ version_output.content | from_json | json_query('name') | regex_replace('^v', '') }}"
+
+- name: set jmeter path
+  set_fact:
+    jmeter_path: "/opt/apache-jmeter-{{ jmeter_version }}/bin"
+
+- name: download jmeter {{ jmeter_version }} tar
+  get_url:
+    url: "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-{{ jmeter_version }}.tgz"
+    dest: "/tmp/apache-jmeter-{{ jmeter_version }}.tgz" 
+
+- name: create jmeter directory
+  file:
+    path: "/opt/apache-jmeter-{{ jmeter_version }}"
+    state: directory
+    mode: 0755
+
+- name: untar jmeter archive
+  unarchive:
+    src: "/tmp/apache-jmeter-{{ jmeter_version }}.tgz"
+    dest: "/opt/apache-jmeter-{{ jmeter_version }}"
+    extra_opts: [--strip-components=1]
+ 
+- name: export jmeter path 
+  lineinfile:
+    path: /root/.bashrc
+    line: "export PATH=\"$PATH:{{ jmeter_path }}\""
+    insertafter: EOF

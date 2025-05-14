@@ -1,0 +1,54 @@
+---
+# set_hostname
+- name: setting up hostname
+  import_role:
+    name: hostname
+
+# sets account ssh pubkey to limited user
+- name: set ssh pubkey
+  import_role:
+      name: sshkey
+
+# disable root login w/wo pubkey
+- name: secure ssh
+  import_role:
+      name: securessh
+  when: disable_root is defined
+
+# apt_setup_update
+- name: update system packages
+  import_role:
+    name: update_pkgs
+
+# ufw_install
+- name: enabling ufw
+  import_role:
+    name: ufw
+
+# ufw rules 
+- name: apply ufw rules
+  import_tasks: ufw_rules.yml
+
+# fail2ban
+- name: enabling fail2ban
+  import_role:
+    name: fail2ban_install
+
+# docker deps for sitespeed.io
+
+- name: add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+# ubuntu 22.04 LTS
+- name: add docker repository 
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu jammy stable
+    state: present
+
+- name: install Docker engine
+  apt:
+    name: docker-ce
+    update_cache: yes
+    state: present

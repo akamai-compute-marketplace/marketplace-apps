@@ -1,0 +1,14 @@
+# linode ansible playbook
+
+- name: code-server setup
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  roles:
+    - common
+    - code-server
+    - post

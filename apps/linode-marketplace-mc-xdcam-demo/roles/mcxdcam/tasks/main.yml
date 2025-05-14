@@ -6,7 +6,7 @@
 
   - name: Run Docker container
     docker_container:
-      name: mc2goxdcam
+      name: mcxdcam
       image: mainconcept/mc_2go_xdcam_transcoder:demo-2-3-616
       state: started
       ports:

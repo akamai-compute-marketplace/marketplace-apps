@@ -1,0 +1,33 @@
+---
+# provision valkey
+- name: setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  gather_facts: true
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    - name: set valkey memory
+      lineinfile:
+        path: ./group_vars/linode/vars
+        line: |
+          valkey_memory_limit: {{ ((ansible_memtotal_mb) * 0.8) | int }}
+    # non integer input is parsed as 0
+    - name: handle bad input for client_count
+      lineinfile:
+        path: ./group_vars/linode/vars
+        regexp: '^client_count:'
+        line: 'client_count: 1'
+      when: client_count | int <= 1
+    - name: generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+    - name: writing deployment variables to vars file
+      blockinfile:
+        path: ./group_vars/linode/vars
+        marker: "# {mark} INSTANCE VARS"
+        block: |
+          valkey_default_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          ca_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          sudo_db_user_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

@@ -1,0 +1,5 @@
+---
+# latest stable branch: https://download.moodle.org/releases/latest/
+moodle_branch: MOODLE_500_STABLE
+moodle_dir: "/var/www/{{ _domain }}"
+moodle_app: "/var/www/{{ _domain }}/moodle"

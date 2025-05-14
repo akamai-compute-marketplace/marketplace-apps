@@ -1,0 +1,13 @@
+external_url "https://{{ _domain }}"
+
+letsencrypt['enable'] = true
+letsencrypt['contact_emails'] = ["{{ soa_email_address }}"]
+letsencrypt['auto_renew'] = true
+
+gitlab_rails['smtp_enable'] = true
+gitlab_rails['smtp_address'] = "localhost"
+gitlab_rails['smtp_port'] = 25
+gitlab_rails['smtp_domain'] = "{{ _domain }}"
+gitlab_rails['smtp_tls'] = false
+gitlab_rails['smtp_openssl_verify_mode'] = "none"
+gitlab_rails['smtp_enable_starttls_auto'] = false

@@ -1,0 +1,14 @@
+---
+# install system packages
+
+- name: install required packages
+  apt:
+    pkg:
+      - curl
+      - htop
+      - net-tools
+      - gnupg
+      - apt-transport-https
+      - ntp
+    state: latest
+    update_cache: true

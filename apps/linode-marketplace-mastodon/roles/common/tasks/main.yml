@@ -4,6 +4,11 @@
   import_role:
     name: hostname
 
+# sets account ssh pubkey to limited user
+- name: set ssh pubkey
+  import_role:
+      name: sshkey
+
 # write _domain to vars.
 - name: write _domain to vars
   lineinfile: 
@@ -40,13 +45,6 @@
     type: 'TXT'
     target: 'v=spf1 a ~all'
     state: present
-
-# sets customer supplied ssh pubkey to limited user
-- name: set ssh pubkey
-  import_role:
-      name: sshkey
-  when: 
-    - pubkey is defined
 
 # disable root login w/wo pubkey
 - name: secure ssh

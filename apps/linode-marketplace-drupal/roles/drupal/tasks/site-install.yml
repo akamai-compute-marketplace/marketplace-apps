@@ -1,0 +1,99 @@
+---
+- name: Install Drush 13.3.3 via Composer
+  composer:
+    command: require
+    arguments: "drush/drush:13.3.3"
+    working_dir: /var/www/{{ _domain }}
+  become: yes
+  become_user: www-data
+
+- name: Configure Drupal using Drush
+  command:
+    cmd: >
+      /var/www/{{ _domain }}/vendor/bin/drush site:install standard
+      --db-url=mysql://drupal:{{ mysql_drupal_password }}@localhost/drupaldb
+      --site-name="{{ drupal_site_name }}"
+      --site-mail="{{ drupal_site_email }}"
+      --account-name="{{ drupal_username }}"
+      --account-pass="{{ drupal_password }}"
+      --account-mail="{{ drupal_account_email }}"
+      --locale="en"
+      --yes
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: yes
+  become_user: www-data
+
+- name: Configure timezone
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush config:set system.date timezone.default UTC -y
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: yes
+  become_user: www-data
+
+- name: Enable update module using Drush
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush pm:enable update -y
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: yes
+  become_user: www-data
+
+- name: Configure update notification email
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush config:set update.settings notification.emails.0 {{ drupal_site_email }} -y
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: yes
+  become_user: www-data
+
+- name: Configure update check interval
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush config:set update.settings check.interval_days 1 -y
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: yes
+  become_user: www-data
+
+- name: Ensure default directory has correct permissions for writing
+  file:
+    path: /var/www/{{ _domain }}/web/sites/default
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: yes
+
+- name: Set settings.php permissions to read/write
+  file:
+    path: /var/www/{{ _domain }}/web/sites/default/settings.php
+    mode: '0644'
+    owner: www-data
+    group: www-data
+  become: yes
+
+- name: Set trusted host patterns in settings.php
+  lineinfile:
+    path: /var/www/{{ _domain }}/web/sites/default/settings.php
+    line: |
+      $settings['trusted_host_patterns'] = ['^localhost$', '^127\.0\.0\.1$', '^{{ _domain | replace('.', '\\.') }}$', '^.*\.ip\.linodeusercontent\.com$'];
+    insertafter: EOF
+    state: present
+  become: yes
+  become_user: www-data
+
+- name: Reset default directory permissions
+  file:
+    path: /var/www/{{ _domain }}/web/sites/default
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  become: yes
+
+- name: Set settings.php permissions to default
+  file:
+    path: /var/www/{{ _domain }}/web/sites/default/settings.php
+    mode: '0444'
+    owner: www-data
+    group: www-data
+  become: yes

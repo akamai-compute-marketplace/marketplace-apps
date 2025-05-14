@@ -1,0 +1,10 @@
+[Unit]
+Description=Browser Exploitation Framework
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=beef
+Group=beef
+ExecStart=/home/beef/start_beef
+[Install]
+WantedBy=default.target

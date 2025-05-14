@@ -10,3 +10,10 @@
   # generate creds
     - name: generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: writing uptime kuma to vars
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          kuma_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

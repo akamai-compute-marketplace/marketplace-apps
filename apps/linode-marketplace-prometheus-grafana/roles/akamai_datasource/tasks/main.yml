@@ -1,0 +1,6 @@
+---
+# akamai datasource
+
+- name: install akamai datasource
+  import_tasks: akamai_ds.yml
+  when: "akamai_datasource == True"

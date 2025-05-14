@@ -1,0 +1,29 @@
+---
+# Final system configurations and cleanup
+- name: Ensure services are started and enabled
+  systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - nginx
+    - redis-server
+    - php8.3-fpm
+
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Grav Admin Username: {{ grav_admin_user }}
+      Grav Admin Password: {{ grav_admin_password }}
+      Grav Admin Email: {{ administrator_email_address }}

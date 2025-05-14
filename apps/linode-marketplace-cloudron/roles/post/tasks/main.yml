@@ -7,8 +7,10 @@
 
 - name: writing sudo creds into file
   copy:
-    dest: /root/.credentials
+    dest: '/home/{{ username }}/.credentials'
     mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}

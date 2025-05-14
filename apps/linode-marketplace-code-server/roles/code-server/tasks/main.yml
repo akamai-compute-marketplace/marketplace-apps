@@ -1,0 +1,80 @@
+---
+- name: install required packages
+  apt:
+    pkg:
+      - nginx
+      - curl
+      - git
+    state: latest
+    update_cache: true
+
+# code-server
+- name: download code-server .deb package
+  get_url:
+    url: "{{ code_server_download_link }}"
+    dest: "/tmp/code-server_{{ code_server_version }}_amd64.deb"
+  register: code_server_deb
+
+- name: install code-server .deb package
+  apt:
+    deb: "{{ code_server_deb.dest }}"
+    state: present
+
+- name: enable and start code-server service
+  systemd:
+    name: "code-server@{{ username }}"
+    enabled: yes
+    state: started
+
+- name: wait for config.yaml to exist
+  wait_for:
+    path: /home/{{ username }}/.config/code-server/config.yaml
+    timeout: 120
+
+- name: code-server config file 
+  template:
+    src: templates/config.yaml.j2
+    dest: "/home/{{ username }}/.config/code-server/config.yaml"  
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0644'
+
+- name: config file setup
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"  
+
+- name: secure code-server with htaccess
+  htpasswd:
+    path: '/etc/nginx/.code_server_htpasswd'
+    name: codeserver
+    password: '{{ code_server_htpasswd }}'
+    state: present
+    create: true  
+
+- name: create a symbolic link for the nginx configuration
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: unlink the default nginx configuration
+  file:
+    path: "/etc/nginx/sites-enabled/default"
+    state: absent
+  notify: reload nginx service
+
+# ssl_certbot
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
+# restart code-server service
+- name: restart code-server service
+  systemd:
+    name: "code-server@{{ username }}"
+    enabled: yes
+    state: restarted
+
+
+

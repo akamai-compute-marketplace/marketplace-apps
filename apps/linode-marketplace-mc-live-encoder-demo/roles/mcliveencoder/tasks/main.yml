@@ -38,8 +38,15 @@
     ansible.builtin.command: firewall-cmd --reload
     become: yes
 
-  - name: Start MainConcept Live Encoder
-    shell: /opt/McLiveEncoder/engine/run.sh &
-    args:
-      chdir: /opt/McLiveEncoder/engine/
+# - name: Start MainConcept Live Encoder
+#   shell: /opt/McLiveEncoder/engine/run.sh &
+#   args:
+#     chdir: /opt/McLiveEncoder/engine/
+
+  - name: start mcliveencodingwebd service
+    systemd:
+      name: mcliveencodingwebd.service
+      state: started
+      enabled: yes
+
 
