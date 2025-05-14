@@ -7,7 +7,7 @@ Deploy a production-ready Rocket.Chat server with built-in security and optimize
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
 | Rocket.Chat  | 7.5.1    | Modern team chat platform |
-| MongoDB     | 8.0       | NoSQL database |
+| MongoDB     | 7.0       | NoSQL database |
 | Nginx     | Latest    | Web server and reverse proxy |
 | Docker     | Latest    | Container runtime |
 | Docker Compose | Latest | Container orchestration |
