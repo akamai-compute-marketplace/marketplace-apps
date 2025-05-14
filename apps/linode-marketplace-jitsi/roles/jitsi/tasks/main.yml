@@ -1,12 +1,6 @@
 ---
 # jitsi
 
-# add jitsi-meet repo
-
-- name: download prosody GPG key
-  apt_key:
-    url: https://prosody.im/files/prosody-debian-packages.key
-
 - name: add jitsi GPG key
   get_url:
     url: https://download.jitsi.org/jitsi-key.gpg.key
