@@ -95,7 +95,7 @@
     msg: "{{ lookup('community.general.dig', domain, '@8.8.8.8') }}"
   register: dig_result
   until: ip_address.msg in dig_result.msg
-  retries: 20
+  retries: 50
   delay: 10
   when:
     - domain is defined
@@ -106,6 +106,6 @@
     msg: "{{ lookup('community.general.dig', subdomain + '.' + domain, '@8.8.8.8') }}"
   register: dig_result
   until: ip_address.msg in dig_result.msg
-  retries: 20
+  retries: 50
   delay: 10
   when: subdomain is defined
