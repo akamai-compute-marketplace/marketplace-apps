@@ -15,38 +15,32 @@ else
   set -e
 fi
 
-#github_endpoint: 'https://raw.githubusercontent.com/akamai-compute-marketplace/marketplace-apps/main/deployment_scripts/linode-marketplace-lamp/lamp-deploy.sh'
-
-## LAMP Settings
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-
-## Linode/SSH Security Settings
+## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
-## Install PHPMyAdmin
-#<UDF name="install_phpmyadmin" label="Would you like to install PHPMyAdmin?" oneOf="Yes,No" default="No">
-
+# repo
 #GH_USER=""
 #BRANCH=""
+
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
         echo "[info] git user and branch set.."
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
-
 else
         export GH_USER="akamai-compute-marketplace"
         export BRANCH="main"
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
 
-export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-lamp"
+export WORK_DIR="/tmp/marketplace-apps"
+export MARKETPLACE_APP="apps/linode-marketplace-liveswitch"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -66,7 +60,7 @@ function provision_failed {
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
         \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-  
+
   exit $?
 }
 
@@ -74,48 +68,40 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
   sed 's/  //g' <<EOF > ${group_vars}
-
-  # deployment vars
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lamp
-  soa_email_address: ${SOA_EMAIL_ADDRESS}
+  webserver_stack: lemp
+  docker_host: unix://var/run/docker.sock
 EOF
-  
-  if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars}
-  else echo "Leaving root login enabled"
-  fi
 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
-  else echo "No API token entered"
+  if [ "$DISABLE_ROOT" = "Yes" ]; then
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
+  else
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
-  else echo "subdomain: www" >> ${group_vars}
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  else echo "subdomain: www" >> ${group_vars};
   fi
- 
-  if [[ -n ${INSTALL_PHPMYADMIN} ]]; then
-    if [ "${INSTALL_PHPMYADMIN}" == "Yes" ]; then
-      echo "install_phpmyadmin: True" >> ${group_vars}
-    elif [ "${INSTALL_PHPMYADMIN}" == "No" ]; then
-      echo "install_phpmyadmin: False" >> ${group_vars}
-    fi
-  else echo "[info] Not installing phpmyadmin"
+
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
+
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
   # staging or production mode (ci)
@@ -125,20 +111,18 @@ EOF
   else
     echo "[info] running in production mode..."
     echo "mode: production" >> ${group_vars}
-  fi  
+  fi
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  #git -C /tmp clone ${GIT_REPO}
-  # for a single testing branch
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   apt install python3-venv -y
   python3 -m venv env
@@ -156,6 +140,7 @@ function run {
 function installation_complete {
   echo "Installation Complete"
 }
+
 # main
 run
 installation_complete

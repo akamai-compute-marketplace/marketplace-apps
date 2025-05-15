@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: jitsi setup
+- name: configuring NetFoundry Edge Router
   hosts: localhost
   connection: local
   gather_facts: true
@@ -16,7 +16,7 @@
             name: "{{ item }}"
           loop:
             - common
-            - jitsi
+            - edge-router
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -34,6 +34,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - jitsi
+        - edge-router
         - post
       when: "mode == 'production'"

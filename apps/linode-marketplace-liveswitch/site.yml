@@ -1,6 +1,5 @@
-# linode ansible playbook
-
-- name: jitsi setup
+---
+- name: liveswitch setup
   hosts: localhost
   connection: local
   gather_facts: true
@@ -16,7 +15,7 @@
             name: "{{ item }}"
           loop:
             - common
-            - jitsi
+            - liveswitch
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -34,6 +33,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - jitsi
+        - liveswitch
         - post
       when: "mode == 'production'"

@@ -10,7 +10,7 @@ Jitsi is a free, open source video conferencing and communication platform. It p
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
