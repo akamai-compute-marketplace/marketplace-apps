@@ -36,7 +36,7 @@ services:
     environment:
       MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/rocketchat?replicaSet=rs0"
       MONGO_OPLOG_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/local?replicaSet=rs0&authSource=admin"
-      ROOT_URL: "http://localhost:3000"
+      ROOT_URL: {{ _domain }}
       PORT: 3000
       DEPLOY_METHOD: docker
       DEPLOY_PLATFORM:
