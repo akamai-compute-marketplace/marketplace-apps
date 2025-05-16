@@ -1,0 +1,20 @@
+---
+- name: install docker latest
+  import_role: 
+    name: docker
+
+- name: Create Rocket.Chat directory
+  file:
+    path: /opt/rocketchat
+    state: directory
+    mode: '0755'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Create docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/rocketchat/docker-compose.yml
+    mode: '0644'
+    owner: "{{ username }}"
+    group: "{{ username }}"

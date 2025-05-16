@@ -1,0 +1,50 @@
+volumes:
+  mongodb_data:
+
+networks:
+  rocketchat-net:
+    driver: bridge
+
+services:
+  mongodb:
+    image: bitnami/mongodb:7.0
+    restart: always
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    networks:
+      - rocketchat-net
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: {{ mongodb_replica_set_key }}
+      MONGODB_ROOT_PASSWORD: {{ mongodb_root_password }}
+      MONGODB_DATABASE: rocketchat
+      MONGODB_USERNAME: {{ mongodb_username }}
+      MONGODB_PASSWORD: {{ mongodb_rocketchat_password }}
+      ALLOW_EMPTY_PASSWORD: "no"
+
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:7.6.0
+    restart: always
+    depends_on:
+      mongodb:
+        condition: service_started
+    networks:
+      - rocketchat-net
+    ports:
+      - "3000:3000"
+    environment:
+      MONGO_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/rocketchat?replicaSet=rs0"
+      MONGO_OPLOG_URL: "mongodb://{{ mongodb_username }}:{{ mongodb_rocketchat_password }}@mongodb:27017/local?replicaSet=rs0&authSource=admin"
+      ROOT_URL: "https://{{ _domain }}"
+      PORT: 3000
+      BIND_IP: "0.0.0.0"
+      DEPLOY_METHOD: docker
+      DEPLOY_PLATFORM:
+      REG_TOKEN: 
+      OVERWRITE_SETTING_Show_Setup_Wizard: "completed"
+      INITIAL_USER: "yes"
+      ADMIN_USERNAME: "admin"
+      ADMIN_NAME: "{{ rocketchat_admin_name }}"
+      ADMIN_EMAIL: "{{ rocketchat_admin_email }}"
+      ADMIN_PASS: "{{ rocketchat_admin_password }}"

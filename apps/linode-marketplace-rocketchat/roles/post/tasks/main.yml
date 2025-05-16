@@ -1,0 +1,23 @@
+---
+# Final system configurations and cleanup
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Rocket.Chat Admin Username: admin
+      Rocket.Chat Admin Password: {{ rocketchat_admin_password }}
+      Rocket.Chat Admin Name: {{ rocketchat_admin_name }}
+      Rocket.Chat Admin Email: {{ rocketchat_admin_email }}
+      MongoDB Root Password: {{ mongodb_root_password }}
+      MongoDB Username: rocketchat
+      MongoDB "rocketchat" User Password: {{ mongodb_rocketchat_password }}
