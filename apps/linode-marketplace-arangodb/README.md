@@ -56,7 +56,7 @@ curl -H "Content-Type: application/json" \
 "backups_enabled": true,
 "booted": true,
 "image": "linode/ubuntu24.04",
-"label": "arrangodb-server",
+"label": "arangodb-server",
 "private_ip": true,
 "region": "us-southeast",
 "root_pass": "${ROOT_PASS}",

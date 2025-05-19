@@ -11,14 +11,6 @@
     state: started
     enabled: true
 
-- name: Create web root directory
-  file:
-    path: "/var/www/grav"
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
-
 - name: Create NGINX site configuration
   template:
     src: nginx.conf.j2

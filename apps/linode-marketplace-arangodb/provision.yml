@@ -17,4 +17,3 @@
         path: group_vars/linode/vars
         line: |
           arangodb_root_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }} 
-          arangodb_user_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }} 

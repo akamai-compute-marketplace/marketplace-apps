@@ -1,10 +1,18 @@
 ---
+- name: Create arangodb system user
+  user:
+    name: arangodb
+    system: yes
+    home: "/opt/arangodb3"
+    shell: /usr/sbin/nologin
+    state: present
+
 - name: Create ArangoDB install directory
   file:
     path: "/opt/arangodb3"
     state: directory
-    owner: "{{ username }}"
-    group: "{{ username }}"
+    owner: arangodb
+    group: arangodb
     mode: '0755'
 
 - name: Download ArangoDB tarball
@@ -19,21 +27,6 @@
     dest: "/opt/arangodb3"
     remote_src: yes
     extra_opts: ["--strip-components=1"]
-
-- name: Create arangodb system user
-  user:
-    name: arangodb
-    system: yes
-    home: "/opt/arangodb3"
-    shell: /usr/sbin/nologin
-    state: present
-
-- name: Set permissions for ArangoDB install dir
-  file:
-    path: "/opt/arangodb3"
-    owner: arangodb
-    group: arangodb
-    recurse: yes
 
 - name: Create ArangoDB directories
   file:
