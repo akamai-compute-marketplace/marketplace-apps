@@ -10,6 +10,10 @@
     certbot_plugin: nginx
     cacheable: yes
 
+- name:  dry-run certbot
+  include_tasks:
+    file: dry-run.yml
+
 - name: installing let's encrypt certificate on subdomain provided via UDF
   shell:
     cmd: "certbot -n --nginx --agree-tos --redirect -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
