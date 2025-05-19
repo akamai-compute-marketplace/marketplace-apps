@@ -69,25 +69,25 @@
     state: present
   when: subdomain is defined
 
-- name: wait for DNS propagation domain
-  debug:
-    msg: waiting for DNS propagation
-  until: "{{ lookup('community.general.dig', domain) }}"
-  register: dig_result
-  until: ip_address.msg in dig_result.msg
-  retries: 10
-  delay: 15
-  when:
-    - domain is defined
-    - subdomain == "www"
+# - name: wait for DNS propagation domain
+#   debug:
+#     msg: waiting for DNS propagation
+#   until: "{{ lookup('community.general.dig', domain) }}"
+#   register: dig_result
+#   until: ip_address.msg in dig_result.msg
+#   retries: 10
+#   delay: 15
+#   when:
+#     - domain is defined
+#     - subdomain == "www"
 
-- name: wait for DNS propagation subdomain
-  debug:
-    msg: waiting for DNS propagation
-  until: "{{ lookup('community.general.dig', subdomain + '.' + domain) }}"
-  register: dig_result
-  until: ip_address.msg in dig_result.msg
-  retries: 10
-  delay: 15
-  when: subdomain is defined
+# - name: wait for DNS propagation subdomain
+#   debug:
+#     msg: waiting for DNS propagation
+#   until: "{{ lookup('community.general.dig', subdomain + '.' + domain) }}"
+#   register: dig_result
+#   until: ip_address.msg in dig_result.msg
+#   retries: 10
+#   delay: 15
+#   when: subdomain is defined
 
