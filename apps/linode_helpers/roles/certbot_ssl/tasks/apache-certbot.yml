@@ -11,8 +11,9 @@
     cacheable: yes
 
 - name:  dry-run certbot
-  include_tasks:
-    file: dry-run.yml
+  include_tasks: dry-run.yml
+  vars:
+    webserver: apache
 
 - name: installing let's encrypt certificate on subdomain provided via UDF
   shell:
