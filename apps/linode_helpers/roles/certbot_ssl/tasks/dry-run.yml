@@ -1,11 +1,4 @@
 # certbot dry-runs
-- name: set stack variable based on webserver_stack
-  set_fact:
-    webserver: >-
-      {{ 'apache' if webserver_stack == 'lamp'
-         else 'nginx' if webserver_stack == 'lemp'
-         else 'standalone' if webserver_stack == 'standalone' }}
-
 - name: run dry-run for subdomain
   shell:
     cmd: "certbot -n --{{ webserver }} --agree-tos --dry-run --redirect certonly -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
