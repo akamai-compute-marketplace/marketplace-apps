@@ -10,6 +10,11 @@
     certbot_plugin: apache
     cacheable: yes
 
+- name:  dry-run certbot
+  include_tasks: dry-run.yml
+  vars:
+    webserver: apache
+
 - name: installing let's encrypt certificate on subdomain provided via UDF
   shell:
     cmd: "certbot -n --apache --agree-tos --redirect -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
