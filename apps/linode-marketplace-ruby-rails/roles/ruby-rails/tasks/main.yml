@@ -1,6 +1,9 @@
 ---
 # Ruby on Rails tasks
 
+- name: Installing Nginx
+  import_tasks: nginx.yml
+
 - name: Installing MISE version manager
   import_tasks: mise.yml
 
@@ -12,10 +15,3 @@
 
 - name: Configure puma service
   import_tasks: puma.yml
-
-- name: Installing Nginx
-  import_tasks: nginx.yml
-
-
-# todo:
-# might be good to have defaults/main.yml

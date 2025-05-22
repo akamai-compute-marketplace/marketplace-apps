@@ -19,11 +19,6 @@
     group: "{{ username }}"
     mode: 0755
 
-- name: Creating temporary directory for mise
-  tempfile:
-    state: directory
-  register: tmpdir
-
 - name: Get mise version
   uri:
     method: GET

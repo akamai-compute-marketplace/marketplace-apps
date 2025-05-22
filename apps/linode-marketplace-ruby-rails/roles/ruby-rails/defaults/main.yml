@@ -1,2 +1,3 @@
 ---
-app_root_path: '/home/{{ username }}/{{ app_name }}'
+#app_root_path: '/home/{{ username }}/{{ app_name }}'
+app_root_path: '/var/www/{{ app_name }}'

@@ -8,6 +8,5 @@ eval "$(/home/{{ username }}/.local/bin/mise activate bash)"
 cd {{ app_root_path }}
 
 # start application in foreground
-PID=$(echo $$)
 export RAILS_ENV=production
-exec bundle exec puma --pidfile tmp/pids/${PID}.pid -C config/puma.rb
+exec bundle exec puma -C config/puma.rb

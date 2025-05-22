@@ -1,5 +1,4 @@
 ---
-
 - name: Installing Ruby
   debug:
     msg: "This is going to take a bit..."

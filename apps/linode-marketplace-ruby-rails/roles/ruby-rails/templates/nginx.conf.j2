@@ -1,5 +1,5 @@
 upstream rails {
-    server unix:///var/www/{{ app_name }}/tmp/sockets/puma.sock;
+    server unix://{{ app_root_path }}/tmp/sockets/puma.sock;
 }
 
 server {

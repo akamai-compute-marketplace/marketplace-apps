@@ -30,7 +30,7 @@
 - name: Adding puma service rails
   template:
     src: templates/puma.service.j2  
-    dest: "{{ systemd.path }}/puma.service"
+    dest: "{{ systemd.path }}/{{ app_name }}.service"
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: 0644
@@ -40,19 +40,21 @@
     src: "{{ app_root_path }}/config/puma.rb"
     dest: "{{ app_root_path }}/config/puma.rb.bak"
     owner: "{{ username }}"
-    group: "{{ username }}"
+    group: "www-data"
     mode: 0644
 
 - name: Backup puma and add startup wrapper
-  copy:
+  template:
     src: "{{ item.src }}" 
     dest: "{{ item.dest }}" 
-    owner: "{{ username }}"
-    group: "{{ username }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   loop:
-    - { src: 'templates/start.sh.j2', dest: '/home/{{ username }}/.local/bin/start.sh', mode: '0755' }
-    - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb', mode: '0644' }
+    - { src: 'templates/start.sh.j2', dest: '/home/{{ username }}/.local/bin/start.sh', 
+      owner: '{{ username }}', group: '{{ username }}', mode: '0755' }
+    - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb', 
+      owner: '{{ username }}', group: 'www-data', mode: '0664' }
 
 - name: Start puma service
   systemd_service: 

@@ -1,4 +1,24 @@
 ---
+
+- name: Create application path
+  file: 
+    path: "{{ app_root_path }}"
+    state: directory
+    owner: "{{ username }}"
+    group: www-data
+
+- name: Create temporary directory
+  tempfile:
+    state: directory
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    executable: /bin/bash    
+  register: tmpdir
+
+
+
 - name: Create new rails app
   shell:
     cmd: |
@@ -8,7 +28,27 @@
   become_user: "{{ username }}"
   become_flags: -i
   args:
+    chdir: "{{ tmpdir.path }}"
     executable: /bin/bash
+
+
+# copy to app_root_path
+- name: Copy over rails app to root path
+  copy:
+    src: "{{ tmpdir.path }}/{{ app_name }}"
+    dest: "{{ app_root_path }}"
+    owner: "{{ username }}"
+    group: www-data
+    mode: 0775
+
+# remove tmpdir
+- name: Remove rails temp directory
+  file:
+    path: "{{ tmpdir.path }}"
+    state: absent
+
+
+
 
 - name: Create home index page
   shell:
@@ -27,8 +67,8 @@
     src: files/index.html.erb
     dest: "{{ app_root_path }}/app/views/home/index.html.erb"
     owner: "{{ username }}"
-    group: "{{ username }}"
-    mode: 0644
+    group: www-data
+    mode: 0664
 
 - name: Backing up routes.rb
   copy:
@@ -55,3 +95,15 @@
   args:
     chdir: "{{ app_root_path }}"
     executable: /bin/bash
+
+
+
+
+- name: Update application permissions
+  file:
+    path: "{{ app_root_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ username }}"
+    group: www-data
+  notify: restart nginx

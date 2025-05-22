@@ -4,16 +4,6 @@
   import_role:
     name: hostname
 
-# this is irrelevant and not loaded into runtime.
-# write _domain to vars
-#- name: write _domain to vars
-#  lineinfile: 
-#    insertafter: EOF
-#    path: group_vars/linode/vars
-#    line: | 
-#      _domain: {{ _domain }}
-#  when: _domain is defined
-
 # dns creation
 - name: create dns A record
   import_role:
