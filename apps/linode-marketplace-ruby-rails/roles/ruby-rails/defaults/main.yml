@@ -1,0 +1,2 @@
+---
+app_root_path: '/home/{{ username }}/{{ app_name }}'

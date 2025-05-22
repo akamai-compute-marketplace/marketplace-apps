@@ -1,0 +1,72 @@
+---
+- name: Installing package dependencies
+  apt:
+    name:
+      - build-essential
+      - rustc
+      - libssl-dev
+      - libyaml-dev
+      - zlib1g-dev
+      - libgmp-dev
+    state: present
+    update_cache: true
+
+- name: Creating {{ username }} bin path for mise
+  file:
+    path: "/home/{{ username }}/.local/bin"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0755
+
+- name: Creating temporary directory for mise
+  tempfile:
+    state: directory
+  register: tmpdir
+
+- name: Get mise version
+  uri:
+    method: GET
+    url: https://api.github.com/repos/jdx/mise/releases/latest
+    return_content: true
+    body_format: json
+  register: version_output
+
+- name: Set mise version
+  set_fact:
+    mise_version: "{{ version_output.content | from_json | json_query('name') }}"
+
+- name: Set mise tarball
+  set_fact:
+    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ mise_version }}/mise-{{ mise_version }}-linux-x64.tar.zst"
+
+- name: Create tempdir
+  tempfile:
+    state: directory
+  register: tempdir
+
+- name: Download mise tarball
+  get_url:
+    url: "{{ mise_tarball }}"
+    dest: "{{ tempdir.path }}"
+  register: tarball
+
+- name: Extract mise tarball
+  unarchive:
+    src: "{{ tarball.dest }}"
+    dest: "{{ tempdir.path }}"
+    extra_opts: [--strip-components=1]
+
+- name: Move mise binary to {{ username }} path
+  copy:
+    src: "{{ tempdir.path }}/bin/mise"
+    dest: "/home/{{ username }}/.local/bin/mise"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0755
+
+- name: Load mise env on login
+  lineinfile:
+    path: "/home/{{ username }}/.bashrc"
+    insertafter: EOF
+    line: 'eval "$(~/.local/bin/mise activate)"'

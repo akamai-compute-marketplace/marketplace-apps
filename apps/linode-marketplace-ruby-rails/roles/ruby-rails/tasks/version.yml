@@ -1,0 +1,52 @@
+---
+
+- name: Installing Ruby
+  debug:
+    msg: "This is going to take a bit..."
+
+- name: Set ruby version via mise
+  shell:
+    cmd: mise use --global ruby@3
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    executable: /bin/bash
+
+- name: Update Ruby gems
+  shell:
+    cmd: |
+      eval "$(~/.local/bin/mise activate)" 
+      gem update --system
+  become: true
+  become_user: "{{ username }}"
+  args:
+    executable: /bin/bash
+
+- name: Installing Rails
+  shell:
+    cmd: |
+      eval "$(~/.local/bin/mise activate)"
+      gem install rails
+  become: true
+  become_user: "{{ username }}"
+  args:
+    executable: /bin/bash
+
+- name: Install nodejs
+  shell:
+    cmd: mise use --global node@24
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    executable: /bin/bash
+
+- name: Disable idiomatic_version_file_enable_tools
+  shell:
+    cmd: mise settings add idiomatic_version_file_enable_tools "[]"
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    executable: /bin/bash

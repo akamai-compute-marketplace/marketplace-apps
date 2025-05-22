@@ -1,0 +1,13 @@
+#!/bin/bash
+# wrapper script for systemd
+
+# load ruby env
+eval "$(/home/{{ username }}/.local/bin/mise activate bash)"
+
+# app dir
+cd {{ app_root_path }}
+
+# start application in foreground
+PID=$(echo $$)
+export RAILS_ENV=production
+exec bundle exec puma --pidfile tmp/pids/${PID}.pid -C config/puma.rb

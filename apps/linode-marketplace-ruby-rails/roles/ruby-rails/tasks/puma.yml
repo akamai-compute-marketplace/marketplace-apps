@@ -1,0 +1,64 @@
+---
+- name: Get info about {{ username }}
+  getent:
+    database: passwd
+    key: "{{ username }}"
+
+- name: Set UID for {{ username }}
+  set_fact:
+    uid: "{{ getent_passwd[username][2] }}"
+
+- name: Enable linger on "{{ username }}"
+  command:
+    cmd: "loginctl enable-linger {{ username }}"
+
+- name: Add XDG_RUNTIME_DIR for systemd
+  lineinfile:
+    path: "/home/{{ username }}/.bashrc"
+    insertafter: EOF
+    line: "export XDG_RUNTIME_DIR=/run/user/{{ uid }}"
+
+- name: Create systemd user directory
+  file:
+    path: "/home/{{ username }}/.config/systemd/user"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0755
+  register: systemd
+
+- name: Adding puma service rails
+  template:
+    src: templates/puma.service.j2  
+    dest: "{{ systemd.path }}/puma.service"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0644
+
+- name: Backup puma.rb file
+  copy:
+    src: "{{ app_root_path }}/config/puma.rb"
+    dest: "{{ app_root_path }}/config/puma.rb.bak"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0644
+
+- name: Backup puma and add startup wrapper
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}" 
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { src: 'templates/start.sh.j2', dest: '/home/{{ username }}/.local/bin/start.sh', mode: '0755' }
+    - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb', mode: '0644' }
+
+- name: Start puma service
+  systemd_service: 
+    name: puma
+    state: started
+    enabled: true
+    scope: user
+  become: true
+  become_user: "{{ username }}"
