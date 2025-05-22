@@ -25,7 +25,7 @@
 - name: Adding frontend index page
   copy:
     src: files/index.html.erb
-    dest: "{{ app_root_path }}/app/views/home/index.html/erb"
+    dest: "{{ app_root_path }}/app/views/home/index.html.erb"
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: 0644
