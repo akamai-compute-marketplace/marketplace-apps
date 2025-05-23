@@ -56,6 +56,14 @@
     - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb', 
       owner: '{{ username }}', group: 'www-data', mode: '0664' }
 
+- name: Create sockets directory
+  file:
+    path: "{{ app_root_path }}/tmp/sockets"
+    state: directory
+    owner: "{{ username }}"
+    group: www-data
+    mode: 0775
+
 - name: Start puma service
   systemd_service: 
     name: "{{ app_name }}"
