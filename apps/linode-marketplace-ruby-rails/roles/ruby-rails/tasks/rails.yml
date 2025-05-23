@@ -1,5 +1,4 @@
 ---
-
 - name: Create application path
   file: 
     path: "{{ app_root_path }}"
@@ -18,8 +17,6 @@
   args:
     chdir: /var/www
     executable: /bin/bash
-
-
 
 - name: Create home index page
   shell:
@@ -66,9 +63,6 @@
   args:
     chdir: "{{ app_root_path }}"
     executable: /bin/bash
-
-
-
 
 - name: Update application permissions
   file:
