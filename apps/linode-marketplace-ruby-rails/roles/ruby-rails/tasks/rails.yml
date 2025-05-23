@@ -10,14 +10,10 @@
 - name: Create temporary directory
   tempfile:
     state: directory
+  register: tmpdir
   become: true
   become_user: "{{ username }}"
   become_flags: -i
-  args:
-    executable: /bin/bash    
-  register: tmpdir
-
-
 
 - name: Create new rails app
   shell:
