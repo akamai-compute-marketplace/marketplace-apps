@@ -7,14 +7,6 @@
     owner: "{{ username }}"
     group: www-data
 
-- name: Create temporary directory
-  tempfile:
-    state: directory
-  register: tmpdir
-  become: true
-  become_user: "{{ username }}"
-  become_flags: -i
-
 - name: Create new rails app
   shell:
     cmd: |
@@ -24,25 +16,8 @@
   become_user: "{{ username }}"
   become_flags: -i
   args:
-    chdir: "{{ tmpdir.path }}"
+    chdir: /var/www
     executable: /bin/bash
-
-
-# copy to app_root_path
-- name: Copy over rails app to root path
-  copy:
-    src: "{{ tmpdir.path }}/{{ app_name }}"
-    dest: "{{ app_root_path }}"
-    owner: "{{ username }}"
-    group: www-data
-    mode: 0775
-
-# remove tmpdir
-- name: Remove rails temp directory
-  file:
-    path: "{{ tmpdir.path }}"
-    state: absent
-
 
 
 
