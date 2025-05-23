@@ -58,7 +58,7 @@
 
 - name: Start puma service
   systemd_service: 
-    name: puma
+    name: "{{ app_name }}"
     state: started
     enabled: true
     scope: user
