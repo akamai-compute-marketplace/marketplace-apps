@@ -15,22 +15,12 @@ else
   set -e
 fi
 
-#github_endpoint: 'https://raw.githubusercontent.com/akamai-compute-marketplace/marketplace-apps/main/deployment_scripts/linode-marketplace-lamp/lamp-deploy.sh'
-
-## LAMP Settings
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-
-## Linode/SSH Security Settings
+##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. `www` will be entered if no subdomain is supplied (Requires Domain)" default="">
-#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-
-## Install PHPMyAdmin
-#<UDF name="install_phpmyadmin" label="Would you like to install PHPMyAdmin?" oneOf="Yes,No" default="No">
+## NetFoundry Edge Router Settings 
+#<UDF name="registration_key" label="Edge Router Registration key" default="none">
 
 #GH_USER=""
 #BRANCH=""
@@ -45,8 +35,8 @@ else
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
 
-export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-lamp"
+export WORK_DIR="/tmp/marketplace-apps"
+export MARKETPLACE_APP="apps/linode-marketplace-netfoundry-edge-router"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -79,44 +69,20 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  local web_stack=$(echo ${WEBSERVER_STACK} | tr [:upper:] [:lower:])
   sed 's/  //g' <<EOF > ${group_vars}
 
-  # deployment vars
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lamp
-  soa_email_address: ${SOA_EMAIL_ADDRESS}
+  # registration key
+  registration_key: ${REGISTRATION_KEY}
+
 EOF
-  
+
   if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars}
-  else echo "Leaving root login enabled"
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
-  else echo "No API token entered"
-  fi
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
-  else echo "subdomain: www" >> ${group_vars}
-  fi
- 
-  if [[ -n ${INSTALL_PHPMYADMIN} ]]; then
-    if [ "${INSTALL_PHPMYADMIN}" == "Yes" ]; then
-      echo "install_phpmyadmin: True" >> ${group_vars}
-    elif [ "${INSTALL_PHPMYADMIN}" == "No" ]; then
-      echo "install_phpmyadmin: False" >> ${group_vars}
-    fi
-  else echo "[info] Not installing phpmyadmin"
-  fi
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
@@ -125,7 +91,7 @@ EOF
   else
     echo "[info] running in production mode..."
     echo "mode: production" >> ${group_vars}
-  fi  
+  fi
 }
 
 function run {
@@ -134,8 +100,6 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  #git -C /tmp clone ${GIT_REPO}
-  # for a single testing branch
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
@@ -149,8 +113,10 @@ function run {
 
   # populate group_vars
   udf
+
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
+  
 }
 
 function installation_complete {
