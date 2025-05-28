@@ -7,20 +7,20 @@
     shell: /usr/sbin/nologin
     state: present
 
-- name: Set up ArangoDB directories and permissions
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: arangodb
-    group: arangodb
-    mode: '0755'
-  loop:
-    - "/opt/arangodb3"
-    - "/var/lib/arangodb3"
-    - "/var/log/arangodb3"
-    - "/opt/arangodb3/etc/arangodb3"
-    - "/opt/arangodb3/usr/share/arangodb3/js/apps"
-    - "/opt/arangodb3/usr/share/arangodb3/js/apps/_db"
+# - name: Set up ArangoDB directories and permissions
+#   file:
+#     path: "{{ item }}"
+#     state: directory
+#     owner: arangodb
+#     group: arangodb
+#     mode: '0755'
+#   loop:
+#     - "/opt/arangodb3"
+#     - "/var/lib/arangodb3"
+#     - "/var/log/arangodb3"
+#     - "/opt/arangodb3/etc/arangodb3"
+#     - "/opt/arangodb3/usr/share/arangodb3/js/apps"
+#     - "/opt/arangodb3/usr/share/arangodb3/js/apps/_db"
 
 - name: Download ArangoDB tarball
   get_url:
@@ -49,16 +49,25 @@
     dest: /etc/systemd/system/arangodb3.service
     mode: '0644'
 
-- name: Reload systemd daemon
-  systemd:
-    daemon_reload: true
-
-- name: Enable and start ArangoDB service
+- name: Reload systemd daemon and start ArangoDB service
   systemd:
     name: arangodb3
     state: started
-    enabled: true 
+    enabled: true
+    daemon_reload: true
 
 - name: Set ArangoDB root password
   shell: |
     echo 'require("@arangodb/users").update("root", "{{ arangodb_root_password }}");' | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 --server.username root --server.password '' --configuration none --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js
+
+- name: Enable authentication in arangod.conf
+  lineinfile:
+    path: "/opt/arangodb3/etc/arangodb3/arangod.conf"
+    regexp: '^authentication ='
+    line: 'authentication = true'
+    state: present
+
+- name: Restart ArangoDB
+  systemd:
+    name: arangodb3
+    state: restarted

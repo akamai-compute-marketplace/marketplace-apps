@@ -8,7 +8,6 @@ Deploy a production-ready ArangoDB instance with built-in security and optimized
 | :---       | :----     | :---                      |
 | ArangoDB   | 3.12.4    | Multi-model NoSQL database |
 | NGINX      | Latest    | Web server and reverse proxy |
-| Certbot    | Latest    | Let's Encrypt SSL certificates |
 
 **Supported Distributions:**
 - Ubuntu 24.04 LTS
