@@ -7,20 +7,20 @@
     shell: /usr/sbin/nologin
     state: present
 
-# - name: Set up ArangoDB directories and permissions
-#   file:
-#     path: "{{ item }}"
-#     state: directory
-#     owner: arangodb
-#     group: arangodb
-#     mode: '0755'
-#   loop:
-#     - "/opt/arangodb3"
-#     - "/var/lib/arangodb3"
-#     - "/var/log/arangodb3"
-#     - "/opt/arangodb3/etc/arangodb3"
-#     - "/opt/arangodb3/usr/share/arangodb3/js/apps"
-#     - "/opt/arangodb3/usr/share/arangodb3/js/apps/_db"
+- name: Set up ArangoDB directories and permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: arangodb
+    group: arangodb
+    mode: '0755'
+  loop:
+    - "/opt/arangodb3"
+    - "/var/lib/arangodb3"
+    - "/var/log/arangodb3"
+    - "/opt/arangodb3/etc/arangodb3"
+    - "/opt/arangodb3/usr/share/arangodb3/js/apps"
+    - "/opt/arangodb3/usr/share/arangodb3/js/apps/_db"
 
 - name: Download ArangoDB tarball
   get_url:
@@ -55,6 +55,13 @@
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Wait for ArangoDB to be ready
+  wait_for:
+    port: 8529
+    host: 127.0.0.1
+    delay: 5
+    timeout: 60
 
 - name: Set ArangoDB root password
   shell: |
