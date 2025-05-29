@@ -1,0 +1,17 @@
+---
+# Ruby on Rails tasks
+
+- name: Installing Nginx
+  import_tasks: nginx.yml
+
+- name: Installing MISE version manager
+  import_tasks: mise.yml
+
+- name: Configure ruby version
+  import_tasks: version.yml
+
+- name: Installing Rails
+  import_tasks: rails.yml
+
+- name: Configure puma service
+  import_tasks: puma.yml

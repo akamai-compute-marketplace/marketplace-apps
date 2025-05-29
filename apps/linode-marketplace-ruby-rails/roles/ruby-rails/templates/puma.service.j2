@@ -1,0 +1,13 @@
+[Unit]
+Description=Puma HTTP Server for Rails App
+After=network.target
+
+[Service]
+Type=simple
+Environment=RAILS_ENV=production
+ExecStart=/home/{{ username }}/.local/bin/start.sh
+ExecStop=/bin/kill -s TERM $MAINPID
+SyslogIdentifier=puma
+
+[Install]
+WantedBy=default.target
