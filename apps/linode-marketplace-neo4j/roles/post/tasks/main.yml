@@ -13,5 +13,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Neo4j User: {{ neo4j_user }}
+      Neo4j User: {{ neo4j_username }}
       Neo4j Password: {{ neo4j_password }}
