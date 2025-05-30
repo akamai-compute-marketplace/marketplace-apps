@@ -34,8 +34,9 @@ fi
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]=""i
-
+        UDF_VARS["SUBDOMAIN"]="" # default
+fi
+      
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
