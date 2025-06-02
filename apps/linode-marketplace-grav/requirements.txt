@@ -7,4 +7,4 @@ dnspython==2.7.0
 ansible-specdoc==0.0.19
 pyyaml==6.0.2
 pexpect==4.8
-
+passlib==1.7.4
