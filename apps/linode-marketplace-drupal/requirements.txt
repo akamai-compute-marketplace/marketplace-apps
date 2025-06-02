@@ -7,3 +7,4 @@ dnspython==2.7.0
 ansible-specdoc==0.0.19
 pyyaml==6.0.2
 passlib==1.7.4
+PyMySQL==1.1.1
