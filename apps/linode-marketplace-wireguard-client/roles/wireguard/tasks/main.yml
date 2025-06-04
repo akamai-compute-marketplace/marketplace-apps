@@ -1,4 +1,4 @@
 ---
 # Main WireGuard installation tasks
-- name: Import Rocket.Chat tasks
-  import_tasks: container.yml 
+- name: Import WireGuard tasks
+  import_tasks: wireguard.yml 
