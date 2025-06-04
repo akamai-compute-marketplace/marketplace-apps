@@ -1,0 +1,80 @@
+---
+- name: Install WireGuard and dependencies
+  apt:
+    name:
+      - wireguard
+      - wireguard-tools
+      - linux-headers-{{ ansible_kernel }}
+    state: present
+    update_cache: true
+
+- name: Ensure /etc/wireguard directory exists
+  file:
+    path: /etc/wireguard
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: Generate WireGuard server private key
+  command: wg genkey
+  register: wg_private_key
+
+- name: Save WireGuard server private key
+  copy:
+    content: "{{ wg_private_key.stdout }}\n"
+    dest: /etc/wireguard/server_private.key
+    owner: {{ username }}
+    group: {{ username }}
+    mode: '0600'
+
+- name: Generate WireGuard server public key from private key
+  command: wg pubkey
+  args:
+    stdin: "{{ wg_private_key.stdout }}"
+
+- name: Save WireGuard server public key
+  copy:
+    content: "{{ wg_public_key.stdout }}\n"
+    dest: /etc/wireguard/server_public.key
+    owner: {{ username }}
+    group: {{ username }}
+    mode: '0644'
+
+- name: Read existing server private key if present
+  slurp:
+    src: /etc/wireguard/server_private.key
+  register: existing_private_key
+
+- name: Set server private key fact
+  set_fact:
+    wireguard_private_key: "{{ (existing_private_key.content | b64decode).strip() if existing_private_key is defined and existing_private_key.content is defined else wg_private_key.stdout }}"
+
+- name: Create WireGuard server configuration file
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: {{ username }}
+    group: {{ username }}
+    mode: '0600'
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+
+- name: Set up NAT for future full-tunnel support
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: eth0
+    jump: MASQUERADE
+    state: present
+
+- name: Enable and start WireGuard service
+  systemd:
+    name: wg-quick@wg0
+    enabled: true
+    state: started
