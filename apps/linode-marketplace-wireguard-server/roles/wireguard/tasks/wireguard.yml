@@ -24,8 +24,8 @@
   copy:
     content: "{{ wg_private_key.stdout }}\n"
     dest: /etc/wireguard/server_private.key
-    owner: {{ username }}
-    group: {{ username }}
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: '0600'
 
 - name: Generate WireGuard server public key from private key
@@ -37,8 +37,8 @@
   copy:
     content: "{{ wg_public_key.stdout }}\n"
     dest: /etc/wireguard/server_public.key
-    owner: {{ username }}
-    group: {{ username }}
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: '0644'
 
 - name: Read existing server private key if present
@@ -54,8 +54,8 @@
   template:
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
-    owner: {{ username }}
-    group: {{ username }}
+    owner: "{{ username }}"
+    group: "{{ username }}"
     mode: '0600'
 
 - name: Enable IP forwarding
