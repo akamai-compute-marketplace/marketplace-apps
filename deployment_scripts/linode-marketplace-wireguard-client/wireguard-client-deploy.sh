@@ -82,6 +82,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
   wireguard_server_public_key: "${WIREGUARD_SERVER_PUBLIC_KEY}"
   wireguard_server_endpoint: "${WIREGUARD_SERVER_ENDPOINT}"
   wireguard_client_tunnel_ip: "${WIREGUARD_CLIENT_TUNNEL_IP}"
@@ -90,31 +91,12 @@ function udf {
   wireguard_mtu: "${WIREGUARD_MTU}"
   wireguard_dns: "${WIREGUARD_DNS}"
   wireguard_use_preshared_key: "${WIREGUARD_USE_PRESHARED_KEY}"
+
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
-  fi
-
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
-
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
   # staging or production mode (ci)
