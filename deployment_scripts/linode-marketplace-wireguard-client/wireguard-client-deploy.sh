@@ -31,7 +31,6 @@ fi
 #<UDF name="wireguard_persistent_keepalive" label="Persistent Keepalive (seconds)" example="25" default="25" />
 #<UDF name="wireguard_mtu" label="WireGuard MTU (optional)" example="1420" default="1420" />
 #<UDF name="wireguard_dns" label="DNS Servers (optional, comma-separated)" example="1.1.1.1,8.8.8.8" default="" />
-#<UDF name="wireguard_use_preshared_key" label="Use Pre-shared Key?" oneOf="Yes,No" default="No" />
 
 #GH_USER=""
 #BRANCH=""
@@ -90,7 +89,6 @@ function udf {
   wireguard_persistent_keepalive: "${WIREGUARD_PERSISTENT_KEEPALIVE}"
   wireguard_mtu: "${WIREGUARD_MTU}"
   wireguard_dns: "${WIREGUARD_DNS}"
-  wireguard_use_preshared_key: "${WIREGUARD_USE_PRESHARED_KEY}"
 
 EOF
 

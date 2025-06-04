@@ -10,5 +10,3 @@ PublicKey = {{ wireguard_server_public_key }}
 Endpoint = {{ wireguard_server_endpoint }}
 AllowedIPs = {{ wireguard_allowed_ips }}
 PersistentKeepalive = {{ wireguard_persistent_keepalive }}
-{% if wireguard_use_preshared_key == 'Yes' and wireguard_preshared_key is defined and wireguard_preshared_key|length > 0 %}PresharedKey = {{ wireguard_preshared_key }}
-{% endif %} 
