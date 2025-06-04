@@ -1,0 +1,74 @@
+---
+- name: Install WireGuard
+  apt:
+    name: wireguard
+    state: present
+    update_cache: true
+
+- name: Ensure directory for keys exists
+  file:
+    path: /etc/wireguard
+    state: directory
+    mode: '0700'
+
+- name: Generate Wireguard client private key
+  command: wg genkey
+  register: wg_private_key
+
+- name: Save wireguardclient private key
+  copy:
+    content: "{{ wg_private_key.stdout }}"
+    dest: /etc/wireguard/client_private.key
+    mode: '0600'
+
+- name: Generate Wireguard client public key
+  command: /bin/bash -c "echo '{{ wg_private_key.stdout }}' | wg pubkey"
+  register: wg_public_key
+
+- name: Save client public key
+  copy:
+    content: "{{ wg_public_key.stdout }}"
+    dest: /etc/wireguard/client_public.key
+    mode: '0644'
+
+- name: Read existing Wireguard client private key
+  slurp:
+    src: /etc/wireguard/client_private.key
+  register: existing_private_key
+
+- name: Set private key fact from existing file
+  set_fact:
+    client_private_key: "{{ existing_private_key.content | b64decode }}"
+
+- name: Set private key fact from generated key
+  set_fact:
+    client_private_key: "{{ wg_private_key.stdout }}"
+
+- name: Set public key fact from generated key
+  set_fact:
+    client_public_key: "{{ wg_public_key.stdout }}"
+
+- name: Read existing wireguardclient public key if already present
+  slurp:
+    src: /etc/wireguard/client_public.key
+  register: existing_public_key
+
+- name: Set public key fact from existing file
+  set_fact:
+    client_public_key: "{{ existing_public_key.content | b64decode }}"
+
+- name: Create WireGuard config from template
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+    mode: '0600'
+
+- name: Enable and start WireGuard
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started
+
+- name: Output client public key for server-side peer addition
+  debug:
+    msg: "Client public key: {{ client_public_key }}"

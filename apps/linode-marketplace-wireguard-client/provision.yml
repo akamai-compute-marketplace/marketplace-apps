@@ -1,0 +1,24 @@
+---
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    # generate creds
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    # - name: Creating Rocket.Chat credentials
+    #   lineinfile:
+    #     insertafter: EOF
+    #     path: group_vars/linode/vars
+    #     line: |
+    #       mongodb_root_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+    #       mongodb_username: rocketchat
+    #       mongodb_rocketchat_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+    #       mongodb_replica_set_key: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+    #       rocketchat_admin_email: "{{ rocketchat_admin_email }}" 
+    #       rocketchat_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
