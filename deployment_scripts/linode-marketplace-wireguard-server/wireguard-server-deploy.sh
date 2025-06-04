@@ -76,6 +76,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
   wireguard_server_address: ${WIREGUARD_SERVER_ADDRESS}
   wireguard_listen_port: ${WIREGUARD_LISTEN_PORT}
 EOF
@@ -84,6 +85,8 @@ EOF
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
+
+  
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
