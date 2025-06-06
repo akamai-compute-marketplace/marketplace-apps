@@ -1,9 +1,22 @@
 ---
+# certbot
+- name: Open firewall for certbot
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
 - name: Get SSL certs via certbot
   import_role:
     name: certbot_ssl
   vars:
     webserver_stack: standalone
+
+- name: Close firewall
+  ufw:
+    rule: deny
+    port: 80
+    proto: tcp
 
 - name: Create cert directory for bolt and browser
   file:
