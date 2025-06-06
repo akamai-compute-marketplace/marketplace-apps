@@ -38,6 +38,8 @@
     src: wg0.conf.j2
     dest: /etc/wireguard/wg0.conf
     mode: '0600'
+  vars:
+    client_private_key: "{{ wg_private_key.stdout }}"
 
 - name: Enable and start WireGuard
   systemd:
