@@ -1,2 +1,4 @@
 ---
 neo4j_config: /etc/neo4j/neo4j.conf
+neo4j_ssl_basedir: /var/lib/neo4j/certificates
+letsencrypt_cert_path: "/etc/letsencrypt/live/{{ _domain }}"

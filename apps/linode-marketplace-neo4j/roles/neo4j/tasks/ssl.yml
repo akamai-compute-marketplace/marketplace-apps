@@ -1,0 +1,47 @@
+---
+- name: Get SSL certs via certbot
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: standalone
+
+- name: Create cert directory for bolt and browser
+  file:
+    path: "{{ neo4j_ssl_basedir }}/{{ item }}"
+    state: directory
+    owner: neo4j
+    group: neo4j
+    mode: 0755
+  loop:
+    - https
+    - bolt
+
+- name: Create trusted and revoked cert directories
+  file:
+    path: "{{ neo4j_ssl_basedir }}/{{ item.dir }}"
+    state: directory
+    owner: neo4j
+    group: neo4j
+    mode: 0755
+  loop:
+    - { dir: 'https/trusted' }
+    - { dir: 'https/revoked' }
+    - { dir: 'bolt/trusted' }
+    - { dir: 'bolt/revoked' }
+
+- name: Copy private key and certificate
+  copy:
+    src: "{{ item.source }}"
+    dest: "{{ item.destination }}"
+    owner: neo4j
+    group: neo4j
+    mode: "{{ item.mode }}"
+  loop:
+  # https
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https', mode: 0644 }
+    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/https', mode: 0400 }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/trusted', mode: 0644 }
+  # bolt
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt', mode: 0644 }
+    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/bolt', mode: 0400 }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/trusted', mode: 0644 }

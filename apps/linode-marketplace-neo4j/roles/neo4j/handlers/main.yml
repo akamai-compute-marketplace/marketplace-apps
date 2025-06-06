@@ -1,0 +1,6 @@
+---
+- name: restart neo4j
+  systemd_server:
+    name: neo4j
+    state: restarted
+    enabled: true

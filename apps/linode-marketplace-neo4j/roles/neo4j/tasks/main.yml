@@ -8,5 +8,8 @@
 - name: Reset admin password
   import_tasks: passwordreset.yml
 
-- name: Install and configure nginx
-  import_tasks: nginx.yml
+- name: Install ssl certificates for neo4j
+  import_tasks: ssl.yml
+
+- name: Update neo4j config for SSL
+  import_tasks: sslconf.yml

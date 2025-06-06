@@ -6,10 +6,36 @@
     proto: tcp
   loop:
     - "22"
-    - "80"
-    - "443"
+
+# Neo4j HTTP and Bolt access
+- name: Allow Neo4j HTTP IPs
+  ufw:
+    rule: allow
+    port: '7473'
+    proto: tcp
+    src: '{{ item }}'
+  loop: '{{ neo4j_http_allow }}'
+  when: neo4j_http_allow is defined
+
+- name: Allow Neo4j HTTP IPs to access Bolt
+  ufw:
+    rule: allow
+    port: '7687'
+    proto: tcp
+    src: '{{ item }}'
+  loop: '{{ neo4j_http_allow }}'
+  when: neo4j_http_allow is defined  
+
+- name: Allow Neo4j Bolt IPs
+  ufw:
+    rule: allow
+    port: '7687'
+    proto: tcp
+    src: '{{ item }}'
+  loop: '{{ neo4j_bolt_allow }}'
+  when: neo4j_bolt_allow is defined
 
 - name: Enable UFW
   ufw:
     state: enabled
-    policy: deny 
+    policy: deny

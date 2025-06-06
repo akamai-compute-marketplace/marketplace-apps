@@ -36,7 +36,21 @@ if [[ -n "${SUBDOMAIN}" ]]; then
 else
         UDF_VARS["SUBDOMAIN"]="" # default
 fi
-      
+
+# Neo4j vars
+
+if [[ -n "${NEO4J_HTTP_ALLOW}" ]]; then
+        UDF_VARS["NEO4J_HTTP_ALLOW"]="${NEO4J_HTTP_ALLOW}"
+else
+        UDF_VARS["NEO4J_HTTP_ALLOW"]="" # default
+fi
+
+if [[ -n "${NEO4J_BOLT_ALLOW}" ]]; then
+        UDF_VARS["NEO4J_BOLT_ALLOW"]="${NEO4J_BOLT_ALLOW}"
+else
+        UDF_VARS["NEO4J_BOLT_ALLOW"]="" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"

@@ -34,7 +34,8 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Neo4j Settings
-# none
+#<UDF name="neo4j_http_allow" label="IP addresses allowed to access Neo4j UI" example="192.0.2.21, 198.51.100.17" default="">
+#<UDF name="neo4j_bolt_allow" label="IP addresses allowed to access Bolt" example="192.0.2.21, 198.51.100.17" default="">
 
 #GH_USER=""
 #BRANCH=""
@@ -109,9 +110,23 @@ EOF
   else echo "No API token entered";
   fi
 
+  # Neo4j vars
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
+
+  if [[ -z ${NEO4J_HTTP_ALLOW} ]]; then
+    echo "[info] No IP addresses provided for HTTP whitelisting"
+  else
+    echo "neo4j_http_allow: [${NEO4J_HTTP_ALLOW}]" >> ${group_vars}
+  fi
+
+  if [[ -z ${NEO4J_BOLT_ALLOW} ]]; then
+    echo "[info] No IP addresses provided for bolt whitelisting"
+  else
+    echo "neo4j_bolt_allow: [${NEO4J_BOLT_ALLOW}]" >> ${group_vars}
+  fi  
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
