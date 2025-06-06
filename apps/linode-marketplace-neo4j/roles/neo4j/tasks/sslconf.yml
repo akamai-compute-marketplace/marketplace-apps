@@ -13,7 +13,7 @@
   lineinfile:
     path: "{{ neo4j_config }}"
     regexp: '{{ item.search }}'
-    line: "{{ items.replace }}"
+    line: "{{ item.replace }}"
     state: present
   loop:
     - { search: '^server.http.enabled', replace: 'server.http.enabled=false'}
@@ -23,7 +23,7 @@
   lineinfile:
     path: "{{ neo4j_config }}"
     regexp: '{{ item.search }}'
-    line: "{{ items.replace }}"
+    line: "{{ item.replace }}"
     state: present
   loop:
     - { search: '^\#dbms.ssl.policy.https.enabled', replace: 'dbms.ssl.policy.https.enabled=true' }
@@ -38,7 +38,7 @@
   lineinfile:
     path: "{{ neo4j_config }}"
     regexp: '{{ item.search }}'
-    line: "{{ items.replace }}"
+    line: "{{ item.replace }}"
     state: present
   loop:
     - { search: '^\#server.bolt.tls_level', replace: 'server.bolt.tls_level=REQUIRED' }
