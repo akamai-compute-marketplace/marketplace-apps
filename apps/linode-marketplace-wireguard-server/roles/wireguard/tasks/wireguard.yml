@@ -42,14 +42,10 @@
     group: "{{ username }}"
     mode: '0644'
 
-- name: Read existing server private key if present
+- name: Read server private key
   slurp:
     src: /etc/wireguard/server_private.key
-  register: existing_private_key
-
-- name: Set server private key fact
-  set_fact:
-    wireguard_private_key: "{{ (existing_private_key.content | b64decode).strip() if existing_private_key is defined and existing_private_key.content is defined else wg_private_key.stdout }}"
+  register: server_private_key
 
 - name: Create WireGuard server configuration file
   template:
@@ -58,6 +54,8 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0600'
+  vars:
+    wireguard_private_key: "{{ server_private_key.content | b64decode | trim }}"
 
 - name: Enable IP forwarding
   sysctl:
