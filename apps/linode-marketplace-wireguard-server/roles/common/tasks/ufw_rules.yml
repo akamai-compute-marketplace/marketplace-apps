@@ -9,6 +9,12 @@
     - "80"
     - "443"
 
+- name: Configure WireGuard rule
+  ufw:
+    rule: allow
+    port: "{{ wireguard_listen_port }}"
+    proto: udp
+
 - name: Enable UFW
   ufw:
     state: enabled
