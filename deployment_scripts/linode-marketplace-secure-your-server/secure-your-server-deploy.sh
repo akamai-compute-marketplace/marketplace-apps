@@ -82,7 +82,6 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
-  app_name: ${APP_NAME}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
