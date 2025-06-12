@@ -7,6 +7,14 @@
     state: present
   when: neo4j_http_allow is defined or neo4j_bolt_allow is defined
 
+- name: Enable HTTP logging
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '^\#dbms.logs.http.enabled'
+    line: "dbms.logs.http.enabled=true"
+    state: present
+  when: neo4j_http_allow is defined
+
 #https
 
 - name: Enable HTTPS in neo4j
