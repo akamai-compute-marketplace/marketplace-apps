@@ -12,9 +12,11 @@
 - name: Enable HTTPS in neo4j
   lineinfile:
     path: "{{ neo4j_config }}"
-    regexp: '{{ item.search }}'
-    line: "{{ item.replace }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
     state: present
+  loop_control:
+    loop_var: line
   loop:
     - { search: '^server.http.enabled', replace: 'server.http.enabled=false'}
     - { search: '^server.https.enabled', replace: 'server.https.enabled=true'}
@@ -22,9 +24,11 @@
 - name: Enable ssl policy for neo4j
   lineinfile:
     path: "{{ neo4j_config }}"
-    regexp: '{{ item.search }}'
-    line: "{{ item.replace }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
     state: present
+  loop_control:
+    loop_var: line
   loop:
     - { search: '^\#dbms.ssl.policy.https.enabled', replace: 'dbms.ssl.policy.https.enabled=true' }
     - { search: '^\#dbms.ssl.policy.https.base_directory', replace: 'dbms.ssl.policy.https.base_directory=certificates/https' }
@@ -37,9 +41,11 @@
 - name: Enable ssl policy for bolt
   lineinfile:
     path: "{{ neo4j_config }}"
-    regexp: '{{ item.search }}'
-    line: "{{ item.replace }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
     state: present
+  loop_control:
+    loop_var: line
   loop:
     - { search: '^\#server.bolt.tls_level', replace: 'server.bolt.tls_level=REQUIRED' }
     - { search: '^\#dbms.ssl.policy.bolt.enabled', replace: 'dbms.ssl.policy.bolt.enabled=true' }

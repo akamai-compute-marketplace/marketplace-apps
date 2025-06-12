@@ -20,35 +20,41 @@
 
 - name: Create cert directory for bolt and browser
   file:
-    path: "{{ neo4j_ssl_basedir }}/{{ item }}"
+    path: "{{ neo4j_ssl_basedir }}/{{ directory }}"
     state: directory
     owner: neo4j
     group: neo4j
     mode: 0755
+  loop_control:
+    loop_var: directory
   loop:
     - https
     - bolt
 
 - name: Create trusted and revoked cert directories
   file:
-    path: "{{ neo4j_ssl_basedir }}/{{ item.dir }}"
+    path: "{{ neo4j_ssl_basedir }}/{{ directory.dest }}"
     state: directory
     owner: neo4j
     group: neo4j
     mode: 0755
+  loop_control:
+    loop_var: directory
   loop:
-    - { dir: 'https/trusted' }
-    - { dir: 'https/revoked' }
-    - { dir: 'bolt/trusted' }
-    - { dir: 'bolt/revoked' }
+    - { dest: 'https/trusted' }
+    - { dest: 'https/revoked' }
+    - { dest: 'bolt/trusted' }
+    - { dest: 'bolt/revoked' }
 
 - name: Copy private key and certificate
   copy:
-    src: "{{ item.source }}"
-    dest: "{{ item.destination }}"
+    src: "{{ cert.source }}"
+    dest: "{{ cert.destination }}"
     owner: neo4j
     group: neo4j
-    mode: "{{ item.mode }}"
+    mode: "{{ cert.mode }}"
+  loop_control:
+    loop_var: cert
   loop:
   # https
     - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/public.crt', mode: '0644' }

@@ -1,15 +1,15 @@
 ---
-- name: Download Neo4j GPG key
+- name: Download neo4j GPG key
   ansible.builtin.get_url:
     url: https://debian.neo4j.com/neotechnology.gpg.key
     dest: /tmp/neo4j.gpg.key
  
-- name: Add Neo4j GPG key
+- name: Add neo4j GPG key
   apt_key:
     file: /tmp/neo4j.gpg.key
     state: present
 
-- name: Adding Neo4j apt repo
+- name: Adding neo4j apt repo
   apt_repository:
     repo: 'deb https://debian.neo4j.com stable latest'
     filename: 'neo4j'
