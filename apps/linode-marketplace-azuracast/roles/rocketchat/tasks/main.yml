@@ -1,0 +1,8 @@
+---
+# Main Azuracast installation tasks
+
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import Azuracast tasks
+  import_tasks: install.yml

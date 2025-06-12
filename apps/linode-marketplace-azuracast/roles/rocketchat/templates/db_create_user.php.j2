@@ -1,0 +1,42 @@
+<?php
+$host = 'localhost';
+$db   = 'azuracast';
+$user = 'azuracast';
+$pass = '{{ azuracast_db_password }}';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+$email = '{{ azuracast_admin_email }}';
+$hash = '{{ admin_password_hash.password_hash }}';
+$now = time();
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+    // Check if user exists
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+    $stmt->execute([$email]);
+    $row = $stmt->fetch();
+    if ($row) {
+        $user_id = $row['id'];
+    } else {
+        // Insert user
+        $stmt = $pdo->prepare('INSERT INTO users (email, auth_password, name, locale, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$email, $hash, '', '', $now, $now]);
+        $user_id = $pdo->lastInsertId();
+    }
+    // Assign Super Administrator role (role_id = 1)
+    $stmt = $pdo->prepare('SELECT * FROM user_has_role WHERE user_id = ? AND role_id = 1');
+    $stmt->execute([$user_id]);
+    if (!$stmt->fetch()) {
+        $stmt = $pdo->prepare('INSERT INTO user_has_role (user_id, role_id) VALUES (?, 1)');
+        $stmt->execute([$user_id]);
+    }
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+} 

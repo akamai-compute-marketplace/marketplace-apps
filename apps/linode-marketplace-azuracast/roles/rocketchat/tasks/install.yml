@@ -1,0 +1,60 @@
+---
+- name: Run AzuraCast setup-release
+  command: ./docker.sh setup-release
+  args:
+    chdir: /var/azuracast
+
+- name: Run AzuraCast install
+  command: ./docker.sh install
+  args:
+    chdir: /var/azuracast
+
+- name: Wait for AzuraCast web container to be up
+  shell: |
+    docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
+  register: azuracast_container
+  retries: 10
+  delay: 10
+  until: azuracast_container.rc == 0
+  changed_when: false
+
+- name: Get AzuraCast DB password from env file
+  slurp:
+    src: /var/azuracast/azuracast.env
+  register: azuracast_env
+
+- name: Set DB password fact
+  set_fact:
+    azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+
+- name: Generate Argon2id hash for admin password
+  community.general.password_hash:
+    password: "{{ azuracast_admin_password }}"
+    algorithm: argon2id
+  register: admin_password_hash
+
+- name: Template AzuraCast admin user creation script
+  template:
+    src: db_create_user.php.j2
+    dest: /var/azuracast/db_create_user.php
+    mode: '0644'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy admin user creation script into container
+  command: docker cp /var/azuracast/db_create_user.php azuracast:/var/azuracast/www/db_create_user.php
+
+- name: Run admin user creation script in container
+  command: docker exec -u www-data azuracast php /var/azuracast/www/db_create_user.php
+
+- name: Set Let's Encrypt email and domain in AzuraCast DB
+  community.mysql.mysql_query:
+    login_unix_socket: /run/mysqld/mysqld.sock
+    login_user: azuracast
+    login_password: "{{ azuracast_db_password }}"
+    login_db: azuracast
+    query: |
+      UPDATE settings SET acme_email='{{ azuracast_admin_email }}', acme_domains='{{ _domain }}';
+
+- name: Restart AzuraCast container
+  command: docker restart azuracast
