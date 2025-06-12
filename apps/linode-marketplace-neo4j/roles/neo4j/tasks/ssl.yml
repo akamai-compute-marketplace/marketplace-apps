@@ -51,10 +51,10 @@
     mode: "{{ item.mode }}"
   loop:
   # https
-    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/public.crt', mode: 0644 }
-    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/https/private.key', mode: 0400 }
-    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/trusted/public.crt', mode: 0644 }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/public.crt', mode: '0644' }
+    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/https/private.key', mode: '0400' }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/trusted/public.crt', mode: '0644' }
   # bolt
-    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/public.crt', mode: 0644 }
-    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/private.key', mode: 0400 }
-    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/trusted/public.crt', mode: 0644 }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/public.crt', mode: '0644' }
+    - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/private.key', mode: '0400' }
+    - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/trusted/public.crt', mode: '0644' }
