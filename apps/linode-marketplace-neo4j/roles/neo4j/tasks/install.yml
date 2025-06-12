@@ -1,0 +1,6 @@
+---
+- name: Install neo4j package
+  apt:
+    name: neo4j
+    state: present
+    update_cache: true
