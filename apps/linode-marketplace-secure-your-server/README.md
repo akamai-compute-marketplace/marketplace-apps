@@ -11,7 +11,7 @@ Performs simple server hardening. Optional settings include disabling root SSH c
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
