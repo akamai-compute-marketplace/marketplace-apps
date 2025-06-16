@@ -1,5 +1,0 @@
----
- # docker
-- name: install docker latest
-  import_role: 
-    name: docker

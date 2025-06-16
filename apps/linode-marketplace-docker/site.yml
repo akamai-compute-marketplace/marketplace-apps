@@ -16,7 +16,7 @@
             name: "{{ item }}"
           loop:
             - common
-            - docker
+            - docker-app
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -34,6 +34,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - docker
+        - docker-app
         - post
       when: "mode == 'production'"
