@@ -2,8 +2,6 @@
 - name: Install Docker latest
   import_role: 
     name: docker
-    state: started
-    enabled: true
 
 - name: Install Docker Compose plugin
   apt:
