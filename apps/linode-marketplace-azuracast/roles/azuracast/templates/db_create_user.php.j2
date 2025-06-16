@@ -1,0 +1,53 @@
+<?php
+$host = 'localhost';
+$db   = 'azuracast';
+$user = 'azuracast';
+$pass = '{{ azuracast_db_password }}';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+$email = '{{ azuracast_admin_email }}';
+$password = '{{ azuracast_admin_password }}';
+$now = time();
+$acme_email = '{{ azuracast_admin_email }}';
+$acme_domains = '{{ _domain }}';
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+    // Generate Argon2id hash
+    $hash = password_hash($password, PASSWORD_ARGON2ID);
+    // Check if user exists
+    $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+    $stmt->execute([$email]);
+    $row = $stmt->fetch();
+    if ($row) {
+        $user_id = $row['id'];
+        // Update password
+        $stmt = $pdo->prepare('UPDATE users SET auth_password = ?, updated_at = ? WHERE id = ?');
+        $stmt->execute([$hash, $now, $user_id]);
+    } else {
+        // Insert user
+        $stmt = $pdo->prepare('INSERT INTO users (email, auth_password, name, locale, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)');
+        $stmt->execute([$email, $hash, '', '', $now, $now]);
+        $user_id = $pdo->lastInsertId();
+    }
+    // Always assign Super Administrator role
+    $stmt = $pdo->prepare('INSERT IGNORE INTO user_has_role (user_id, role_id) VALUES (?, 1)');
+    $stmt->execute([$user_id]);
+    echo "Super Administrator role assigned.\n";
+    // Set Let's Encrypt email and domain
+    $stmt = $pdo->prepare('UPDATE settings SET acme_email=?, acme_domains=?');
+    $stmt->execute([$acme_email, $acme_domains]);
+    $stmt = $pdo->query('SELECT acme_email, acme_domains FROM settings');
+    $row = $stmt->fetch();
+    echo "acme_email: {$row['acme_email']}\n";
+    echo "acme_domains: {$row['acme_domains']}\n";
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+} 

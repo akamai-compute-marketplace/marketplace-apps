@@ -27,12 +27,6 @@
   set_fact:
     azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
 
-- name: Generate Argon2id hash for admin password
-  community.general.password_hash:
-    password: "{{ azuracast_admin_password }}"
-    algorithm: argon2id
-  register: admin_password_hash
-
 - name: Template AzuraCast admin user creation script
   template:
     src: db_create_user.php.j2
@@ -41,20 +35,38 @@
     owner: "{{ username }}"
     group: "{{ username }}"
 
+- name: Check for db_create_user.php on host
+  stat:
+    path: /var/azuracast/db_create_user.php
+  register: db_create_user_php_stat
+
+- name: Debug host db_create_user.php stat
+  debug:
+    var: db_create_user_php_stat
+
 - name: Copy admin user creation script into container
   command: docker cp /var/azuracast/db_create_user.php azuracast:/var/azuracast/www/db_create_user.php
 
-- name: Run admin user creation script in container
-  command: docker exec -u www-data azuracast php /var/azuracast/www/db_create_user.php
+- name: Check for db_create_user.php in container
+  command: docker exec azuracast ls -l /var/azuracast/www/db_create_user.php
+  register: container_db_create_user_php_check
+  ignore_errors: true
 
-- name: Set Let's Encrypt email and domain in AzuraCast DB
-  community.mysql.mysql_query:
-    login_unix_socket: /run/mysqld/mysqld.sock
-    login_user: azuracast
-    login_password: "{{ azuracast_db_password }}"
-    login_db: azuracast
-    query: |
-      UPDATE settings SET acme_email='{{ azuracast_admin_email }}', acme_domains='{{ _domain }}';
+- name: Debug container db_create_user.php check
+  debug:
+    var: container_db_create_user_php_check
+
+- name: Run admin user creation script in container
+  command: docker exec -u azuracast azuracast php /var/azuracast/www/db_create_user.php
 
 - name: Restart AzuraCast container
   command: docker restart azuracast
+
+- name: Trigger Let's Encrypt certificate issuance via AzuraCast CLI
+  command: docker exec azuracast php /var/azuracast/www/bin/console azuracast:acme:renew
+  register: acme_renew_result
+  ignore_errors: true
+
+- name: Show Let's Encrypt CLI output
+  debug:
+    var: acme_renew_result.stdout_lines

@@ -9,3 +9,4 @@ pyyaml==6.0.2
 passlib==1.7.4
 pexpect==4.9.0
 docker==7.1.0
+PyMySQL==1.1.1
