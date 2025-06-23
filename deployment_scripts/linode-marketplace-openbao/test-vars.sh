@@ -29,6 +29,12 @@ UDF_VARS["EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 #else
 #        UDF_VARS["CHANGE_ME"]="some value" # default
 #fi
+# Needed for openbao IF deployed without a private IP
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
+fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
