@@ -27,7 +27,7 @@
   set_fact:
     azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
 
-- name: Template AzuraCast admin user creation script
+- name: Copy AzuraCast admin user creation script to host
   template:
     src: db_create_user.php.j2
     dest: /var/azuracast/db_create_user.php
@@ -35,29 +35,37 @@
     owner: "{{ username }}"
     group: "{{ username }}"
 
-- name: Check for db_create_user.php on host
-  stat:
-    path: /var/azuracast/db_create_user.php
-  register: db_create_user_php_stat
+# - name: Check for db_create_user.php on host
+#   stat:
+#     path: /var/azuracast/db_create_user.php
+#   register: db_create_user_php_stat
 
-- name: Debug host db_create_user.php stat
-  debug:
-    var: db_create_user_php_stat
+# - name: Debug host db_create_user.php stat
+#   debug:
+#     var: db_create_user_php_stat
 
 - name: Copy admin user creation script into container
   command: docker cp /var/azuracast/db_create_user.php azuracast:/var/azuracast/www/db_create_user.php
 
-- name: Check for db_create_user.php in container
-  command: docker exec azuracast ls -l /var/azuracast/www/db_create_user.php
-  register: container_db_create_user_php_check
-  ignore_errors: true
+# - name: Check for db_create_user.php in container
+#   command: docker exec azuracast ls -l /var/azuracast/www/db_create_user.php
+#   register: container_db_create_user_php_check
+#   ignore_errors: true
 
-- name: Debug container db_create_user.php check
-  debug:
-    var: container_db_create_user_php_check
+# - name: Debug container db_create_user.php check
+#   debug:
+#     var: container_db_create_user_php_check
 
 - name: Run admin user creation script in container
   command: docker exec -u azuracast azuracast php /var/azuracast/www/db_create_user.php
+
+- name: Wait for Redis socket in container
+  command: docker exec azuracast test -S /run/redis/redis.sock
+  register: redis_socket_check
+  retries: 10
+  delay: 5
+  until: redis_socket_check.rc == 0
+  changed_when: false
 
 - name: Set super admin user with AzuraCast CLI
   command: docker exec azuracast azuracast_cli azuracast:account:set-administrator {{ azuracast_admin_email }}
@@ -65,11 +73,11 @@
 - name: Restart AzuraCast container
   command: docker restart azuracast
 
-- name: Trigger Let's Encrypt certificate issuance via AzuraCast CLI
-  command: docker exec azuracast php /var/azuracast/www/bin/console azuracast:acme:renew
+- name: Set up Let's Encrypt certificate with AzuraCast CLI
+  command: docker exec azuracast azuracast_cli azuracast:acme:get-certificate
   register: acme_renew_result
   ignore_errors: true
 
-- name: Show Let's Encrypt CLI output
-  debug:
-    var: acme_renew_result.stdout_lines
+# - name: Show Let's Encrypt CLI output
+#   debug:
+#     var: acme_renew_result.stdout_lines
