@@ -59,6 +59,9 @@
 - name: Run admin user creation script in container
   command: docker exec -u azuracast azuracast php /var/azuracast/www/db_create_user.php
 
+- name: Set super admin user with AzuraCast CLI
+  command: docker exec azuracast azuracast_cli azuracast:account:set-administrator {{ azuracast_admin_email }}
+
 - name: Restart AzuraCast container
   command: docker restart azuracast
 
