@@ -18,6 +18,10 @@
   until: azuracast_container.rc == 0
   changed_when: false
 
+- name: Wait for 2 minutes to make sure mysql is ready
+  pause:
+    seconds: 120
+
 - name: Get AzuraCast DB password from env file
   slurp:
     src: /var/azuracast/azuracast.env
@@ -35,26 +39,8 @@
     owner: "{{ username }}"
     group: "{{ username }}"
 
-# - name: Check for db_create_user.php on host
-#   stat:
-#     path: /var/azuracast/db_create_user.php
-#   register: db_create_user_php_stat
-
-# - name: Debug host db_create_user.php stat
-#   debug:
-#     var: db_create_user_php_stat
-
 - name: Copy admin user creation script into container
   command: docker cp /var/azuracast/db_create_user.php azuracast:/var/azuracast/www/db_create_user.php
-
-# - name: Check for db_create_user.php in container
-#   command: docker exec azuracast ls -l /var/azuracast/www/db_create_user.php
-#   register: container_db_create_user_php_check
-#   ignore_errors: true
-
-# - name: Debug container db_create_user.php check
-#   debug:
-#     var: container_db_create_user_php_check
 
 - name: Run admin user creation script in container
   command: docker exec -u azuracast azuracast php /var/azuracast/www/db_create_user.php
@@ -78,6 +64,6 @@
   register: acme_renew_result
   ignore_errors: true
 
-# - name: Show Let's Encrypt CLI output
-#   debug:
-#     var: acme_renew_result.stdout_lines
+- name: Show Let's Encrypt CLI output
+  debug:
+    var: acme_renew_result.stdout_lines
