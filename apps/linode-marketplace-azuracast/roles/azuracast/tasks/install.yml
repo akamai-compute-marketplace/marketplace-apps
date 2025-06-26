@@ -9,18 +9,26 @@
   args:
     chdir: /var/azuracast
 
-- name: Wait for AzuraCast web container to be up
-  shell: |
-    docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
-  register: azuracast_container
+# - name: Wait for AzuraCast web container to be up
+#   shell: |
+#     docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
+#   register: azuracast_container
+- name: Get AzuraCast container info
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_info
   retries: 10
   delay: 10
-  until: azuracast_container.rc == 0
+  # until: azuracast_container.rc == 0
+  until: azuracast_info.container is defined and azuracast_info.container.State.Status == 'running'
   changed_when: false
 
 - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
-  shell: |
-    docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
+  # shell: |
+  #   docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: bash -c "echo > /dev/tcp/localhost/3306"
   register: mysql_ready
   retries: 20
   delay: 5
@@ -64,27 +72,25 @@
 - name: Restart AzuraCast container
   command: docker restart azuracast
 
-- name: Wait for AzuraCast container to be up after restart
-  shell: |
-    docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
+# - name: Wait for AzuraCast container to be up after restart
+#   shell: |
+#     docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
+- name: Get AzuraCast container info after restart
+  community.docker.docker_container_info:
+    name: azuracast
   register: azuracast_container_restart
   retries: 10
   delay: 10
-  until: azuracast_container_restart.rc == 0
+  # until: azuracast_container_restart.rc == 0
+  until: azuracast_container_restart.container is defined and azuracast_container_restart.container.State.Status == 'running'
   changed_when: false
 
-# - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
-#   shell: |
-#     docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
-#   register: mysql_ready
-#   retries: 20
-#   delay: 5
-#   until: mysql_ready.rc == 0
-#   changed_when: false
-
 - name: Wait for AzuraCast web server to be ready in container
-  shell: |
-    docker exec azuracast curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  # shell: |
+  #   docker exec azuracast curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
   register: web_ready
   retries: 20
   delay: 5
@@ -94,7 +100,6 @@
 - name: Set up Let's Encrypt certificate with AzuraCast CLI
   command: docker exec azuracast azuracast_cli azuracast:acme:get-certificate
   register: acme_renew_result
-  ignore_errors: true
 
 - name: Show Let's Encrypt CLI output
   debug:
