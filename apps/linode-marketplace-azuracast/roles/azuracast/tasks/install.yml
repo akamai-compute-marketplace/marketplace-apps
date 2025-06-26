@@ -18,10 +18,6 @@
   until: azuracast_container.rc == 0
   changed_when: false
 
-# - name: Wait for 1 minute to make sure mysql is ready
-#   pause:
-#     seconds: 60
-
 - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
   shell: |
     docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
@@ -77,19 +73,24 @@
   until: azuracast_container_restart.rc == 0
   changed_when: false
 
-# - name: Wait for 1 minute to make sure mysql is ready
-#   pause:
-#     seconds: 60
+# - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+#   shell: |
+#     docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
+#   register: mysql_ready
+#   retries: 20
+#   delay: 5
+#   until: mysql_ready.rc == 0
+#   changed_when: false
 
-- name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+- name: Wait for AzuraCast web server to be ready in container
   shell: |
-    docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
-  register: mysql_ready
+    docker exec azuracast curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  register: web_ready
   retries: 20
   delay: 5
-  until: mysql_ready.rc == 0
+  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
   changed_when: false
-  
+
 - name: Set up Let's Encrypt certificate with AzuraCast CLI
   command: docker exec azuracast azuracast_cli azuracast:acme:get-certificate
   register: acme_renew_result
