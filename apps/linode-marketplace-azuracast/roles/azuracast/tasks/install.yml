@@ -18,9 +18,18 @@
   until: azuracast_container.rc == 0
   changed_when: false
 
-- name: Wait for 2 minutes to make sure mysql is ready
-  pause:
-    seconds: 120
+# - name: Wait for 1 minute to make sure mysql is ready
+#   pause:
+#     seconds: 60
+
+- name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+  shell: |
+    docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
+  register: mysql_ready
+  retries: 20
+  delay: 5
+  until: mysql_ready.rc == 0
+  changed_when: false
 
 - name: Get AzuraCast DB password from env file
   slurp:
@@ -59,6 +68,28 @@
 - name: Restart AzuraCast container
   command: docker restart azuracast
 
+- name: Wait for AzuraCast container to be up after restart
+  shell: |
+    docker ps --format '{{'{{'}}.Names{{'}}'}}' | grep -q '^azuracast$'
+  register: azuracast_container_restart
+  retries: 10
+  delay: 10
+  until: azuracast_container_restart.rc == 0
+  changed_when: false
+
+# - name: Wait for 1 minute to make sure mysql is ready
+#   pause:
+#     seconds: 60
+
+- name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+  shell: |
+    docker exec azuracast bash -c "echo > /dev/tcp/localhost/3306"
+  register: mysql_ready
+  retries: 20
+  delay: 5
+  until: mysql_ready.rc == 0
+  changed_when: false
+  
 - name: Set up Let's Encrypt certificate with AzuraCast CLI
   command: docker exec azuracast azuracast_cli azuracast:acme:get-certificate
   register: acme_renew_result
