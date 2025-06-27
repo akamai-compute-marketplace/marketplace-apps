@@ -42,6 +42,13 @@ try {
     $stmt = $pdo->prepare('INSERT IGNORE INTO user_has_role (user_id, role_id) VALUES (?, 1)');
     $stmt->execute([$user_id]);
     echo "Super Administrator role assigned.\n";
+    // Set Let's Encrypt email and domain
+    $stmt = $pdo->prepare('UPDATE settings SET acme_email=?, acme_domains=?');
+    $stmt->execute([$acme_email, $acme_domains]);
+    $stmt = $pdo->query('SELECT acme_email, acme_domains FROM settings');
+    $row = $stmt->fetch();
+    echo "acme_email: {$row['acme_email']}\n";
+    echo "acme_domains: {$row['acme_domains']}\n";
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
 } 

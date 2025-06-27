@@ -36,6 +36,7 @@
 - name: Set DB password fact
   set_fact:
     azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+  no_log: true
 
 - name: Copy AzuraCast admin user creation script to host
   template:
