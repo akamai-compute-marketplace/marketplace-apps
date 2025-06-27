@@ -1,0 +1,89 @@
+---
+- name: Run AzuraCast setup-release
+  command: ./docker.sh setup-release
+  args:
+    chdir: /var/azuracast
+
+- name: Run AzuraCast install
+  command: ./docker.sh install
+  args:
+    chdir: /var/azuracast
+
+- name: Get AzuraCast container info
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_info
+  retries: 10
+  delay: 10
+  until: azuracast_info.container is defined and azuracast_info.container.State.Status == 'running'
+  changed_when: false
+
+- name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: bash -c "echo > /dev/tcp/localhost/3306"
+  register: mysql_ready
+  retries: 20
+  delay: 5
+  until: mysql_ready.rc == 0
+  changed_when: false
+
+- name: Get AzuraCast DB password from env file
+  slurp:
+    src: /var/azuracast/azuracast.env
+  register: azuracast_env
+
+- name: Set DB password fact
+  set_fact:
+    azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+  no_log: true
+
+- name: Copy AzuraCast admin user creation script to host
+  template:
+    src: db_create_user.php.j2
+    dest: /var/azuracast/db_create_user.php
+    mode: '0644'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy admin user creation script into container
+  command: docker cp /var/azuracast/db_create_user.php azuracast:/var/azuracast/www/db_create_user.php
+
+- name: Run admin user creation script in container
+  command: docker exec -u azuracast azuracast php /var/azuracast/www/db_create_user.php
+
+- name: Wait for Redis socket in container
+  command: docker exec azuracast test -S /run/redis/redis.sock
+  register: redis_socket_check
+  retries: 10
+  delay: 5
+  until: redis_socket_check.rc == 0
+  changed_when: false
+
+- name: Set super admin user with AzuraCast CLI
+  command: docker exec azuracast azuracast_cli azuracast:account:set-administrator {{ azuracast_admin_email }}
+
+- name: Restart AzuraCast container
+  command: docker restart azuracast
+
+- name: Get AzuraCast container info after restart
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_container_restart
+  retries: 10
+  delay: 10
+  until: azuracast_container_restart.container is defined and azuracast_container_restart.container.State.Status == 'running'
+  changed_when: false
+
+- name: Wait for AzuraCast web server to be ready in container
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  register: web_ready
+  retries: 20
+  delay: 5
+  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
+  changed_when: false
+
+- name: Set up Let's Encrypt certificate with AzuraCast CLI
+  command: docker exec azuracast azuracast_cli azuracast:acme:get-certificate
