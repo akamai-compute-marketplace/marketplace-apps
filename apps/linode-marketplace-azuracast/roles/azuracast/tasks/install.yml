@@ -57,14 +57,14 @@
     project_src: /tmp/azuracast
     state: present
 
-- name: Get AzuraCast container info
-  community.docker.docker_container_info:
-    name: azuracast
-  register: azuracast_info
-  retries: 10
-  delay: 10
-  until: azuracast_info.container is defined and azuracast_info.container.State.Status == 'running'
-  changed_when: false
+# - name: Get AzuraCast container info
+#   community.docker.docker_container_info:
+#     name: azuracast
+#   register: azuracast_info
+#   retries: 10
+#   delay: 10
+#   until: azuracast_info.container is defined and azuracast_info.container.State.Status == 'running'
+#   changed_when: false
   # no_log: true
 
 - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
@@ -123,19 +123,24 @@
     container: azuracast
     command: azuracast_cli azuracast:account:set-administrator {{ azuracast_admin_email }}
 
-- name: Restart AzuraCast container
-  community.docker.docker_container:
-    name: azuracast
-    state: started
+# - name: Restart AzuraCast container
+#   community.docker.docker_container:
+#     name: azuracast
+#     state: started
 
-- name: Get AzuraCast container info after restart
-  community.docker.docker_container_info:
-    name: azuracast
-  register: azuracast_container_restart
-  retries: 10
-  delay: 10
-  until: azuracast_container_restart.container.State.Status == 'running'
-  changed_when: false
+- name: Restart AzuraCast
+  community.docker.docker_compose_v2:
+    project_src: /tmp/azuracast
+    state: restarted
+
+# - name: Get AzuraCast container info after restart
+#   community.docker.docker_container_info:
+#     name: azuracast
+#   register: azuracast_container_restart
+#   retries: 10
+#   delay: 10
+#   until: azuracast_container_restart.container.State.Status == 'running'
+#   changed_when: false
 
 # - name: Wait for AzuraCast web server to be ready in container
 #   community.docker.docker_container_exec:
