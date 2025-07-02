@@ -18,12 +18,12 @@
     mode: '0644'
 
 - name: Run AzuraCast installer container
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /tmp/azuracast
     files:
       - docker-compose.installer.yml
     project_name: azuracast_installer
-    pull: yes
+    pull: always
     services:
       - installer
 
@@ -36,27 +36,25 @@
   command: mv /tmp/azuracast/docker-compose.new.yml /tmp/azuracast/docker-compose.yml
 
 - name: Pull AzuraCast images
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /tmp/azuracast
-    pull: yes
+    pull: always
     state: present
 
 - name: Run azuracast_install in web container
   community.docker.docker_container:
     name: azuracast_web_run_install
-    image: azuracast/azuracast_web:stable
+    image: ghcr.io/azuracast/azuracast:stable
     command: azuracast_install
     state: started
-    auto_remove: true
-    detach: false
     volumes:
       - /tmp/azuracast:/var/azuracast
 
 - name: Bring up AzuraCast stack
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /tmp/azuracast
     state: present
-    restarted: true
+    state: restarted
 
 - name: Get AzuraCast container info
   community.docker.docker_container_info:
@@ -92,14 +90,12 @@
     src: db_create_user.php.j2
     dest: /tmp/azuracast/db_create_user.php
     mode: '0644'
-    owner: "{{ username }}"
-    group: "{{ username }}"
 
 - name: Copy admin user creation script into container
-  community.docker.docker_cp:
-    src: /tmp/azuracast/db_create_user.php
-    dest: /var/azuracast/www/db_create_user.php
+  community.docker.docker_container_copy_into:
     container: azuracast
+    path: /tmp/azuracast/db_create_user.php
+    container_path: /var/azuracast/www/db_create_user.php
 
 - name: Run admin user creation script in container
   community.docker.docker_container_exec:
@@ -123,7 +119,7 @@
 - name: Restart AzuraCast container
   community.docker.docker_container:
     name: azuracast
-    state: restarted
+    state: started
 
 - name: Get AzuraCast container info after restart
   community.docker.docker_container_info:
@@ -134,15 +130,15 @@
   until: azuracast_container_restart.container.State.Status == 'running'
   changed_when: false
 
-# - name: Wait for AzuraCast web server to be ready in container
-#   community.docker.docker_container_exec:
-#     container: azuracast
-#     command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
-#   register: web_ready
-#   retries: 20
-#   delay: 5
-#   until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
-#   changed_when: false
+- name: Wait for AzuraCast web server to be ready in container
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  register: web_ready
+  retries: 20
+  delay: 5
+  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
+  changed_when: false
 
 - name: Wait for AzuraCast web server to be ready
   wait_for:
