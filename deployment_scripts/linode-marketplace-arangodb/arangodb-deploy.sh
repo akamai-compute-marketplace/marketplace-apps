@@ -4,18 +4,10 @@
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # modes
-#DEBUG="NO"
-if [[ -n ${DEBUG} ]]; then
-  if [ "${DEBUG}" == "NO" ]; then
-    trap "cleanup $? $LINENO" EXIT
-  fi
-else
+DEBUG="NO"
+if [ "${DEBUG}" == "NO" ]; then
   trap "cleanup $? $LINENO" EXIT
 fi
-
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
 
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
@@ -31,7 +23,7 @@ fi
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for new DNS zone" example="user@domain.tld (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 #GH_USER=""
 #BRANCH=""
@@ -47,7 +39,7 @@ else
 fi
 
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-docker"
+export MARKETPLACE_APP="apps/linode-marketplace-arangodb"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -67,7 +59,7 @@ function provision_failed {
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
         \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
+  
   exit $?
 }
 
@@ -82,6 +74,8 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: lemp
+  arangodb_version: 3.12.4
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

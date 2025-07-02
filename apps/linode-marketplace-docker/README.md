@@ -12,7 +12,7 @@ Docker is a tool that enables you to create, deploy, and manage containers. Each
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

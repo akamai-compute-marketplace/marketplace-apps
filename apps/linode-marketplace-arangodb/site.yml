@@ -1,9 +1,7 @@
-# linode ansible playbook
-
-- name: secure your server setup
+---
+- name: Install ArangoDB
   hosts: localhost
   connection: local
-  gather_facts: true
   any_errors_fatal: true
   user: root
   vars_files:
@@ -16,6 +14,7 @@
             name: "{{ item }}"
           loop:
             - common
+            - arangodb
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -33,5 +32,6 @@
         name: "{{ item }}"
       loop:
         - common
+        - arangodb
         - post
-      when: "mode == 'production'"
+      when: "mode == 'production'" 

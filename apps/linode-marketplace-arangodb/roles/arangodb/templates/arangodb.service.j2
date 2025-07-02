@@ -1,0 +1,13 @@
+[Unit]
+Description=ArangoDB database server
+After=network.target
+
+[Service]
+Type=simple
+User=arangodb
+Group=arangodb
+ExecStart=/opt/arangodb3/usr/sbin/arangod --configuration /opt/arangodb3/etc/arangodb3/arangod.conf
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target 

@@ -1,0 +1,15 @@
+---
+- name: Add Neo4j latest repo
+  import_tasks: repo.yml
+ 
+- name: Install neo4j
+  import_tasks: install.yml
+
+- name: Reset admin password
+  import_tasks: passwordreset.yml
+
+- name: Install ssl certificates for neo4j
+  import_tasks: ssl.yml
+
+- name: Update neo4j config for SSL
+  import_tasks: sslconf.yml
