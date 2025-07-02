@@ -47,13 +47,14 @@
     image: ghcr.io/azuracast/azuracast:stable
     command: azuracast_install
     state: started
+    auto_remove: true
     volumes:
       - /tmp/azuracast:/var/azuracast
+    env_file: /tmp/azuracast/.env
 
 - name: Bring up AzuraCast stack
   community.docker.docker_compose_v2:
     project_src: /tmp/azuracast
-    state: present
     state: restarted
 
 - name: Get AzuraCast container info
@@ -64,6 +65,7 @@
   delay: 10
   until: azuracast_info.container is defined and azuracast_info.container.State.Status == 'running'
   changed_when: false
+  # no_log: true
 
 - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
   community.docker.docker_container_exec:
@@ -74,6 +76,11 @@
   delay: 5
   until: mysql_ready.rc == 0
   changed_when: false
+
+- name: Run database migrations to ensure complete schema
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: azuracast_cli azuracast:setup:migrate
 
 - name: Get AzuraCast DB password from env file
   slurp:
@@ -130,15 +137,15 @@
   until: azuracast_container_restart.container.State.Status == 'running'
   changed_when: false
 
-- name: Wait for AzuraCast web server to be ready in container
-  community.docker.docker_container_exec:
-    container: azuracast
-    command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
-  register: web_ready
-  retries: 20
-  delay: 5
-  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
-  changed_when: false
+# - name: Wait for AzuraCast web server to be ready in container
+#   community.docker.docker_container_exec:
+#     container: azuracast
+#     command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
+#   register: web_ready
+#   retries: 20
+#   delay: 5
+#   until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
+#   changed_when: false
 
 - name: Wait for AzuraCast web server to be ready
   wait_for:
