@@ -55,7 +55,7 @@
 - name: Bring up AzuraCast stack
   community.docker.docker_compose_v2:
     project_src: /tmp/azuracast
-    state: restarted
+    state: present
 
 - name: Get AzuraCast container info
   community.docker.docker_container_info:
