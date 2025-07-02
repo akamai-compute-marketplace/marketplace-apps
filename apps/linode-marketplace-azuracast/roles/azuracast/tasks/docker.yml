@@ -1,0 +1,29 @@
+---
+- name: Install Docker latest
+  import_role: 
+    name: docker
+
+- name: Install Docker Compose plugin
+  apt:
+    name: docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create /tmp/azuracast directory
+  file:
+    path: /tmp/azuracast
+    state: directory
+    mode: '0755'
+
+# For debugging
+- name: Download AzuraCast docker.sh installer
+  get_url:
+    url: https://raw.githubusercontent.com/AzuraCast/AzuraCast/main/docker.sh
+    dest: /tmp/azuracast/docker.sh
+    mode: '0755'
