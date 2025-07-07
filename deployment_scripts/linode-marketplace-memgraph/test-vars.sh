@@ -16,7 +16,7 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["MEMGRAPH_USER"]="memgraph"
+UDF_VARS["MEMGRAPH_USERNAME"]="memgraph"
 
 
 # dynamic variables
