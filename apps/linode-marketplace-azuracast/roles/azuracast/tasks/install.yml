@@ -187,14 +187,6 @@
   until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
   changed_when: false
 
-# - name: Wait for AzuraCast web server to be ready
-#   wait_for:
-#     host: 127.0.0.1
-#     port: 80
-#     delay: 5
-#     timeout: 60
-#     state: started
-
 - name: Set up Let's Encrypt certificate with AzuraCast CLI
   community.docker.docker_container_exec:
     container: azuracast
