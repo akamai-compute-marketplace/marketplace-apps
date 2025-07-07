@@ -1,0 +1,17 @@
+---
+- name: Set up MOTD
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: Writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Memgraph User: {{ memgraph_username }}
+      Memgraph Password: {{ memgraph_password }}

@@ -1,0 +1,20 @@
+---
+- name: Configure Memgraph on localhost for password reset
+  lineinfile:
+    path: "{{ memgraph_config }}"
+    regexp: "^\# --bolt-address=0.0.0.0"
+    line: "--bolt-address=127.0.0.1"
+    state: present
+  notify: restart memgraph
+
+- name: Wait for Memgraph to start
+  wait_for:
+    host: localhost
+    port: 7687
+    timeout: 30  
+
+# no_log on prod
+- name: Creating Memgraph username
+  command:
+    cmd: >
+      echo "CREATE USER {{ memgraph_username }} IDENTIFIED BY '{{ memgraph_password }}';" | mgconsole

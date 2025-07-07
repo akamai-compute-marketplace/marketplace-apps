@@ -1,0 +1,9 @@
+---
+- name: Download Memgraph latest
+  import_tasks: install.yml
+
+- name: Create Memgraph user
+  import_tasks: create_user.yml
+
+- name: Enable SSL on bolt protocol
+  import_tasks: ssl.yml

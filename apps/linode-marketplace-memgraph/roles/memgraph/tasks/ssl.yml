@@ -1,0 +1,13 @@
+---
+- name: Enabling SSL on Bolt protocol
+  lineinfile:
+    path: "{{ memgraph_config }}"
+    regexp: "{{ line.search }}"
+    line: "{{ line.replace }}"
+    state: present
+  loop_control:
+    loop_var: line
+  loop:
+    - { search: '^\# --bolt-cert-file=/etc/memgraph/ssl/cert.pem', replace: '--bolt-cert-file=/etc/memgraph/ssl/cert.pem' }
+    - { search: '^\# --bolt-key-file=/etc/memgraph/ssl/key.pem', replace: '--bolt-key-file=/etc/memgraph/ssl/key.pem' }
+    - { search: '^\--bolt-address=127.0.0.1', replace: '--bolt-address=.0.0.0.0' }
