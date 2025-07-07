@@ -18,8 +18,8 @@
     port: 7687
     timeout: 30  
 
-# no_log on prod
 - name: Creating Memgraph username
   command:
     cmd: >
       echo "CREATE USER {{ memgraph_username }} IDENTIFIED BY '{{ memgraph_password }}';" | mgconsole
+  no_log: true

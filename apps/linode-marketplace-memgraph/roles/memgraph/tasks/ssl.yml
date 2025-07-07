@@ -10,4 +10,4 @@
   loop:
     - { search: '^# --bolt-cert-file=/etc/memgraph/ssl/cert.pem', replace: '--bolt-cert-file=/etc/memgraph/ssl/cert.pem' }
     - { search: '^# --bolt-key-file=/etc/memgraph/ssl/key.pem', replace: '--bolt-key-file=/etc/memgraph/ssl/key.pem' }
-    - { search: '^--bolt-address=127.0.0.1', replace: '--bolt-address=.0.0.0.0' }
+    - { search: '^--bolt-address=127.0.0.1', replace: '--bolt-address=0.0.0.0' }
