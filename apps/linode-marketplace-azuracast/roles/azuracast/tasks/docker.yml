@@ -15,8 +15,8 @@
     state: started
     enabled: true
 
-- name: Create /tmp/azuracast directory
+- name: Create AzuraCast directory
   file:
-    path: /tmp/azuracast
+    path: "{{ azuracast_dir }}"
     state: directory
     mode: '0755'

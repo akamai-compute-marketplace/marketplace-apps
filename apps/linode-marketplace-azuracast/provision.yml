@@ -17,3 +17,10 @@
         path: group_vars/linode/vars
         line: |
           azuracast_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+
+    - name: Setting AzuraCast directory path
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          azuracast_dir: /var/azuracast

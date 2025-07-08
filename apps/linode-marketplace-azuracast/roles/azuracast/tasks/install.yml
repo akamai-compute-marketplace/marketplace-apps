@@ -5,21 +5,21 @@
     dest: "{{ item.dest }}"
     mode: '0644'
   loop:
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env", dest: "/tmp/azuracast/.env" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env", dest: "/tmp/azuracast/azuracast.env" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.sample.yml", dest: "/tmp/azuracast/docker-compose.yml" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.installer.yml", dest: "/tmp/azuracast/docker-compose.installer.yml" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env", dest: "{{ azuracast_dir }}/.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env", dest: "{{ azuracast_dir }}/azuracast.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.sample.yml", dest: "{{ azuracast_dir }}/docker-compose.yml" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.installer.yml", dest: "{{ azuracast_dir }}/docker-compose.installer.yml" }
 
 - name: Set AZURACAST_VERSION to stable in .env
   lineinfile:
-    path: /tmp/azuracast/.env
+    path: "{{ azuracast_dir }}/.env"
     regexp: '^AZURACAST_VERSION='
     line: 'AZURACAST_VERSION=stable'
     mode: '0644'
 
 - name: Run AzuraCast installer container
   community.docker.docker_compose_v2:
-    project_src: /tmp/azuracast
+    project_src: "{{ azuracast_dir }}"
     files:
       - docker-compose.installer.yml
     project_name: azuracast_installer
@@ -29,21 +29,21 @@
 
 - name: Remove docker-compose.installer.yml
   file:
-    path: /tmp/azuracast/docker-compose.installer.yml
+    path: "{{ azuracast_dir }}/docker-compose.installer.yml"
     state: absent
 
 - name: Rename docker-compose.new.yml to docker-compose.yml
-  command: mv /tmp/azuracast/docker-compose.new.yml /tmp/azuracast/docker-compose.yml
+  command: mv {{ azuracast_dir }}/docker-compose.new.yml {{ azuracast_dir }}/docker-compose.yml
 
 - name: Pull AzuraCast images
   community.docker.docker_compose_v2:
-    project_src: /tmp/azuracast
+    project_src: "{{ azuracast_dir }}"
     pull: always
     state: present
 
 - name: Get AzuraCast DB password from env file for installer
   slurp:
-    src: /tmp/azuracast/azuracast.env
+    src: "{{ azuracast_dir }}/azuracast.env"
   register: azuracast_env_pre
 
 - name: Run azuracast_install in web container
@@ -54,8 +54,8 @@
     state: started
     auto_remove: true
     volumes:
-      - /tmp/azuracast:/var/azuracast
-    env_file: /tmp/azuracast/azuracast.env
+      - "{{ azuracast_dir }}:/var/azuracast"
+    env_file: "{{ azuracast_dir }}/azuracast.env"
     env:
       MARIADB_ROOT_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
       MARIADB_USER: azuracast
@@ -64,7 +64,7 @@
 
 - name: Bring up AzuraCast stack
   community.docker.docker_compose_v2:
-    project_src: /tmp/azuracast
+    project_src: "{{ azuracast_dir }}"
     state: present
 
 - name: Get AzuraCast container info
@@ -89,7 +89,7 @@
 
 - name: Restart AzuraCast container to reset database state
   community.docker.docker_compose_v2:
-    project_src: /tmp/azuracast
+    project_src: "{{ azuracast_dir }}"
     state: restarted
 
 - name: Wait for container to be ready after restart
@@ -123,7 +123,7 @@
 
 - name: Get AzuraCast DB password from env file
   slurp:
-    src: /tmp/azuracast/azuracast.env
+    src: "{{ azuracast_dir }}/azuracast.env"
   register: azuracast_env
 
 - name: Set DB password fact
@@ -135,13 +135,13 @@
 - name: Copy AzuraCast admin user creation script to host
   template:
     src: db_create_user.php.j2
-    dest: /tmp/azuracast/db_create_user.php
+    dest: "{{ azuracast_dir }}/db_create_user.php"
     mode: '0644'
 
 - name: Copy admin user creation script into container
   community.docker.docker_container_copy_into:
     container: azuracast
-    path: /tmp/azuracast/db_create_user.php
+    path: "{{ azuracast_dir }}/db_create_user.php"
     container_path: /var/azuracast/www/db_create_user.php
 
 - name: Run admin user creation script in container
@@ -165,7 +165,7 @@
 
 - name: Restart AzuraCast
   community.docker.docker_compose_v2:
-    project_src: /tmp/azuracast
+    project_src: "{{ azuracast_dir }}"
     state: restarted
 
 - name: Get AzuraCast container info after restart
