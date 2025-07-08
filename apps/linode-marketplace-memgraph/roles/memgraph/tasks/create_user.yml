@@ -19,7 +19,7 @@
     timeout: 30  
 
 - name: Creating Memgraph username
-  command:
+  shell:
     cmd: >
       echo "CREATE USER {{ memgraph_username }} IDENTIFIED BY '{{ memgraph_password }}';" | mgconsole
   no_log: true
