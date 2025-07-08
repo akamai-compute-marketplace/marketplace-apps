@@ -14,9 +14,3 @@
     name: docker
     state: started
     enabled: true
-
-- name: Create AzuraCast directory
-  file:
-    path: "{{ azuracast_dir }}"
-    state: directory
-    mode: '0755'

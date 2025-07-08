@@ -1,9 +1,21 @@
 ---
+- name: Set AzuraCast directory path
+  set_fact:
+    azuracast_dir: /var/azuracast
+
+- name: Create AzuraCast directory
+  file:
+    path: "{{ azuracast_dir }}"
+    state: directory
+    mode: '0755'
+
 - name: Download AzuraCast required files
   get_url:
-    url: "{{ item.url }}"
-    dest: "{{ item.dest }}"
+    url: "{{ file.url }}"
+    dest: "{{ file.dest }}"
     mode: '0644'
+  loop_control:
+    loop_var: file
   loop:
     - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env", dest: "{{ azuracast_dir }}/.env" }
     - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env", dest: "{{ azuracast_dir }}/azuracast.env" }
@@ -15,7 +27,6 @@
     path: "{{ azuracast_dir }}/.env"
     regexp: '^AZURACAST_VERSION='
     line: 'AZURACAST_VERSION=stable'
-    mode: '0644'
 
 - name: Run AzuraCast installer container
   community.docker.docker_compose_v2:
