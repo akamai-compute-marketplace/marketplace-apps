@@ -16,17 +16,23 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="<add-server-public-key-here>"
-UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="<add-server-public-ip-here>:51820"
 UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="10.0.0.2/32"
-UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32,192.168.1.0/24"
+UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32,192.0.2.0/24"
 
-# dynamic variables
-#if [[ -n "${CHANGE_ME}" ]]; then
-#        UDF_VARS["CHANGE_ME"]="${CHANGE_ME}"
-#else
-#        UDF_VARS["CHANGE_ME"]="some value" # default
-#fi
+# dynamic variables - these can be set via environment variables after server deployment
+if [[ -n "${WIREGUARD_SERVER_PUBLIC_KEY}" ]]; then
+        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="${WIREGUARD_SERVER_PUBLIC_KEY}"
+else
+        echo "ERROR: WIREGUARD_SERVER_PUBLIC_KEY environment variable is required"
+        exit 1
+fi
+
+if [[ -n "${WIREGUARD_SERVER_ENDPOINT}" ]]; then
+        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="${WIREGUARD_SERVER_ENDPOINT}"
+else
+        echo "ERROR: WIREGUARD_SERVER_ENDPOINT environment variable is required"
+        exit 1
+fi
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

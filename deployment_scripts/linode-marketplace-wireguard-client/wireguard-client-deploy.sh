@@ -25,9 +25,9 @@ fi
 
 ## WireGuard Settings
 #<UDF name="wireguard_server_public_key" label="WireGuard Server Public Key (Base64)" example="5+m82uxMXQchGKbTb3lpQbxxG9g+GXz1vjFC6Pa8zi8=" />
-#<UDF name="wireguard_server_endpoint" label="WireGuard Server Endpoint (IP:Port)" example="170.187.144.181:51820" />
+#<UDF name="wireguard_server_endpoint" label="WireGuard Server Endpoint (IP:51820)" example="203.0.113.0:51820" />
 #<UDF name="wireguard_client_tunnel_ip" label="WireGuard Client Tunnel IP (with /32)" example="10.0.0.2/32" default="10.0.0.2/32" />
-#<UDF name="wireguard_allowed_ips" label="Allowed IPs (comma-separated list)" example="10.0.0.1/32,192.168.1.0/24" default="10.0.0.1/32" />
+#<UDF name="wireguard_allowed_ips" label="Allowed IPs (comma-separated list)" example="10.0.0.1/32,192.0.2.0/24" default="10.0.0.1/32" />
 
 #GH_USER=""
 #BRANCH=""
