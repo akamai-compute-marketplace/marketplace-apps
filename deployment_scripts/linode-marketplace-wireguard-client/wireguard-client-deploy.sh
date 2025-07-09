@@ -27,10 +27,7 @@ fi
 #<UDF name="wireguard_server_public_key" label="WireGuard Server Public Key (Base64)" example="5+m82uxMXQchGKbTb3lpQbxxG9g+GXz1vjFC6Pa8zi8=" />
 #<UDF name="wireguard_server_endpoint" label="WireGuard Server Endpoint (IP:Port)" example="170.187.144.181:51820" />
 #<UDF name="wireguard_client_tunnel_ip" label="WireGuard Client Tunnel IP (with /32)" example="10.0.0.2/32" default="10.0.0.2/32" />
-#<UDF name="wireguard_allowed_ips" label="Allowed IPs (split tunnel)" example="10.0.0.1/32" default="10.0.0.1/32" />
-#<UDF name="wireguard_persistent_keepalive" label="Persistent Keepalive (seconds)" example="25" default="25" />
-#<UDF name="wireguard_mtu" label="WireGuard MTU (optional)" example="1420" default="1420" />
-#<UDF name="wireguard_dns" label="DNS Servers (optional, comma-separated)" example="1.1.1.1,8.8.8.8" default="" />
+#<UDF name="wireguard_allowed_ips" label="Allowed IPs (comma-separated list)" example="10.0.0.1/32,192.168.1.0/24" default="10.0.0.1/32" />
 
 #GH_USER=""
 #BRANCH=""
@@ -85,10 +82,7 @@ function udf {
   wireguard_server_public_key: "${WIREGUARD_SERVER_PUBLIC_KEY}"
   wireguard_server_endpoint: "${WIREGUARD_SERVER_ENDPOINT}"
   wireguard_client_tunnel_ip: "${WIREGUARD_CLIENT_TUNNEL_IP}"
-  wireguard_allowed_ips: "${WIREGUARD_ALLOWED_IPS}"
-  wireguard_persistent_keepalive: "${WIREGUARD_PERSISTENT_KEEPALIVE}"
-  wireguard_mtu: "${WIREGUARD_MTU}"
-  wireguard_dns: "${WIREGUARD_DNS}"
+  wireguard_allowed_ips: "[${WIREGUARD_ALLOWED_IPS}]"
 
 EOF
 

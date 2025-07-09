@@ -34,12 +34,9 @@ Make sure that the following values are updated at the top of the code block bef
 - ROOT_PASS - Root password for the Linode
 - USERNAME - System user that will be created
 - WIREGUARD_SERVER_PUBLIC_KEY - WireGuard Server Public Key (Base64)
-- WIREGUARD_SERVER_ENDPOINT - WireGuard Server Endpoint (IP:Port)
+- WIREGUARD_SERVER_ENDPOINT - WireGuard Server Endpoint (IP:51820)
 - WIREGUARD_CLIENT_TUNNEL_IP - WireGuard Client Tunnel IP (with /32)
-- WIREGUARD_ALLOWED_IPS - Allowed IPs (split tunnel)
-- WIREGUARD_PERSISTENT_KEEPALIVE - Persistent Keepalive (seconds)
-- WIREGUARD_MTU - WireGuard MTU (optional)
-- WIREGUARD_DNS - DNS Servers (optional, comma-separated)
+- WIREGUARD_ALLOWED_IPS - Allowed IPs (comma-separated list)
 
 ### SHELL
 
@@ -49,12 +46,10 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export WIREGUARD_SERVER_PUBKEY="Base64 format"
-export WIREGUARD_SERVER_ENDPOINT="IP:PORT"
+export WIREGUARD_SERVER_ENDPOINT="IP:51820"
 export WIREGUARD_CLIENT_IP="10.0.0.2/32"
-export WIREGUARD_ALLOWED_IPS="10.0.0.1/32"
+export WIREGUARD_ALLOWED_IPS="10.0.0.1/32,192.168.1.0/24"
 export WIREGUARD_KEEPALIVE="25"
-export WIREGUARD_MTU="1420"
-export WIREGUARD_DNS="1.1.1.1,8.8.8.8"
 
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${TOKEN}" \
@@ -70,10 +65,7 @@ curl -H "Content-Type: application/json" \
 "wireguard_server_public_key": "${WIREGUARD_SERVER_PUBKEY}",
 "wireguard_server_endpoint": "${WIREGUARD_SERVER_ENDPOINT}",
 "wireguard_client_tunnel_ip": "${WIREGUARD_CLIENT_IP}",
-"wireguard_allowed_ips": "${WIREGUARD_ALLOWED_IPS}",
-"wireguard_persistent_keepalive": "${WIREGUARD_KEEPALIVE}",
-"wireguard_mtu": "${WIREGUARD_MTU}",
-"wireguard_dns": "${WIREGUARD_DNS}"
+"wireguard_allowed_ips": "${WIREGUARD_ALLOWED_IPS}"
 },
 "type": "g6-nanode-1",
 "tags": ["mytag"],
@@ -87,12 +79,10 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export WIREGUARD_SERVER_PUBKEY="in base64 format"
-export WIREGUARD_SERVER_ENDPOINT="IP:PORT"
+export WIREGUARD_SERVER_ENDPOINT="IP:51820"
 export WIREGUARD_CLIENT_IP="10.0.0.2/32"
-export WIREGUARD_ALLOWED_IPS="10.0.0.1/32"
+export WIREGUARD_ALLOWED_IPS="10.0.0.1/32,192.168.1.0/24"
 export WIREGUARD_KEEPALIVE="25"
-export WIREGUARD_MTU="1420"
-export WIREGUARD_DNS="1.1.1.1,8.8.8.8"
 
 linode-cli linodes create \
   --image 'linode/ubuntu24.04' \
@@ -101,7 +91,7 @@ linode-cli linodes create \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"user_name": "${USERNAME}", "disable_root": "Yes", "wireguard_server_public_key": "${WIREGUARD_SERVER_PUBKEY}", "wireguard_server_endpoint": "${WIREGUARD_SERVER_ENDPOINT}", "wireguard_client_tunnel_ip": "${WIREGUARD_CLIENT_IP}", "wireguard_allowed_ips": "${WIREGUARD_ALLOWED_IPS}", "wireguard_persistent_keepalive": "${WIREGUARD_KEEPALIVE}", "wireguard_mtu": "${WIREGUARD_MTU}", "wireguard_dns": "${WIREGUARD_DNS}"}' \
+  --stackscript_data '{"user_name": "${USERNAME}", "disable_root": "Yes", "wireguard_server_public_key": "${WIREGUARD_SERVER_PUBKEY}", "wireguard_server_endpoint": "${WIREGUARD_SERVER_ENDPOINT}", "wireguard_client_tunnel_ip": "${WIREGUARD_CLIENT_IP}", "wireguard_allowed_ips": "${WIREGUARD_ALLOWED_IPS}"}' \
   --region us-east \
   --type g6-nanode-1 \
   --tags mytag \

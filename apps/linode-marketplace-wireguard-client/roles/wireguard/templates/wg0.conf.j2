@@ -1,12 +1,11 @@
 [Interface]
 PrivateKey = {{ client_private_key }}
 Address = {{ wireguard_client_tunnel_ip }}
-{% if wireguard_mtu is defined and wireguard_mtu|length > 0 %}MTU = {{ wireguard_mtu }}
-{% endif %}{% if wireguard_dns is defined and wireguard_dns|length > 0 %}DNS = {{ wireguard_dns }}
-{% endif %}
+MTU = 1420
+DNS = 8.8.8.8
 
 [Peer]
 PublicKey = {{ wireguard_server_public_key }}
 Endpoint = {{ wireguard_server_endpoint }}
-AllowedIPs = {{ wireguard_allowed_ips }}
-PersistentKeepalive = {{ wireguard_persistent_keepalive }}
+AllowedIPs = {{ wireguard_allowed_ips | join(',') }}
+PersistentKeepalive = 25
