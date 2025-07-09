@@ -25,7 +25,6 @@ fi
 
 ## WireGuard Settings
 #<UDF name="wireguard_server_address" label="WireGuard Server Tunnel Address (e.g. 10.0.0.1/24)" default="10.0.0.1/24">
-#<UDF name="wireguard_listen_port" label="WireGuard Listen Port" default="51820">
 
 #GH_USER=""
 #BRANCH=""
@@ -78,7 +77,6 @@ function udf {
   username: ${USER_NAME}
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
   wireguard_server_address: ${WIREGUARD_SERVER_ADDRESS}
-  wireguard_listen_port: ${WIREGUARD_LISTEN_PORT}
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

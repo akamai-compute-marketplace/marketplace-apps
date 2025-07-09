@@ -34,7 +34,6 @@ Make sure that the following values are updated at the top of the code block bef
 - ROOT_PASS - Root password for the Linode
 - USERNAME - System user that will be created
 - WIREGUARD_SERVER_ADDRESS - e.g., 10.0.0.1/24
-- WIREGUARD_LISTEN_PORT - e.g., 51820
 
 ### SHELL
 
@@ -44,7 +43,6 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export WIREGUARD_SERVER_ADDRESS="10.0.0.1/24"
-export WIREGUARD_LISTEN_PORT="51820"
 
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer ${TOKEN}" \
@@ -67,8 +65,7 @@ curl -H "Content-Type: application/json" \
 "subdomain": "${SUBDOMAIN}",
 "domain": "${DOMAIN}",
 "soa_email_address": "${SOA_EMAIL_ADDRESS}",
-"wireguard_server_address": "${WIREGUARD_SERVER_ADDRESS}",
-"wireguard_listen_port": "${WIREGUARD_LISTEN_PORT}"
+"wireguard_server_address": "${WIREGUARD_SERVER_ADDRESS}"
 },
 "stackscript_id": 00000000000,
 "type": "g6-nanode-1",
@@ -81,7 +78,6 @@ export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
 export WIREGUARD_SERVER_ADDRESS="10.0.0.1/24"
-export WIREGUARD_LISTEN_PORT="51820"
 
 linode-cli linodes create \
 --image 'linode/ubuntu24.04' \
@@ -90,7 +86,7 @@ linode-cli linodes create \
 --root_pass ${ROOT_PASS} \
 --booted true \
 --stackscript_id 00000000000 \
---stackscript_data '{"user_name": "${USERNAME}", "disable_root": "Yes", "token_password": "${TOKEN}", "subdomain": "${SUBDOMAIN}", "domain": "${DOMAIN}", "soa_email_address": "${SOA_EMAIL_ADDRESS}", "wireguard_server_address": "${WIREGUARD_SERVER_ADDRESS}", "wireguard_listen_port": "${WIREGUARD_LISTEN_PORT}"}' \
+--stackscript_data '{"user_name": "${USERNAME}", "disable_root": "Yes", "token_password": "${TOKEN}", "subdomain": "${SUBDOMAIN}", "domain": "${DOMAIN}", "soa_email_address": "${SOA_EMAIL_ADDRESS}", "wireguard_server_address": "${WIREGUARD_SERVER_ADDRESS}"}' \
 --region us-east \
 --type g6-nanode-1 \
 --tags mytag \

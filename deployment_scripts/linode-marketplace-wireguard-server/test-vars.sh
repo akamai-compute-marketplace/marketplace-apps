@@ -17,7 +17,6 @@ declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["WIREGUARD_SERVER_ADDRESS"]="10.0.0.1/24"
-UDF_VARS["WIREGUARD_LISTEN_PORT"]="51820"
 
 # dynamic variables
 #if [[ -n "${CHANGE_ME}" ]]; then

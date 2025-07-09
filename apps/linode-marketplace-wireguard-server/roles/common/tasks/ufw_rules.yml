@@ -12,7 +12,7 @@
 - name: Configure WireGuard rule
   ufw:
     rule: allow
-    port: "{{ wireguard_listen_port }}"
+    port: "51820"
     proto: udp
 
 - name: Enable UFW
