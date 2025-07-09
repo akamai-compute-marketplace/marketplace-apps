@@ -23,15 +23,13 @@ UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32,192.0.2.0/24"
 if [[ -n "${WIREGUARD_SERVER_PUBLIC_KEY}" ]]; then
         UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="${WIREGUARD_SERVER_PUBLIC_KEY}"
 else
-        echo "ERROR: WIREGUARD_SERVER_PUBLIC_KEY environment variable is required"
-        exit 1
+        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="" # default
 fi
 
 if [[ -n "${WIREGUARD_SERVER_ENDPOINT}" ]]; then
         UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="${WIREGUARD_SERVER_ENDPOINT}"
 else
-        echo "ERROR: WIREGUARD_SERVER_ENDPOINT environment variable is required"
-        exit 1
+        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="" # default
 fi
 
 set_vars() {
