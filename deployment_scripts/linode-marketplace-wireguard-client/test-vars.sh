@@ -20,6 +20,9 @@ UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="10.0.0.2/32"
 UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32,192.0.2.0/24"
 
 # dynamic variables - these can be set via environment variables after server deployment
+echo "[DEBUG] WIREGUARD_SERVER_PUBLIC_KEY after parsing: '${WIREGUARD_SERVER_PUBLIC_KEY}'"
+echo "[DEBUG] Full INSTANCE_ENV: '${INSTANCE_ENV}'"
+
 if [[ -n "${WIREGUARD_SERVER_PUBLIC_KEY}" ]]; then
         UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="${WIREGUARD_SERVER_PUBLIC_KEY}"
 else
