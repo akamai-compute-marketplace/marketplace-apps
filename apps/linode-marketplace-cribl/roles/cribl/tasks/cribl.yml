@@ -25,7 +25,7 @@
 
 - name: Start cribl service
   systemd_service: 
-    name: cribl.service
+    name: cribl
     state: started
     enabled: true
 
