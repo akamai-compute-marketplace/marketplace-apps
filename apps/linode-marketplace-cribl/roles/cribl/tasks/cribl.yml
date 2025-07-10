@@ -7,7 +7,7 @@
 - name: Config file setup
   template:
     src: templates/cribl.service.j2
-    dest: /etc/systemd/system/joplin.service
+    dest: /etc/systemd/system/cribl.service
 
 - name: Create cribl directory
   file:
