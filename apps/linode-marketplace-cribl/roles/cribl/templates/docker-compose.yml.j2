@@ -1,0 +1,22 @@
+services:
+  cribl:
+    image: cribl/cribl:latest
+    container_name: cribl_stream
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000" 
+    volumes:
+      - cribl_state:/opt/cribl/state
+      - cribl_logs:/opt/cribl/logs
+      - cribl_config:/opt/cribl/config
+    networks:
+      - cribl-net
+
+volumes:
+  cribl_state:
+  cribl_logs:
+  cribl_config:
+
+networks:
+  cribl-net:
+    driver: bridge

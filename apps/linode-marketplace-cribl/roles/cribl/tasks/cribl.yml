@@ -1,0 +1,43 @@
+---
+ # docker
+- name: Install docker latest
+  import_role: 
+    name: docker
+
+- name: Config file setup
+  template:
+    src: templates/cribl.service.j2
+    dest: /etc/systemd/system/joplin.service
+
+- name: Create cribl directory
+  file:
+    path: /opt/cribl
+    state: directory
+
+- name: Add docker compose file
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: /opt/cribl/docker-compose.yml
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Start cribl service
+  systemd_service: 
+    name: cribl.service
+    state: started
+    enabled: true
+
+- name: Add user.json file to change default admin password
+  template:
+    src: templates/users.json.j2
+    dest: /tmp/users.json
+
+- name: Copy file into Cribl container
+  command: docker cp /tmp/users.json cribl_stream:/opt/cribl/local/cribl/auth/users.json
+
+- name: Remove /tmp/users.json
+  ansible.builtin.file:
+    path: /tmp/users.json
+    state: absent
