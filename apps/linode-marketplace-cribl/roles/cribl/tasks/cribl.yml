@@ -1,13 +1,10 @@
 ---
-- name: Set docker_compose to true
-  set_fact:
-    docker_compose: true
 # docker
 - name: Install docker latest
   import_role: 
     name: docker
-#  vars:
-#    docker_compose: true   
+  vars:
+    docker_compose: "true"   
 
 - name: Config file setup
   template:
