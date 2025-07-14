@@ -1,7 +1,7 @@
 ---
 - name: Set docker-compose variable
   set_fact:
-    install_docker: true
+    docker_compose: true
 # docker
 - name: Install docker latest
   import_role: 
