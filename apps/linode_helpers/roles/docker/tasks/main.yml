@@ -43,3 +43,10 @@
     name: docker-ce
     update_cache: yes
     state: present
+
+- name: install docker-compose if needed
+  apt:
+    name: docker-compose-plugin
+    state: present
+    update_cache: yes
+  when: docker_compose | bool
