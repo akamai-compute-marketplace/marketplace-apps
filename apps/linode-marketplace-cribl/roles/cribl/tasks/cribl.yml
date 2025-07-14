@@ -40,6 +40,14 @@
     src: templates/users.json.j2
     dest: /tmp/users.json
 
+- name: Wait for Cribl to start
+  wait_for:
+    host: 127.0.0.1
+    port: 9000
+    delay: 5
+    timeout: 5
+    state: started
+
 - name: Copy file into Cribl container
   command: docker cp /tmp/users.json cribl_stream:/opt/cribl/local/cribl/auth/users.json
 
