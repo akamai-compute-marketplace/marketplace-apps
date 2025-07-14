@@ -3,8 +3,6 @@
 - name: Install docker latest
   import_role: 
     name: docker
-  vars:
-    docker_compose: "true"   
 
 - name: Config file setup
   template:
