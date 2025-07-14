@@ -75,6 +75,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: standalone
+  docker_compose: true
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
