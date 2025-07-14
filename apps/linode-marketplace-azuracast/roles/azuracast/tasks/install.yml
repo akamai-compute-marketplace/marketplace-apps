@@ -189,6 +189,7 @@
   delay: 10
   until: azuracast_container_restart.container.State.Status == 'running'
   changed_when: false
+  no_log: true
 
 - name: Wait for AzuraCast web server to be ready in container
   community.docker.docker_container_exec:
