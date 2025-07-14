@@ -49,4 +49,4 @@
     name: docker-compose-plugin
     state: present
     update_cache: yes
-  when: docker_compose==true
+  when: docker_compose == 'true'
