@@ -46,7 +46,7 @@
 
 - name: install docker-compose if needed
   apt:
-    name: docker-compose-plugin
+    name: docker-compose
     state: present
     update_cache: yes
   when: docker_compose == 'true'

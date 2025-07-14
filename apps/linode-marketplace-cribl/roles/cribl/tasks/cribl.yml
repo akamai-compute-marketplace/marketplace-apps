@@ -4,6 +4,12 @@
   import_role: 
     name: docker
 
+- name: Install docker-compose
+  apt:
+    name: docker-compose
+    state: present
+    update_cache: yes
+
 - name: Config file setup
   template:
     src: templates/cribl.service.j2
