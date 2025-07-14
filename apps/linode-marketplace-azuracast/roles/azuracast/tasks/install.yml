@@ -72,6 +72,7 @@
       MARIADB_USER: azuracast
       MARIADB_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
       MARIADB_DATABASE: azuracast
+    no_log: true
 
 - name: Bring up AzuraCast stack
   community.docker.docker_compose_v2:
@@ -86,7 +87,7 @@
   delay: 10
   until: azuracast_info.container.State.Status == 'running'
   changed_when: false
-  # no_log: true
+  no_log: true
 
 - name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
   community.docker.docker_container_exec:
@@ -136,6 +137,7 @@
   slurp:
     src: "{{ azuracast_dir }}/azuracast.env"
   register: azuracast_env
+  no_log: true
 
 - name: Set DB password fact
   set_fact:
@@ -187,6 +189,7 @@
   delay: 10
   until: azuracast_container_restart.container.State.Status == 'running'
   changed_when: false
+  no_log: true
 
 - name: Wait for AzuraCast web server to be ready in container
   community.docker.docker_container_exec:
