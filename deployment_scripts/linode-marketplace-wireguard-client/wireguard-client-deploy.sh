@@ -75,6 +75,14 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  
+  # Convert comma-separated IPs to YAML list format
+  local ips_list=""
+  IFS=',' read -ra IPS <<< "${WIREGUARD_ALLOWED_IPS}"
+  for ip in "${IPS[@]}"; do
+    ips_list="${ips_list}    - \"${ip}\"\n"
+  done
+  
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
@@ -82,7 +90,8 @@ function udf {
   wireguard_server_public_key: "${WIREGUARD_SERVER_PUBLIC_KEY}"
   wireguard_server_endpoint: "${WIREGUARD_SERVER_ENDPOINT}"
   wireguard_client_tunnel_ip: "${WIREGUARD_CLIENT_TUNNEL_IP}"
-  wireguard_allowed_ips: "[${WIREGUARD_ALLOWED_IPS}]"
+  wireguard_allowed_ips:
+$(echo -e "${ips_list}")
 
 EOF
 
