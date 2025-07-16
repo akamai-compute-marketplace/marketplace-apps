@@ -50,8 +50,10 @@
 
 - name: Copy file into Cribl container
   command: docker cp /tmp/users.json cribl_stream:/opt/cribl/local/cribl/auth/users.json
-
+  notify: restart cribl
+  
 - name: Remove /tmp/users.json
   file:
     path: /tmp/users.json
     state: absent
+  
