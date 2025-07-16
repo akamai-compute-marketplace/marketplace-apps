@@ -31,7 +31,11 @@ fi
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address for new DNS zone" example="user@domain.tld (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+
+## Neo4j Settings
+#<UDF name="neo4j_http_allow" label="IP addresses allowed to access Neo4j UI" example="192.0.2.21, 198.51.100.17" default="">
+#<UDF name="neo4j_bolt_allow" label="IP addresses allowed to access Bolt" example="192.0.2.21, 198.51.100.17" default="">
 
 #GH_USER=""
 #BRANCH=""
@@ -47,7 +51,7 @@ else
 fi
 
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-docker"
+export MARKETPLACE_APP="apps/linode-marketplace-neo4j"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -67,7 +71,7 @@ function provision_failed {
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
         \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
+  
   exit $?
 }
 
@@ -82,6 +86,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  neo4j_username: neo4j
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -105,9 +110,23 @@ EOF
   else echo "No API token entered";
   fi
 
+  # Neo4j vars
+
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
+
+  if [[ -z ${NEO4J_HTTP_ALLOW} ]]; then
+    echo "[info] No IP addresses provided for HTTP whitelisting"
+  else
+    echo "neo4j_http_allow: [${NEO4J_HTTP_ALLOW}]" >> ${group_vars}
+  fi
+
+  if [[ -z ${NEO4J_BOLT_ALLOW} ]]; then
+    echo "[info] No IP addresses provided for bolt whitelisting"
+  else
+    echo "neo4j_bolt_allow: [${NEO4J_BOLT_ALLOW}]" >> ${group_vars}
+  fi  
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then

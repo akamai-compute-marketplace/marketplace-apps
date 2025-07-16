@@ -1,0 +1,64 @@
+---
+- name: Updating listen address
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '^\#server.default_listen_address'
+    line: "server.default_listen_address=0.0.0.0"
+    state: present
+  when: neo4j_http_allow is defined or neo4j_bolt_allow is defined
+
+- name: Enable HTTP logging
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '^\#dbms.logs.http.enabled'
+    line: "dbms.logs.http.enabled=true"
+    state: present
+  when: neo4j_http_allow is defined
+
+#https
+
+- name: Enable HTTPS in neo4j
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
+    state: present
+  loop_control:
+    loop_var: line
+  loop:
+    - { search: '^server.http.enabled', replace: 'server.http.enabled=false'}
+    - { search: '^server.https.enabled', replace: 'server.https.enabled=true'}
+
+- name: Enable ssl policy for neo4j
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
+    state: present
+  loop_control:
+    loop_var: line
+  loop:
+    - { search: '^\#dbms.ssl.policy.https.enabled', replace: 'dbms.ssl.policy.https.enabled=true' }
+    - { search: '^\#dbms.ssl.policy.https.base_directory', replace: 'dbms.ssl.policy.https.base_directory=certificates/https' }
+    - { search: '^\#dbms.ssl.policy.https.private_key', replace: 'dbms.ssl.policy.https.private_key=private.key' }
+    - { search: '^\#dbms.ssl.policy.https.public_certificate', replace: 'dbms.ssl.policy.https.public_certificate=public.crt' }
+    - { search: '^\#dbms.ssl.policy.https.client_auth', replace: 'dbms.ssl.policy.https.client_auth=NONE' }
+
+#bolt
+
+- name: Enable ssl policy for bolt
+  lineinfile:
+    path: "{{ neo4j_config }}"
+    regexp: '{{ line.search }}'
+    line: "{{ line.replace }}"
+    state: present
+  loop_control:
+    loop_var: line
+  loop:
+    - { search: '^\#server.bolt.tls_level', replace: 'server.bolt.tls_level=REQUIRED' }
+    - { search: '^\#dbms.ssl.policy.bolt.enabled', replace: 'dbms.ssl.policy.bolt.enabled=true' }
+    - { search: '^\#dbms.ssl.policy.bolt.base_directory', replace: 'dbms.ssl.policy.bolt.base_directory=certificates/bolt' }
+    - { search: '^\#dbms.ssl.policy.bolt.private_key', replace: 'dbms.ssl.policy.bolt.private_key=private.key' }
+    - { search: '^\#dbms.ssl.policy.bolt.public_certificate', replace: 'dbms.ssl.policy.bolt.public_certificate=public.crt' }
+    - { search: '^\#dbms.ssl.policy.bolt.client_auth', replace: 'dbms.ssl.policy.bolt.client_auth=NONE' }
+  notify: restart neo4j
