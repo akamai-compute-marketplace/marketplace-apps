@@ -40,13 +40,13 @@
     src: templates/users.json.j2
     dest: /tmp/users.json
 
-- name: Wait for Cribl to start
-  wait_for:
-    host: 127.0.0.1
-    port: 9000
-    delay: 15
-    timeout: 15
-    state: started
+- name: Wait for container to be healthy
+  shell: docker inspect -f '{{.State.Health.Status}}' cribl_stream
+  register: health_status
+  retries: 20
+  delay: 5
+  until: health_status.stdout == "healthy"
+  changed_when: false
 
 - name: Copy file into Cribl container
   command: docker cp /tmp/users.json cribl_stream:/opt/cribl/local/cribl/auth/users.json
