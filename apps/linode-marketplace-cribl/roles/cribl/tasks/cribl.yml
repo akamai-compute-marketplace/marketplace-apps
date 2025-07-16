@@ -44,8 +44,8 @@
   wait_for:
     host: 127.0.0.1
     port: 9000
-    delay: 10
-    timeout: 10
+    delay: 15
+    timeout: 15
     state: started
 
 - name: Copy file into Cribl container
