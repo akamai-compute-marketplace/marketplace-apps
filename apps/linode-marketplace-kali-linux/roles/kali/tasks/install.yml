@@ -2,5 +2,4 @@
 - name: Install Kali Linux
   apt:
     name: "{{ kali_package }}"
-    state: present
-  when: kali_package is defined 
+    state: present 

@@ -29,11 +29,17 @@ Make sure that the following values are updated at the top of the code block bef
 - TOKEN
 - ROOT_PASS
 
+### Available StackScript Parameters:
+- `user_name`: The limited sudo user to be created (default: "admin")
+- `disable_root`: Disable root access over SSH (default: "No")
+- `kali_package`: Kali Linux package to install - Everything (~34GB), Headless (~12GB), Core (~1.5GB) (default: "Headless")
+- `vnc`: Setup VNC remote desktop access - recommended for Everything package, adds desktop to Headless/Core (default: "No")
+- `vnc_username`: VNC user to be created (required if vnc="Yes"; password auto-generated)
+
 SHELL:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export SOA_EMAIL_ADDRESS="email@domain.com"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -44,8 +50,11 @@ curl -H "Content-Type: application/json" \
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
-        "disable_root": "no/yes",
-        "soa_email_address": "${SOA_EMAIL_ADDRESS}"
+        "user_name": "admin",
+        "disable_root": "No",
+        "kali_package": "Headless",
+        "vnc": "No",
+        "vnc_username": "kaliuser"
       },
       "authorized_users": [
         "myUser",
@@ -64,14 +73,13 @@ CLI:
 ```
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
-export SOA_EMAIL_ADDRESS="email@domain.com"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
-  --stackscript_data '{"soa_email_address": "${SOA_EMAIL_ADDRESS}", "disable_root": "no/yes" }' \
+  --stackscript_data '{"user_name": "admin", "disable_root": "No", "kali_package": "Headless", "vnc": "No", "vnc_username": "kaliuser"}' \
   --region us-east \
   --type g6-standard-2 \
   --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer"

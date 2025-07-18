@@ -10,3 +10,11 @@
   tasks:
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Writing VNC password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          vnc_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+      when: vnc_enabled

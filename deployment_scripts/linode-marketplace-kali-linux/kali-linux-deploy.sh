@@ -19,15 +19,14 @@ else
   set -e
 fi
 
-## Linode/SSH Security Settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
+## Akamai Compute/SSH Security Settings
+#<UDF name="user_name" label="The limited sudo user to be created for the Akamai Compute Instance: *All lowercase*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Kali Settings
-#<UDF name="kali_package" label="Kali Linux Package" oneOf="Everything,Headless,Core" default="Everything">
-#<UDF name="vnc" label="Would you like to setup VNC to access Kali XFCE Desktop" oneOf="Yes,No" default="Yes">
-#<UDF name="vnc_username" label="The VNC user to be created for the Linode. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
-#<UDF name="vnc_password" label="The password for the limited VNC user">
+#<UDF name="kali_package" label="Kali Linux Package" oneOf="Everything,Headless,Core" default="Headless">
+#<UDF name="vnc" label="Setup VNC Remote Desktop? (recommended for Everything package; adds desktop to Headless/Core)" oneOf="Yes,No" default="No">
+#<UDF name="vnc_username" label="The VNC user to be created for the Akamai Compute Instance. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
 
 #GH_USER=""
 #BRANCH=""
@@ -88,7 +87,7 @@ function udf {
       KALI_PACKAGE_NAME="kali-linux-core"
       ;;
     *)
-      KALI_PACKAGE_NAME="kali-linux-everything"  # Default fallback
+      KALI_PACKAGE_NAME="kali-linux-headless"  # Default
       ;;
   esac
 
@@ -100,7 +99,6 @@ function udf {
 
   # VNC settings
   vnc_username: "${VNC_USERNAME}"
-  vnc_password: "${VNC_PASSWORD}"
 
   # Other variables
   username: "${USER_NAME}"
