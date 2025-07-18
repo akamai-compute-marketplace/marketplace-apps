@@ -20,6 +20,18 @@
   import_role:
       name: securessh
 
+- name: Pre-configure grub-pc for non-interactive upgrade
+  ansible.builtin.debconf:
+    name: grub-pc
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: 'grub-pc/install_devices', value: '/dev/sda', vtype: 'multiselect' }
+    - { question: 'grub-pc/install_devices_disks_changed', value: '/dev/sda', vtype: 'multiselect' }
+    - { question: 'grub-pc/install_devices_empty', value: 'false', vtype: 'boolean' }
+    - { question: 'grub-pc/install_devices_failed', value: 'true', vtype: 'boolean' }
+    
 - name: update system packages
   import_role:
     name: update_pkgs
