@@ -48,8 +48,8 @@
     timeout: 15
     state: started
 
-- name: Copy file into Cribl container
-  command: docker exec -i cribl_stream /bin/bash -c 'echo "{\"username\":\"admin\",\"first\":\"Admin\",\"last\":\"User\",\"roles\":[\"admin\"],\"disabled\":false,\"password\":\"Complexpassword123\"}" > /opt/cribl/local/cribl/auth/users.json'
+- name: Copy users.json into container 
+  command: docker cp /tmp/users.json cribl_stream:/opt/cribl/local/cribl/auth/users.json
   notify: restart cribl
 
 - name: Remove /tmp/users.json
