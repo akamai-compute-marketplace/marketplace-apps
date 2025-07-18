@@ -14,7 +14,7 @@ This Marketplace app deploys Kali Linux on Ubuntu 24.04 LTS with optional VNC re
 
 **Supported Distributions:**
 
-- Ubuntu 24.04 LTS
+- Kali Linux
 
 ## Kali Linux Package Options
 
@@ -64,7 +64,7 @@ curl -H "Content-Type: application/json" \
     -X POST -d '{
       "backups_enabled": true,
       "swap_size": 512,
-      "image": "linode/ubuntu2404",
+      "image": "linode/kali",
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
@@ -97,6 +97,7 @@ export VNC_USERNAME="kaliuser"
 
 linode-cli linodes create \
   --label linode123 \
+  --image kali \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 00000000000 \
