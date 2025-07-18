@@ -1,0 +1,125 @@
+---
+  - name: Create netfoundry directory
+    file:
+      path: /opt/netfoundry
+      mode: 0755
+      state: directory
+
+  - name: Add saltstack repo key
+    get_url:
+      dest: /etc/apt/keyrings/salt-archive-keyring-2023.pgp
+      url:  https://packages.broadcom.com/artifactory/api/security/keypair/SaltProjectKey/public 
+      mode: 0644
+
+  - name: Add saltstack repo file
+    copy:
+      dest: /etc/apt/sources.list.d/salt.list
+      content: |
+        deb [signed-by=/etc/apt/keyrings/salt-archive-keyring-2023.pgp arch=amd64] https://packages.broadcom.com/artifactory/saltproject-deb/ stable main
+      mode: 0644
+
+  - name: PIN salt version to 3006
+    copy:
+      dest: /etc/apt/preferences.d/salt-pin-1001
+      content: |
+        Package: salt-*
+        Pin: version 3006.*
+        Pin-Priority: 1001
+      mode: 0644
+
+  - name: Download router-registration
+    unarchive:
+      src: https://github.com/netfoundry/edge-router-registration/releases/latest/download/router_registration_bootstrap.tar.gz
+      dest: /opt/netfoundry/
+      mode: 0755
+      owner: root
+      group: root
+      remote_src: yes
+
+  - name: Download zt-upgrade
+    unarchive:
+      src: https://github.com/netfoundry/edge-router-upgrade/releases/latest/download/router_upgrade_bootstrap.tar.gz
+      dest: /opt/netfoundry/
+      mode: 0755
+      owner: root
+      group: root
+      remote_src: yes
+
+  - name: Download vm-support-bundle
+    unarchive:
+      src: https://github.com/netfoundry/edge-router-support-bundle/releases/latest/download/support_bundle_bootstrap.tar.gz
+      dest: /opt/netfoundry/
+      mode: 0755
+      owner: root
+      group: root
+      remote_src: yes
+
+  - name: Ensure depend packages are installed
+    apt:
+      update_cache: yes
+      pkg:
+      - ca-certificates
+      - wget
+      - net-tools
+      - ipcalc
+      - dnsutils
+      - git
+      - vim
+      - bash-completion
+      - salt-minion
+      - sysstat
+      - zip
+      - jq
+      - htop
+      - acl
+      - ufw
+      - jc
+      - curl
+
+  - name: Disable salt-minion - will start during registration
+    systemd:
+      name: salt-minion
+      state: stopped
+      enabled: false
+
+  - name: Remove the auto generated minion_id
+    file:
+      path: /etc/salt/minion_id
+      state: absent
+
+  - name: Download login message
+    unarchive:
+      src: https://github.com/netfoundry/edge-router-nfhelp/releases/latest/download/nfhelp.tar.gz
+      dest: /etc/profile.d/
+      owner: root
+      group: root
+      mode: 0755
+      remote_src: yes
+
+  - name: Copy login readme files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+      mode: 0644
+    loop:
+      - {src: 'login-readme', dest: '/opt/netfoundry/.login-readme'}
+      - {src: 'login-readme.registered', dest: '/opt/netfoundry/.login-readme.registered'}
+
+  - name: Get network interfaces excluding loopback
+    set_fact:
+      interfaces: "{{ ansible_interfaces | select('search', '^((?!lo).)*$') | list }}"
+
+  - name: Set the second interface IP address
+    set_fact:
+      second_interface_ip: "{{ ansible_facts['eth1']['ipv4']['address'] }}"
+    when: interfaces | length == 2
+
+  - name: Register the Edge Router with one interface
+    command:
+      cmd: "/opt/netfoundry/router-registration {{ registration_key }}"
+    when: interfaces | length == 1 and registration_key != "paste key here"
+
+  - name: Register the Edge Router with two interfaces
+    command:
+      cmd: "/opt/netfoundry/router-registration {{ registration_key }} -e {{ second_interface_ip }} -i {{ second_interface_ip }}"
+    when: interfaces | length == 2 and registration_key != "paste key here"

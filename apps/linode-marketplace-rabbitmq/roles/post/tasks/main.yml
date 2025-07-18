@@ -1,0 +1,23 @@
+---
+  - name: copy MOTD template to /etc/motd
+    template:
+      src: 'templates/motd.j2'
+      dest: '/etc/motd'
+
+  - name: writing creds into file
+    copy:
+      dest: '/home/{{ username }}/.credentials'
+      mode: '0600'
+      owner: '{{ username }}'
+      group: '{{ username }}'
+      content: |
+        Sudo Username: {{ username }}
+        Sudo Password: {{ password }}
+
+        # RabbitMQ Credentials:
+        RabbitMQ Username: {{ rabbitmq_username }}
+        RabbitMQ Password: {{ rabbitmq_password}}
+        
+        RabbitMQ Admin Username: {{ rabbitmq_admin_username }}
+        RabbitMQ Admin Password: {{ rabbitmq_admin_password }}
+        

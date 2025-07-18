@@ -1,6 +1,6 @@
 collections:
  - name: linode.cloud
-   version: 0.16.1
-### community.docker hotfix version ###
+   version: 0.32.0
+
  - name: community.docker
-   version: 3.10.3 
+   version: 4.3.0 

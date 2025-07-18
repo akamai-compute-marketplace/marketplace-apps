@@ -1,0 +1,59 @@
+networks:
+  liveswitch:
+    driver: bridge
+
+services:
+  redis:
+    image: redis:8.0.0
+    restart: always
+    networks:
+      - liveswitch
+    ports:
+      - "127.0.0.1:6379:6379"  # Local only
+
+  postgres:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - liveswitch
+    ports:
+      - "127.0.0.1:5432:5432"  # Local only
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:4.1.0
+    restart: always
+    networks:
+      - liveswitch
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    ports:
+      - "127.0.0.1:5672:5672"     # AMQP
+      - "127.0.0.1:15672:15672"   # Management UI (optional for dev)
+
+  liveswitch-gateway:
+    image: frozenmountain/liveswitch-gateway
+    restart: always
+    networks:
+      - liveswitch
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    ports:
+      - "127.0.0.1:8080:8080"  # LiveSwitch Gateway (HTTP)
+      - "127.0.0.1:8443:8443"  # Gateway (TLS)
+      - "127.0.0.1:9090:9090"  # Admin Console
+      - "127.0.0.1:9443:9443"  # Admin Console (TLS)
+    environment:
+      CONNECTIONSTRINGS__DEFAULT: "postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/postgres?sslmode=disable"
+      CONNECTIONSTRINGS__CACHE: "redis://redis:6379"
+      Deployments__0__RecordingManagement__Enabled: "true"
+      Deployments__0__RecordingManagement__AmqpUri: "amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672"
+      Deployments__0__RecordingManagement__PostgresUri: "postgres://postgres:${POSTGRES_PASSWORD}@postgres:5432/recording?sslmode=disable"
+volumes:
+  pgdata:

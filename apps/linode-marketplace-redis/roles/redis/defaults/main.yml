@@ -1,0 +1,11 @@
+---
+# Basic Paths
+redis_conf_directory: /etc/redis
+# SSL Paths
+redis_ssl_directory: /etc/redis/ssl
+redis_ssl_ca_directory: /etc/redis/ssl/ca
+redis_ssl_reqs_directory: /etc/redis/ssl/reqs
+redis_ssl_keys_directory: /etc/redis/ssl/keys
+redis_ssl_certs_directory: /etc/redis/ssl/certs
+redis_ssl_server_cert: /etc/redis/ssl/certs/redis.crt
+redis_ssl_server_key: /etc/redis/ssl/keys/redis.key.pem

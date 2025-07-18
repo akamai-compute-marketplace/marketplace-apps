@@ -1,0 +1,73 @@
+---
+# install system packages
+
+- name: set distro release codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+    os: "ubuntu"
+
+- name: install required packages
+  apt:
+    pkg:
+      - curl
+      - htop
+      - ca-certificates
+      - tzdata
+      - perl
+      - gnupg
+      - apt-transport-https
+    state: latest
+    update_cache: true
+
+- name: add gitlab gpg key
+  get_url:
+    url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
+    dest: /tmp/gitlab-key.gpg
+
+- name: dearmouring gitlab key
+  shell: gpg --dearmor < /tmp/gitlab-key.gpg > //etc/apt/trusted.gpg.d/gitlab_gitlab-ce.gpg
+
+- name: add gitlab deb repository to sources list
+  apt_repository:
+    repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
+    state: present
+    filename: "gitlab_gitlab-ce"
+
+- name: add gitlab deb-source repository to sources list
+  apt_repository:
+    repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
+    state: present
+    filename: "gitlab_gitlab-ce"
+
+- name: install gitlab
+  apt:
+    name: gitlab-ce
+    state: latest
+    update_cache: true
+
+- name: configure gitlab
+  template:
+    src: gitlab.rb.j2
+    dest: /etc/gitlab/gitlab.rb
+
+- name: reconfigure gitlab
+  command: gitlab-ctl reconfigure
+  async: 600
+  poll: 10
+
+- name: obtain default password
+  slurp:
+    src: /etc/gitlab/initial_root_password
+  register: gitlab_password
+  no_log: true
+
+- name: extract the password using regex
+  set_fact:
+    gitlab_root_password: "{{ gitlab_password['content'] | b64decode | regex_findall('Password: (.+)') | first }}"
+  no_log: true
+
+- name: disable gitlab user signups
+  command: >
+    gitlab-rails runner 'ApplicationSetting.find_by(id: 1)&.update!(signup_enabled: false)'
+  become: yes
+  become_user: git

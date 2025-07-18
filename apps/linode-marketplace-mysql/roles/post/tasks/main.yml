@@ -1,0 +1,16 @@
+---
+  - name: Copy MOTD template to /etc/motd
+    template:
+      src: 'templates/motd.j2'
+      dest: '/etc/motd'
+
+  - name: Writing creds into file
+    copy:
+      dest: '/home/{{ username }}/.credentials'
+      mode: '0600'
+      owner: '{{ username }}'
+      group: '{{ username }}'
+      content: |
+        Sudo Username: {{ username }}
+        Sudo Password: {{ password }}
+        MySQL Root Password: {{ mysql_root_password }}

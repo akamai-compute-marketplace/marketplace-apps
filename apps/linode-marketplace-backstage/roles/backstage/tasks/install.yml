@@ -1,0 +1,57 @@
+---
+# install system packages
+
+- name: install required packages
+  apt:
+    pkg:
+      - curl
+      - htop
+      - net-tools
+      - make
+      - build-essential
+      - postgresql
+      - libpq-dev
+      - npm
+    state: latest
+    update_cache: true
+
+- name: get nvm latest version
+  uri:
+    url: https://api.github.com/repos/nvm-sh/nvm/releases/latest
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_release
+
+- name: set nvm latest version
+  set_fact:
+    nvm_latest_version: "{{ latest_release.json.tag_name }}"
+
+- name: download nvm latest binary
+  get_url:
+    url: 'https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_latest_version }}/install.sh'
+    dest: '{{ username_directory }}/install.sh'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: 0700
+  register: install_sh
+
+- name: install nvm
+  shell: '{{ install_sh.dest }}' 
+  become: true
+  become_method: su
+  become_user: '{{ username }}'
+
+- name: remove install.sh
+  file:
+    path: '{{ install_sh.dest }}'
+    state: absent
+
+- name: install docker latest
+  import_role: 
+    name: docker
+
+- name: stop docker service
+  systemd:
+    name: docker
+    state: stopped

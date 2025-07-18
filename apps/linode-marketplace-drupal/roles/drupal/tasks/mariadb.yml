@@ -1,0 +1,33 @@
+---
+- name: Ensure MariaDB is started
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Import securemysql passgen
+  import_role:
+    name: securemysql
+    tasks_from: passgen
+
+- name: Import secure MySQL role
+  import_role:
+    name: securemysql
+
+- name: Create Drupal database
+  mysql_db:
+    name: drupaldb
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+
+- name: Create Drupal database user
+  mysql_user:
+    name: drupal
+    password: "{{ mysql_drupal_password }}"
+    priv: 'drupaldb.*:ALL'
+    host: localhost
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  notify: restart mariadb

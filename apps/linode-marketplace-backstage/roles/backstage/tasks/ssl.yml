@@ -1,0 +1,60 @@
+---
+# obtain ssl certs
+
+- name: open http port for ACME
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+
+- name: get ssl certificates for backstage
+  import_role: 
+    name: certbot_ssl
+
+- name: closing http port
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+    delete: true
+
+- name: update directory permissions (1/2)
+  file:
+    path: "{{ item }}"
+    mode: 0755
+  loop:
+    - '/etc/letsencrypt/live' 
+    - '/etc/letsencrypt/archive'
+
+- name: update directory permissions (2/2)
+  file:
+    path: "{{ item }}"
+    mode: 0755
+    recurse: true
+    owner: '{{ username }}'
+    group: '{{ username }}'
+  loop:
+    - '/etc/letsencrypt/live/{{ _domain }}' 
+    - '/etc/letsencrypt/archive/{{ _domain }}'
+
+- name: create app certs directory
+  file:
+    path: '{{ app_directory }}/certs'
+    state: directory
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: 0755
+
+- name: symlinking certficates to certs directory
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+    state: link
+  loop:
+    - {src: '/etc/letsencrypt/live/{{ _domain }}/fullchain.pem', 
+      dest: '{{ app_directory }}/certs/fullchain.pem'}
+    - {src: '/etc/letsencrypt/live/{{ _domain }}/privkey.pem', 
+      dest: '{{ app_directory }}/certs/privkey.pem'}

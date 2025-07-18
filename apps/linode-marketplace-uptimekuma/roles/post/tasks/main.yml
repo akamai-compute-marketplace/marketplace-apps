@@ -14,3 +14,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      Uptime-Kuma Username: {{ kuma_user_name }}
+      Uptime-Kuma password: {{ kuma_password }}

@@ -1,0 +1,11 @@
+ansible==11.5.0
+passlib==1.7.4
+yamllint==1.37.1
+ansible-lint==25.4.0
+flake8==7.2.0
+linode_api4==5.30.0
+dnspython==2.7.0
+ansible-specdoc==0.0.19
+pyyaml==6.0.2
+pexpect==4.8
+jmespath==1.0.1

@@ -1,0 +1,37 @@
+---
+# Final system configurations and cleanup
+- name: Ensure services are started and enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  loop:
+    - apache2
+    - mariadb
+
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      MariaDB Drupal database name: drupaldb
+      MariaDB Drupal username: drupal
+      MariaDB drupal user password: {{ mysql_drupal_password }}
+      MariaDB root user password: {{ mysql_root_password }}
+      Drupal Site Name: {{ drupal_site_name }}
+      Drupal Site Email: {{ drupal_site_email }}
+      Drupal Admin Username: {{ drupal_username }}
+      Drupal Admin Password: {{ drupal_password }}
+      Drupal Admin Email: {{ drupal_account_email }}

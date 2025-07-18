@@ -1,0 +1,43 @@
+---
+# Set up Docker Compose for LiveSwitch
+
+- name: Create Docker Compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/{{ username }}/liveswitch-secure/docker-compose.yml
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0644'
+
+- name: Create .env file
+  template:
+    src: env.j2
+    dest: /home/{{ username }}/liveswitch-secure/.env
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+
+- name: Start LiveSwitch containers
+  community.docker.docker_compose_v2:
+    project_src: /home/{{ username }}/liveswitch-secure
+    state: present
+
+- name: Ensure Postgresql container is running
+  community.docker.docker_container_info:
+    name: liveswitch-secure-postgres-1
+  register: pgcontainer_status
+  until: pgcontainer_status.container.State.Status == 'running'
+  retries: 10
+  delay: 2
+- name: Create Recording database
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      psql -U postgres -c "CREATE DATABASE recording;"
+
+- name: Grant privileges on Recording database
+  community.docker.docker_container_exec:
+    container: liveswitch-secure-postgres-1
+    command: >
+      psql -U postgres -c
+      "GRANT ALL PRIVILEGES ON DATABASE recording TO postgres;"

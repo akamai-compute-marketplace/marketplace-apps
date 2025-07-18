@@ -1,0 +1,47 @@
+---
+- name: Enable Apache modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - rewrite
+    - headers
+    - ssl
+    - socache_shmcb
+  notify: restart apache
+
+- name: Create Apache log directory for Drupal
+  file:
+    path: "/var/log/apache2"
+    state: directory
+    mode: '0755'
+
+- name: Create log files
+  file:
+    path: "/var/log/apache2/{{ item }}"
+    state: touch
+    mode: '0644'
+  loop:
+    - "drupal-error.log"
+    - "drupal-access.log"
+
+- name: Configure Apache virtual host
+  template:
+    src: apache-drupal.conf.j2
+    dest: /etc/apache2/sites-available/{{ _domain }}.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Disable default Apache site
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: restart apache
+
+- name: Enable Drupal site
+  file:
+    src: /etc/apache2/sites-available/{{ _domain }}.conf
+    dest: /etc/apache2/sites-enabled/{{ _domain }}.conf
+    state: link
+  notify: restart apache 

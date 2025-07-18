@@ -1,0 +1,74 @@
+---
+- name: Create application path
+  file: 
+    path: "{{ app_root_path }}"
+    state: directory
+    owner: "{{ username }}"
+    group: www-data
+
+- name: Create new rails app
+  shell:
+    cmd: |
+      eval "$(~/.local/bin/mise activate)"
+      rails new {{ app_name }}
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    chdir: /var/www
+    executable: /bin/bash
+
+- name: Create home index page
+  shell:
+    cmd: |
+      eval "$(~/.local/bin/mise activate)"
+      rails generate controller Home index
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    chdir: "{{ app_root_path }}"
+    executable: /bin/bash
+
+- name: Adding frontend index page
+  copy:
+    src: files/index.html.erb
+    dest: "{{ app_root_path }}/app/views/home/index.html.erb"
+    owner: "{{ username }}"
+    group: www-data
+    mode: 0664
+
+- name: Backing up routes.rb
+  copy:
+    src: "{{ app_root_path }}/config/routes.rb"
+    dest: "{{ app_root_path }}/config/routes.rb.bak"
+
+- name: Updating routes.rb
+  copy:
+    dest: "{{ app_root_path }}/config/routes.rb"
+    content: | 
+      Rails.application.routes.draw do
+          root "home#index"
+      end          
+
+- name: Generate static assets
+  shell:
+    cmd: |
+      eval "$(~/.local/bin/mise activate)"
+      export RAILS_ENV=production 
+      bundle exec rake assets:precompile
+  become: true
+  become_user: "{{ username }}"
+  become_flags: -i
+  args:
+    chdir: "{{ app_root_path }}"
+    executable: /bin/bash
+
+- name: Update application permissions
+  file:
+    path: "{{ app_root_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ username }}"
+    group: www-data
+  notify: restart nginx

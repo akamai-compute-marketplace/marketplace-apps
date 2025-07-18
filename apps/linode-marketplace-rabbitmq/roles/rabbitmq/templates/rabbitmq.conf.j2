@@ -1,0 +1,10 @@
+# conf:
+# https://github.com/rabbitmq/rabbitmq-server/blob/v4.0.x/deps/rabbit/docs/rabbitmq.conf.example
+
+{% if rabbitmq_private_ip is defined %}
+listeners.tcp.local = {{ rabbitmq_private_ip }}:5672
+{% else %}
+listeners.tcp.local = {{ rabbitmq_public_ip }}:5672
+{% endif %}
+# management ui listen address
+management.tcp.ip = 127.0.0.1

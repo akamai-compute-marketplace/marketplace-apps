@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
-trap "cleanup $? $LINENO" EXIT
+DEBUG="NO"
+if [ "${DEBUG}" == "NO" ]; then
+  trap "cleanup $? $LINENO" EXIT
+fi
+
 
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -13,6 +17,7 @@ trap "cleanup $? $LINENO" EXIT
 
 ## KUMA Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="kuma_user_name" label="The Username to log into your Uptime Kuma dashboard: *No Capital Letters or Special Characters*">
 
 
 # git repo
@@ -37,6 +42,7 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  kuma_user_name: ${KUMA_USER_NAME}
   webserver_stack: lemp
 EOF
 
@@ -82,14 +88,13 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
   
-
   # populate group_vars
   udf
   # run playbooks
@@ -102,4 +107,6 @@ function installation_complete {
 }
 # main
 run && installation_complete
-cleanup
+if [ "${DEBUG}" == "NO" ]; then
+  cleanup
+fi

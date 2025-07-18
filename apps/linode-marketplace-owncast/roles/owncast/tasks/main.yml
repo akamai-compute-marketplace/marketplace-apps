@@ -1,0 +1,10 @@
+---
+- name: Download and install NGINX
+  include_tasks: nginx.yml
+
+- name: Configure SSL with certbot
+  import_role:
+    name: certbot_ssl
+  
+- name: Download and install Owncast
+  include_tasks: owncast.yml 

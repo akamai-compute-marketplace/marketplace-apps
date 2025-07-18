@@ -1,0 +1,27 @@
+---
+- name: Copy sample Node.js application
+  copy:
+    src: sample_app.js
+    dest: "/var/www/{{ _domain }}/app.js"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0644'
+
+- name: Create Node.js systemd service file
+  template:
+    src: node.service.j2
+    dest: /etc/systemd/system/node.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start Node.js service
+  systemd:
+    name: node
+    enabled: true
+    state: started
+  notify: restart node
