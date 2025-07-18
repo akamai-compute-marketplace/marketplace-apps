@@ -7,8 +7,8 @@ Deploy a production-ready instance of Cribl Stream running inside Docker, with N
 | Software     | Version            | Description                                 |
 | :----------- | :----------------- | :------------------------------------------ |
 | Cribl Stream | Latest (Docker Image) | Observability pipeline & log processor      |
-| Docker       | Latest             | Container engine to run Cribl               |
-| NGINX        | Latest             | Web server and reverse proxy                |
+| Docker-Compose       | Latest             | Container engine to run Cribl               |
+
 
 **Supported Distributions:**
 - Ubuntu 24.04 LTS
