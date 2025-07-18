@@ -42,7 +42,7 @@
 - name: Kill VNC process
   shell: |
     killall Xtigervnc
-  ignore_errors: yes
+  # ignore_errors: yes
 
 - name: Create VNC service file
   template:

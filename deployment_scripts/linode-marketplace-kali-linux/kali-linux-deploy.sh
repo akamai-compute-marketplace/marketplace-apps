@@ -1,74 +1,125 @@
 #!/bin/bash
-set -e
-if [ "${DEBUG}" == "NO" ]; then
+
+# enable logging
+exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+
+# modes
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
 fi
 
-## Kali
-#<UDF name="everything" label="Would you like to Install the Kali Everything Package?" oneOf="Yes,No" default="Yes">
-#<UDF name="headless" label="Would you like to Install the Kali Headless Package?" oneOf="Yes,No" default="No">
-#<UDF name="vnc" label="Would you like to setup VNC to access Kali XFCE Desktop" oneOf="Yes,No" default="Yes">
-#<UDF name="vnc_username" label="The VNC user to be created for the Linode. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
-#<UDF name="vnc_password" label="The password for the limited VNC user">
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
+fi
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-# git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+## Kali Settings
+#<UDF name="kali_package" label="Kali Linux Package" oneOf="Everything,Headless,Core" default="Everything">
+#<UDF name="vnc" label="Would you like to setup VNC to access Kali XFCE Desktop" oneOf="Yes,No" default="Yes">
+#<UDF name="vnc_username" label="The VNC user to be created for the Linode. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
+#<UDF name="vnc_password" label="The password for the limited VNC user">
+
+#GH_USER=""
+#BRANCH=""
+# git user and branch
+if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+        echo "[info] git user and branch set.."
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+
+else
+        export GH_USER="akamai-compute-marketplace"
+        export BRANCH="main"
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+fi
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-kali-linux"
 
-# enable logging
-exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+function provision_failed {
+  echo "[info] Provision failed. Sending status.."
+
+  # dep
+  apt install jq -y
+
+  # set token
+  local token=($(curl -ks -X POST ${KC_SERVER} \
+     -H "Content-Type: application/json" \
+     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
+
+  # send pre-provision failure
+  curl -sk -X POST ${DATA_ENDPOINT} \
+     -H "Authorization: ${token}" \
+     -H "Content-Type: application/json" \
+     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
+        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
+  
+  exit $?
+}
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
-  # Translate UDF values to boolean variables
-  local EVERYTHING_BOOL=false
-  local HEADLESS_BOOL=false
-  local VNC_BOOL=false
-  local DISABLE_ROOT_BOOL=false
+  local KALI_PACKAGE_NAME=""
 
-  if [ "${EVERYTHING}" == "Yes" ]; then
-    EVERYTHING_BOOL=true
-  fi
-
-  if [ "${HEADLESS}" == "Yes" ]; then
-    HEADLESS_BOOL=true
-  fi
-
-  if [ "${VNC}" == "Yes" ]; then
-    VNC_BOOL=true
-  fi
-
-  if [ "${DISABLE_ROOT}" == "Yes" ]; then
-    DISABLE_ROOT_BOOL=true
-  fi
+  # Set the Kali package name based on selection
+  case "${KALI_PACKAGE}" in
+    "Everything")
+      KALI_PACKAGE_NAME="kali-linux-everything"
+      ;;
+    "Headless")
+      KALI_PACKAGE_NAME="kali-linux-headless"
+      ;;
+    "Core")
+      KALI_PACKAGE_NAME="kali-linux-core"
+      ;;
+    *)
+      KALI_PACKAGE_NAME="kali-linux-everything"  # Default fallback
+      ;;
+  esac
 
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
   sed 's/  //g' <<EOF > ${group_vars}
   # Kali Linux settings
-  kali_package: "{{ 'kali-linux-everything' if ${EVERYTHING_BOOL} else 'kali-linux-headless' if ${HEADLESS_BOOL} else '' }}"
+  kali_package: "${KALI_PACKAGE_NAME}"
 
   # VNC settings
-  vnc_enabled: ${VNC_BOOL}
   vnc_username: "${VNC_USERNAME}"
   vnc_password: "${VNC_PASSWORD}"
 
   # Other variables
   username: "${USER_NAME}"
-  disable_root: ${DISABLE_ROOT_BOOL}
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 EOF
+
+  # Handle VNC enabled/disabled
+  if [ "${VNC}" = "Yes" ]; then
+    echo "vnc_enabled: true" >> ${group_vars}
+  else
+    echo "vnc_enabled: false" >> ${group_vars}
+  fi
+
+  # Handle disable root setting
+  if [ "${DISABLE_ROOT}" = "Yes" ]; then
+    echo "disable_root: true" >> ${group_vars}
+  else
+    echo "Leaving root login enabled"
+  fi
 }
 
 function run {
@@ -82,7 +133,6 @@ function run {
     gnupg \
     python3 \
     python3-pip \
-    python3-venv \
     python3-full \
     ansible
   # clone repo and set up ansible environment
@@ -109,8 +159,7 @@ function run {
 function installation_complete {
   echo "Installation Complete"
 }
+
 # main
-run && installation_complete
-if [ "${DEBUG}" == "NO" ]; then
-  cleanup
-fi
+run
+installation_complete

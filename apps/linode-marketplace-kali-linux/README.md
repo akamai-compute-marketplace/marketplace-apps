@@ -10,7 +10,7 @@
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -40,7 +40,7 @@ curl -H "Content-Type: application/json" \
     -X POST -d '{
       "backups_enabled": true,
       "swap_size": 512,
-      "image": "linode/ubuntu2204",
+      "image": "linode/ubuntu2404",
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
