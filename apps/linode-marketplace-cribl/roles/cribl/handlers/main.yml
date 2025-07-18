@@ -1,6 +1,3 @@
 # cribl handlers
 - name: restart cribl
-  systemd:
-    name: cribl
-    state: restarted
-    enabled: yes
+  command: docker exec -i cribl_stream /opt/cribl/bin/cribl restart
