@@ -24,8 +24,8 @@ fi
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Kali Settings
-#<UDF name="kali_package" label="Kali Linux Package" oneOf="Everything,Headless,Core" default="Headless">
-#<UDF name="vnc" label="Setup VNC Remote Desktop? (recommended for Everything package; adds desktop to Headless/Core)" oneOf="Yes,No" default="No">
+#<UDF name="kali_package" label="Kali Linux Package" oneOf="Everything,Default,Core" default="Default">
+#<UDF name="vnc" label="Setup VNC Remote Desktop? (recommended for Everything package; adds desktop to Default/Core)" oneOf="Yes,No" default="No">
 #<UDF name="vnc_username" label="The VNC user to be created for the Akamai Compute Instance. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
 
 #GH_USER=""
@@ -80,14 +80,14 @@ function udf {
     "Everything")
       KALI_PACKAGE_NAME="kali-linux-everything"
       ;;
-    "Headless")
-      KALI_PACKAGE_NAME="kali-linux-headless"
+    "Default")
+      KALI_PACKAGE_NAME="kali-linux-default"
       ;;
     "Core")
       KALI_PACKAGE_NAME="kali-linux-core"
       ;;
     *)
-      KALI_PACKAGE_NAME="kali-linux-headless"  # Default
+      KALI_PACKAGE_NAME="kali-linux-default"  # Default
       ;;
   esac
 

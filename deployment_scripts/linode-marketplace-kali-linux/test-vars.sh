@@ -16,7 +16,7 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["KALI_PACKAGE"]="Headless"
+UDF_VARS["KALI_PACKAGE"]="Default"
 UDF_VARS["VNC"]="No"
 UDF_VARS["VNC_USERNAME"]="kaliuser"
 
@@ -24,7 +24,7 @@ UDF_VARS["VNC_USERNAME"]="kaliuser"
 if [[ -n "${KALI_PACKAGE}" ]]; then
         UDF_VARS["KALI_PACKAGE"]="${KALI_PACKAGE}"
 else
-        UDF_VARS["KALI_PACKAGE"]="Headless" # default
+        UDF_VARS["KALI_PACKAGE"]="Default" # default (kali-linux-default)
 fi
 
 if [[ -n "${VNC}" ]]; then
