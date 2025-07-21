@@ -1,4 +1,5 @@
 *********************************************************
+{% if vnc_enabled %}
 Akamai Connected Cloud Kali Marketplace App
 
 ###################################
@@ -17,6 +18,12 @@ Akamai Connected Cloud Kali Marketplace App
 ### To remove this message, you can edit the /etc/motd file ###
 
 Credentials File: /home/{{ username }}/.credentials
+{% else %}
+Akamai Connected Cloud Kali Linux Marketplace App
+App URL: https://{{ ansible_default_ipv4.address }}
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/marketplace/apps/linode/kali-linux/
+{% endif %}
 *********************************************************
 To delete this message of the day: rm /etc/motd
 

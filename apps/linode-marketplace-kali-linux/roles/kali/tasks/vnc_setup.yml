@@ -31,13 +31,17 @@
 - name: Set up VNC password
   expect:
     command: vncserver
+    timeout: 30
     responses:
-      Password: "{{ vnc_password }}"
-      Verify: "{{ vnc_password }}"
+      "Password:": "{{ vnc_password }}"
+      "Verify:": "{{ vnc_password }}"
       "Would you like to enter a view-only password (y/n)?": "n"
   become: yes
   become_user: "{{ vnc_username }}"
   no_log: true
+  environment:
+    DISPLAY: ":1"
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Check if VNC is running
   command: pgrep Xtigervnc

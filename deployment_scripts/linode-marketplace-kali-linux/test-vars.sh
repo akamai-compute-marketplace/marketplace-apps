@@ -16,8 +16,8 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["KALI_PACKAGE"]="Default"
-UDF_VARS["VNC"]="No"
+UDF_VARS["KALI_PACKAGE"]="Default" # Options: Default, Core, Everything
+UDF_VARS["VNC"]="No" # Options: Yes, No
 UDF_VARS["VNC_USERNAME"]="kaliuser"
 
 # dynamic variables
