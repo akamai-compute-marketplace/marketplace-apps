@@ -105,19 +105,26 @@ function udf {
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 EOF
 
-  # Handle VNC enabled/disabled
   if [ "${VNC}" = "Yes" ]; then
     echo "vnc_enabled: true" >> ${group_vars}
   else
     echo "vnc_enabled: false" >> ${group_vars}
   fi
 
-  # Handle disable root setting
   if [ "${DISABLE_ROOT}" = "Yes" ]; then
     echo "disable_root: true" >> ${group_vars}
   else
     echo "Leaving root login enabled"
   fi
+
+  # staging or production mode (ci)
+  if [[ "${MODE}" == "staging" ]]; then
+    echo "[info] running in staging mode..."
+    echo "mode: ${MODE}" >> ${group_vars}
+  else
+    echo "[info] running in production mode..."
+    echo "mode: production" >> ${group_vars}
+  fi  
 }
 
 function run {

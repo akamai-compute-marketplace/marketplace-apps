@@ -20,7 +20,8 @@
   import_role:
       name: securessh
 
-- name: Determine root device for GRUB installation # root device is not always /dev/sda on kali
+# Provides dynamic detection of root device for GRUB installation since root device is not always /dev/sda on Kali
+- name: Determine root device for GRUB installation
   shell: findmnt -n -o SOURCE / | sed 's/[0-9]*$//'
   register: root_device
   changed_when: false
