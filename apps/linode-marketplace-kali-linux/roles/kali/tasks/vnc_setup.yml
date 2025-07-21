@@ -28,9 +28,17 @@
     password: "{{ vnc_password | password_hash('sha512') }}"
     shell: /bin/bash
 
-- name: Set up VNC password
+- name: Create VNC directory for user
+  file:
+    path: "/home/{{ vnc_username }}/.vnc"
+    state: directory
+    owner: "{{ vnc_username }}"
+    group: "{{ vnc_username }}"
+    mode: '0700'
+
+- name: Set up VNC password using vncpasswd
   expect:
-    command: vncserver
+    command: vncpasswd
     timeout: 30
     responses:
       "Password:": "{{ vnc_password }}"
@@ -40,8 +48,7 @@
   become_user: "{{ vnc_username }}"
   no_log: true
   environment:
-    DISPLAY: ":1"
-    DEBIAN_FRONTEND: noninteractive
+    HOME: "/home/{{ vnc_username }}"
 
 - name: Check if VNC is running
   command: pgrep Xtigervnc

@@ -16,5 +16,5 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          vnc_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+          vnc_password: {{ lookup('password', '/dev/null length=8 chars=ascii_letters,digits') }}
       when: vnc_enabled
