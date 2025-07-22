@@ -1,15 +1,13 @@
 ---
+- name: Set WireGuard Client directory path
+  set_fact:
+    wireguard_dir: /etc/wireguard
+
 - name: Install WireGuard
   apt:
     name: wireguard
     state: present
     update_cache: true
-
-- name: Ensure directory for keys exists
-  file:
-    path: /etc/wireguard
-    state: directory
-    mode: '0700'
 
 - name: Generate WireGuard client private key
   command: wg genkey
@@ -18,7 +16,7 @@
 - name: Save WireGuard client private key
   copy:
     content: "{{ wg_private_key.stdout }}"
-    dest: /etc/wireguard/client_private.key
+    dest: "{{ wireguard_dir }}/client_private.key"
     mode: '0600'
 
 - name: Generate WireGuard client public key from private key
@@ -30,13 +28,13 @@
 - name: Save WireGuard client public key
   copy:
     content: "{{ wg_public_key.stdout }}\n"
-    dest: /etc/wireguard/client_public.key
+    dest: "{{ wireguard_dir }}/client_public.key"
     mode: '0644'
 
 - name: Create WireGuard config from template
   template:
     src: wg0.conf.j2
-    dest: /etc/wireguard/wg0.conf
+    dest: "{{ wireguard_dir }}/wg0.conf"
     mode: '0600'
   vars:
     client_private_key: "{{ wg_private_key.stdout }}"
