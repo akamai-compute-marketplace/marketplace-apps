@@ -6,8 +6,6 @@
     proto: tcp
   loop:
     - "22"
-    - "80"
-    - "443"
 
 - name: Configure WireGuard server endpoint
   ufw:
