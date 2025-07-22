@@ -29,7 +29,7 @@ fi
 if [[ -n "${WIREGUARD_SERVER_ENDPOINT}" ]]; then
         UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="${WIREGUARD_SERVER_ENDPOINT}"
 else
-        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="" # default
+        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="127.0.0.1:51820" # default
 fi
 
 set_vars() {
