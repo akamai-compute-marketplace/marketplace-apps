@@ -65,7 +65,7 @@
     state: started
     auto_remove: true
     volumes:
-      - "{{ azuracast_dir }}:/var/azuracast"
+      - "{{ azuracast_dir }}:/{{ azuracast_dir }}"
     env_file: "{{ azuracast_dir }}/azuracast.env"
     env:
       MARIADB_ROOT_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
