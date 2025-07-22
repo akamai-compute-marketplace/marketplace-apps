@@ -1,0 +1,207 @@
+---
+- name: Set AzuraCast directory path
+  set_fact:
+    azuracast_dir: /var/azuracast
+
+- name: Create AzuraCast directory
+  file:
+    path: "{{ azuracast_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Download AzuraCast required files
+  get_url:
+    url: "{{ file.url }}"
+    dest: "{{ file.dest }}"
+    mode: '0644'
+  loop_control:
+    loop_var: file
+  loop:
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env", dest: "{{ azuracast_dir }}/.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env", dest: "{{ azuracast_dir }}/azuracast.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.sample.yml", dest: "{{ azuracast_dir }}/docker-compose.yml" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.installer.yml", dest: "{{ azuracast_dir }}/docker-compose.installer.yml" }
+
+- name: Set AZURACAST_VERSION to stable in .env
+  lineinfile:
+    path: "{{ azuracast_dir }}/.env"
+    regexp: '^AZURACAST_VERSION='
+    line: 'AZURACAST_VERSION=stable'
+
+- name: Run AzuraCast installer container
+  community.docker.docker_compose_v2:
+    project_src: "{{ azuracast_dir }}"
+    files:
+      - docker-compose.installer.yml
+    project_name: azuracast_installer
+    pull: always
+    services:
+      - installer
+
+- name: Remove docker-compose.installer.yml
+  file:
+    path: "{{ azuracast_dir }}/docker-compose.installer.yml"
+    state: absent
+
+- name: Rename docker-compose.new.yml to docker-compose.yml
+  command: mv {{ azuracast_dir }}/docker-compose.new.yml {{ azuracast_dir }}/docker-compose.yml
+
+- name: Pull AzuraCast images
+  community.docker.docker_compose_v2:
+    project_src: "{{ azuracast_dir }}"
+    pull: always
+    state: present
+
+- name: Get AzuraCast DB password from env file for installer
+  slurp:
+    src: "{{ azuracast_dir }}/azuracast.env"
+  register: azuracast_env_pre
+
+- name: Run azuracast_install in web container
+  community.docker.docker_container:
+    name: azuracast_web_run_install
+    image: ghcr.io/azuracast/azuracast:stable
+    command: azuracast_install
+    state: started
+    auto_remove: true
+    volumes:
+      - "{{ azuracast_dir }}:/{{ azuracast_dir }}"
+    env_file: "{{ azuracast_dir }}/azuracast.env"
+    env:
+      MARIADB_ROOT_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
+      MARIADB_USER: azuracast
+      MARIADB_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+      MARIADB_DATABASE: azuracast
+  no_log: true
+
+- name: Bring up AzuraCast stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ azuracast_dir }}"
+    state: present
+
+- name: Get AzuraCast container info
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_info
+  retries: 10
+  delay: 10
+  until: azuracast_info.container.State.Status == 'running'
+  changed_when: false
+  no_log: true
+
+- name: Wait for MySQL to be ready in AzuraCast container (using /dev/tcp)
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: bash -c "echo > /dev/tcp/localhost/3306"
+  register: mysql_ready
+  retries: 20
+  delay: 5
+  until: mysql_ready.rc == 0
+  changed_when: false
+
+- name: Restart AzuraCast container to reset database state
+  community.docker.docker_compose_v2:
+    project_src: "{{ azuracast_dir }}"
+    state: restarted
+
+- name: Wait for container to be ready after restart
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_restart_info
+  retries: 10
+  delay: 10
+  until: azuracast_restart_info.container.State.Status == 'running'
+  changed_when: false
+  no_log: true
+
+- name: Wait for MySQL to be ready after restart
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: bash -c "echo > /dev/tcp/localhost/3306"
+  register: mysql_ready_restart
+  retries: 20
+  delay: 5
+  until: mysql_ready_restart.rc == 0
+  changed_when: false
+
+- name: Initialize AzuraCast with azuracast_install command
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: azuracast_install
+
+- name: Run AzuraCast setup command with init flag
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: azuracast_cli azuracast:setup --init
+
+- name: Get AzuraCast DB password from env file
+  slurp:
+    src: "{{ azuracast_dir }}/azuracast.env"
+  register: azuracast_env
+
+- name: Set DB password fact
+  set_fact:
+    azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+    azuracast_db_root_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
+  no_log: true
+
+- name: Copy AzuraCast admin user creation script to host
+  template:
+    src: db_create_user.php.j2
+    dest: "{{ azuracast_dir }}/db_create_user.php"
+    mode: '0644'
+
+- name: Copy admin user creation script into container
+  community.docker.docker_container_copy_into:
+    container: azuracast
+    path: "{{ azuracast_dir }}/db_create_user.php"
+    container_path: "{{ azuracast_dir }}/www/db_create_user.php"
+
+- name: Run admin user creation script in container
+  community.docker.docker_container_exec:
+    container: azuracast
+    user: azuracast
+    command: "php {{ azuracast_dir }}/www/db_create_user.php"
+
+- name: Wait for Redis socket in container
+  command: docker exec azuracast test -S /run/redis/redis.sock
+  register: redis_socket_check
+  retries: 10
+  delay: 5
+  until: redis_socket_check.rc == 0
+  changed_when: false
+
+- name: Set super admin user with AzuraCast CLI
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: azuracast_cli azuracast:account:set-administrator {{ azuracast_admin_email }}
+
+- name: Restart AzuraCast
+  community.docker.docker_compose_v2:
+    project_src: "{{ azuracast_dir }}"
+    state: restarted
+
+- name: Get AzuraCast container info after restart
+  community.docker.docker_container_info:
+    name: azuracast
+  register: azuracast_container_restart
+  retries: 10
+  delay: 10
+  until: azuracast_container_restart.container.State.Status == 'running'
+  changed_when: false
+  no_log: true
+
+- name: Wait for AzuraCast web server to be ready in container
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
+  register: web_ready
+  retries: 20
+  delay: 5
+  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
+  changed_when: false
+
+- name: Set up Let's Encrypt certificate with AzuraCast CLI
+  community.docker.docker_container_exec:
+    container: azuracast
+    command: azuracast_cli azuracast:acme:get-certificate
