@@ -1,0 +1,16 @@
+---
+- name: Install Docker latest
+  import_role: 
+    name: docker
+
+- name: Install Docker Compose plugin
+  apt:
+    name: docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: true
