@@ -5,11 +5,6 @@
     state: present
     update_cache: true
 
-- name: Ensure directory for keys exists
-  file:
-    path: /etc/wireguard
-    state: directory
-    mode: '0700'
 
 - name: Generate WireGuard client private key
   command: wg genkey
