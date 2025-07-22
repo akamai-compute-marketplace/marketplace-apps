@@ -155,7 +155,7 @@
   community.docker.docker_container_copy_into:
     container: azuracast
     path: "{{ azuracast_dir }}/db_create_user.php"
-    container_path: /var/azuracast/www/db_create_user.php
+    container_path: "{{ azuracast_dir }}/www/db_create_user.php"
 
 - name: Run admin user creation script in container
   community.docker.docker_container_exec:
