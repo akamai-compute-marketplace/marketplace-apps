@@ -161,7 +161,7 @@
   community.docker.docker_container_exec:
     container: azuracast
     user: azuracast
-    command: php /var/azuracast/www/db_create_user.php
+    command: "php {{ azuracast_dir }}/www/db_create_user.php"
 
 - name: Wait for Redis socket in container
   command: docker exec azuracast test -S /run/redis/redis.sock
