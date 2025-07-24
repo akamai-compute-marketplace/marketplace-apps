@@ -1,0 +1,24 @@
+---
+- name: Configure UFW rules
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "22"
+
+- name: Configure WireGuard server endpoint
+  ufw:
+    rule: allow
+    from_ip: "{{ wireguard_server_endpoint.split(':')[0] }}"
+
+- name: Configure WireGuard allowed IPs
+  ufw:
+    rule: allow
+    from_ip: "{{ item }}"
+  loop: "{{ wireguard_allowed_ips }}"
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny 

@@ -1,0 +1,19 @@
+---
+# Final system configurations and cleanup
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Azuracast Admin Email: {{ azuracast_admin_email }}
+      Azuracast Admin Password: {{ azuracast_admin_password }}
+      

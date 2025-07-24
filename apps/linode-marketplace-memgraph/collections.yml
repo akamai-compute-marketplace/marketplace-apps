@@ -1,0 +1,5 @@
+collections:
+ - name: linode.cloud
+   version: 0.37.1
+ - name: community.crypto
+   version: 2.26.0 

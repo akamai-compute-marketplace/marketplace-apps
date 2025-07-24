@@ -1,0 +1,22 @@
+---
+- name: Allow SSH connections
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+
+# Memgraph Bolt access
+
+- name: Allow memgraph Bolt IPs
+  ufw:
+    rule: allow
+    port: '7687'
+    proto: tcp
+    src: '{{ item }}'
+  loop: '{{ memgraph_bolt_allow }}'
+  when: memgraph_bolt_allow is defined
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny

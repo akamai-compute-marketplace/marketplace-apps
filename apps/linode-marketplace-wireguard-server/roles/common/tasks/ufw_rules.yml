@@ -1,0 +1,21 @@
+---
+- name: Configure UFW rules
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "22"
+    - "80"
+    - "443"
+
+- name: Configure WireGuard rule
+  ufw:
+    rule: allow
+    port: "51820"
+    proto: udp
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny 
