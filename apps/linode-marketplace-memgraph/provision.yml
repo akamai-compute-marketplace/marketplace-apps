@@ -11,9 +11,9 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    - name: Creating Azuracast credentials
-      lineinfile:
+    - name: Generating memgraph password
+      blockinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        line: |
-          azuracast_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+        block: |
+          memgraph_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
