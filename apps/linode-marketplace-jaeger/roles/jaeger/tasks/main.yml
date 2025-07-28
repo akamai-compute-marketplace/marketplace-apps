@@ -1,0 +1,22 @@
+---
+# Main installation tasks for Jaeger
+
+- name: Set application facts
+  set_fact:
+    app_name: "jaeger"
+    app_version: "{{ jaeger_version | default('latest') }}"
+    jaeger_ui_port: "{{ jaeger_ui_port | default('16686') }}"
+    jaeger_collector_port: "{{ jaeger_collector_port | default('14268') }}"
+    jaeger_admin_user: "jaeger"
+    jaeger_admin_password: "{{ jaeger_admin_password }}"
+
+# Install Docker
+- name: Install Docker
+  import_role:
+    name: docker
+
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml

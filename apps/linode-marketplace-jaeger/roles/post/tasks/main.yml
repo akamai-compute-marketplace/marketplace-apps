@@ -1,0 +1,32 @@
+---
+# Final system configurations and cleanup
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: Write credentials file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      # Akamai Connected Cloud Jaeger Marketplace App Credentials
+      
+      ## System Access
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      
+      ## Jaeger UI Access
+      Jaeger UI URL: https://{{ _domain }}
+      Jaeger Username: {{ jaeger_admin_user }}
+      Jaeger Password: {{ jaeger_admin_password }}
+      
+      ## OTLP Endpoints (for applications sending traces)
+      OTLP gRPC: {{ _domain }}:4317
+      OTLP HTTP: {{ _domain }}:4318
+      
+      ## Container Management
+      View Jaeger logs: docker logs jaeger
+      Restart Jaeger: docker restart jaeger

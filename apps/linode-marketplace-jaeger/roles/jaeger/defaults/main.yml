@@ -1,0 +1,5 @@
+---
+# Default variables for Jaeger
+jaeger_version: "latest"
+jaeger_ui_port: "16686"
+jaeger_collector_port: "14268"
