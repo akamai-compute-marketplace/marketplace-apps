@@ -82,15 +82,14 @@ function udf {
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: true" >> ${group_vars};
-  else 
-    echo "disable_root: false" >> ${group_vars};
+    echo "disable_root: yes" >> ${group_vars};
+  else echo "Leaving root login enabled";
   fi
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 \".ip.linodeusercontent.com\"'})" >> ${group_vars};
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
@@ -119,28 +118,32 @@ EOF
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
-  apt-get install -y git python3 python3-pip python3-dev python3-venv
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git clone "${GIT_REPO}" "${WORK_DIR}"
-  cd "${WORK_DIR}"
-  git checkout "${BRANCH}"
+  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # write vars from UDFs
-  udf
-  source ${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars
-  # run playbooks
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
+  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
-  pip install --upgrade pip
+  pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
-  ansible-playbook provision.yml
-  ansible-playbook site.yml
+
+  # populate group_vars
+  udf
+  # run playbooks
+  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
+}
+
+function installation_complete {
+  echo "Installation Complete"
 }
 
 # main
-run && exit 0 || exit 1
+run
+installation_complete
