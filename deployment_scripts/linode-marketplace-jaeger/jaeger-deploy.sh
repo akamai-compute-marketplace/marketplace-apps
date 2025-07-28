@@ -4,8 +4,12 @@
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # modes
-DEBUG="NO"
-if [ "${DEBUG}" == "NO" ]; then
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
 fi
 
