@@ -19,7 +19,7 @@
       COLLECTOR_OTLP_ENABLED: "true"
     volumes:
       - jaeger_data:/tmp
-    logging_driver: json-file
-    logging_options:
+    log_driver: json-file
+    log_options:
       max-size: "10m"
       max-file: "3"
