@@ -1,0 +1,194 @@
+---
+# TLS Certificate Generation for OTLP Authentication
+# Implements client certificate authentication to secure OTLP endpoints (ports 4317/4318)
+
+- name: Create TLS certificates directory
+  file:
+    path: /etc/jaeger/tls
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Generate CA private key
+  openssl_privatekey:
+    path: /etc/jaeger/tls/ca-key.pem
+    size: 4096
+    mode: '0600'
+
+- name: Generate CA certificate signing request
+  openssl_csr:
+    path: /etc/jaeger/tls/ca.csr
+    privatekey_path: /etc/jaeger/tls/ca-key.pem
+    common_name: "Jaeger OTLP CA"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+
+- name: Generate self-signed CA certificate
+  openssl_certificate:
+    path: /etc/jaeger/tls/ca-cert.pem
+    privatekey_path: /etc/jaeger/tls/ca-key.pem
+    csr_path: /etc/jaeger/tls/ca.csr
+    provider: selfsigned
+    mode: '0644'
+
+- name: Generate client private key
+  openssl_privatekey:
+    path: /etc/jaeger/tls/client-key.pem
+    size: 4096
+    mode: '0600'
+
+- name: Generate client certificate signing request
+  openssl_csr:
+    path: /etc/jaeger/tls/client.csr
+    privatekey_path: /etc/jaeger/tls/client-key.pem
+    common_name: "jaeger-client"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+
+- name: Generate client certificate signed by CA
+  openssl_certificate:
+    path: /etc/jaeger/tls/client-cert.pem
+    privatekey_path: /etc/jaeger/tls/client-key.pem
+    csr_path: /etc/jaeger/tls/client.csr
+    provider: ownca
+    ownca_path: /etc/jaeger/tls/ca-cert.pem
+    ownca_privatekey_path: /etc/jaeger/tls/ca-key.pem
+    mode: '0644'
+
+- name: Generate server private key for Jaeger
+  openssl_privatekey:
+    path: /etc/jaeger/tls/server-key.pem
+    size: 4096
+    mode: '0600'
+
+- name: Generate server certificate signing request
+  openssl_csr:
+    path: /etc/jaeger/tls/server.csr
+    privatekey_path: /etc/jaeger/tls/server-key.pem
+    common_name: "{{ _domain }}"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+    subject_alt_name:
+      - "DNS:{{ _domain }}"
+      - "DNS:localhost"
+      - "IP:127.0.0.1"
+
+- name: Generate server certificate signed by CA
+  openssl_certificate:
+    path: /etc/jaeger/tls/server-cert.pem
+    privatekey_path: /etc/jaeger/tls/server-key.pem
+    csr_path: /etc/jaeger/tls/server.csr
+    provider: ownca
+    ownca_path: /etc/jaeger/tls/ca-cert.pem
+    ownca_privatekey_path: /etc/jaeger/tls/ca-key.pem
+    mode: '0644'
+
+- name: Create client certificates directory for user
+  file:
+    path: "/home/{{ username }}/.jaeger-client-certs"
+    state: directory
+    mode: '0700'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy client certificates to user directory
+  copy:
+    src: "{{ item }}"
+    dest: "/home/{{ username }}/.jaeger-client-certs/"
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    remote_src: true
+  loop:
+    - /etc/jaeger/tls/ca-cert.pem
+    - /etc/jaeger/tls/client-cert.pem
+    - /etc/jaeger/tls/client-key.pem
+
+- name: Add TLS certificate information to credentials file
+  lineinfile:
+    path: "/home/{{ username }}/.credentials"
+    line: |
+      
+      === Jaeger OTLP Client Certificates ===
+      CA Certificate: /home/{{ username }}/.jaeger-client-certs/ca-cert.pem
+      Client Certificate: /home/{{ username }}/.jaeger-client-certs/client-cert.pem
+      Client Private Key: /home/{{ username }}/.jaeger-client-certs/client-key.pem
+      
+      OTLP Endpoints:
+      - gRPC: {{ _domain }}:4317 (with TLS)
+      - HTTP: https://{{ _domain }}:4318/v1/traces (with TLS)
+    create: true
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Create client configuration example file
+  copy:
+    content: |
+      # Jaeger TLS Client Certificate Configuration
+      # Use these files for authenticated OTLP connections
+      
+      ## For Python OpenTelemetry applications:
+      ```python
+      from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+      from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as HTTPSpanExporter
+      import grpc
+      import ssl
+      
+      # Load certificates
+      with open('/path/to/ca-cert.pem', 'rb') as f:
+          ca_cert = f.read()
+      with open('/path/to/client-cert.pem', 'rb') as f:
+          client_cert = f.read()
+      with open('/path/to/client-key.pem', 'rb') as f:
+          client_key = f.read()
+      
+      # Option 1: gRPC with client certificates (recommended)
+      credentials = grpc.ssl_channel_credentials(
+          root_certificates=ca_cert,
+          private_key=client_key,
+          certificate_chain=client_cert
+      )
+      exporter = OTLPSpanExporter(
+          endpoint="{{ _domain }}:4317",
+          credentials=credentials
+      )
+      
+      # Option 2: HTTP with client certificates
+      ssl_context = ssl.create_default_context(cafile='/path/to/ca-cert.pem')
+      ssl_context.load_cert_chain('/path/to/client-cert.pem', '/path/to/client-key.pem')
+      
+      exporter = HTTPSpanExporter(
+          endpoint="https://{{ _domain }}:4318/v1/traces",
+          session=requests.Session()  # Configure with ssl_context
+      )
+      ```
+      
+      ## For Docker applications:
+      ```bash
+      # Copy certificates to container
+      docker cp ca-cert.pem container:/certs/
+      docker cp client-cert.pem container:/certs/
+      docker cp client-key.pem container:/certs/
+      
+      # Set environment variables
+      export OTEL_EXPORTER_OTLP_ENDPOINT="{{ _domain }}:4317"
+      export OTEL_EXPORTER_OTLP_CERTIFICATE=/certs/ca-cert.pem
+      export OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE=/certs/client-cert.pem
+      export OTEL_EXPORTER_OTLP_CLIENT_KEY=/certs/client-key.pem
+      ```
+      
+      ## Certificate Distribution:
+      1. Copy these files to your application servers:
+         - ca-cert.pem (CA certificate for server verification)
+         - client-cert.pem (Client certificate for authentication)
+         - client-key.pem (Client private key)
+      
+      2. Secure the private key with appropriate file permissions (600)
+      
+      3. Configure your OpenTelemetry exporter to use these certificates
+    dest: "/home/{{ username }}/.jaeger-tls-config"
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"

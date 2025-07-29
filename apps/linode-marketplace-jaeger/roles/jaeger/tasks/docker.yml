@@ -13,12 +13,23 @@
       - "16686:16686"   # Jaeger UI
       - "14268:14268"   # HTTP collector
       - "14250:14250"   # gRPC collector  
-      - "4317:4317"     # OTLP gRPC receiver
-      - "4318:4318"     # OTLP HTTP receiver
+      - "4317:4317"     # OTLP gRPC receiver with TLS
+      - "4318:4318"     # OTLP HTTP receiver with TLS
     env:
       COLLECTOR_OTLP_ENABLED: "true"
+      # TLS configuration for OTLP gRPC endpoint
+      COLLECTOR_OTLP_GRPC_TLS_ENABLED: "true"
+      COLLECTOR_OTLP_GRPC_TLS_CERT: "/etc/jaeger/tls/server-cert.pem"
+      COLLECTOR_OTLP_GRPC_TLS_KEY: "/etc/jaeger/tls/server-key.pem"
+      COLLECTOR_OTLP_GRPC_TLS_CLIENT_CA: "/etc/jaeger/tls/ca-cert.pem"
+      # TLS configuration for OTLP HTTP endpoint  
+      COLLECTOR_OTLP_HTTP_TLS_ENABLED: "true"
+      COLLECTOR_OTLP_HTTP_TLS_CERT: "/etc/jaeger/tls/server-cert.pem"
+      COLLECTOR_OTLP_HTTP_TLS_KEY: "/etc/jaeger/tls/server-key.pem"
+      COLLECTOR_OTLP_HTTP_TLS_CLIENT_CA: "/etc/jaeger/tls/ca-cert.pem"
     volumes:
       - jaeger_data:/tmp
+      - /etc/jaeger/tls:/etc/jaeger/tls:ro  # Mount TLS certificates
     log_driver: json-file
     log_options:
       max-size: "10m"
