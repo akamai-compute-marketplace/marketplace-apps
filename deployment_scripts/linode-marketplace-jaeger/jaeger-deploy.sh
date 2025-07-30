@@ -82,6 +82,7 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
+  jaeger_admin_user: jaeger
   jaeger_admin_email: ${JAEGER_ADMIN_EMAIL}
 EOF
 
