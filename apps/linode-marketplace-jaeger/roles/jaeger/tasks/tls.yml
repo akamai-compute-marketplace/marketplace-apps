@@ -1,6 +1,6 @@
 ---
 # TLS Certificate Generation for OTLP Authentication
-# Implements client certificate authentication to secure OTLP endpoints (ports 4317/4318)
+# Creates certificates for authentication to secure OTLP endpoints (ports 4317/4318)
 
 - name: Create TLS certificates directory
   file:
