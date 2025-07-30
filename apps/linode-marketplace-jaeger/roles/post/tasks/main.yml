@@ -19,3 +19,12 @@
       
       Jaeger Username: {{ jaeger_admin_user }}
       Jaeger Password: {{ jaeger_admin_password }}
+
+      # Jaeger OTLP Client Certificates
+      CA Certificate: /home/{{ username }}/.jaeger-client-certs/ca-cert.pem
+      Client Certificate: /home/{{ username }}/.jaeger-client-certs/client-cert.pem
+      Client Private Key: /home/{{ username }}/.jaeger-client-certs/client-key.pem
+      
+      # OTLP Endpoints
+      - gRPC: {{ _domain }}:4317 (with TLS)
+      - HTTP: https://{{ _domain }}:4318/v1/traces (with TLS)

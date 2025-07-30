@@ -2,4 +2,6 @@
 # Default variables for Jaeger
 jaeger_version: "latest"
 jaeger_ui_port: "16686"
-jaeger_collector_port: "14268"
+jaeger_admin_user: "jaeger"
+jaeger_tls_dir: "/etc/jaeger/tls"
+app_name: "jaeger"
