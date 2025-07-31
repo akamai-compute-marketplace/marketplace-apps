@@ -21,7 +21,7 @@
       COLLECTOR_OTLP_ENABLED: "true"
       # Badger storage configuration
       SPAN_STORAGE_TYPE: "badger"
-      BADGER_EPHEMERAL: false
+      BADGER_EPHEMERAL: "false"
       BADGER_DIRECTORY_VALUE: "{{ jaeger_badger_container_dir }}/data"
       BADGER_DIRECTORY_KEY: "{{ jaeger_badger_container_dir }}/key"
       # TLS configuration for OTLP gRPC endpoint

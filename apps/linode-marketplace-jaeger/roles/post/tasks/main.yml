@@ -28,3 +28,4 @@
       # OTLP Endpoints
       - gRPC: {{ _domain }}:4317 (with TLS)
       - HTTP: https://{{ _domain }}:4318/v1/traces (with TLS)
+      
