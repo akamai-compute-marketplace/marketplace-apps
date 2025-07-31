@@ -1,7 +1,11 @@
 ---
-- name: Create Docker volume for Jaeger data
-  community.docker.docker_volume:
-    name: jaeger_data
+- name: Create Badger data directory on host
+  file:
+    path: "{{ jaeger_badger_dir }}"
+    state: directory
+    owner: "10001"
+    group: "10001"
+    mode: '0755'
 
 - name: Run Jaeger All-in-One container
   community.docker.docker_container:
@@ -15,6 +19,11 @@
       - "4318:4318"     # OTLP HTTP receiver (mTLS secured)
     env:
       COLLECTOR_OTLP_ENABLED: "true"
+      # Badger storage configuration
+      SPAN_STORAGE_TYPE: "badger"
+      BADGER_EPHEMERAL: false
+      BADGER_DIRECTORY_VALUE: "{{ jaeger_badger_container_dir }}/data"
+      BADGER_DIRECTORY_KEY: "{{ jaeger_badger_container_dir }}/key"
       # TLS configuration for OTLP gRPC endpoint
       COLLECTOR_OTLP_GRPC_TLS_ENABLED: "true"
       COLLECTOR_OTLP_GRPC_TLS_CERT: "{{ jaeger_tls_dir }}/server-cert.pem"
@@ -26,7 +35,7 @@
       COLLECTOR_OTLP_HTTP_TLS_KEY: "{{ jaeger_tls_dir }}/server-key.pem"
       COLLECTOR_OTLP_HTTP_TLS_CLIENT_CA: "{{ jaeger_tls_dir }}/ca-cert.pem"
     volumes:
-      - jaeger_data:/tmp
+      - "{{ jaeger_badger_dir }}:{{ jaeger_badger_container_dir }}"
       - "{{ jaeger_tls_dir }}:{{ jaeger_tls_dir }}:ro"  # Mount TLS certificates
     log_driver: json-file
     log_options:
