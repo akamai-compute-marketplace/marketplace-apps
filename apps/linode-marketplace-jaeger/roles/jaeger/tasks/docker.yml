@@ -9,13 +9,7 @@
 
 - name: Create sampling strategies configuration
   copy:
-    content: |
-      {
-        "default_strategy": {
-          "type": "probabilistic",
-          "param": 1.0
-        }
-      }
+    src: sampling_strategies.json
     dest: "{{ jaeger_tls_dir }}/sampling_strategies.json"
     mode: '0644'
 
