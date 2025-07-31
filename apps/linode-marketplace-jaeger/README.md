@@ -1,14 +1,15 @@
 # Linode Jaeger One-Click App
 
-Deploy a production-ready Jaeger All-in-One distributed tracing system with built-in security and optimized performance. This setup uses the official Jaeger All-in-One Docker container that combines the UI, collector, query service, and agent with in-memory storage in a single process, making it ideal for development, testing, and small-scale production environments. The deployment includes Docker for containerized deployment and NGINX reverse proxy with SSL termination and HTTP basic authentication for secure access.
+Deploy a production-ready Jaeger All-in-One distributed tracing system with built-in security, persistent storage, and optimized performance. This setup uses the official Jaeger All-in-One Docker container that combines the UI, collector, query service, and agent with **Badger persistent storage** in a single process, making it ideal for development, testing, and production environments where data persistence is required. The deployment includes Docker for containerized deployment, NGINX reverse proxy with SSL termination and HTTP basic authentication for secure access, and **mTLS client certificate authentication** for all trace data ingestion endpoints.
 
 ## Software Included
 
 | Software   | Version   | Description                |
 | :---       | :----     | :---                      |
-| Jaeger     | Latest    | Distributed tracing platform |
+| Jaeger     | Latest    | Distributed tracing platform with Badger persistent storage |
 | Docker     | Latest    | Container runtime |
 | NGINX      | Latest    | Web server and reverse proxy |
+| Badger     | Embedded  | Fast, persistent key-value store for trace data |
 
 **Supported Distributions:**
 - Ubuntu 24.04 LTS
@@ -71,3 +72,5 @@ linode-cli linodes create \
 
 - [Jaeger Official Documentation](https://www.jaegertracing.io/docs/)
 - [Marketplace App Documentation](https://www.linode.com/docs/marketplace-docs/guides/jaeger/)
+- [OpenTelemetry Documentation](https://opentelemetry.io/docs/)
+- [Badger Database](https://github.com/dgraph-io/badger)
