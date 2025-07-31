@@ -8,8 +8,8 @@
     - "22"
     - "80"
     - "443"
-    - "4317"  # OTLP gRPC receiver
-    - "4318"  # OTLP HTTP receiver
+    - "4317"  # OTLP gRPC receiver (mTLS required)
+    - "4318"  # OTLP HTTP receiver (mTLS required)
 
 - name: Enable UFW
   community.general.ufw:

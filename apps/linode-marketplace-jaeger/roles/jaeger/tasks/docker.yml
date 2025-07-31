@@ -7,6 +7,18 @@
     group: "10001"
     mode: '0755'
 
+- name: Create sampling strategies configuration
+  copy:
+    content: |
+      {
+        "default_strategy": {
+          "type": "probabilistic",
+          "param": 1.0
+        }
+      }
+    dest: "{{ jaeger_tls_dir }}/sampling_strategies.json"
+    mode: '0644'
+
 - name: Run Jaeger All-in-One container
   community.docker.docker_container:
     name: jaeger
@@ -14,9 +26,9 @@
     state: started
     restart_policy: unless-stopped
     ports:
-      - "16686:16686"   # Jaeger UI (reverse proxied with basic htpasswd auth)
-      - "4317:4317"     # OTLP gRPC receiver (mTLS secured)
-      - "4318:4318"     # OTLP HTTP receiver (mTLS secured)
+      - "127.0.0.1:16686:16686"   # Jaeger UI (localhost only; reverse proxied; secured with basic htpasswd auth)
+      - "4317:4317"     # OTLP gRPC receiver (mTLS required; client certificates needed)
+      - "4318:4318"     # OTLP HTTP receiver (mTLS required; client certificates needed)
     env:
       COLLECTOR_OTLP_ENABLED: "true"
       # Badger storage configuration
