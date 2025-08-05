@@ -45,3 +45,5 @@
 - name: setting up ssl certificate
   import_role:
     name: certbot_ssl
+  vars:
+    webserver_stack: lemp

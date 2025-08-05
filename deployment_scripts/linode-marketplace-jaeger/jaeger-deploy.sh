@@ -30,6 +30,7 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Jaeger Settings
+#<UDF name="jaeger_admin_user" label="Administrator Username" example="jaegeradmin" default="jaegeradmin">
 #<UDF name="jaeger_admin_email" label="Administrator Email Address" example="user@domain.tld">
 
 #GH_USER=""
@@ -81,8 +82,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lemp
-  jaeger_admin_user: jaeger
+  jaeger_admin_user: ${JAEGER_ADMIN_USER}
   jaeger_admin_email: ${JAEGER_ADMIN_EMAIL}
 EOF
 

@@ -1,8 +1,6 @@
 ---
 # Main installation tasks for Jaeger
 
-
-# Install Docker
 - name: Install Docker
   import_role:
     name: docker
