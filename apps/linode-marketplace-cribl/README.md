@@ -1,13 +1,13 @@
 # Linode Cribl Stream One-Click App
 
-Deploy a production-ready instance of Cribl Stream running with NGINX configured as a reverse proxy and SSL termination for secure access. This setup simplifies log stream processing while ensuring ease of management and security. Cribl is containerized for flexible deployment, and NGINX handles encrypted HTTPS traffic with Certbot for automatic SSL.
+Deploy a production-ready instance of Cribl Stream running with NGINX configured as a reverse proxy and SSL termination for secure access. This setup simplifies log stream processing while ensuring ease of management and security. Cribl runs along NGINX which handles encrypted HTTPS traffic with Certbot for automatic SSL.
 
 ## Software Included
 
 | Software     | Version            | Description                                 |
 | :----------- | :----------------- | :------------------------------------------ |
 | Cribl Stream | Latest | Observability pipeline & log processor      |
-            |
+      
 
 
 **Supported Distributions:**

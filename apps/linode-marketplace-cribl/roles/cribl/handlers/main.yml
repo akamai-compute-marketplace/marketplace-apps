@@ -1,6 +1,6 @@
 # cribl handlers
 - name: restart cribl
-  systemd:
+  systemd_service:
     name: cribl
     state: restarted
-    enabled: yes
+    enabled: true
