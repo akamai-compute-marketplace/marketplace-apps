@@ -7,6 +7,8 @@ Deploy a production-ready instance of Cribl Stream running with NGINX configured
 | Software     | Version            | Description                                 |
 | :----------- | :----------------- | :------------------------------------------ |
 | Cribl Stream | Latest | Observability pipeline & log processor      |
+| Nginx | Latest | Web Server Service     |
+
       
 
 
