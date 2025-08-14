@@ -40,16 +40,17 @@
   args:
     creates: /etc/systemd/system/cribl.service
 
+- name: Add user.json file to change default admin password
+  template:
+    src: templates/users.json.j2
+    dest: "{{ cribl_dir }}/local/cribl/auth/users.json"
+
 - name: Restart cribl Service
   systemd_service:
     name: cribl
     state: restarted
     enabled: true
 
-- name: Add user.json file to change default admin password
-  template:
-    src: templates/users.json.j2
-    dest: "{{ cribl_dir }}/local/cribl/auth/users.json"
-  notify: restart cribl
+
 
   
