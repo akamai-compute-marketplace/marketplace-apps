@@ -25,7 +25,7 @@ fi
 # <UDF name="client_ips" label="List of IP addresses to whitelist" example="192.168.1.2, 192.168.1.3" default="" />
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. Required for Private IP check/add and DNS records [if applicable]">
+#<UDF name="token_password" label="Your Linode API token. Required if adding DNS records [if applicable]" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="email for SOA" default="">
@@ -99,9 +99,8 @@ EOF
   if [[ -z ${CLIENT_IPS} ]]; then
     echo "[info] No IP addresses provided for Openbao whitelisting"
   else
-    echo "CLIENT_IPS: [${CLIENT_IPS}]" >> ${group_vars}
+    echo "client_ips: [${CLIENT_IPS}]" >> ${group_vars}
   fi  
- fi
    if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
