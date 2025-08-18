@@ -1,11 +1,14 @@
 ---
  # openbao
-- name: get latest OpenBao release version
+- name: Get latest OpenBao release version
   set_fact:
     openbao_version: "{{ (lookup('url', 'https://api.github.com/repos/openbao/openbao/releases') | from_json)[0].tag_name | regex_replace('^v', '') }}"
-    openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
-    openbao_deb_file: /tmp/bao-hsm_{{ openbao_version }}_linux_amd64.deb
 
+- name: Build OpenBao download link
+  set_fact:
+    openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
+    openbao_deb_file: "/tmp/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
+    
 - name: install required packages
   apt:
     name: "{{ item }}"
