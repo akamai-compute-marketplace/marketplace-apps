@@ -13,10 +13,6 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
 else
@@ -100,14 +96,11 @@ function udf {
   privateip: ${LINODE_IP}
 EOF
 # write client IPs
-  IPS=$(echo ${CLIENT_IPS} | tr ' ' '\n' | grep -Eo '^([0-9]{1,3}\.){3}[0-9]{1,3}' | sed 's/^/  - /g')
-  if [ -z ${IPS} ]; then
-    echo "[INFO] No valid client IP addressed found"
+  if [[ -z ${CLIENT_IPS} ]]; then
+    echo "[info] No IP addresses provided for Openbao whitelisting"
   else
-    cat << EOF >> ${group_vars}
-client_ips:
-${IPS}
-EOF
+    echo "CLIENT_IPS: [${CLIENT_IPS}]" >> ${group_vars}
+  fi  
  fi
    if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
@@ -144,44 +137,10 @@ EOF
   fi  
 }
 
-function add_privateip {
-  echo "[info] Adding instance private IP"
-  curl -H "Content-Type: application/json" \
-      -H "Authorization: Bearer ${TOKEN_PASSWORD}" \
-      -X POST -d '{
-        "type": "ipv4",
-        "public": false
-      }' \
-      https://api.linode.com/v4/linode/instances/${LINODE_ID}/ips
-}
-
-function get_privateip {
-  curl -s -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TOKEN_PASSWORD}" \
-   https://api.linode.com/v4/linode/instances/${LINODE_ID}/ips | \
-   jq -r '.ipv4.private[].address'
-}
-
-function configure_privateip {
-  LINODE_IP=$(get_privateip)
-  if [ ! -z "${LINODE_IP}" ]; then
-          echo "[info] Linode private IP present"
-  else
-          echo "[warn] No private IP found. Adding.."
-          add_privateip
-          LINODE_IP=$(get_privateip)
-          echo "Address=$LINODE_IP/17" | tee -a /etc/systemd/network/05-eth0.network
-          systemctl restart systemd-networkd    
-  fi
-}
-
 function run {
   # install dependencies
   apt-get update
   apt-get install -y git python3 python3-pip
-
-  # Private IP needed for openbao
-  configure_privateip
 
   # clone repo and set up ansible environment
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}

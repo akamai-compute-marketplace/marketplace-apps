@@ -8,7 +8,8 @@
   set_fact:
     openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
     openbao_deb_file: "/tmp/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
-    
+    listen_address: "{{ (ansible_all_ipv4_addresses | select('search', '^192\\.168\\.') | list | first) | default('0.0.0.0') }}"
+
 - name: install required packages
   apt:
     name: "{{ item }}"
@@ -29,7 +30,7 @@
 - name: add VAULT_ADDR to .bashrc
   lineinfile:
     path: "{{ item }}"
-    line: 'export VAULT_ADDR=https://{{ privateip }}:8200'
+    line: 'export VAULT_ADDR=https://{{ listen_address }}:8200'
     insertbefore: EOF
   with_items:
     - "~/.bashrc"
@@ -65,8 +66,7 @@
       - keyCertSign
     key_usage_critical: true
     subject_alt_name:
-          - IP:{{ privateip }}
-          - IP:{{ ansible_default_ipv4.address }}
+          - IP:{{ listen_address }}
     owner: openbao
     group: openbao
     mode: '0644'
@@ -107,8 +107,7 @@
     email_address: '{{ email_address }}'
     common_name: 'openbao'
     subject_alt_name:
-          - IP:{{ privateip }}
-          - IP:{{ ansible_default_ipv4.address }}
+          - IP:{{ listen_address }}
     owner: openbao
     group: openbao
 
@@ -167,7 +166,7 @@
     state: started
 
 - name: bao operator init command and capture output
-  shell: "bao operator init -address=https://{{ privateip }}:8200 -key-shares=3 -key-threshold=2"
+  shell: "bao operator init -address=https://{{ listen_address }}:8200 -key-shares=3 -key-threshold=2"
   args:
     executable: /bin/bash
   register: bao_output
