@@ -50,15 +50,6 @@
   environment:
     HOME: "/home/{{ vnc_username }}"
 
-# - name: Check if VNC is running
-#   command: pgrep Xtigervnc
-#   register: vnc_running
-#   ignore_errors: true # ignore if no process is running
-
-# - name: Kill existing VNC process
-#   command: killall Xtigervnc
-#   when: vnc_running.rc == 0 # only kill if VNC is running
-
 - name: Create VNC service file
   template:
     src: vncserver@.service.j2
