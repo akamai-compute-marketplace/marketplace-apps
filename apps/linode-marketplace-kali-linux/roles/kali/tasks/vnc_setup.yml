@@ -44,20 +44,20 @@
       "Password:": "{{ vnc_password }}"
       "Verify:": "{{ vnc_password }}"
       "Would you like to enter a view-only password (y/n)?": "n"
-  become: yes
+  become: true
   become_user: "{{ vnc_username }}"
   no_log: true
   environment:
     HOME: "/home/{{ vnc_username }}"
 
-- name: Check if VNC is running
-  command: pgrep Xtigervnc
-  register: vnc_running
-  ignore_errors: true # ignore if no process is running
+# - name: Check if VNC is running
+#   command: pgrep Xtigervnc
+#   register: vnc_running
+#   ignore_errors: true # ignore if no process is running
 
-- name: Kill existing VNC process
-  command: killall Xtigervnc
-  when: vnc_running.rc == 0 # only kill if VNC is running
+# - name: Kill existing VNC process
+#   command: killall Xtigervnc
+#   when: vnc_running.rc == 0 # only kill if VNC is running
 
 - name: Create VNC service file
   template:
@@ -69,5 +69,5 @@
   systemd:
     name: vncserver@1.service
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
