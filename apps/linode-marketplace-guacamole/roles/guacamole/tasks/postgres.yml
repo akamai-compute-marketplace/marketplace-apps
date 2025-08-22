@@ -8,8 +8,6 @@
     cleanup: true
     state: started
   register: initdb_output
-  args:
-    creates: "{{ guacamole_postgres_init_dir }}/001-initdb.sql"
 
 - name: Write database initialization script to file
   copy:

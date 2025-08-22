@@ -1,4 +1,18 @@
 ---
+- name: Create guacamole directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - "{{ guacamole_base_dir }}"
+    - "{{ guacamole_base_dir }}/config"
+    - "{{ guacamole_postgres_init_dir }}"
+  loop_control:
+    label: "{{ item }}"
+
 - name: Install Docker latest
   import_role: 
     name: docker
