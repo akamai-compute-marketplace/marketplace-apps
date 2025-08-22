@@ -16,5 +16,5 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: |
-          postgres_user_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits,punctuation') }}
+          postgres_user_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           guacamole_admin_password: {{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}
