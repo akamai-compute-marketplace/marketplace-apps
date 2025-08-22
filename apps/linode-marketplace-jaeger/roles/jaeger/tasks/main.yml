@@ -5,6 +5,9 @@
   import_role:
     name: docker
 
+- name: Import user setup tasks
+  import_tasks: user.yml
+
 - name: Import TLS certificate tasks
   import_tasks: tls.yml
 

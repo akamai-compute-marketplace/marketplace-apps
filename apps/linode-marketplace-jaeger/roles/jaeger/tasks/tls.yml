@@ -104,8 +104,8 @@
 - name: Fix ownership for Jaeger container access to server certificates
   file:
     path: "{{ cert_file }}"
-    owner: "10001"
-    group: "10001"
+    owner: jaeger-service
+    group: jaeger-service
     mode: '0644'
   loop:
     - "{{ jaeger_tls_dir }}/server-cert.pem"
@@ -116,8 +116,8 @@
 - name: Fix ownership for Jaeger container access to server private key
   file:
     path: "{{ jaeger_tls_dir }}/server-key.pem"
-    owner: "10001"
-    group: "10001"
+    owner: jaeger-service
+    group: jaeger-service
     mode: '0600'
 
 - name: Create client certificates directory for user

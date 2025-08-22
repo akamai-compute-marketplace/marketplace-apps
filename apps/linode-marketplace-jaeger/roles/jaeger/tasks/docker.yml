@@ -3,8 +3,8 @@
   file:
     path: "{{ jaeger_badger_dir }}"
     state: directory
-    owner: "10001"
-    group: "10001"
+    owner: jaeger-service
+    group: jaeger-service
     mode: '0755'
 
 - name: Create sampling strategies configuration
