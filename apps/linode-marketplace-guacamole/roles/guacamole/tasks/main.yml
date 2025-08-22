@@ -1,0 +1,15 @@
+---
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import PostgreSQL tasks
+  include_tasks: postgres.yml
+
+- name: Import NGINX tasks
+  include_tasks: nginx.yml
+
+- name: Import Guacamole tasks
+  import_tasks: guacamole.yml
+
+- name: Import credentials tasks
+  include_tasks: credentials.yml

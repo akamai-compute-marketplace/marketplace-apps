@@ -1,0 +1,43 @@
+---
+- name: Create guacamole directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+  loop:
+    - "{{ guacamole_base_dir }}"
+    - "{{ guacamole_base_dir }}/config"
+    - "{{ guacamole_postgres_init_dir }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Start Guacamole services with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ guacamole_base_dir }}"
+    state: present
+  register: docker_compose_result
+
+- name: Wait for Guacamole web application to be ready
+  wait_for:
+    port: 8080
+    host: 127.0.0.1
+    timeout: 120
+    delay: 5
+    sleep: 2
+    msg: "Guacamole web application did not start within 120 seconds"
+  when: docker_compose_result is succeeded
+
+- name: Display service status
+  command: docker compose ps
+  args:
+    chdir: "{{ guacamole_base_dir }}"
+  register: compose_status
+  when: docker_compose_result is succeeded
+  changed_when: false
+
+- name: Show Docker Compose status
+  debug:
+    var: compose_status.stdout_lines
+  when: docker_compose_result is succeeded

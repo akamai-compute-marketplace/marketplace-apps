@@ -1,0 +1,22 @@
+---
+- name: Generate PostgreSQL database initialization script
+  community.docker.docker_container:
+    name: guacamole_initdb_temp
+    image: "guacamole/guacamole:{{ guacamole_version }}"
+    command: /opt/guacamole/bin/initdb.sh --postgresql
+    detach: false
+    cleanup: true
+    state: started
+  register: initdb_output
+  args:
+    creates: "{{ guacamole_postgres_init_dir }}/001-initdb.sql"
+
+- name: Write database initialization script to file
+  copy:
+    content: "{{ initdb_output.container.Output }}"
+    dest: "{{ guacamole_postgres_init_dir }}/001-initdb.sql"
+    mode: '0644'
+    owner: root
+    group: root
+  when: initdb_output.container.Output is defined
+
