@@ -1,0 +1,34 @@
+---
+# make backup of default
+- name: creating openbao config backup
+  copy:
+    src: "{{ openbao_config }}"
+    dest: "{{ openbao_config }}.bak"
+    owner: openbao
+    group: openbao
+    mode: '0644'
+
+# update openbao config
+- name: update openbao config
+  template:
+    src: "templates/openbao.hcl.j2"
+    dest: "{{ openbao_config }}"  
+
+# update systemd file openbao 
+- name: update openbao config
+  template:
+    src: "templates/openbao.service"
+    dest: "/lib/systemd/system/openbao.service" 
+
+- name: enable openbao service
+  systemd:
+    name: openbao
+    enabled: true
+    daemon_reload: true
+    state: started
+
+- name: bao operator init command and capture output
+  shell: "bao operator init -address=https://{{ listen_address }}:8200 -key-shares=3 -key-threshold=2"
+  args:
+    executable: /bin/bash
+  register: bao_output
