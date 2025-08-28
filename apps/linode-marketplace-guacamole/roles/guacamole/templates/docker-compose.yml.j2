@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: "{{ postgres_user_password }}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+      - initdb:/docker-entrypoint-initdb.d:ro
     networks:
       - "{{ guacamole_network_name }}"
     restart: unless-stopped
@@ -34,12 +34,15 @@ services:
       POSTGRES_PASSWORD: "{{ postgres_user_password }}"
     ports:
       - "127.0.0.1:8080:8080"
+    volumes:
+      - "initdb:/opt/guacamole/extensions/guacamole-auth-jdbc/postgresql/schema:ro"
     networks:
       - "{{ guacamole_network_name }}"
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  initdb:
 
 networks:
   "{{ guacamole_network_name }}":

@@ -2,9 +2,6 @@
 - name: Import Docker tasks
   import_tasks: docker.yml
 
-- name: Import PostgreSQL tasks
-  import_tasks: postgres.yml
-
 - name: Import NGINX tasks
   import_tasks: nginx.yml
 
