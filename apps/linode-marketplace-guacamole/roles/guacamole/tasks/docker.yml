@@ -4,8 +4,6 @@
     path: "{{ directory }}"
     state: directory
     mode: '0755'
-    owner: root
-    group: root
   loop:
     - "{{ guacamole_base_dir }}"
     - "{{ guacamole_base_dir }}/config"

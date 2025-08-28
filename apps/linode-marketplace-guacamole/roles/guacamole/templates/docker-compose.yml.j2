@@ -38,6 +38,9 @@ services:
       - "{{ guacamole_network_name }}"
     restart: unless-stopped
 
+volumes:
+  postgres_data:
+
 networks:
   "{{ guacamole_network_name }}":
     driver: bridge
