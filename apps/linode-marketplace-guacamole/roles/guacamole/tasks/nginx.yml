@@ -6,7 +6,7 @@
     update_cache: true
 
 - name: Enable and start NGINX service
-  systemd:
+  systemd_service:
     name: nginx
     state: started
     enabled: true
@@ -29,7 +29,7 @@
     state: absent
 
 - name: Restart NGINX service
-  systemd:
+  systemd_service:
     name: nginx
     state: restarted
 

@@ -15,15 +15,15 @@
     msg: "Guacamole web application did not start within 120 seconds"
   when: docker_compose_result is succeeded
 
-- name: Display service status
-  command: docker compose ps
-  args:
-    chdir: "{{ guacamole_base_dir }}"
-  register: compose_status
-  when: docker_compose_result is succeeded
-  changed_when: false
+# - name: Display service status
+#   command: docker compose ps
+#   args:
+#     chdir: "{{ guacamole_base_dir }}"
+#   register: compose_status
+#   when: docker_compose_result is succeeded
+#   changed_when: false
 
-- name: Show Docker Compose status
-  debug:
-    var: compose_status.stdout_lines
-  when: docker_compose_result is succeeded
+# - name: Show Docker Compose status
+#   debug:
+#     var: compose_status.stdout_lines
+#   when: docker_compose_result is succeeded

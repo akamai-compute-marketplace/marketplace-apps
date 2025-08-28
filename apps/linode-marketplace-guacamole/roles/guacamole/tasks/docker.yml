@@ -1,7 +1,7 @@
 ---
 - name: Create guacamole directories
   file:
-    path: "{{ item }}"
+    path: "{{ directory }}"
     state: directory
     mode: '0755'
     owner: root
@@ -11,7 +11,7 @@
     - "{{ guacamole_base_dir }}/config"
     - "{{ guacamole_postgres_init_dir }}"
   loop_control:
-    label: "{{ item }}"
+    loop_var: directory
 
 - name: Install Docker latest
   import_role: 
@@ -21,6 +21,3 @@
   template:
     src: docker-compose.yml.j2
     dest: "{{ guacamole_base_dir }}/docker-compose.yml"
-    mode: '0644'
-    owner: root
-    group: root
