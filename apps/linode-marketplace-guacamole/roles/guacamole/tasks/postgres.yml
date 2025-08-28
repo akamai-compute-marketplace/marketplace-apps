@@ -14,5 +14,3 @@
     content: "{{ initdb_output.container.Output }}"
     dest: "{{ guacamole_postgres_init_dir }}/001-initdb.sql"
     mode: '0644'
-    owner: root
-    group: root
