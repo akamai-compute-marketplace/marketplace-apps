@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 # Full configuration options can be found at https://github.com/openbao/openbao/tree/main/website/content/docs/configuration
-## UI not available as of 06/24/2024
-#ui = true
+ui = true
 
 #mlock = true
 #disable_mlock = true
@@ -41,6 +40,15 @@ api_addr = "https://{{ ansible_default_ipv4.address }}:8200"
 # address openbao nodes will use to communicate with each other within the cluster
 # required option for Raft storage
 cluster_addr = "https://{{ privateip }}:8201"
+
+# This enables an audit device which writes audit logs to /dev/stdout
+# so they can be filtered separately from server logs written to /dev/stderr.
+audit "file" "stdout" {
+  description = "Log audit events to /dev/stdout"
+  options = {
+    "file_path" = "stdout"
+  }
+}
 
 # Example AWS KMS auto unseal
 #seal "awskms" {
