@@ -84,8 +84,6 @@ EOF
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
-}
-
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
