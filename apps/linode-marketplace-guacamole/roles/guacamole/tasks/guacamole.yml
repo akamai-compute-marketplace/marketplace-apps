@@ -5,16 +5,9 @@
     state: present
   register: docker_compose_result
 
-- name: Show docker compose result
-  debug:
-    var: docker_compose_result
-
 - name: Wait for Guacamole web application to be ready
   wait_for:
     port: 8080
     host: 127.0.0.1
     timeout: 120
-    delay: 5
-    sleep: 2
     msg: "Guacamole web application did not start within 120 seconds"
-  when: docker_compose_result is succeeded
