@@ -1,26 +1,129 @@
----
-- name: Install required build and Python dependencies
-  ansible.builtin.apt:
+- name: Set deployment fact
+  set_fact:
+    airflow_home: /opt/airflow
+    airflow_venv: /opt/airflow/airflow_venv
+
+- name: Ensure airflow group exists
+  group:
+    name: airflow
+    gid: 50000
+    state: present
+
+- name: Ensure airflow user exists
+  user:
+    name: airflow
+    uid: 50000
+    group: airflow
+    home: /opt/airflow
+    shell: /bin/bash
+    create_home: yes
+    state: present
+
+- name: Ensure system dependencies are installed
+  apt:
     name:
+      - python3-pip
+      - python3-venv
       - build-essential
       - libssl-dev
       - libffi-dev
       - python3-dev
-      - python3-pip
-      - python3-venv
+      - curl
     state: present
     update_cache: yes
 
-- name: Create airflow system user
-  user:
-    name: airflow
-    home: /opt/airflow
-    shell: /bin/bash
-    system: yes
-    create_home: yes
+- name: Get latest available Python3 version
+  ansible.builtin.shell: |
+    python3 --version | awk '{print $2}' | cut -d. -f1-2
+  register: python_version
+  changed_when: false
 
-- name: Add airflow user to sudo group
-  user:
-    name: airflow
-    groups: sudo
-    append: yes
+- name: Get latest Airflow release version
+  ansible.builtin.uri:
+    url: https://pypi.org/pypi/apache-airflow/json
+    return_content: yes
+  register: airflow_pypi
+
+- name: Set Airflow version fact
+  set_fact:
+    airflow_version: "{{ (airflow_pypi.json.info.version) }}"
+
+- name: Build constraints URL
+  set_fact:
+    constraint_url: "https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version.stdout }}.txt"
+
+- name: Create Airflow directories
+  file:
+    path: "{{ airflow_home }}"
+    state: directory
+    owner: airflow
+    group: airflow
+    mode: '0755'
+
+- name: Create virtual environment for Airflow
+  command: python3 -m venv {{ airflow_venv }}
+  args:
+    creates: "{{ airflow_venv }}/bin/activate"
+
+- name: Upgrade pip in venv
+  command: "{{ airflow_venv }}/bin/pip install --upgrade pip setuptools wheel"
+
+- name: Install Airflow with constraints
+  pip:
+    virtualenv: "{{ airflow_venv }}"
+    virtualenv_command: python3 -m venv
+    name: "apache-airflow=={{ airflow_version }}"
+    extra_args: "--constraint {{ constraint_url }}"
+    state: present
+#  async: 30      
+#  poll: 0
+
+- name: Initialize Airflow metadata database
+  command: "{{ airflow_venv }}/bin/airflow db migrate"
+  args:
+    creates: "{{ airflow_home }}/airflow.db"
+
+- name: Template Airflow Scheduler systemd service
+  template:
+    src: airflow-scheduler.service.j2
+    dest: /etc/systemd/system/airflow-scheduler.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Template Airflow API systemd service
+  template:
+    src: airflow-api.service.j2
+    dest: /etc/systemd/system/airflow-api.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start Airflow Services
+  systemd:
+    name: "airflow-{{ item.name }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes
+  loop:
+    - { name: "scheduler" }
+    - { name: "api" }
+  loop_control:
+    loop_var: item
+
+- name: Wait until Airflow password file exists
+  stat:
+    path: /opt/airflow/airflow/simple_auth_manager_passwords.json.generated
+  register: airflow_password_file_stat
+  until: airflow_password_file_stat.stat.exists
+  retries: 5
+  delay: 5
+
+- name: Read Airflow generated password file
+  slurp:
+    src: /opt/airflow/airflow/simple_auth_manager_passwords.json.generated
+  register: airflow_password_file
+
+- name: Parse JSON and set password as var
+  set_fact:
+    airflow_admin_password: "{{ (airflow_password_file['content'] | b64decode | from_json).admin }}"

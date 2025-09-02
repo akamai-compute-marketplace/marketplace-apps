@@ -1,9 +1,6 @@
 ---
-- name: Download Memgraph latest
+- name: install airflow
   import_tasks: install.yml
 
-- name: Create Memgraph user
-  import_tasks: create_user.yml
-
-- name: Enable SSL on bolt protocol
-  import_tasks: ssl.yml
+- name: enable nginx for airflow
+  import_tasks: nginx.yml

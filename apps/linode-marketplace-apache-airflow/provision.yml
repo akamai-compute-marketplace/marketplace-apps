@@ -10,10 +10,3 @@
     # generate creds
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
-    - name: Generating memgraph password
-      blockinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        block: |
-          memgraph_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
