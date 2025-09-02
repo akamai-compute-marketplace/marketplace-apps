@@ -35,7 +35,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     volumes:
-      - "initdb:/opt/guacamole/extensions/guacamole-auth-jdbc/postgresql/schema:ro"
+      - "initdb:/opt/guacamole/postgresql/schema:ro"
     networks:
       - "{{ guacamole_network_name }}"
     restart: unless-stopped
