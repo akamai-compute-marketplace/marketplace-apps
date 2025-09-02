@@ -5,6 +5,10 @@
     state: present
   register: docker_compose_result
 
+- name: Show docker compose result
+  debug:
+    var: docker_compose_result
+
 - name: Wait for Guacamole web application to be ready
   wait_for:
     port: 8080
