@@ -1,5 +1,5 @@
 ---
-- name: Openbao setup
+- name: Install Jaeger
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -14,7 +14,7 @@
             name: "{{ item }}"
           loop:
             - common
-            - openbao
+            - jaeger
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -32,6 +32,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - openbao
+        - jaeger
         - post
       when: "mode == 'production'"

@@ -1,7 +1,8 @@
 ---
-- name: Openbao setup
+- name: Kali Linux setup
   hosts: localhost
   connection: local
+  gather_facts: true
   any_errors_fatal: true
   user: root
   vars_files:
@@ -14,7 +15,7 @@
             name: "{{ item }}"
           loop:
             - common
-            - openbao
+            - kali
             - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
@@ -32,6 +33,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - openbao
+        - kali
         - post
       when: "mode == 'production'"

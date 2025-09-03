@@ -1,0 +1,38 @@
+# Jaeger UI with HTTP Basic Authentication
+upstream jaeger {
+    server 127.0.0.1:16686;
+}
+
+server {
+    listen 80;
+    server_name {{ _domain }};
+
+    # Basic Authentication
+    auth_basic "Jaeger UI Access";
+    auth_basic_user_file /etc/nginx/.htpasswd;
+
+    # Main Jaeger UI location
+    location / {
+        proxy_pass http://jaeger;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket support for Jaeger UI
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_buffering off;
+    }
+
+    # API endpoints (also protected)
+    location /api/ {
+        proxy_pass http://jaeger;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+    }
+}

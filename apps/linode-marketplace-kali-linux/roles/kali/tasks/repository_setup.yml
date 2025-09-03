@@ -1,0 +1,28 @@
+---
+- name: Add Kali Linux repository GPG key
+  ansible.builtin.get_url:
+    url: https://archive.kali.org/archive-key.asc
+    dest: /etc/apt/trusted.gpg.d/kali-archive-keyring.asc
+    mode: '0644'
+
+- name: Add non-free repository
+  apt_repository:
+    repo: deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware
+    state: present
+    filename: kali-nonfree
+
+- name: Install firmware-misc-nonfree
+  apt:
+    name: firmware-misc-nonfree
+    state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Fix broken packages
+  apt:
+    clean: true
+    autoclean: true
+    autoremove: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive 
