@@ -22,7 +22,6 @@
     dest: /opt/
     remote_src: true
 
-
 - name: Enable Cribl boot-start using systemd for user cribl
   command: "{{ cribl_dir }}/bin/cribl boot-start enable -m systemd -u cribl"
 
