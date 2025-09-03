@@ -1,0 +1,64 @@
+---
+- name: Install Kali XFCE and VNC packages
+  apt:
+    name:
+      - kali-desktop-xfce
+      - dbus-x11
+      - tigervnc-standalone-server
+      - expect
+      - lightdm
+    state: present
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Configure lightdm as default display manager
+  debconf:
+    name: lightdm
+    question: shared/default-x-display-manager
+    value: lightdm
+    vtype: select
+
+- name: Set Xfce as default session manager
+  command: update-alternatives --set x-session-manager /usr/bin/xfce4-session
+  changed_when: true
+
+- name: Create VNC user
+  user:
+    name: "{{ vnc_username }}"
+    password: "{{ vnc_password | password_hash('sha512') }}"
+    shell: /bin/bash
+
+- name: Create VNC directory for user
+  file:
+    path: "/home/{{ vnc_username }}/.vnc"
+    state: directory
+    owner: "{{ vnc_username }}"
+    group: "{{ vnc_username }}"
+    mode: '0700'
+
+- name: Set up VNC password using vncpasswd
+  expect:
+    command: vncpasswd
+    timeout: 30
+    responses:
+      "Password:": "{{ vnc_password }}"
+      "Verify:": "{{ vnc_password }}"
+      "Would you like to enter a view-only password (y/n)?": "n"
+  become: true
+  become_user: "{{ vnc_username }}"
+  no_log: true
+  environment:
+    HOME: "/home/{{ vnc_username }}"
+
+- name: Create VNC service file
+  template:
+    src: vncserver@.service.j2
+    dest: /etc/systemd/system/vncserver@.service
+    mode: '0644'
+
+- name: Start and enable VNC service
+  systemd:
+    name: vncserver@1.service
+    state: started
+    enabled: true
+    daemon_reload: true

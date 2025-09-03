@@ -1,0 +1,31 @@
+*********************************************************
+{% if vnc_enabled %}
+Akamai Connected Cloud Kali Marketplace App
+
+###################################
+#   VNC SSH Tunnel Instructions   #
+###################################
+
+* Ensure you have a VNC Client installed on your local machine
+* Run the command below to start the SSH tunnel for VNC 
+
+    ssh -L 61000:127.0.0.1:5901 -N -l {{ vnc_username }} {{ ansible_default_ipv4.address }}
+
+* For more Detailed documentation please visit the official Documentation below
+
+    https://www.linode.com/docs/marketplace-docs/guides/kali-linux/
+
+### To remove this message, you can edit the /etc/motd file ###
+
+Credentials File: /home/{{ username }}/.credentials
+{% else %}
+Akamai Connected Cloud Kali Linux Marketplace App
+App URL: https://{{ ansible_default_ipv4.address }}
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/marketplace/apps/linode/kali-linux/
+{% endif %}
+*********************************************************
+To delete this message of the day: rm /etc/motd
+
+
+

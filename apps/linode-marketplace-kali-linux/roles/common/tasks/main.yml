@@ -1,0 +1,54 @@
+---
+# set_hostname
+- name: setting up hostname
+  import_role:
+    name: hostname
+
+- name: set ssh pubkey
+  import_role:
+      name: sshkey
+
+- name: write _domain to vars
+  lineinfile: 
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: | 
+      _domain: {{ _domain }}
+  when: _domain is defined 
+
+- name: secure ssh
+  import_role:
+      name: securessh
+
+# Provides dynamic detection of root device for GRUB installation since root device is not always /dev/sda on Kali
+- name: Determine root device for GRUB installation
+  shell: findmnt -n -o SOURCE / | sed 's/[0-9]*$//'
+  register: root_device
+  changed_when: false
+
+- name: Pre-configure grub-pc for non-interactive upgrade
+  ansible.builtin.debconf:
+    name: grub-pc
+    question: "{{ item.question }}"
+    value: "{{ item.value }}"
+    vtype: "{{ item.vtype }}"
+  loop:
+    - { question: 'grub-pc/install_devices', value: '{{ root_device.stdout }}', vtype: 'multiselect' }
+    - { question: 'grub-pc/install_devices_disks_changed', value: '{{ root_device.stdout }}', vtype: 'multiselect' }
+    - { question: 'grub-pc/install_devices_empty', value: 'false', vtype: 'boolean' }
+    - { question: 'grub-pc/install_devices_failed', value: 'true', vtype: 'boolean' }
+
+- name: update system packages
+  import_role:
+    name: update_pkgs
+
+- name: enabling ufw
+  import_role:
+    name: ufw
+
+- name: apply ufw rules
+  import_tasks: ufw_rules.yml
+
+- name: enabling fail2ban
+  import_role:
+    name: fail2ban_install

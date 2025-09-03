@@ -1,0 +1,5 @@
+---
+- name: Install Kali Linux
+  apt:
+    name: "{{ kali_package }}"
+    state: present 
