@@ -1,0 +1,49 @@
+---
+- name: Create Badger data directory on host
+  file:
+    path: "{{ jaeger_badger_dir }}"
+    state: directory
+    owner: jaeger-service
+    group: jaeger-service
+    mode: '0755'
+
+- name: Create sampling strategies configuration
+  copy:
+    src: sampling_strategies.json
+    dest: "{{ jaeger_tls_dir }}/sampling_strategies.json"
+    mode: '0644'
+
+- name: Run Jaeger All-in-One container
+  community.docker.docker_container:
+    name: jaeger
+    image: "jaegertracing/all-in-one:{{ jaeger_version }}"
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "127.0.0.1:16686:16686"   # Jaeger UI (localhost only; reverse proxied; secured with basic htpasswd auth)
+      - "4317:4317"     # OTLP gRPC receiver (mTLS required; client certificates needed)
+      - "4318:4318"     # OTLP HTTP receiver (mTLS required; client certificates needed)
+    env:
+      COLLECTOR_OTLP_ENABLED: "true"
+      # Badger storage configuration
+      SPAN_STORAGE_TYPE: "badger"
+      BADGER_EPHEMERAL: "false"
+      BADGER_DIRECTORY_VALUE: "{{ jaeger_badger_container_dir }}/data"
+      BADGER_DIRECTORY_KEY: "{{ jaeger_badger_container_dir }}/key"
+      # TLS configuration for OTLP gRPC endpoint
+      COLLECTOR_OTLP_GRPC_TLS_ENABLED: "true"
+      COLLECTOR_OTLP_GRPC_TLS_CERT: "{{ jaeger_tls_dir }}/server-cert.pem"
+      COLLECTOR_OTLP_GRPC_TLS_KEY: "{{ jaeger_tls_dir }}/server-key.pem"
+      COLLECTOR_OTLP_GRPC_TLS_CLIENT_CA: "{{ jaeger_tls_dir }}/ca-cert.pem"
+      # TLS configuration for OTLP HTTP endpoint  
+      COLLECTOR_OTLP_HTTP_TLS_ENABLED: "true"
+      COLLECTOR_OTLP_HTTP_TLS_CERT: "{{ jaeger_tls_dir }}/server-cert.pem"
+      COLLECTOR_OTLP_HTTP_TLS_KEY: "{{ jaeger_tls_dir }}/server-key.pem"
+      COLLECTOR_OTLP_HTTP_TLS_CLIENT_CA: "{{ jaeger_tls_dir }}/ca-cert.pem"
+    volumes:
+      - "{{ jaeger_badger_dir }}:{{ jaeger_badger_container_dir }}"
+      - "{{ jaeger_tls_dir }}:{{ jaeger_tls_dir }}:ro"  # Mount TLS certificates
+    log_driver: json-file
+    log_options:
+      max-size: "10m"
+      max-file: "3"

@@ -1,0 +1,17 @@
+---
+- name: Create jaeger-service group
+  group:
+    name: jaeger-service
+    gid: 10001
+    state: present
+
+- name: Create jaeger-service system user
+  user:
+    name: jaeger-service
+    uid: 10001
+    group: jaeger-service
+    system: yes
+    shell: /usr/sbin/nologin
+    create_home: false
+    comment: "Jaeger service user"
+    state: present

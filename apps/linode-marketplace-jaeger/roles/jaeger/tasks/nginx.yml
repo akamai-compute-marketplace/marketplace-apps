@@ -1,0 +1,49 @@
+---
+- name: Install NGINX and apache2-utils
+  apt:
+    name:
+      - nginx
+      - apache2-utils
+    state: present
+    update_cache: true
+
+- name: Create basic auth password file
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: "{{ jaeger_admin_user }}"
+    password: "{{ jaeger_admin_password }}"
+    owner: root
+    group: www-data
+    mode: '0640'
+
+- name: Create NGINX site configuration with basic auth
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ _domain }}
+    mode: '0644'
+  notify: restart nginx
+
+- name: Enable Jaeger NGINX site
+  file:
+    src: /etc/nginx/sites-available/{{ _domain }}
+    dest: /etc/nginx/sites-enabled/jaeger-basic-auth
+    state: link
+  notify: restart nginx
+
+- name: Remove default NGINX site configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
+- name: Enable and start NGINX service
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
