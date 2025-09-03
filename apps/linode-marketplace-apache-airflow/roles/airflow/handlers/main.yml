@@ -1,6 +1,0 @@
----
-- name: restart memgraph
-  systemd_service:
-    name: memgraph
-    state: restarted
-    enabled: true
