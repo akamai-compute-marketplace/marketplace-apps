@@ -22,6 +22,13 @@
     dest: /opt/
     remote_src: true
 
+- name: Update ownership of "{{ cribl_dir }}" to cribl user
+  file:
+    path: "{{ cribl_dir }}"
+    owner: cribl
+    group: cribl
+    recurse: true
+
 - name: Enable Cribl boot-start using systemd for user cribl
   command: "{{ cribl_dir }}/bin/cribl boot-start enable -m systemd -u cribl"
 
