@@ -1,0 +1,17 @@
+---
+# Default variables for Guacamole deployment
+
+# Container versions
+guacamole_version: "1.5.5"
+postgres_version: "15"
+
+# Directories
+guacamole_base_dir: "/opt/guacamole"
+guacamole_postgres_init_dir: "{{ guacamole_base_dir }}/postgres-init"
+
+# Default database settings
+postgres_db_name: "guacamole_db"
+postgres_user_name: "guacamole_user"
+
+# Network settings
+guacamole_network_name: "guacamole_net"

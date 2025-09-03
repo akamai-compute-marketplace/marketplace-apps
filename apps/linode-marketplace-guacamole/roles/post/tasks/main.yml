@@ -1,0 +1,23 @@
+---
+# motd and creds gen
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    
+- name: Writing creds to file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      
+      Admin Username: guacadmin
+      Admin Password: {{ guacamole_admin_password }}
+      
+      PostgreSQL User: guacamole_user
+      PostgreSQL Password: {{ postgres_user_password }}
+      Database Name: guacamole_db
