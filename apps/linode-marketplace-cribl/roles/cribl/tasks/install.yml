@@ -2,15 +2,15 @@
 - name: Set Cribl directory
   set_fact:
     cribl_dir: "/opt/cribl"
-    
-- name: Create cribl system user 
+
+- name: Create cribl system user
   user:
     name: cribl
     system: true
     shell: /bin/false
     state: present
 
-- name: Get latest Cribl 
+- name: Get latest Cribl
   uri:
     url: https://cdn.cribl.io/dl/latest-x64
     return_content: true
@@ -22,33 +22,12 @@
     dest: /opt/
     remote_src: true
 
-- name: Update cribl config to listen on localhost
-  replace:
-    path: "{{ cribl_dir }}/default/cribl/cribl.yml"
-    regexp: '^(\s*host:\s*)0\.0\.0\.0\s*$'
-    replace: '\1 127.0.0.1'
-
-- name: Update ownership of /opt/cribl to cribl user
-  file:
-    path: "{{ cribl_dir }}"
-    owner: cribl
-    group: cribl
-    recurse: true
 
 - name: Enable Cribl boot-start using systemd for user cribl
   command: "{{ cribl_dir }}/bin/cribl boot-start enable -m systemd -u cribl"
-  args:
-    creates: /etc/systemd/system/cribl.service
-
-- name: Add user.json file to change default admin password
-  template:
-    src: templates/users.json.j2
-    dest: "{{ cribl_dir }}/local/cribl/auth/users.json"
 
 - name: Restart cribl Service
   systemd_service:
     name: cribl
     state: restarted
     enabled: true
-
-
