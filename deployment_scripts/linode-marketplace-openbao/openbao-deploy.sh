@@ -1,8 +1,22 @@
 #!/bin/bash
-set -e
-DEBUG="NO"
-if [ "${DEBUG}" == "NO" ]; then
+
+# enable logging
+exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+
+# modes
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
+fi
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
 fi
 
 ##Linode/SSH security settings
@@ -11,7 +25,7 @@ fi
 # <UDF name="client_ips" label="List of IP addresses to whitelist" example="192.168.1.2, 192.168.1.3" default="" />
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. Required for Private IP check/add and DNS records [if applicable]">
+#<UDF name="token_password" label="Your Linode API token. Required if adding DNS records [if applicable]" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="email for SOA" default="">
@@ -24,25 +38,53 @@ fi
 # <UDF name="organization_name" label="Organization" example="Example: Akamai Technologies"  />
 # <UDF name="email_address" label="Email Address" example="Example: user@domain.tld" />
 
-# git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+#GH_USER=""
+#BRANCH=""
+# git user and branch
+if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+        echo "[info] git user and branch set.."
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+
+else
+        export GH_USER="akamai-compute-marketplace"
+        export BRANCH="main"
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+fi
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-openbao"
 
-# enable logging
-exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+function provision_failed {
+  echo "[info] Provision failed. Sending status.."
+
+  # dep
+  apt install jq -y
+
+  # set token
+  local token=($(curl -ks -X POST ${KC_SERVER} \
+     -H "Content-Type: application/json" \
+     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
+
+  # send pre-provision failure
+  curl -sk -X POST ${DATA_ENDPOINT} \
+     -H "Authorization: ${token}" \
+     -H "Content-Type: application/json" \
+     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
+        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
+
+  exit $?
+}
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   sed 's/  //g' <<EOF > ${group_vars}
-
   # sudo username
   username: ${USER_NAME}
   # ssl config
@@ -53,24 +95,19 @@ function udf {
   email_address: ${EMAIL_ADDRESS}
   privateip: ${LINODE_IP}
 EOF
-  # write client IPs
-  IPS=$(echo ${CLIENT_IPS} | tr ' ' '\n' | grep -Eo '^([0-9]{1,3}\.){3}[0-9]{1,3}' | sed 's/^/  - /g')
-  if [ -z ${IPS} ]; then
-    echo "[INFO] No valid client IP addressed found"
+# write client IPs
+  if [[ -z ${CLIENT_IPS} ]]; then
+    echo "[info] No IP addresses provided for Openbao whitelisting"
   else
-    cat << EOF >> ${group_vars}
-client_ips:
-${IPS}
-EOF
+    echo "client_ips: [${CLIENT_IPS}]" >> ${group_vars}
+  fi  
+   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
-  fi
-  
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
   if [[ -n ${DOMAIN} ]]; then
@@ -83,77 +120,49 @@ EOF
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   else echo "subdomain: www" >> ${group_vars};
   fi
- 
+
   if [[ -n ${TOKEN_PASSWORD} ]]; then
     echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
   else echo "No API token entered";
   fi
 
-}
-function add_privateip {
-  echo "[info] Adding instance private IP"
-  curl -H "Content-Type: application/json" \
-      -H "Authorization: Bearer ${TOKEN_PASSWORD}" \
-      -X POST -d '{
-        "type": "ipv4",
-        "public": false
-      }' \
-      https://api.linode.com/v4/linode/instances/${LINODE_ID}/ips
-}
-
-function get_privateip {
-  curl -s -H "Content-Type: application/json" \
-    -H "Authorization: Bearer ${TOKEN_PASSWORD}" \
-   https://api.linode.com/v4/linode/instances/${LINODE_ID}/ips | \
-   jq -r '.ipv4.private[].address'
-}
-
-function configure_privateip {
-  LINODE_IP=$(get_privateip)
-  if [ ! -z "${LINODE_IP}" ]; then
-          echo "[info] Linode private IP present"
+  # staging or production mode (ci)
+  if [[ "${MODE}" == "staging" ]]; then
+    echo "[info] running in staging mode..."
+    echo "mode: ${MODE}" >> ${group_vars}
   else
-          echo "[warn] No private IP found. Adding.."
-          add_privateip
-          LINODE_IP=$(get_privateip)
-          echo "Address=$LINODE_IP/17" | tee -a /etc/systemd/network/05-eth0.network
-          systemctl restart systemd-networkd    
-  fi
+    echo "[info] running in production mode..."
+    echo "mode: production" >> ${group_vars}
+  fi  
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
-  apt-get install -y git python3 python3-pip python3-venv jq
-
-  # Private IP needed for openbao
-  configure_privateip
+  apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
-  # for a single testing branch
-  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
+  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
-  
+
   # populate group_vars
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-  
 }
 
 function installation_complete {
   echo "Installation Complete"
 }
+
 # main
-run && installation_complete
-if [ "${DEBUG}" == "NO" ]; then
-  cleanup
-fi
+run
+installation_complete
