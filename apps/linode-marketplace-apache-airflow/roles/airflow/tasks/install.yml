@@ -3,34 +3,30 @@
     airflow_home: /opt/airflow
     airflow_venv: /opt/airflow/airflow_venv
 
-- name: Ensure airflow group exists
+- name: Create airflow Group
   group:
     name: airflow
-    gid: 50000
     state: present
 
-- name: Ensure airflow user exists
+- name: Create airflow user
   user:
     name: airflow
-    uid: 50000
     group: airflow
-    home: /opt/airflow
-    shell: /bin/bash
+    home: "{{ airflow_home }}"
+    shell: nologin
     create_home: yes
     state: present
 
 - name: Ensure system dependencies are installed
   apt:
     name:
-      - python3-pip
-      - python3-venv
       - build-essential
       - libssl-dev
       - libffi-dev
       - python3-dev
       - curl
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Get latest available Python3 version
   ansible.builtin.shell: |
@@ -41,7 +37,7 @@
 - name: Get latest Airflow release version
   ansible.builtin.uri:
     url: https://pypi.org/pypi/apache-airflow/json
-    return_content: yes
+    return_content: true
   register: airflow_pypi
 
 - name: Set Airflow version fact
@@ -75,8 +71,6 @@
     name: "apache-airflow=={{ airflow_version }}"
     extra_args: "--constraint {{ constraint_url }}"
     state: present
-#  async: 30      
-#  poll: 0
 
 - name: Initialize Airflow metadata database
   command: "{{ airflow_venv }}/bin/airflow db migrate"
@@ -100,11 +94,11 @@
     mode: '0644'
 
 - name: Start Airflow Services
-  systemd:
+  systemd_servicewhat:
     name: "airflow-{{ item.name }}"
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true
   loop:
     - { name: "scheduler" }
     - { name: "api" }
@@ -113,7 +107,7 @@
 
 - name: Wait until Airflow password file exists
   stat:
-    path: /opt/airflow/airflow/simple_auth_manager_passwords.json.generated
+    path: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file_stat
   until: airflow_password_file_stat.stat.exists
   retries: 5
@@ -121,7 +115,7 @@
 
 - name: Read Airflow generated password file
   slurp:
-    src: /opt/airflow/airflow/simple_auth_manager_passwords.json.generated
+    src: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file
 
 - name: Parse JSON and set password as var
