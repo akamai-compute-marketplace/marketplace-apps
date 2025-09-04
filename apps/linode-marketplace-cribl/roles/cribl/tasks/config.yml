@@ -1,4 +1,9 @@
 ---
+- name: Add user.json file to change default admin password
+  template:
+    src: templates/users.json.j2
+    dest: /opt/cribl/local/cribl/auth/users.json
+
 - name: Update cribl config to listen on localhost
   replace:
     path: "{{ cribl_dir }}/default/cribl/cribl.yml"
