@@ -13,7 +13,7 @@
     name: airflow
     group: airflow
     home: "{{ airflow_home }}"
-    shell: nologin
+    shell: /usr/sbin/nologin
     create_home: yes
     state: present
 
