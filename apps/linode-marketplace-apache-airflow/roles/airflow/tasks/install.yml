@@ -94,7 +94,7 @@
     mode: '0644'
 
 - name: Start Airflow Services
-  systemd_servicewhat:
+  systemd_service:
     name: "airflow-{{ item.name }}"
     state: started
     enabled: true
