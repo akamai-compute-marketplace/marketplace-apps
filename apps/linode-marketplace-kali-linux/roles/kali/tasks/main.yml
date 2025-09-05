@@ -1,0 +1,10 @@
+---
+- name: Set up repository and firmware
+  import_tasks: repository_setup.yml
+
+- name: Install Kali Linux packages
+  import_tasks: install.yml
+
+- name: Set up VNC
+  import_tasks: vnc_setup.yml
+  when: vnc_enabled

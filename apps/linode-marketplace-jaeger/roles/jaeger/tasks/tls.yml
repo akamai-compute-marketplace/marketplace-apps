@@ -1,0 +1,144 @@
+---
+# TLS Certificate Generation for OTLP Authentication
+# Creates certificates for authentication to secure OTLP endpoints (ports 4317/4318)
+
+- name: Create TLS certificates directory
+  file:
+    path: "{{ jaeger_tls_dir }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Generate CA private key
+  openssl_privatekey:
+    path: "{{ jaeger_tls_dir }}/ca-key.pem"
+    size: 4096
+    mode: '0600'
+
+- name: Generate CA certificate signing request with CA extensions
+  openssl_csr:
+    path: "{{ jaeger_tls_dir }}/ca.csr"
+    privatekey_path: "{{ jaeger_tls_dir }}/ca-key.pem"
+    common_name: "Jaeger OTLP CA"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+    basic_constraints:
+      - "CA:TRUE"
+    basic_constraints_critical: true
+    key_usage:
+      - keyCertSign
+      - cRLSign
+    key_usage_critical: true
+
+- name: Generate self-signed CA certificate
+  openssl_certificate:
+    path: "{{ jaeger_tls_dir }}/ca-cert.pem"
+    privatekey_path: "{{ jaeger_tls_dir }}/ca-key.pem"
+    csr_path: "{{ jaeger_tls_dir }}/ca.csr"
+    provider: selfsigned
+    mode: '0644'
+
+- name: Generate client private key
+  openssl_privatekey:
+    path: "{{ jaeger_tls_dir }}/client-key.pem"
+    size: 4096
+    mode: '0600'
+
+- name: Generate client certificate signing request with client extensions
+  openssl_csr:
+    path: "{{ jaeger_tls_dir }}/client.csr"
+    privatekey_path: "{{ jaeger_tls_dir }}/client-key.pem"
+    common_name: "jaeger-client"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+
+- name: Generate client certificate signed by CA
+  openssl_certificate:
+    path: "{{ jaeger_tls_dir }}/client-cert.pem"
+    privatekey_path: "{{ jaeger_tls_dir }}/client-key.pem"
+    csr_path: "{{ jaeger_tls_dir }}/client.csr"
+    provider: ownca
+    ownca_path: "{{ jaeger_tls_dir }}/ca-cert.pem"
+    ownca_privatekey_path: "{{ jaeger_tls_dir }}/ca-key.pem"
+    mode: '0644'
+
+- name: Generate server private key for Jaeger
+  openssl_privatekey:
+    path: "{{ jaeger_tls_dir }}/server-key.pem"
+    size: 4096
+    mode: '0600'
+
+- name: Generate server certificate signing request with server extensions
+  openssl_csr:
+    path: "{{ jaeger_tls_dir }}/server.csr"
+    privatekey_path: "{{ jaeger_tls_dir }}/server-key.pem"
+    common_name: "{{ _domain }}"
+    organization_name: "{{ _domain }}"
+    country_name: "US"
+    subject_alt_name:
+      - "DNS:{{ _domain }}"
+      - "DNS:localhost"
+      - "IP:127.0.0.1"
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - serverAuth
+
+- name: Generate server certificate signed by CA
+  openssl_certificate:
+    path: "{{ jaeger_tls_dir }}/server-cert.pem"
+    privatekey_path: "{{ jaeger_tls_dir }}/server-key.pem"
+    csr_path: "{{ jaeger_tls_dir }}/server.csr"
+    provider: ownca
+    ownca_path: "{{ jaeger_tls_dir }}/ca-cert.pem"
+    ownca_privatekey_path: "{{ jaeger_tls_dir }}/ca-key.pem"
+    mode: '0644'
+
+- name: Fix ownership for Jaeger container access to server certificates
+  file:
+    path: "{{ cert_file }}"
+    owner: jaeger-service
+    group: jaeger-service
+    mode: '0644'
+  loop:
+    - "{{ jaeger_tls_dir }}/server-cert.pem"
+    - "{{ jaeger_tls_dir }}/ca-cert.pem"
+  loop_control:
+    loop_var: cert_file
+
+- name: Fix ownership for Jaeger container access to server private key
+  file:
+    path: "{{ jaeger_tls_dir }}/server-key.pem"
+    owner: jaeger-service
+    group: jaeger-service
+    mode: '0600'
+
+- name: Create client certificates directory for user
+  file:
+    path: "/home/{{ username }}/.jaeger-client-certs"
+    state: directory
+    mode: '0700'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: Copy client certificates to user directory
+  copy:
+    src: "{{ cert_file }}"
+    dest: "/home/{{ username }}/.jaeger-client-certs/"
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    remote_src: true
+  loop:
+    - "{{ jaeger_tls_dir }}/ca-cert.pem"
+    - "{{ jaeger_tls_dir }}/client-cert.pem"
+    - "{{ jaeger_tls_dir }}/client-key.pem"
+  loop_control:
+    loop_var: cert_file
