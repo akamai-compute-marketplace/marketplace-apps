@@ -1,5 +1,11 @@
 ---
 # install Loki
+- name: install required dependencies
+  apt:
+    name: unzip
+    state: present
+    update_cache: true
+
 - name: create loki user
   user:
     name: loki
@@ -37,21 +43,29 @@
   set_fact:
     loki_version: '{{ latest_loki.json.tag_name | regex_replace("^v", "") }}'
 
-- name: download loki binary
+- name: download loki latest
   get_url:
     url: 'https://github.com/grafana/loki/releases/download/v{{ loki_version }}/loki-linux-amd64.zip'
     dest: '/tmp/loki-{{ loki_version }}.zip'
+    owner: loki
+    group: loki
     mode: '0644'
 
-- name: unarchive loki
+- name: untar loki archive
   unarchive:
     src: '/tmp/loki-{{ loki_version }}.zip'
     dest: '/tmp/'
+    owner: loki
+    group: loki
+    mode: '0644'
+    creates: '/tmp/loki-{{ loki_version }}.linux-amd64/'
 
-- name: install loki binary to /usr/local/bin
+- name: install loki archive to /usr/local/bin
   copy:
-    src: '/tmp/loki-linux-amd64'
+    src: '/tmp/loki-{{ loki_version }}.linux-amd64/'
     dest: '/usr/local/bin/loki'
+    owner: loki
+    group: loki
     mode: '0755'
 
 - name: create loki config
