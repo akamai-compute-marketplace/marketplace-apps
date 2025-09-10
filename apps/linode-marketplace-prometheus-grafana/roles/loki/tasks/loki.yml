@@ -57,12 +57,13 @@
     dest: '/tmp/'
     owner: loki
     group: loki
-    mode: '0644'
-    creates: '/tmp/loki-{{ loki_version }}.linux-amd64/'
+    mode: '0755'
+    creates: '/tmp/loki-linux-amd64'
+    remote_src: true
 
-- name: install loki archive to /usr/local/bin
+- name: install loki binary to /usr/local/bin
   copy:
-    src: '/tmp/loki-{{ loki_version }}.linux-amd64/'
+    src: '/tmp/loki-linux-amd64'
     dest: '/usr/local/bin/loki'
     owner: loki
     group: loki
