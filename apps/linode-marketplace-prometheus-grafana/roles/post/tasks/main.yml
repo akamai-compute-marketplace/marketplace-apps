@@ -19,3 +19,7 @@
       Prometheus Password: {{ prometheus_htpasswd }}
       Grafana Username: admin
       Grafana Password: {{ grafana_password }}
+      {% if install_loki | bool %}
+      Loki Username: loki
+      Loki Password: {{ loki_htpasswd }}
+      {% endif %}

@@ -16,7 +16,7 @@ Grafana is an analytics and monitoring solution with a focus on accessibility fo
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -39,6 +39,7 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export INSTALL_LOKI="Yes/No"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -54,7 +55,8 @@ curl -H "Content-Type: application/json" \
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "token_password": "${TOKEN}",
         "subdomain": "prometheus",
-        "domain": "example.com"
+        "domain": "example.com",
+        "install_loki": "${INSTALL_LOKI}"
       },
       "authorized_users": [
         "myUser",
@@ -74,13 +76,14 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export INSTALL_LOKI="Yes/No"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 985364 \
-  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com"}' \
+  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com","install_loki": "${INSTALL_LOKI}"}' \
   --region us-mia \
   --type g6-standard-2 \
   --authorized_users "myUser"
@@ -91,3 +94,4 @@ linode-cli linodes create \
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
+- [Loki Documentation](https://grafana.com/docs/loki/latest/)

@@ -1,0 +1,89 @@
+---
+# install Loki
+- name: create loki user
+  user:
+    name: loki
+    system: true
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- name: create loki directories
+  file:
+    path: '{{ loki_dir }}'
+    state: directory
+    owner: loki
+    group: loki
+    mode: '0755'
+  loop:
+    - '/etc/loki'
+    - '/var/lib/loki'
+    - '/var/lib/loki/chunks'
+    - '/var/lib/loki/rules'
+  loop_control:
+    loop_var: loki_dir
+
+- name: get loki latest release metadata
+  uri:
+    url: https://api.github.com/repos/grafana/loki/releases/latest
+  register: latest_loki
+
+###########################################
+- name: debug loki latest release metadata
+  debug:
+    var: latest_loki.json.tag_name
+###########################################
+
+- name: set loki version
+  set_fact:
+    loki_version: '{{ latest_loki.json.tag_name | regex_replace("^v", "") }}'
+
+- name: download loki binary
+  get_url:
+    url: 'https://github.com/grafana/loki/releases/download/v{{ loki_version }}/loki-linux-amd64.zip'
+    dest: '/tmp/loki-{{ loki_version }}.zip'
+    mode: '0644'
+
+- name: unarchive loki
+  unarchive:
+    src: '/tmp/loki-{{ loki_version }}.zip'
+    dest: '/tmp/'
+
+- name: install loki binary to /usr/local/bin
+  copy:
+    src: '/tmp/loki-linux-amd64'
+    dest: '/usr/local/bin/loki'
+    mode: '0755'
+
+- name: create loki config
+  template:
+    src: 'templates/loki-config.yml.j2'
+    dest: '/etc/loki/loki-config.yml'
+    owner: loki
+    group: loki
+    mode: '0644'
+
+- name: create loki systemd service file
+  template:
+    src: 'templates/loki.service.j2'
+    dest: '/etc/systemd/system/loki.service'
+    mode: '0644'
+  notify: 
+    - restart loki
+    - restart nginx
+
+- name: reload systemd and enable/start loki
+  systemd:
+    name: loki
+    daemon_reload: true
+    enabled: true
+    state: started
+
+- name: cleanup temporary loki files
+  file:
+    path: '/tmp/{{ loki_temp_file }}'
+    state: absent
+  loop:
+    - 'loki-{{ loki_version }}.zip'
+    - 'loki-linux-amd64'
+  loop_control:
+    loop_var: loki_temp_file

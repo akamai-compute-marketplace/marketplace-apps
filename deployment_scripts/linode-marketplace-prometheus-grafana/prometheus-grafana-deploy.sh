@@ -1,8 +1,18 @@
 #!/bin/bash
-set -e
+
+# enable logging
+exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+
+# modes
 DEBUG="NO"
 if [ "${DEBUG}" == "NO" ]; then
   trap "cleanup $? $LINENO" EXIT
+fi
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
 fi
 
 ## Linode/SSH security settings
@@ -21,8 +31,22 @@ fi
 # <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akab-zyx987xa6osbli4k-e7jf5ikib5jknes3" default="" />
 # <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akab-nomoflavjuc4422-fa2xznerxrm3teg7" default="" />
 
-# git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+## Loki Datasource
+# <UDF name="install_loki" label="Install Loki?" oneOf="Yes,No" default="No" />
+
+#GH_USER=""
+#BRANCH=""
+# git user and branch
+if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+        echo "[info] git user and branch set.."
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+
+else
+        export GH_USER="akamai-compute-marketplace"
+        export BRANCH="main"
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+fi
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-prometheus-grafana"
 
@@ -73,6 +97,12 @@ EOF
   else echo "No API token entered"
   fi
 
+  if [ "$INSTALL_LOKI" = "Yes" ]; then
+    echo "install_loki: true" >> ${group_vars}
+  else
+    echo "install_loki: false" >> ${group_vars}
+  fi
+
   # akamai datasource
   if [[ -n ${AKAMAI_CLIENT_SECRET} ]] && [[ -n ${AKAMAI_HOST} ]] && [[ -n ${AKAMAI_ACCESS_TOKEN} ]] && [[ -n ${AKAMAI_CLIENT_TOKEN} ]]; then
     echo "akamai_datasource: True" >> ${group_vars}
@@ -98,8 +128,8 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
@@ -116,7 +146,5 @@ function installation_complete {
   echo "Installation Complete"
 }
 # main
-run && installation_complete
-if [ "${DEBUG}" == "NO" ]; then
-  cleanup
-fi
+run
+installation_complete
