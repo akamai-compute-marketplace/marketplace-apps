@@ -67,6 +67,7 @@
     owner: loki
     group: loki
     mode: '0755'
+    remote_src: true
 
 - name: create loki config
   template:
