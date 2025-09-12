@@ -20,3 +20,6 @@
         block: |
           prometheus_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           grafana_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          {% if install_loki | bool %}
+          loki_htpasswd: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          {% endif %}

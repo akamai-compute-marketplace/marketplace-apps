@@ -58,6 +58,13 @@
     name: grafana-server
     state: restarted
 
+- name: wait for grafana to be ready
+  wait_for:
+    host: localhost
+    port: 3000
+    sleep: 5
+    timeout: 60
+
 - name: create json payload file for datasource
   template:
     src: 'templates/datasource.json.j2'

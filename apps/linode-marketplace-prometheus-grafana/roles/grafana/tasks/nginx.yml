@@ -21,6 +21,15 @@
     state: present
     create: true
 
+- name: secure loki with htaccess
+  community.general.htpasswd:
+    path: '/etc/nginx/.loki_htpasswd'
+    name: loki
+    password: '{{ loki_htpasswd }}'
+    state: present
+    create: true
+  when: install_loki | bool
+
 - name: enable grafana vhost
   file: 
     src: '/etc/nginx/sites-available/{{ _domain }}'
