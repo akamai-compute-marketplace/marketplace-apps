@@ -62,6 +62,7 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+  local install_loki=false
   sed 's/  //g' <<EOF > ${group_vars}
 
   # sudo username
@@ -97,7 +98,7 @@ EOF
   else echo "No API token entered"
   fi
 
-  if [ "$INSTALL_LOKI" = "Yes" ]; then
+  if [[ "$INSTALL_LOKI" == "Yes" ]]; then
     echo "install_loki: true" >> ${group_vars}
   else
     echo "install_loki: false" >> ${group_vars}

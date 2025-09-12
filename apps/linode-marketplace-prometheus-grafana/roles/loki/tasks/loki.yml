@@ -1,6 +1,6 @@
 ---
 # install Loki
-- name: install required dependencies
+- name: install required dependencies for loki install
   apt:
     name: unzip
     state: present
@@ -32,12 +32,6 @@
   uri:
     url: https://api.github.com/repos/grafana/loki/releases/latest
   register: latest_loki
-
-###########################################
-- name: debug loki latest release metadata
-  debug:
-    var: latest_loki.json.tag_name
-###########################################
 
 - name: set loki version
   set_fact:

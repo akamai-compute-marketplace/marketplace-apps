@@ -1,10 +1,12 @@
 # Linode Prometheus & Grafana Deployment One-Click APP
 
-This Marketplace App installs both Prometheus and Grafana, two open source tools that are commonly used together to collect and view data.
+This Marketplace App installs Prometheus and Grafana, two open source tools that are commonly used together to collect and view data, with an optional Loki installation for log aggregation.
 
 Use Prometheus to collect metrics and receive alerts. Prometheus monitors targets that you define at given intervals by scraping their metrics HTTP endpoints. This tool is particularly well-suited for numeric time series data, which makes it ideal for machine-centric monitoring as well as monitoring of highly dynamic service-oriented architectures.
 
 Grafana is an analytics and monitoring solution with a focus on accessibility for metric visualization. You can use Grafana to create, monitor, store, and share metrics with your team to keep tabs on your infrastructure. Grafana is very lightweight and does not use a lot of memory and CPU resources.
+
+Optionally, you can install a horizontally-scalable, highly-available, multi-tenant log aggregation system inspired by Prometheus. It is designed to be very cost effective and easy to operate. It does not index the contents of the logs, but rather a set of labels for each log stream.
 
 ## Software Included
 
@@ -12,6 +14,7 @@ Grafana is an analytics and monitoring solution with a focus on accessibility fo
 | :---      | :----     | :---          |
 | Prometheus    | latest    | HTTP metric scraper |
 | Grafana | Latest | Analytics and metrics dashboard |
+| Loki (Optional) | Latest | Log aggregation system |
 | Nginx   | 1.18   | High-performance web server and reverse proxy server |  
 
 **Supported Distributions:**
