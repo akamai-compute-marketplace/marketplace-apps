@@ -9,6 +9,7 @@ polling==0.3.2
 ansible-specdoc==0.0.19
 pyyaml==6.0.2
 docker==7.1.0
+passlib==1.7.4
 
 #for django
 psycopg2-binary==2.9.10

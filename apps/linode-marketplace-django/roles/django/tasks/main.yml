@@ -30,7 +30,7 @@
   postgresql_user:
     name: django
     password: "{{ postgres_db_password }}"
-    encrypted: yes
+    encrypted: true
     state: present
   become: true
   become_user: postgres
@@ -103,13 +103,13 @@
     path: "{{ project_directory }}"
     owner: "{{ username }}"
     group: "{{ username }}"
-    recurse: yes
+    recurse: true
 
 - name: copy settings template
   template:
     src: "templates/settings.py.j2"
     dest: "{{ project_directory }}/django_sample/django_sample/settings.py"
-    force: yes
+    force: true
   become: true  
   become_user: "{{ username }}"
 
@@ -121,9 +121,10 @@
   lineinfile:
     path: "{{ project_directory }}/django_sample/django_sample/settings.py"
     regexp: "^SECRET_KEY = "
-    line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
+    line: 'SECRET_KEY = "{{ new_secret_key.stdout_lines[-1] }}"'
   become: true
   become_user: "{{ username }}"
+  no_log: true
 
 - name: django migrate
   community.general.django_manage:
@@ -171,13 +172,13 @@
 
 - name: reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: start and enable Gunicorn service
   systemd:
     name: "gunicorn"
     state: started
-    enabled: yes
+    enabled: true
 
 # nginx
 - name: update default config file 
