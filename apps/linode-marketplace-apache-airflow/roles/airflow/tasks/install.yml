@@ -72,6 +72,11 @@
     extra_args: "--constraint {{ constraint_url }}"
     state: present
 
+- name: Initialize Airflow metadata database
+  command: "{{ airflow_venv }}/bin/airflow db migrate"
+  args:
+    creates: "{{ airflow_home }}/airflow.db"
+
 - name: Template Airflow Scheduler systemd service
   template:
     src: airflow-scheduler.service.j2
@@ -100,17 +105,12 @@
   loop_control:
     loop_var: item
 
-- name: Initialize Airflow metadata database
-  command: "{{ airflow_venv }}/bin/airflow db migrate"
-  args:
-    creates: "{{ airflow_home }}/airflow.db"
-
 - name: Wait until Airflow password file exists
   stat:
     path: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file_stat
   until: airflow_password_file_stat.stat.exists
-  retries: 5
+  retries: 10
   delay: 5
 
 - name: Read Airflow generated password file
