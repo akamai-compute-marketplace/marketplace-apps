@@ -72,11 +72,6 @@
     extra_args: "--constraint {{ constraint_url }}"
     state: present
 
-- name: Initialize Airflow metadata database
-  command: "{{ airflow_venv }}/bin/airflow db migrate"
-  args:
-    creates: "{{ airflow_home }}/airflow.db"
-
 - name: Template Airflow Scheduler systemd service
   template:
     src: airflow-scheduler.service.j2
@@ -104,6 +99,11 @@
     - { name: "api" }
   loop_control:
     loop_var: item
+
+- name: Initialize Airflow metadata database
+  command: "{{ airflow_venv }}/bin/airflow db migrate"
+  args:
+    creates: "{{ airflow_home }}/airflow.db"
 
 - name: Wait until Airflow password file exists
   stat:
