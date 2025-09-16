@@ -1,0 +1,59 @@
+---
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+
+- name: set postgresql system user and db user facts
+  set_fact: 
+    postgres_system_user: "postgres"
+    postgres_db_user: "django"
+    postgres_db_name: "django"
+
+- name: configure PostgreSQL
+  postgresql_db:
+    name: "{{ postgres_db_name }}"
+    state: present
+  become: true
+  become_user: "{{ postgres_system_user }}"
+
+- name: create PostgreSQL user
+  postgresql_user:
+    name: "{{ postgres_db_user }}"
+    password: "{{ postgres_db_password }}"
+    encrypted: true
+    state: present
+  become: true
+  become_user: "{{ postgres_system_user }}"
+
+- name: set client_encoding for django
+  postgresql_query:
+    db: "{{ postgres_db_name }}"
+    login_user: "{{ postgres_system_user }}"
+    login_unix_socket: /var/run/postgresql
+    query:
+      - "ALTER ROLE {{ postgres_db_user }} SET client_encoding TO 'utf8';"
+  become: true
+  become_user: "{{ postgres_system_user }}"
+
+- name: set default_transaction_isolation for django
+  postgresql_query:
+    db: "{{ postgres_db_name }}"
+    login_user: "{{ postgres_system_user }}"
+    query:
+      - "ALTER ROLE {{ postgres_db_user }} SET default_transaction_isolation TO 'read committed';"
+  become: true
+  become_user: "{{ postgres_system_user }}"
+
+- name: set timezone for django
+  postgresql_query:
+    db: "{{ postgres_db_name }}"
+    login_user: "{{ postgres_system_user }}"
+    login_password: "{{ postgres_db_password }}"
+    query:
+      - "ALTER ROLE {{ postgres_db_user }} SET timezone TO 'UTC';"
+  become: true
+  become_user: "{{ postgres_system_user }}"

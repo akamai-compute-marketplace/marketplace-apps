@@ -13,5 +13,5 @@ passlib==1.7.4
 
 #for django
 psycopg2-binary==2.9.10
-django==5.2.6
-gunicorn==23.0.0
+# django==5.2.6
+# gunicorn==23.0.0
