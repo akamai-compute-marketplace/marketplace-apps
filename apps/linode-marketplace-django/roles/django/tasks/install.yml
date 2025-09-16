@@ -42,11 +42,10 @@
   become_user: "{{ username }}"
 
 - name: start django project
-  community.general.django_command:
-    command: "startproject django_sample"
-    venv: "{{ project_directory }}/djangoenv"
-    pythonpath: "{{ project_directory }}"
+  shell:
+    cmd: "{{ enable_venv }} && django-admin startproject django_sample"
   args:
+    executable: /bin/bash
     chdir: "{{ project_directory }}"
     creates: "{{ project_directory }}/django_sample/manage.py"
   become: true
@@ -79,9 +78,8 @@
 
 - name: generate a new SECRET_KEY
   shell:
-    cmd: "python -c \"from django.core.management import utils; print(utils.get_random_secret_key())\""
-  environment:
-    PYTHONPATH: "{{ project_directory }}/djangoenv/lib/python3.10/site-packages"
+    cmd: "{{ enable_venv }} && python -c \"from django.core.management import utils; print(utils.get_random_secret_key())\""
+    executable: /bin/bash
   register: new_secret_key
   when: secret_key_empty is changed
 
@@ -104,20 +102,23 @@
   become_user: "{{ username }}"
 
 - name: create an initial superuser
-  community.general.django_manage:
-    command: "createsuperuser"
-    virtualenv: "{{ project_directory }}/djangoenv"
-    project_path: "{{ project_directory }}/django_sample"
-    extra_args: "--noinput --username={{ django_user }} --email={{ soa_email_address }}"
+  shell:
+    cmd: "{{ enable_venv }} && python manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+    executable: /bin/bash
+    chdir: "{{ project_directory }}/django_sample"
+  environment:
+    DJANGO_SUPERUSER_USERNAME: "{{ django_user }}"
+    DJANGO_SUPERUSER_EMAIL: "{{ soa_email_address }}"
+    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
   become: true
   become_user: "{{ username }}"
 
 - name: set django admin password
-  community.general.django_manage:
-    command: "shell"
-    virtualenv: "{{ project_directory }}/djangoenv"
-    project_path: "{{ project_directory }}/django_sample"
-    extra_args: "-c \"from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()\""
+  shell:
+    cmd: |
+      {{ enable_venv }} && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+    executable: /bin/bash
+    chdir: "{{ project_directory }}/django_sample"
   become: true
   become_user: "{{ username }}"
   no_log: true
@@ -125,8 +126,8 @@
 - name: run django system checks
   community.general.django_check:
     settings: "django_sample.settings"
-    virtualenv: "{{ project_directory }}/djangoenv"
-    project_path: "{{ project_directory }}/django_sample"
+    venv: "{{ project_directory }}/djangoenv"
+    pythonpath: "{{ project_directory }}/django_sample"
   become: true
   become_user: "{{ username }}"
 
@@ -135,6 +136,5 @@
     command: "collectstatic"
     virtualenv: "{{ project_directory }}/djangoenv"
     project_path: "{{ project_directory }}/django_sample"
-    extra_args: "--noinput"
   become: true
   become_user: "{{ username }}"
