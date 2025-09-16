@@ -100,8 +100,8 @@
     enabled: true
     daemon_reload: true
   loop:
-    - { name: "scheduler" }
     - { name: "api" }
+    - { name: "scheduler" }
   loop_control:
     loop_var: item
 
