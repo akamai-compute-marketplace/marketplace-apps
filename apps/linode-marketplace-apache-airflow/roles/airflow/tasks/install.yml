@@ -25,7 +25,7 @@
 
 - name: Get latest Apache Airflow & set URL
   set_fact:
-    airflow_latest_tag: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
+    airflow_version: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
     constraint_url: "https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ ansible_facts.python_version }}.txt"
 
 - name: Create Airflow directories
