@@ -26,7 +26,6 @@
 - name: Get latest Apache Airflow & set URL
   set_fact:
     airflow_version: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
-    constraint_url: "https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ ansible_facts.python_version }}.txt"
 
 - name: Create Airflow directories
   file:
@@ -49,7 +48,7 @@
     virtualenv: "{{ airflow_venv }}"
     virtualenv_command: python3 -m venv
     name: "apache-airflow=={{ airflow_version }}"
-    extra_args: "--constraint {{ constraint_url }}"
+    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ ansible_facts.python_version }}.txt"
     state: present
 
 - name: Initialize Airflow metadata database
