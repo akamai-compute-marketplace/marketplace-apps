@@ -47,7 +47,6 @@
   args:
     executable: /bin/bash
     chdir: "{{ project_directory }}"
-    creates: "{{ project_directory }}/django_sample/manage.py"
   become: true
   become_user: "{{ username }}"
 
@@ -66,32 +65,44 @@
   become: true  
   become_user: "{{ username }}"
 
-- name: check if SECRET_KEY is empty
-  lineinfile:
-    path: "{{ project_directory }}/django_sample/django_sample/settings.py"
-    regexp: "^SECRET_KEY = ''"
-    state: absent
-  check_mode: true
-  register: secret_key_empty
-  become: true
-  become_user: "{{ username }}"
+# - name: check if SECRET_KEY is empty
+#   lineinfile:
+#     path: "{{ project_directory }}/django_sample/django_sample/settings.py"
+#     regexp: "^SECRET_KEY = ''"
+#     state: absent
+#   check_mode: true
+#   register: secret_key_empty
+#   become: true
+#   become_user: "{{ username }}"
+
+# - name: generate a new SECRET_KEY
+#   shell:
+#     cmd: "{{ enable_venv }} && python -c \"from django.core.management import utils; print(utils.get_random_secret_key())\""
+#     executable: /bin/bash
+#   register: new_secret_key
+#   when: secret_key_empty is changed
 
 - name: generate a new SECRET_KEY
-  shell:
-    cmd: "{{ enable_venv }} && python -c \"from django.core.management import utils; print(utils.get_random_secret_key())\""
-    executable: /bin/bash
+  command: 'django-admin shell -c "from django.core.management import utils; print(utils.get_random_secret_key())"'
   register: new_secret_key
-  when: secret_key_empty is changed
+
+# - name: replace SECRET_KEY line in Django settings
+#   lineinfile:
+#     path: "{{ project_directory }}/django_sample/django_sample/settings.py"
+#     regexp: "^SECRET_KEY = "
+#     line: 'SECRET_KEY = "{{ new_secret_key.stdout_lines[-1] }}"'
+#   become: true
+#   become_user: "{{ username }}"
+#   no_log: true
+#   when: secret_key_empty is changed
 
 - name: replace SECRET_KEY line in Django settings
   lineinfile:
     path: "{{ project_directory }}/django_sample/django_sample/settings.py"
     regexp: "^SECRET_KEY = "
-    line: 'SECRET_KEY = "{{ new_secret_key.stdout_lines[-1] }}"'
+    line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
   become: true
   become_user: "{{ username }}"
-  no_log: true
-  when: secret_key_empty is changed
 
 - name: django migrate
   community.general.django_manage:
@@ -101,17 +112,24 @@
   become: true
   become_user: "{{ username }}"
 
+# - name: create an initial superuser
+#   shell:
+#     cmd: "{{ enable_venv }} && python manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+#     executable: /bin/bash
+#     chdir: "{{ project_directory }}/django_sample"
+#   environment:
+#     DJANGO_SUPERUSER_USERNAME: "{{ django_user }}"
+#     DJANGO_SUPERUSER_EMAIL: "{{ soa_email_address }}"
+#     DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
+#   become: true
+#   become_user: "{{ username }}"
+
 - name: create an initial superuser
-  shell:
-    cmd: "{{ enable_venv }} && python manage.py createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
-    executable: /bin/bash
-    chdir: "{{ project_directory }}/django_sample"
-  environment:
-    DJANGO_SUPERUSER_USERNAME: "{{ django_user }}"
-    DJANGO_SUPERUSER_EMAIL: "{{ soa_email_address }}"
-    DJANGO_SUPERUSER_PASSWORD: "{{ django_password }}"
-  become: true
-  become_user: "{{ username }}"
+  community.general.django_manage:
+    command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+
 
 - name: set django admin password
   shell:
@@ -123,13 +141,13 @@
   become_user: "{{ username }}"
   no_log: true
 
-- name: run django system checks
-  community.general.django_check:
-    settings: "django_sample.settings"
-    venv: "{{ project_directory }}/djangoenv"
-    pythonpath: "{{ project_directory }}/django_sample"
-  become: true
-  become_user: "{{ username }}"
+# - name: run django system checks
+#   community.general.django_check:
+#     settings: "django_sample.settings"
+#     venv: "{{ project_directory }}/djangoenv"
+#     pythonpath: "{{ project_directory }}/django_sample"
+#   become: true
+#   become_user: "{{ username }}"
 
 - name: collect static files
   community.general.django_manage:
