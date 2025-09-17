@@ -1,5 +1,4 @@
 ---
-# gunicorn
 - name: configure gunicorn socket
   copy:
     src: "files/gunicorn.socket"
