@@ -1,0 +1,4 @@
+---
+# Basic Paths
+airflow_home: /opt/airflow
+airflow_venv: /opt/airflow/airflow_venv

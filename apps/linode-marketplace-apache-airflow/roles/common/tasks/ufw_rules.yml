@@ -1,12 +1,4 @@
 ---
-- name: Allow SSH connections
-  ufw:
-    rule: allow
-    port: '22'
-    proto: tcp
-
-# Apache Airflow access
-
 - name: Configure UFW rules for Apache Airflow
   community.general.ufw:
     rule: allow

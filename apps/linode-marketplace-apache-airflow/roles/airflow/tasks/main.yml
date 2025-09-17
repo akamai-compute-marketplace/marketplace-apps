@@ -1,6 +1,6 @@
 ---
-- name: install airflow
+- name: Install Airflow
   import_tasks: install.yml
 
-- name: enable nginx for airflow
+- name: Enable Nginx for Airflow
   import_tasks: nginx.yml
