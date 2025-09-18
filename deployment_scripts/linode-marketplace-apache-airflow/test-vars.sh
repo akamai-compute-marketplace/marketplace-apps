@@ -16,6 +16,7 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
+UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
 # dynamic variables
 #if [[ -n "${CHANGE_ME}" ]]; then
