@@ -15,5 +15,4 @@
     - prometheus
     - akamai_datasource
     - loki
-    - loki_datasource
     - post
