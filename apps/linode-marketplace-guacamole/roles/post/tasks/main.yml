@@ -15,8 +15,8 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
       
-      Admin Username: guacadmin
-      Admin Password: {{ guacamole_admin_password }}
+      Guacamole Admin Username: guacadmin
+      Guacamole Admin Password: {{ guacamole_admin_password }}
       
       PostgreSQL User: guacamole_user
       PostgreSQL Password: {{ postgres_user_password }}
