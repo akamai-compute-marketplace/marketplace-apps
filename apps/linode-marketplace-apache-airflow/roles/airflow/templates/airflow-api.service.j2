@@ -1,0 +1,17 @@
+[Unit]
+Description=Airflow API Server
+After=network.target
+
+[Service]
+User=airflow
+Group=airflow
+Environment="AIRFLOW_HOME={{ airflow_home }}/airflow"
+Environment="PATH={{ airflow_venv }}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStartPre={{ airflow_venv }}/bin/airflow db migrate
+ExecStart={{ airflow_venv }}/bin/airflow api-server --host 127.0.0.1 --port 8080
+
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
