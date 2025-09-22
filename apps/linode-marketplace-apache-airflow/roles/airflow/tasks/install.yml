@@ -66,7 +66,7 @@
     mode: '0644'
   loop:
     - { src: "airflow-scheduler.service.j2", dest: "/etc/systemd/system/airflow-scheduler.service" }
-    - { src: "airflow-api.service.j2",       dest: "/etc/systemd/system/airflow-api.service" }
+    - { src: "airflow-api.service.j2", dest: "/etc/systemd/system/airflow-api.service" }
 
 - name: Start Airflow Services
   systemd_service:
