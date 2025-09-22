@@ -1,0 +1,36 @@
+NR_CONFIG_FILE="/etc/newrelic-infra.yml"
+
+echo "=================================================" | tee -a "$LOG_FILE"
+echo " New Relic Installation - License Key Setup" | tee -a "$LOG_FILE"
+echo "=================================================" | tee -a "$LOG_FILE"
+echo ""
+
+# Loop until a valid license key is provided
+while true; do
+    echo ""
+    echo "If you don't have a NewRelic API token, visit:" | tee -a "$LOG_FILE"
+    echo "  https://one.newrelic.com/admin-portal/api-keys/ to generate one" | tee -a "$LOG_FILE"
+    echo ""
+    read -s -p "Enter your New Relic license key: " NEWRELIC_KEY
+
+    # Validate the token via New Relic API
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -H "Api-Key: $NEWRELIC_KEY" \
+        https://api.newrelic.com/v2/applications.json)
+
+    if [ "$HTTP_CODE" -eq 200 ]; then
+        cat <<EOF > "$NR_CONFIG_FILE"
+license_key: $NEWRELIC_KEY
+EOF
+        chmod 600 "$NR_CONFIG_FILE"
+        chown root:root "$NR_CONFIG_FILE"
+        echo "$(date) - License key written to $NR_CONFIG_FILE" | tee -a "$LOG_FILE"
+        break
+    else
+        echo "$(date) - Invalid New Relic license key. Please try again." | tee -a "$LOG_FILE"
+    fi
+done
+
+# Restart newrelic to pickup changes
+sudo systemctl restart newrelic-infra
+

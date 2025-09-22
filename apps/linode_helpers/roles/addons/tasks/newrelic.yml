@@ -1,0 +1,48 @@
+- name: Ensure required dependencies are installed
+  apt:
+    name: 
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: Import New Relic GPG key
+  apt_key:
+    url: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
+    state: present
+
+- name: Add New Relic Infrastructure repo
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt noble main"
+    state: present
+    filename: newrelic-infra
+
+- name: Install New Relic Infrastructure Agent
+  apt:
+    name: newrelic-infra
+    state: latest
+
+- name: Create New Relic config directory
+  file:
+    path: /etc/newrelic-infra
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Insert New Relic line after "# BEGIN ADDONS"
+  lineinfile:
+    path: /etc/profile.d/addons.sh
+    insertafter: '^# BEGIN ADDONS'
+    line: "{{ lookup('template', 'newrelic.sh.j2') }}"
+    create: yes
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure newrelic-infra service is enabled and started
+  systemd:
+    name: newrelic-infra
+    enabled: yes
+    state: starteds
