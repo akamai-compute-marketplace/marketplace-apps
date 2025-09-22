@@ -62,7 +62,6 @@ function cleanup {
 function udf {
   
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  local install_loki=false
   sed 's/  //g' <<EOF > ${group_vars}
 
   # sudo username
