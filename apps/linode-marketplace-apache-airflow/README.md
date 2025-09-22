@@ -2,6 +2,13 @@
 
 Apache Airflow is a powerful open-source platform designed to programmatically author, schedule, and monitor workflows. Built with scalability and flexibility in mind, Airflow allows developers and data engineers to orchestrate complex data pipelines through Directed Acyclic Graphs (DAGs). With its intuitive web-based UI, Airflow makes it easy to visualize tasks, monitor execution, and troubleshoot issues. It integrates seamlessly with popular services and technologies such as cloud providers, databases, and messaging systems, making it a cornerstone for modern data engineering workflows.
 
+## Software Included
+
+| Software   | Version   | Description                |
+| :---       | :----     | :---                      |
+| Apache Airflow   | latest    | Workflow management tool |
+| NGINX      | Latest    | Web server and reverse proxy |
+
 **Supported Distributions:**
 
 - Ubuntu 24.04 LTS
