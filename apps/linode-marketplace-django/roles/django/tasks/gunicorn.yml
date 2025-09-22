@@ -1,0 +1,20 @@
+---
+- name: configure gunicorn socket
+  copy:
+    src: "files/gunicorn.socket"
+    dest: "/etc/systemd/system/gunicorn.socket"
+
+- name: configure Gunicorn systemd service
+  template:
+    src: "gunicorn.service.j2"
+    dest: "/etc/systemd/system/gunicorn.service"
+
+- name: reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: start and enable Gunicorn service
+  systemd:
+    name: "gunicorn"
+    state: started
+    enabled: true

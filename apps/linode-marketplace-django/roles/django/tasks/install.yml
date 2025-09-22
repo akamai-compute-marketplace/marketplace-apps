@@ -1,0 +1,112 @@
+---
+- name: install required packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3-venv
+    - python3-dev
+    - libpq-dev
+
+- name: setting facts for deployment
+  set_fact:
+    enable_venv: "source /var/www/django_app/djangoenv/bin/activate"
+    project_directory: "/var/www/django_app"
+
+- name: import postgresql tasks
+  import_tasks: postgresql.yml
+
+- name: create project directory
+  file:
+    path: "{{ project_directory }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+
+- name: create and activate virtual environment
+  command: python3 -m venv djangoenv
+  args:
+    chdir: "{{ project_directory }}"
+  become: true
+  become_user: "{{ username }}"
+
+- name: install Django and Gunicorn
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ project_directory}}/djangoenv"
+  loop:
+    - django
+    - gunicorn
+    - psycopg2-binary
+  become: true
+  become_user: "{{ username }}"
+
+- name: start django project
+  shell:
+    cmd: "{{ enable_venv }} && django-admin startproject django_sample"
+  args:
+    executable: /bin/bash
+    chdir: "{{ project_directory }}"
+  become: true
+  become_user: "{{ username }}"
+
+- name: set ownership for django_app
+  file:
+    path: "{{ project_directory }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    recurse: true
+
+- name: copy settings template
+  template:
+    src: "templates/settings.py.j2"
+    dest: "{{ project_directory }}/django_sample/django_sample/settings.py"
+    force: true
+  become: true  
+  become_user: "{{ username }}"
+
+- name: generate a new SECRET_KEY
+  shell:
+    cmd: "{{ enable_venv }} && python -c \"from django.core.management import utils; print(utils.get_random_secret_key())\""
+    executable: /bin/bash
+  register: new_secret_key
+
+- name: replace SECRET_KEY line in Django settings
+  lineinfile:
+    path: "{{ project_directory }}/django_sample/django_sample/settings.py"
+    regexp: "^SECRET_KEY = "
+    line: 'SECRET_KEY = "{{ new_secret_key.stdout }}"'
+  become: true
+  become_user: "{{ username }}"
+
+- name: django migrate
+  community.general.django_manage:
+    command: "migrate"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"
+
+- name: create an initial superuser
+  community.general.django_manage:
+    command: "createsuperuser --noinput --username={{ django_user }} --email={{ soa_email_address }}"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+
+- name: set django admin password
+  shell:
+    cmd: |
+      {{ enable_venv }} && python manage.py shell -c "from django.contrib.auth.models import User; u = User.objects.get(username='{{ django_user }}'); u.set_password('{{ django_password }}'); u.save()"
+    executable: /bin/bash
+    chdir: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"
+  no_log: true
+
+- name: collect static files
+  community.general.django_manage:
+    command: "collectstatic"
+    virtualenv: "{{ project_directory }}/djangoenv"
+    project_path: "{{ project_directory }}/django_sample"
+  become: true
+  become_user: "{{ username }}"

@@ -14,6 +14,9 @@
     content: |
       Sudo username: {{ username }}
       Sudo password: {{ password }}
-      postgres Django DB password: {{ postgres_db_password }}
+
+      Postgres user: {{ postgres_db_user }}
+      Postgres Django DB password: {{ postgres_db_password }}
+      
       Django user: {{ django_user }}
       Django password: {{ django_password }}
