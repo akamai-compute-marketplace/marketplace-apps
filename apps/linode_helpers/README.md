@@ -34,6 +34,23 @@ The Add-ons module allows Marketplace apps to enable optional integrations (moni
    ```yaml
    - { name: "myaddon", file: "myaddon.yml" }
 
+### Post Add-on installation steps
+
+Some add-ons may require additional configuration after installation, such as providing API tokens, server-specific details, or other user inputs. To handle this, the deployment process creates a script at /etc/profile.d/addons.sh, which runs automatically on the first login after the Ansible playbook completes. This script is designed to support multiple add-ons by allowing configuration snippets to be appended as needed.
+
+For example, you can insert a new add-on snippet into the existing file like this:
+```
+- name: Insert New add-on line after "# BEGIN ADDONS"
+  lineinfile:
+    path: /etc/profile.d/addons.sh
+    insertafter: '^# BEGIN ADDONS'
+    line: "{{ lookup('template', 'myaddon.sh.j2') }}"
+    create: yes
+    owner: root
+    group: root
+    mode: '0755'
+```
+
 ## Creating Your Own
 
 Additional Linode Helpers can be added while respecting [Ansible common practice](https://docs.ansible.com/ansible/2.8/user_guide/playbooks_best_practices.html) and directory structure. Linode Helpers should perform common, repeatable system configuration tasks with minimal dependancies. Linode Helper functions can be imported as roles as needed in playbooks. Please see [DEVELOPMENT.md](docs/DEVELOPMENT.md) for more detailed standards.
