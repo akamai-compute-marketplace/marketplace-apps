@@ -1,13 +1,12 @@
-ansible==6.0.0
-PyMySQL==1.0.2
-yamllint==1.26.2
-ansible-lint==6.0.1
-flake8==3.9.2
-linode_api4==5.5.0
-dnspython==2.2.1
+ansible==12.0.0
+PyMySQL==1.1.2
+yamllint==1.37.1
+ansible-lint==25.8.2
+flake8==7.3.0
+linode_api4==5.35.0
+dnspython==2.8.0
 polling==0.3.2
-ansible-specdoc==0.0.14
-pyyaml==6.0.1
-dnspython==2.2.1
+ansible-specdoc==0.0.19
+pyyaml==6.0.2
 ## htpasswd req
 passlib==1.7.4
