@@ -4,10 +4,10 @@ Apache Airflow is a powerful open-source platform designed to programmatically a
 
 ## Software Included
 
-| Software   | Version   | Description                |
-| :---       | :----     | :---                      |
-| Apache Airflow   | latest    | Workflow management tool |
-| NGINX      | Latest    | Web server and reverse proxy |
+| Software   | Version   | Description |
+| :---       | :----     | :---        |
+| Apache Airflow   | Latest  | Workflow management tool |
+| Nginx      | Latest  | Web server and reverse proxy |
 
 **Supported Distributions:**
 
