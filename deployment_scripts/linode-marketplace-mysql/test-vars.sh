@@ -18,6 +18,7 @@ UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
+UDF_VARS["ADD_ONS"]="none"
 
 # dynamic variables
 if [[ -n "${DATABASE}" ]]; then
