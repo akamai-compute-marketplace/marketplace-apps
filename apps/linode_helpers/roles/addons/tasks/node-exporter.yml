@@ -1,0 +1,58 @@
+---
+# install node_exporter latest
+# https://api.github.com/repos/prometheus/node_exporter/releases/latest
+
+- name: create prometheus user
+  import_tasks:
+    file: promuser.yml
+
+- name: get node_exporter latest
+  uri:
+    url: 'https://api.github.com/repos/prometheus/node_exporter/releases/latest'
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: latest_release
+
+- name: set node_exporter latest version
+  set_fact:
+    node_exporter_version: "{{ latest_release.json.tag_name[1:] }}"
+
+- name: download node_exporter latest binary
+  get_url: 
+    url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    owner: prometheus
+    group: prometheus
+    mode: 0644
+
+- name: untar node_exporter archive
+  unarchive:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp"
+    owner: prometheus
+    group: prometheus
+    mode: 0644    
+    creates: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+
+- name: moving node_exporter binary to path
+  copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: "/usr/local/bin/node_exporter"
+    mode: 0755
+    owner: prometheus
+    group: prometheus
+      
+# system service
+
+- name: moving node_exporter service
+  copy:
+    src: 'files/node_exporter.service'
+    dest: '/etc/systemd/system/node_exporter.service'
+    
+- name: start node_exporter service
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: true
+    daemon_reload: true

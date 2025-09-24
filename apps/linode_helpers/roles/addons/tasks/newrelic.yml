@@ -31,18 +31,16 @@
     group: root
     mode: '0755'
 
-- name: Insert New Relic line after "# BEGIN ADDONS"
-  lineinfile:
-    path: /etc/profile.d/addons.sh
-    insertafter: '^# BEGIN ADDONS'
-    line: "{{ lookup('template', 'newrelic.sh.j2') }}"
-    create: yes
+- name: Create newrelic.sh for post install
+  template:
+    src: 'templates/newrelic.sh.j2' 
+    dest: '/etc/profile.d/newrelic.sh'
     owner: root
     group: root
-    mode: '0755'
+    mode: 0755
 
 - name: Ensure newrelic-infra service is enabled and started
   systemd:
     name: newrelic-infra
     enabled: yes
-    state: starteds
+    state: started

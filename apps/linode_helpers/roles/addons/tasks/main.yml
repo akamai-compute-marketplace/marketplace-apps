@@ -1,29 +1,9 @@
 ---
-# ==============================================================================
-# Ansible Add-ons Playbook
-#
-# Purpose:
-#   - Creates /etc/profile.d/addons.sh from a template
-#   - Installs and configures add-ons defined in the `add_ons` variable in the stackscript
-#
-# How It Works:
-#   1. If `add_ons` is defined and not equal to "none", the addons.sh script 
-#      is created on the system.
-#   2. The "Install add-ons" task loops through the list of available add-ons.
-#   3. For each add-on listed, its corresponding task file (YAML) is included 
-#      and executed, but only if the add-on is present in the `add_ons` variable.
-#
-- name: Create addons.sh
-  template:
-    src: 'templates/addons.sh.j2' 
-    dest: '/etc/profile.d/addons.sh'
-    owner: root
-    group: root
-    mode: 0755
-  when: add_ons is defined and add_ons != 'none'
 
 - name: Install add-ons
   include_tasks: "{{ item.file }}"
   loop:
     - { name: "newrelic", file: "newrelic.yml" }
+    - { name: "node_exporter", file: "node-exporter.yml" }
+    - { name: "mysqld_exporter", file: "data-exporter.yml" }
   when: item.name in add_ons

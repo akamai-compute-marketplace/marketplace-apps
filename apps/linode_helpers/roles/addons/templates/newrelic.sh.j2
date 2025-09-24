@@ -1,3 +1,6 @@
+#!/bin/bash
+# Log File
+LOG_FILE="/var/log/marketplace_addons.log"
 NR_CONFIG_FILE="/etc/newrelic-infra.yml"
 
 echo "=================================================" | tee -a "$LOG_FILE"
@@ -34,3 +37,5 @@ done
 # Restart newrelic to pickup changes
 sudo systemctl restart newrelic-infra
 
+# Clean up
+rm /etc/profile.d/newrelic.sh
