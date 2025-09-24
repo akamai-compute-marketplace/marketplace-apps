@@ -1,35 +1,51 @@
 - name: Ensure required dependencies are installed
   apt:
-    name: 
-      - apt-transport-https
-      - ca-certificates
-      - gnupg
+    name:
+      - curl
+      - tar
+      - gzip
     state: present
     update_cache: true
 
-- name: Import New Relic GPG key
-  apt_key:
-    url: https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg
-    state: present
+- name: Detect latest New Relic CLI version
+  command: curl -sL https://download.newrelic.com/install/newrelic-cli/currentVersion.txt
+  register: newrelic_version_result
+  changed_when: false
 
-- name: Add New Relic Infrastructure repo
-  apt_repository:
-    repo: "deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt noble main"
-    state: present
-    filename: newrelic-infra
+- name: Set newrelic_cli_version fact
+  set_fact:
+    newrelic_cli_version: "{{ newrelic_version_result.stdout | regex_replace('^v', '') }}"
 
-- name: Install New Relic Infrastructure Agent
-  apt:
-    name: newrelic-infra
-    state: latest
-
-- name: Create New Relic config directory
+- name: Ensure /usr/local/bin exists
   file:
-    path: /etc/newrelic-infra
+    path: /usr/local/bin
     state: directory
+    mode: "0755"
+
+- name: Download New Relic CLI tarball
+  get_url:
+    url: "https://download.newrelic.com/install/newrelic-cli/v{{ newrelic_cli_version }}/newrelic-cli_{{ newrelic_cli_version }}_Linux_x86_64.tar.gz"
+    dest: /tmp/newrelic-cli.tar.gz
+    mode: "0644"
+  register: download_newrelic
+  retries: 3
+  delay: 5
+  until: download_newrelic is succeeded
+
+- name: Extract New Relic CLI binary
+  unarchive:
+    src: /tmp/newrelic-cli.tar.gz
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/newrelic
+
+- name: Install New Relic CLI binary
+  copy:
+    src: /tmp/newrelic
+    dest: /usr/local/bin/newrelic
+    mode: "0755"
     owner: root
     group: root
-    mode: '0755'
 
 - name: Create newrelic.sh for post install
   template:
@@ -39,8 +55,8 @@
     group: root
     mode: 0755
 
-- name: Ensure newrelic-infra service is enabled and started
-  systemd:
-    name: newrelic-infra
-    enabled: yes
-    state: started
+#- name: Ensure newrelic-infra service is enabled and started
+#  systemd:
+#    name: newrelic-infra
+#    enabled: yes
+#    state: started
