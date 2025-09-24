@@ -2,7 +2,7 @@
 # Install Addons if requested
 - name: add addons
   import_role:
-  name: addons
+    name: addons
   when: add_ons != 'none'
 
 - name: Copy MOTD template to /etc/motd
