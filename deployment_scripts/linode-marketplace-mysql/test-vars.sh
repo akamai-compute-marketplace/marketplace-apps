@@ -18,13 +18,18 @@ UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
-UDF_VARS["ADD_ONS"]="none"
 
 # dynamic variables
 if [[ -n "${DATABASE}" ]]; then
         UDF_VARS["DATABASE"]="${DATABASE}"
 else
         UDF_VARS["DATABASE"]="mysql" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
 fi
 
 set_vars() {
