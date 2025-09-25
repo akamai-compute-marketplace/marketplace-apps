@@ -5,5 +5,5 @@
   loop:
     - { name: "newrelic", file: "newrelic.yml" }
     - { name: "node_exporter", file: "node-exporter.yml" }
-    - { name: "mysqld_exporter", file: "data-exporter.yml" }
+    - { name: "mysqld_exporter", file: "mysqld-exporter.yml" }
   when: item.name in add_ons
