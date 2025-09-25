@@ -6,4 +6,6 @@
     - { name: "newrelic", file: "newrelic.yml" }
     - { name: "node_exporter", file: "node-exporter.yml" }
     - { name: "mysqld_exporter", file: "mysqld-exporter.yml" }
-  when: item.name in add_ons
+  when: 
+    - add_ons is defined 
+    - add_ons != 'none'
