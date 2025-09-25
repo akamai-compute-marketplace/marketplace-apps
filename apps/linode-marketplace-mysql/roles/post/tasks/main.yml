@@ -3,7 +3,7 @@
 - name: add addons
   import_role:
     name: addons
-  when: add_ons != 'none'
+  when: add_ons != ['none']
 
 - name: Copy MOTD template to /etc/motd
   template:
