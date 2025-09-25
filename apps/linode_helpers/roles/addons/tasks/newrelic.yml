@@ -15,7 +15,7 @@
 
 - name: Set newrelic_cli_version fact
   set_fact:
-    newrelic_cli_version: "{{ newrelic_version_result.stdout | regex_replace('^v', '') }}"
+    newrelic_cli_version: "{{ newrelic_version_result.content | regex_replace('^v', '') | trim }}"
 
 - name: Ensure /usr/local/bin exists
   file:
