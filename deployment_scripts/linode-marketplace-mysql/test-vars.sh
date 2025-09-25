@@ -27,9 +27,9 @@ else
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
-        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+        UDF_VARS["ADD_ONS"]="[${ADD_ONS}]"
 else
-        UDF_VARS["ADD_ONS"]="none" # default
+        UDF_VARS["ADD_ONS"]="['none']" # default
 fi
 
 set_vars() {
