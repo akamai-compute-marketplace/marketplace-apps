@@ -8,10 +8,12 @@
     update_cache: true
 
 - name: Detect latest New Relic CLI version
-  command: curl -sL https://download.newrelic.com/install/newrelic-cli/currentVersion.txt
+  uri:
+    url: https://download.newrelic.com/install/newrelic-cli/currentVersion.txt
+    return_content: yes
   register: newrelic_version_result
   changed_when: false
-
+  
 - name: Set newrelic_cli_version fact
   set_fact:
     newrelic_cli_version: "{{ newrelic_version_result.stdout | regex_replace('^v', '') }}"
@@ -54,9 +56,3 @@
     owner: root
     group: root
     mode: 0755
-
-#- name: Ensure newrelic-infra service is enabled and started
-#  systemd:
-#    name: newrelic-infra
-#    enabled: yes
-#    state: started
