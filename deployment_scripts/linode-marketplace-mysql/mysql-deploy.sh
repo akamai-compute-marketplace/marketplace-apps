@@ -23,7 +23,7 @@ fi
 #<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb"
 
 ## Addons
-#<UDF name="add_ons" label="Optional Add-ons for Your Deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none"  default="none">
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none"  default="none">
 
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
