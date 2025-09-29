@@ -8,4 +8,4 @@
     - { name: "mysqld_exporter", file: "mysqld-exporter.yml" }
   when: 
     - add_ons is defined 
-    - add_ons != 'none'
+    - add_ons != ['none']
