@@ -1,0 +1,39 @@
+---
+- name: Set Cribl directory
+  set_fact:
+    cribl_dir: "/opt/cribl"
+
+- name: Create cribl system user
+  user:
+    name: cribl
+    system: true
+    shell: /bin/false
+    state: present
+
+- name: Get latest Cribl
+  uri:
+    url: https://cdn.cribl.io/dl/latest-x64
+    return_content: true
+  register: cribl_url
+
+- name: Download and extract Cribl to /opt
+  unarchive:
+    src: "{{ cribl_url.content }}"
+    dest: /opt/
+    remote_src: true
+
+- name: Update ownership of "{{ cribl_dir }}" to cribl user
+  file:
+    path: "{{ cribl_dir }}"
+    owner: cribl
+    group: cribl
+    recurse: true
+
+- name: Enable Cribl boot-start using systemd for user cribl
+  command: "{{ cribl_dir }}/bin/cribl boot-start enable -m systemd -u cribl"
+
+- name: Restart cribl Service
+  systemd_service:
+    name: cribl
+    state: restarted
+    enabled: true

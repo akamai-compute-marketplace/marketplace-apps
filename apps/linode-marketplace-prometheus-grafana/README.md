@@ -1,10 +1,12 @@
 # Linode Prometheus & Grafana Deployment One-Click APP
 
-This Marketplace App installs both Prometheus and Grafana, two open source tools that are commonly used together to collect and view data.
+This Marketplace App installs Prometheus and Grafana, two open source tools that are commonly used together to collect and view data, with an optional Loki installation for log aggregation.
 
 Use Prometheus to collect metrics and receive alerts. Prometheus monitors targets that you define at given intervals by scraping their metrics HTTP endpoints. This tool is particularly well-suited for numeric time series data, which makes it ideal for machine-centric monitoring as well as monitoring of highly dynamic service-oriented architectures.
 
 Grafana is an analytics and monitoring solution with a focus on accessibility for metric visualization. You can use Grafana to create, monitor, store, and share metrics with your team to keep tabs on your infrastructure. Grafana is very lightweight and does not use a lot of memory and CPU resources.
+
+Optionally, you can install Loki, a log aggregation system inspired by Prometheus. This single-node deployment provides cost-effective log collection and querying.
 
 ## Software Included
 
@@ -12,11 +14,12 @@ Grafana is an analytics and monitoring solution with a focus on accessibility fo
 | :---      | :----     | :---          |
 | Prometheus    | latest    | HTTP metric scraper |
 | Grafana | Latest | Analytics and metrics dashboard |
+| Loki (Optional) | Latest | Log aggregation system |
 | Nginx   | 1.18   | High-performance web server and reverse proxy server |  
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -39,6 +42,7 @@ SHELL:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export INSTALL_LOKI="Yes"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -54,7 +58,8 @@ curl -H "Content-Type: application/json" \
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "token_password": "${TOKEN}",
         "subdomain": "prometheus",
-        "domain": "example.com"
+        "domain": "example.com",
+        "install_loki": "${INSTALL_LOKI}"
       },
       "authorized_users": [
         "myUser",
@@ -74,13 +79,14 @@ CLI:
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export SOA_EMAIL_ADDRESS="email@domain.com"
+export INSTALL_LOKI="Yes"
 
 linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
   --stackscript_id 985364 \
-  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com"}' \
+  --stackscript_data '{"disable_root":"No","user_name":"sudo_user","soa_email_address":"${SOA_EMAIL_ADDRESS}","token_password":"${TOKEN}","subdomain":"prometheus","domain":"example.com","install_loki": "${INSTALL_LOKI}"}' \
   --region us-mia \
   --type g6-standard-2 \
   --authorized_users "myUser"
@@ -91,3 +97,4 @@ linode-cli linodes create \
 
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript referece](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
+- [Loki Documentation](https://grafana.com/docs/loki/latest/)

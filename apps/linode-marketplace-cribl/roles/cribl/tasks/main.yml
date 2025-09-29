@@ -1,0 +1,11 @@
+---
+
+# Main Cribl installation tasks
+- name: Install Cribl
+  import_tasks: install.yml
+
+- name: Configure Nginx
+  import_tasks: nginx.yml
+
+- name: Configure Cribl
+  import_tasks: config.yml
