@@ -9,3 +9,4 @@
   when: 
     - add_ons is defined 
     - add_ons != ['none']
+    - item.name in add_ons
