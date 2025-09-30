@@ -20,7 +20,7 @@ fi
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## MySQL settings
-#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb"
+#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb">
 
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none"  default="none">
