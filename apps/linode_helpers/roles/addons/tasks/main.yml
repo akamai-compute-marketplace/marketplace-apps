@@ -1,14 +1,14 @@
 ---
 
 - name: Install add-ons
-  include_tasks: "{{ addon.file }}"
+  include_tasks: "{{ item.file }}"
   loop:
     - { name: "newrelic", file: "newrelic.yml" }
     - { name: "node_exporter", file: "node-exporter.yml" }
     - { name: "mysqld_exporter", file: "mysqld-exporter.yml" }
   loop_control:
-    label: "{{ addon.name }}"
+    label: "{{ item.name }}"
   when:
     - add_ons is defined
     - add_ons != ['none']
-    - addon.name in add_ons
+    - item.name in add_ons
