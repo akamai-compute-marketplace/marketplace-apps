@@ -6,6 +6,7 @@
     - { name: "newrelic", file: "newrelic.yml" }
     - { name: "node_exporter", file: "node-exporter.yml" }
     - { name: "mysqld_exporter", file: "mysqld-exporter.yml" }
+    - { name: "opentelemetry_collector", file: "opentelemetry-collector.yml" }
   loop_control:
     label: "{{ item.name }}"
   when:
