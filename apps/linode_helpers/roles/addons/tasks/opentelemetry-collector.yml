@@ -1,25 +1,26 @@
-- name: Get latest OpenTelemetry Collector release info
+- name: Get OpenTelemetry Collector latest release
   uri:
-    url: https://api.github.com/repos/open-telemetry/opentelemetry-collector-releases/releases/latest
-    return_content: yes
-  register: otel_release
+    url: 'https://api.github.com/repos/open-telemetry/opentelemetry-collector-releases/releases/latest'
+    return_content: true
+    status_code: 200
+    body_format: json
+  register: otel_latest_release
 
-- name: Set download URL for latest .deb package
+- name: Set OpenTelemetry Collector latest version
   set_fact:
-    otel_deb_url: "{{ otel_release.json.assets
-      | selectattr('name', 'search', 'otelcol_.*_linux_amd64\\.deb')
-      | map(attribute='browser_download_url')
-      | first }}"
+    otel_version: "{{ otel_latest_release.json.tag_name | regex_replace('^v', '') }}"
 
-- name: Download latest OpenTelemetry Collector .deb
+- name: Download OpenTelemetry Collector latest .deb package
   get_url:
-    url: "{{ otel_deb_url }}"
-    dest: "/tmp/otelcol_latest.deb"
+    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otel_version }}/otelcol_{{ otel_version }}_amd64.deb"
+    dest: "/tmp/otelcol_{{ otel_version }}_amd64.deb"
+    owner: root
+    group: root
     mode: '0644'
 
 - name: Install OpenTelemetry Collector
   apt:
-    deb: "/tmp/otelcol_latest.deb"
+    deb: "/tmp/otelcol_{{ otel_version }}_amd64.deb"
     state: present
 
 - name: Clean up installer file
