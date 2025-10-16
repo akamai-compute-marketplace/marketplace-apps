@@ -1,0 +1,26 @@
+---
+# create prometheus system user
+
+- name: Checking for prometheus user
+  getent:
+    database: passwd
+    key: prometheus
+  ignore_errors: true
+  register: usercheck
+
+- name: Create prometheus group
+  group:
+    name: prometheus
+    state: present
+    system: true
+  when: usercheck is failed 
+
+- name: Create prometheus user
+  user:
+    name: "prometheus"
+    shell: /sbin/nologin
+    expires: -1
+    create_home: false
+    system: true
+    state: present
+  when: usercheck is failed

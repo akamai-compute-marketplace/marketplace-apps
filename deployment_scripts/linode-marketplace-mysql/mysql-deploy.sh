@@ -4,23 +4,33 @@
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # modes
-DEBUG="NO"
-if [ "${DEBUG}" == "NO" ]; then
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
 fi
+
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
 
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
 else
   set -e
 fi
-
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## MySQL settings
-#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb"
+#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb">
+
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector, none"  default="none">
 
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
@@ -74,6 +84,8 @@ function udf {
   username: ${USER_NAME}
   # database install option
   database: ${DATABASE}
+  # addons
+  add_ons: [${ADD_ONS}]  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

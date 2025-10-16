@@ -1,0 +1,50 @@
+#!/bin/bash
+# Log File
+LOG_FILE="/var/log/marketplace_addons.log"
+
+echo "=================================================" | tee -a "$LOG_FILE"
+echo " New Relic Installation - License Key & Account Setup" | tee -a "$LOG_FILE"
+echo "=================================================" | tee -a "$LOG_FILE"
+echo ""
+
+# Prompt for New Relic License Key
+while true; do
+    echo ""
+    echo "If you don't have a New Relic API token, visit:" | tee -a "$LOG_FILE"
+    echo "  https://one.newrelic.com/admin-portal/api-keys/ to generate one" | tee -a "$LOG_FILE"
+    echo ""
+    read -s -p "Enter your New Relic license key: " NEWRELIC_KEY
+    echo ""
+
+    # Validate the token via New Relic API
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+        -H "Api-Key: $NEWRELIC_KEY" \
+        https://api.newrelic.com/v2/applications.json)
+
+    if [ "$HTTP_CODE" -eq 200 ]; then
+        echo "$(date) - License key validated." | tee -a "$LOG_FILE"
+        break
+    else
+        echo "$(date) - Invalid New Relic license key. Please try again." | tee -a "$LOG_FILE"
+    fi
+done
+
+# Prompt for New Relic Account ID
+while true; do
+    read -p "Enter your New Relic Account ID: " NEWRELIC_ACCOUNTID
+    if [[ "$NEWRELIC_ACCOUNTID" =~ ^[0-9]+$ ]]; then
+        echo "$(date) - Account ID accepted." | tee -a "$LOG_FILE"
+        break
+    else
+        echo "$(date) - Invalid Account ID. Must be numeric." | tee -a "$LOG_FILE"
+    fi
+done
+
+NEW_RELIC_API_KEY="$NEWRELIC_KEY" \
+NEW_RELIC_ACCOUNT_ID="$NEWRELIC_ACCOUNTID" \
+/usr/local/bin/newrelic install
+
+echo "$(date) - New Relic installation completed." | tee -a "$LOG_FILE"
+
+# Clean up
+rm -f /etc/profile.d/newrelic.sh

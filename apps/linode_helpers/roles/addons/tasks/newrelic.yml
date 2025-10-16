@@ -1,0 +1,57 @@
+- name: Ensure required dependencies are installed
+  apt:
+    name:
+      - curl
+      - tar
+      - gzip
+    state: present
+    update_cache: true
+
+- name: Detect latest New Relic CLI version
+  uri:
+    url: https://download.newrelic.com/install/newrelic-cli/currentVersion.txt
+    return_content: yes
+  register: newrelic_version_result
+
+- name: Set newrelic_cli_version fact
+  set_fact:
+    newrelic_cli_version: "{{ newrelic_version_result.content | regex_replace('^v', '') | trim }}"
+
+- name: Ensure /usr/local/bin exists
+  file:
+    path: /usr/local/bin
+    state: directory
+    mode: "0755"
+
+- name: Download New Relic CLI tarball
+  get_url:
+    url: "https://download.newrelic.com/install/newrelic-cli/v{{ newrelic_cli_version }}/newrelic-cli_{{ newrelic_cli_version }}_Linux_x86_64.tar.gz"
+    dest: /tmp/newrelic-cli.tar.gz
+    mode: "0644"
+  register: download_newrelic
+  retries: 3
+  delay: 5
+  until: download_newrelic is succeeded
+
+- name: Extract New Relic CLI binary
+  unarchive:
+    src: /tmp/newrelic-cli.tar.gz
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/newrelic
+
+- name: Install New Relic CLI binary
+  copy:
+    src: /tmp/newrelic
+    dest: /usr/local/bin/newrelic
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Create newrelic.sh for post install
+  template:
+    src: 'templates/newrelic.sh.j2' 
+    dest: '/etc/profile.d/newrelic.sh'
+    owner: root
+    group: root
+    mode: 0755

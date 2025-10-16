@@ -16,7 +16,40 @@ The Linode Helper functions are static roles that can be imported into Marketpla
 | SSH Key   | Writes SSH pubkey to `sudo` user's `authorized_keys`.  | Writes UDF supplied `pubkey` to `/home/$username/.ssh/authorized_keys`. To add a SSH key to `root` please use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/).   |
 | Update Packages   | Performs standard apt updates and upgrades. | The Update Packages module performs apt update and upgrade actions as root.  |
 | Data Exporter | Prometheus exporters that allow OS-level metrics collection | This modules allows the installation of several Promtheus exporters on the system by capturing UDF input as a list. This module allows the installation of `node_exporter` and `mysqld_exporter`. This modules creates a `prometheus` system user to run the service as. |
-| Docker | Installs the latest version of Docker Edition | Use the `import_role` to use this module in your tasks.
+| Docker | Installs the latest version of Docker Edition | Use the `import_role` to use this module in your tasks. |
+| Add-ons | Installs and manages optional Marketplace add-ons. | The Add-ons module creates `/etc/profile.d/addons.sh` from a template and includes task files for each supported add-on. Add-ons are enabled by listing them in the `add_ons` variable. Supported add-ons include `newrelic`, `node_exporter`, and `mysqld_exporter`. |
+
+## Add-ons: Usage and Extending
+
+The Add-ons module allows Marketplace apps to enable optional integrations (monitoring agents, exporters, etc.) in a modular way.
+
+### How it Works
+1. If the `add_ons` variable is defined (and not `"none"`), the `addons.sh` profile script is created from a template.  
+2. The playbook loops through the defined add-ons and includes their respective task files.  
+3. Each add-on only runs if its name is present in the `add_ons` list.  
+
+### Adding a New Add-on
+1. Create a new task file (e.g. `myaddon.yml`) inside the role’s `tasks/` directory.  
+2. Add an entry to the add-ons loop in the playbook:  
+   ```yaml
+   - { name: "myaddon", file: "myaddon.yml" }
+
+### Post Add-on installation steps
+
+Some add-ons may require additional configuration after installation, such as providing API tokens, server-specific details, or other user inputs. To handle this, the deployment process creates a script at /etc/profile.d/addons.sh, which runs automatically on the first login after the Ansible playbook completes. This script is designed to support multiple add-ons by allowing configuration snippets to be appended as needed.
+
+For example, you can insert a new add-on snippet into the existing file like this:
+```
+- name: Insert New add-on line after "# BEGIN ADDONS"
+  lineinfile:
+    path: /etc/profile.d/addons.sh
+    insertafter: '^# BEGIN ADDONS'
+    line: "{{ lookup('template', 'myaddon.sh.j2') }}"
+    create: yes
+    owner: root
+    group: root
+    mode: '0755'
+```
 
 ## Creating Your Own
 
