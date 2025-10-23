@@ -26,6 +26,12 @@ else
         UDF_VARS["DATABASE"]="mysql" # default
 fi
 
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="['none']" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"

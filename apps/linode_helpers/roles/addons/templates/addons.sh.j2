@@ -1,0 +1,12 @@
+#!/bin/bash
+# Log File
+LOG_FILE="/var/log/marketplace_addons.log"
+
+# BEGIN ADDONS
+# END ADDONS
+
+# Install Complete
+echo "$(date) - Installation script removed." | tee -a "$LOG_FILE"
+
+# Clean up
+rm /etc/profile.d/addons.sh
