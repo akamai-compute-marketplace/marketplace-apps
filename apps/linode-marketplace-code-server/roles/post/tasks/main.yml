@@ -4,19 +4,20 @@
   import_role:
     name: addons
   when: add_ons != ['none']
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: 'templates/motd.j2'
-      dest: '/etc/motd'
 
-  - name: writing creds into file
-    copy:
-      dest: '/home/{{ username }}/.credentials'
-      mode: '0600'
-      owner: '{{ username }}'
-      group: '{{ username }}'
-      content: |
-        Sudo Username: {{ username }}
-        Sudo Password: {{ password }}
-        Code-Server Login: codeserver
-        Code-Server Password: {{ code_server_htpasswd }}
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: 'templates/motd.j2'
+    dest: '/etc/motd'
+
+- name: Writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Code-Server Login: codeserver
+      Code-Server Password: {{ code_server_htpasswd }}
