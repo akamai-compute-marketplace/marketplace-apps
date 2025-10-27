@@ -47,16 +47,22 @@ else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
-else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
-fi
-
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
+fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${CODE_SERVER_VERSION}" ]]; then
+        UDF_VARS["CODE_SERVER_VERSION"]="${CODE_SERVER_VERSION}"
+else
+        UDF_VARS["CODE_SERVER_VERSION"]="4.96.1" # default
 fi
 
 
