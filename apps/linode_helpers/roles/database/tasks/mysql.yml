@@ -5,29 +5,38 @@
       - mysql-server
       - python3-mysqldb
     state: present
+    update_cache: yes
 
-- name: Reset root password
+- name: Ensure MySQL service is started
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: Ensure root user has a temporary password
   community.mysql.mysql_user:
     name: root
     host: localhost
+    password: "{{ mysql_root_password }}"
     state: present
-    update_password: always
-    password: '{{ mysql_root_password }}'
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: Removes all anonymous user accounts
+- name: Switch root authentication to unix_socket
+  community.mysql.mysql_query:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /run/mysqld/mysqld.sock
+    query: "ALTER USER 'root'@'localhost' IDENTIFIED WITH auth_socket;"
+
+- name: Remove all anonymous users
   community.mysql.mysql_user:
     name: ''
     host_all: true
     state: absent
-    login_user: root
-    login_password: '{{ mysql_root_password }}'
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: remove test database
+- name: Remove test database
   community.mysql.mysql_db:
-    login_user: root
-    login_password: '{{ mysql_root_password }}'
-    login_unix_socket: /run/mysqld/mysqld.sock
     name: test
     state: absent
+    login_unix_socket: /run/mysqld/mysqld.sock
