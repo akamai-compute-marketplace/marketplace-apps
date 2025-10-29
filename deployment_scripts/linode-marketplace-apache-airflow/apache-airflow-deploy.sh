@@ -33,6 +33,11 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -83,6 +88,10 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: standalone
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -109,7 +118,6 @@ EOF
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
-
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then

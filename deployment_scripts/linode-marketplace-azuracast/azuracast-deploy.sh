@@ -3,6 +3,7 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+# BEGIN CI-MODE
 # modes
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
@@ -12,12 +13,7 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
+# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -31,6 +27,11 @@ fi
 
 ## Azuracast Settings
 #<UDF name="azuracast_admin_email" label="Administrator Email Address" example="user@domain.tld">
+
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
@@ -83,6 +84,10 @@ function udf {
   username: ${USER_NAME}
   azuracast_admin_email: ${AZURACAST_ADMIN_EMAIL}
   webserver_stack: standalone
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
