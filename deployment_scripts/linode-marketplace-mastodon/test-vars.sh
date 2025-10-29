@@ -29,28 +29,46 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${TOKEN_PASSWORD}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
-        UDF_VARS["TOKEN_PASSWORD"]="" # default
+        UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]="" # default
+        UDF_VARS["SUBDOMAIN"]="www" # default
 fi
 
-if [[ -n "${DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${DOMAIN}"
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
-        UDF_VARS["DOMAIN"]="" # default
+        UDF_VARS["TOKEN_PASSWORD"]="HugsAreWorthMoreThanHandshakes" # default
 fi
 
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${OWNER_USERNAME}" ]]; then
+        UDF_VARS["OWNER_USERNAME"]="${OWNER_USERNAME}"
+else
+        UDF_VARS["OWNER_USERNAME"]="testuser" # default
+fi
+
+if [[ -n "${OWNER_EMAIL}" ]]; then
+        UDF_VARS["OWNER_EMAIL"]="${OWNER_EMAIL}"
+else
+        UDF_VARS["OWNER_EMAIL"]="testuser@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${SINGLE_USER_MODE}" ]]; then
+        UDF_VARS["SINGLE_USER_MODE"]="${SINGLE_USER_MODE}"
+else
+        UDF_VARS["SINGLE_USER_MODE"]="Yes" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

@@ -29,40 +29,10 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${TOKEN_PASSWORD}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
-else
-        UDF_VARS["TOKEN_PASSWORD"]="" # default
-fi
-
-if [[ -n "${SUBDOMAIN}" ]]; then
-        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
-else
-        UDF_VARS["SUBDOMAIN"]="" # default
-fi
-
-if [[ -n "${DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${DOMAIN}"
-else
-        UDF_VARS["DOMAIN"]="" # default
-fi
-
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
-fi
-
-if [[ -n "${MEMGRAPH_USERNAME}" ]]; then
-        UDF_VARS["MEMGRAPH_USERNAME"]="${MEMGRAPH_USERNAME}"
-else
-        UDF_VARS["MEMGRAPH_USERNAME"]="memuser" # default
-fi
-
-if [[ -n "${MEMGRAPH_BOLT_ALLOW}" ]]; then
-        UDF_VARS["MEMGRAPH_BOLT_ALLOW"]="${MEMGRAPH_BOLT_ALLOW}"
-else
-        UDF_VARS["MEMGRAPH_BOLT_ALLOW"]="" # default
 fi
 
 
