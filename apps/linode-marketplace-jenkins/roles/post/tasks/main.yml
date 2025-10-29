@@ -1,16 +1,22 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # motd and creds gen
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: get jenkins admin password
+- name: Get jenkins admin password
   slurp:
     src: /var/lib/jenkins/secrets/initialAdminPassword
   register: initial_admin_password
 
-- name: writing sudo creds into file
+- name: Writing sudo creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'

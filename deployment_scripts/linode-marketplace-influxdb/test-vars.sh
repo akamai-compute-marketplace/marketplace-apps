@@ -23,6 +23,24 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${ADMIN_USERNAME}" ]]; then
+        UDF_VARS["ADMIN_USERNAME"]="${ADMIN_USERNAME}"
+else
+        UDF_VARS["ADMIN_USERNAME"]="" # default
+fi
+
+if [[ -n "${ORG_NAME}" ]]; then
+        UDF_VARS["ORG_NAME"]="${ORG_NAME}"
+else
+        UDF_VARS["ORG_NAME"]="" # default
+fi
+
+if [[ -n "${BUCKET_NAME}" ]]; then
+        UDF_VARS["BUCKET_NAME"]="${BUCKET_NAME}"
+else
+        UDF_VARS["BUCKET_NAME"]="" # default
+fi
+
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
@@ -51,12 +69,6 @@ if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
         UDF_VARS["DOMAIN"]="" # default
-fi
-
-if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
-        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
-else
-        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

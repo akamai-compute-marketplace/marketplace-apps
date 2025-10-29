@@ -1,15 +1,21 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # motd and creds gen
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: retrieve Jupyter token
+- name: Retrieve Jupyter token
   command: docker exec jupyter_jupyterlab_1 /bin/bash -c "jupyter server list | grep -oP '(?<=token=)[^ ]*'"
   register: jupyter_token_output
 
-- name: writing sudo creds into file
+- name: Writing sudo creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
