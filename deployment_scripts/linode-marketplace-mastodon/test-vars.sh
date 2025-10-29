@@ -32,19 +32,19 @@ fi
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
-        UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
+        UDF_VARS["DOMAIN"]="" # default
 fi
 
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]="www" # default
+        UDF_VARS["SUBDOMAIN"]="" # default
 fi
 
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
         UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
-        UDF_VARS["TOKEN_PASSWORD"]="HugsAreWorthMoreThanHandshakes" # default
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
