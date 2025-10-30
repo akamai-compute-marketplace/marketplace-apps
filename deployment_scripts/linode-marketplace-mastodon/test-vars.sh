@@ -38,7 +38,7 @@ fi
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]="" # default
+        UDF_VARS["SUBDOMAIN"]="www" # default
 fi
 
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
