@@ -19,9 +19,9 @@ fi
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Mastodon Settings
-#<UDF name="domain" label="Domain name for your Mastodon instance." example="domain.tld" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
-#<UDF name="token_password" label="Your Linode API token" default="">
+#<UDF name="domain" label="Domain name for your Mastodon instance." example="domain.tld">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
+#<UDF name="token_password" label="Your Linode API token">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
 #<UDF name="owner_username" label="Username for Mastodon Owner" example="" />
 #<UDF name="owner_email" label="Email address for Mastodon Owner" example="user@domain.tld" />
