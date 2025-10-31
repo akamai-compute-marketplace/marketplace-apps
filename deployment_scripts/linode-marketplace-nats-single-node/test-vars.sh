@@ -47,10 +47,40 @@ else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
+if [[ -n "${NAME}" ]]; then
+        UDF_VARS["NAME"]="${NAME}"
+else
+        UDF_VARS["NAME"]="Test" # default
+fi
+
+if [[ -n "${VERSION}" ]]; then
+        UDF_VARS["VERSION"]="${VERSION}"
+else
+        UDF_VARS["VERSION"]="2.10.1" # default
+fi
+
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${NATS_PORT}" ]]; then
+        UDF_VARS["NATS_PORT"]="${NATS_PORT}"
+else
+        UDF_VARS["NATS_PORT"]="4222" # default
+fi
+
+if [[ -n "${WEBSOCKET_PORT}" ]]; then
+        UDF_VARS["WEBSOCKET_PORT"]="${WEBSOCKET_PORT}"
+else
+        UDF_VARS["WEBSOCKET_PORT"]="8888" # default
+fi
+
+if [[ -n "${MQTT_PORT}" ]]; then
+        UDF_VARS["MQTT_PORT"]="${MQTT_PORT}"
+else
+        UDF_VARS["MQTT_PORT"]="1883" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
