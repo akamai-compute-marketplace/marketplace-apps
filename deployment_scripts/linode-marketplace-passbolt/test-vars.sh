@@ -29,22 +29,28 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${TOKEN_PASSWORD}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+if [[ -n "${PUBKEY}" ]]; then
+        UDF_VARS["PUBKEY"]="${PUBKEY}"
 else
-        UDF_VARS["TOKEN_PASSWORD"]="" # default
-fi
-
-if [[ -n "${SUBDOMAIN}" ]]; then
-        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
-else
-        UDF_VARS["SUBDOMAIN"]="" # default
+        UDF_VARS["PUBKEY"]="" # default
 fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
-        UDF_VARS["DOMAIN"]="" # default
+        UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${SUBDOMAIN}" ]]; then
+        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
+else
+        UDF_VARS["SUBDOMAIN"]="www" # default
+fi
+
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="HugsAreWorthMoreThanHandshakes" # default
 fi
 
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
@@ -53,16 +59,22 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${NEO4J_HTTP_ALLOW}" ]]; then
-        UDF_VARS["NEO4J_HTTP_ALLOW"]="${NEO4J_HTTP_ALLOW}"
+if [[ -n "${PASSBOLT_FIRST_ADMIN_USERNAME}" ]]; then
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_USERNAME"]="${PASSBOLT_FIRST_ADMIN_USERNAME}"
 else
-        UDF_VARS["NEO4J_HTTP_ALLOW"]="" # default
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_USERNAME"]="passboltadmin" # default
 fi
 
-if [[ -n "${NEO4J_BOLT_ALLOW}" ]]; then
-        UDF_VARS["NEO4J_BOLT_ALLOW"]="${NEO4J_BOLT_ALLOW}"
+if [[ -n "${PASSBOLT_FIRST_ADMIN_SURNAME}" ]]; then
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_SURNAME"]="${PASSBOLT_FIRST_ADMIN_SURNAME}"
 else
-        UDF_VARS["NEO4J_BOLT_ALLOW"]="" # default
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_SURNAME"]="passboltsurname" # default
+fi
+
+if [[ -n "${PASSBOLT_FIRST_ADMIN_EMAIL}" ]]; then
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_EMAIL"]="${PASSBOLT_FIRST_ADMIN_EMAIL}"
+else
+        UDF_VARS["PASSBOLT_FIRST_ADMIN_EMAIL"]="passbolt@{DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

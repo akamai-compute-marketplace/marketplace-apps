@@ -38,6 +38,11 @@ fi
 # <UDF name="organization_name" label="Organization" example="Example: Akamai Technologies"  />
 # <UDF name="email_address" label="Email Address" example="Example: user@domain.tld" />
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -94,6 +99,10 @@ function udf {
   organization_name: ${ORGANIZATION_NAME}
   email_address: ${EMAIL_ADDRESS}
   privateip: ${LINODE_IP}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 # write client IPs
   if [[ -z ${CLIENT_IPS} ]]; then
