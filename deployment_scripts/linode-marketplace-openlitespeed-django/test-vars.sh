@@ -38,7 +38,7 @@ fi
 if [[ -n "${DJANGO_SUPERUSER_EMAIL}" ]]; then
         UDF_VARS["DJANGO_SUPERUSER_EMAIL"]="${DJANGO_SUPERUSER_EMAIL}"
 else
-        UDF_VARS["DJANGO_SUPERUSER_EMAIL"]="djangouser@@${DEFAULT_DNS}" # default
+        UDF_VARS["DJANGO_SUPERUSER_EMAIL"]="djangouser@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
