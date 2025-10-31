@@ -23,7 +23,6 @@ else
   set -e
 fi
 
-
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
@@ -36,6 +35,11 @@ fi
 
 ## RoR Settings
 #<UDF name="app_name" label="Ruby app name. This will be used to create the service name." example="my-app">
+
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
@@ -87,6 +91,10 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   app_name: ${APP_NAME}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

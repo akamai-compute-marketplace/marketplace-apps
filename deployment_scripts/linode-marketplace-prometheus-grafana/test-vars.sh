@@ -13,23 +13,52 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
-declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["SUBDOMAIN"]=""
-UDF_VARS["DOMAIN"]=""
-UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
-UDF_VARS["AKAMAI_CLIENT_SECRET"]="abcdEcSnaAt123FNkBxy456z25qx9Yp5CPUxlEfQeTDkfh4QA=I"
-UDF_VARS["AKAMAI_HOST"]="akab-lmn789n2k53w7qrs10cxy-nfkxaa4lfk3kd6ym.luna.akamaiapis.net"
-UDF_VARS["AKAMAI_ACCESS_TOKEN"]="akab-zyx987xa6osbli4k-e7jf5ikib5jknes3"
-UDF_VARS["AKAMAI_CLIENT_TOKEN"]="akab-nomoflavjuc4422-fa2xznerxrm3teg7"
+# UDF Variables
 
-# dynamic variables
-if [[ -n "${INSTALL_LOKI}" ]]; then
-        UDF_VARS["INSTALL_LOKI"]="${INSTALL_LOKI}"
+declare -A UDF_VARS
+
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
-        UDF_VARS["INSTALL_LOKI"]="No" # default
+        UDF_VARS["USER_NAME"]="admin" # default
 fi
+
+if [[ -n "${DISABLE_ROOT}" ]]; then
+        UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
+else
+        UDF_VARS["DISABLE_ROOT"]="No" # default
+fi
+
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${DOMAIN}"
+else
+        UDF_VARS["DOMAIN"]="" # default
+fi
+
+if [[ -n "${SUBDOMAIN}" ]]; then
+        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
+else
+        UDF_VARS["SUBDOMAIN"]="www" # default
+fi
+
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
+fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
+fi
+
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

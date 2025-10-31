@@ -50,13 +50,7 @@ fi
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
-fi
-
-if [[ -n "${APP_NAME}" ]]; then
-        UDF_VARS["APP_NAME"]="${APP_NAME}"
-else
-        UDF_VARS["APP_NAME"]="myapp" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
