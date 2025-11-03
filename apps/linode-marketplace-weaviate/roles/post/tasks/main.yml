@@ -12,15 +12,8 @@
     owner: '{{ username }}'
     group: '{{ username }}'
     content: |
-      # Akamai Connected Cloud Weaviate Marketplace App Credentials
-
-      ## System Access
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
-      ## Weaviate Access
-      Weaviate URL: https://{{ _domain }}
-
-      ### API Keys
       Admin API Key: {{ weaviate_admin_api_key }}
       User API Key (Read-Only): {{ weaviate_user_api_key }}

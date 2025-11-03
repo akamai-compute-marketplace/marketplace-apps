@@ -16,11 +16,10 @@ fi
 declare -A UDF_VARS
 UDF_VARS["USER_NAME"]="admin"
 UDF_VARS["DISABLE_ROOT"]="No"
+UDF_VARS["TOKEN_PASSWORD"]=""
 UDF_VARS["SUBDOMAIN"]=""
 UDF_VARS["DOMAIN"]=""
 UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
-UDF_VARS["WEAVIATE_ADMIN_USER"]="weaviateadmin"
-UDF_VARS["WEAVIATE_ADMIN_EMAIL"]="admin@${DEFAULT_DNS}"
 
 # dynamic variables
 #if [[ -n "${CHANGE_ME}" ]]; then

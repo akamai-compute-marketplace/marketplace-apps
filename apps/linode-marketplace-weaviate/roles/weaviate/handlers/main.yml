@@ -1,6 +1,4 @@
 ---
-# Handlers for Weaviate
-
 - name: restart docker
   systemd_service:
     name: docker
