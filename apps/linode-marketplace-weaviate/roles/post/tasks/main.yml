@@ -1,0 +1,26 @@
+---
+# Final system configurations and cleanup
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: Write credentials file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      # Akamai Connected Cloud Weaviate Marketplace App Credentials
+
+      ## System Access
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      ## Weaviate Access
+      Weaviate URL: https://{{ _domain }}
+
+      ### API Keys
+      Admin API Key: {{ weaviate_admin_api_key }}
+      User API Key (Read-Only): {{ weaviate_user_api_key }}

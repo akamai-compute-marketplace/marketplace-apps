@@ -1,0 +1,45 @@
+---
+- name: blacklist nouveau driver
+  copy:
+    dest: /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    mode: '0644'
+
+- name: install ubuntu-drivers-common package
+  apt:
+    name: ubuntu-drivers-common
+    state: present
+    update_cache: true
+
+- name: install recommended nvidia drivers
+  command: ubuntu-drivers install
+
+- name: add nvidia container toolkit repository gpg key
+  get_url:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+    dest: /usr/share/keyrings/nvidia-container-toolkit-keyring.asc
+    mode: '0644'
+
+- name: add nvidia container toolkit repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/$(ARCH) /"
+    filename: nvidia-container-toolkit
+    state: present
+
+- name: add nvidia container toolkit repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/{{ ansible_architecture }} /"
+    filename: nvidia-container-toolkit
+    state: present
+    update_cache: true
+
+- name: install nvidia Container Toolkit
+  apt:
+    name: nvidia-container-toolkit
+    state: present
+
+- name: configure docker to use nvidia runtime
+  command: nvidia-ctk runtime configure --runtime=docker
+  notify: restart docker
