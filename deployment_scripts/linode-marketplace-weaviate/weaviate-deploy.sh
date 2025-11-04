@@ -116,117 +116,16 @@ EOF
 }
 
 function run {
-  local resume_marker="/root/.weaviate-deploy-resume"
-  local udf_backup="/root/.weaviate-udf-backup"
-
-  # check if this is post-reboot continuation
-  if [ -f "$resume_marker" ]; then
-    echo "[info] === Resuming deployment after reboot for NVIDIA driver kernel ==="
-    rm -f "$resume_marker"
-
-    # restore UDF variables from backup
-    if [ -f "$udf_backup" ]; then
-      source "$udf_backup"
-      echo "[info] Restored UDF variables"
-    fi
-
-    # re-clone repo (in case /tmp was cleared during reboot)
-    rm -rf ${WORK_DIR}
-    git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
-
-    cd ${WORK_DIR}/${MARKETPLACE_APP}
-
-    # recreate venv
-    apt install -y python3-venv
-    python3 -m venv env
-    source env/bin/activate
-    pip install pip --upgrade
-    pip install -r requirements.txt
-    ansible-galaxy install -r collections.yml
-
-    # regenerate group_vars from backed up UDF values
-    udf
-
-    # run playbooks
-    ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-
-    # cleanup resume service
-    systemctl disable weaviate-deploy-resume.service 2>/dev/null || true
-    rm -f /etc/systemd/system/weaviate-deploy-resume.service
-    rm -f "$udf_backup"
-    systemctl daemon-reload
-
-    return 0
-  fi
-
-  # === FIRST RUN: Initial setup ===
   # install dependencies
   apt-get update
-  apt-get install -y git python3 python3-pip python3-venv
+  apt-get install -y git python3 python3-pip
 
-  # backup UDF variables before potential reboot
-  cat > "$udf_backup" <<EOF
-export USER_NAME="${USER_NAME}"
-export DISABLE_ROOT="${DISABLE_ROOT}"
-export TOKEN_PASSWORD="${TOKEN_PASSWORD}"
-export SUBDOMAIN="${SUBDOMAIN}"
-export DOMAIN="${DOMAIN}"
-export SOA_EMAIL_ADDRESS="${SOA_EMAIL_ADDRESS}"
-export MODE="${MODE}"
-export GH_USER="${GH_USER}"
-export BRANCH="${BRANCH}"
-export GIT_REPO="${GIT_REPO}"
-export WORK_DIR="${WORK_DIR}"
-export MARKETPLACE_APP="${MARKETPLACE_APP}"
-EOF
-
-  # upgrade system packages BEFORE ansible setup (GPU instances need matching nvidia modules)
-  echo "[info] Upgrading system packages for NVIDIA driver compatibility..."
-  DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
-
-  # check if reboot is required BEFORE doing any ansible work
-  if [ -f /var/run/reboot-required ]; then
-    echo "[info] Kernel upgraded - reboot required for NVIDIA drivers"
-    echo "[info] Configuring post-reboot auto-resume..."
-
-    # create systemd oneshot service to resume after reboot
-    cat > /etc/systemd/system/weaviate-deploy-resume.service <<EOF
-[Unit]
-Description=Resume Weaviate Deployment After Kernel Upgrade
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=oneshot
-ExecStart=/bin/bash -c "exec > >(tee -a /dev/ttyS0 /var/log/stackscript.log) 2>&1; source /root/.weaviate-udf-backup; cd /tmp && curl -s https://raw.githubusercontent.com/${GH_USER}/marketplace-apps/${BRANCH}/deployment_scripts/linode-marketplace-weaviate/weaviate-deploy.sh | bash"
-StandardOutput=journal+console
-StandardError=journal+console
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    # create resume marker
-    touch "$resume_marker"
-
-    systemctl daemon-reload
-    systemctl enable weaviate-deploy-resume.service
-
-    echo "[info] ============================================"
-    echo "[info] Rebooting to load new kernel with NVIDIA drivers..."
-    echo "[info] Deployment will automatically resume after reboot"
-    echo "[info] Check /var/log/stackscript.log for progress"
-    echo "[info] ============================================"
-    sleep 5
-    reboot
-    exit 0
-  fi
-
-  # no reboot needed - clone repo and continue normally
-  echo "[info] No kernel upgrade needed, continuing with deployment..."
+  # clone repo and set up ansible environment
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
+  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
@@ -235,7 +134,6 @@ EOF
 
   # populate group_vars
   udf
-
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 }

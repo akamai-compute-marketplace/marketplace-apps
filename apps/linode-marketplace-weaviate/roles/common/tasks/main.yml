@@ -32,11 +32,9 @@
   when: disable_root is defined
 
 # apt_setup_update
-# NOTE: System packages are upgraded in the stackscript before Ansible runs
-# This ensures NVIDIA drivers match the running kernel on GPU instances
-# - name: update system packages
-#   import_role:
-#     name: update_pkgs
+- name: update system packages
+  import_role:
+    name: update_pkgs
 
 # ufw_install
 - name: enabling ufw

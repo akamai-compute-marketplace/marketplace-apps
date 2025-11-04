@@ -7,17 +7,14 @@
       options nouveau modeset=0
     mode: '0644'
 
-- name: install ubuntu-drivers-common and dkms
+- name: install ubuntu-drivers-common package
   apt:
-    name:
-      - ubuntu-drivers-common
-      - dkms
-      - linux-headers-{{ ansible_kernel }}
+    name: ubuntu-drivers-common
     state: present
     update_cache: true
 
-- name: install recommended nvidia drivers for current kernel
-  command: ubuntu-drivers install --gpgpu
+- name: install recommended nvidia drivers
+  command: ubuntu-drivers install
 
 - name: add nvidia container toolkit repository gpg key
   get_url:
