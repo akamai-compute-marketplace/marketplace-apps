@@ -31,7 +31,20 @@ Deploy a production-ready Weaviate vector database with GPU acceleration on Akam
 
 ## Getting Started
 
-After deployment, your credentials and API keys are stored in `/home/[username]/.credentials`.
+### Deployment Process
+
+**Note:** This app requires a GPU compute instance. During initial deployment:
+
+1. The system will upgrade packages to ensure NVIDIA drivers match the latest kernel
+2. If a kernel upgrade is detected, the system will automatically reboot
+3. Deployment resumes automatically after reboot (monitor `/var/log/stackscript.log`)
+4. Total deployment time: 15-20 minutes (including reboot and 8GB model download)
+
+After deployment completes, your credentials and API keys are stored in `/home/[username]/.credentials`.
+
+### System Updates
+
+You can safely run `apt upgrade && reboot` after deployment. Ubuntu automatically installs matching NVIDIA driver modules (`linux-modules-nvidia-*`) alongside kernel upgrades, so GPU functionality will be maintained after system updates.
 
 ## Use our API
 
