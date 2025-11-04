@@ -190,7 +190,7 @@ EOF
     echo "[info] Configuring post-reboot auto-resume..."
 
     # create systemd oneshot service to resume after reboot
-    cat > /etc/systemd/system/weaviate-deploy-resume.service <<'EOF'
+    cat > /etc/systemd/system/weaviate-deploy-resume.service <<EOF
 [Unit]
 Description=Resume Weaviate Deployment After Kernel Upgrade
 After=network-online.target
