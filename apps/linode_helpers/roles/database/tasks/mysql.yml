@@ -1,4 +1,8 @@
 ---
+- name: Generate and persist MySQL root password
+  set_fact:
+    mysql_root_password: "{{ lookup('password', '/etc/ansible/mysql_root_password length=45 chars=ascii_letters,digits') }}"
+
 - name: Install MySQL
   apt:
     pkg:
@@ -13,30 +17,28 @@
     state: started
     enabled: yes
 
-- name: Ensure root user has a temporary password
+- name: Ensure root user has password auth enabled
   community.mysql.mysql_user:
     name: root
     host: localhost
     password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: Switch root authentication to unix_socket
-  community.mysql.mysql_query:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    login_unix_socket: /run/mysqld/mysqld.sock
-    query: "ALTER USER 'root'@'localhost' IDENTIFIED WITH auth_socket;"
-
-- name: Remove all anonymous users
+- name: Remove anonymous users
   community.mysql.mysql_user:
     name: ''
     host_all: true
     state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
     login_unix_socket: /run/mysqld/mysqld.sock
 
 - name: Remove test database
   community.mysql.mysql_db:
     name: test
     state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
     login_unix_socket: /run/mysqld/mysqld.sock
