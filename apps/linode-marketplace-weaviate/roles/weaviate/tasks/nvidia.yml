@@ -43,6 +43,14 @@
     - gpu_driver_link.stat.exists
     - current_driver.stdout == "nouveau"
 
+- name: unload nouveau module to prevent rebinding
+  community.general.modprobe:
+    name: nouveau
+    state: absent
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+
 - name: load nvidia kernel module
   community.general.modprobe:
     name: nvidia
