@@ -25,7 +25,7 @@
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-- name: Create root password login for automation
+- name: Create root password login if needed
   community.mysql.mysql_user:
     name: root
     host: 127.0.0.1
