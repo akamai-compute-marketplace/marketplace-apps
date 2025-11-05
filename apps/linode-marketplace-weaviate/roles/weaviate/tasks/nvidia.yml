@@ -43,6 +43,14 @@
     - gpu_driver_link.stat.exists
     - current_driver.stdout == "nouveau"
 
+- name: load nvidia kernel module
+  community.general.modprobe:
+    name: nvidia
+    state: present
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+
 - name: bind gpu to nvidia driver
   shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
   args:
