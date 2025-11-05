@@ -24,6 +24,38 @@
     state: present
     update_cache: true
 
+- name: check if gpu is bound to nouveau
+  stat:
+    path: /sys/bus/pci/devices/0000:00:02.0/driver
+  register: gpu_driver_link
+
+- name: get current gpu driver
+  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
+  register: current_driver
+  changed_when: false
+  when: gpu_driver_link.stat.exists
+
+- name: unbind gpu from nouveau driver
+  shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nouveau/unbind
+  args:
+    executable: /bin/bash
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+
+- name: bind gpu to nvidia driver
+  shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
+  args:
+    executable: /bin/bash
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+
+- name: load nvidia-uvm module for cuda support
+  community.general.modprobe:
+    name: nvidia_uvm
+    state: present
+
 - name: add nvidia container toolkit repository gpg key
   get_url:
     url: https://nvidia.github.io/libnvidia-container/gpgkey
