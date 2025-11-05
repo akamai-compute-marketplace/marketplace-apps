@@ -3,12 +3,6 @@
   set_fact:
     mysql_root_password: "{{ lookup('password', '/etc/ansible/mysql_root_password length=45 chars=ascii_letters,digits') }}"
 
-- name: Persist mysql root password to vars file
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: "mysql_root_password: \"{{ mysql_root_password }}\""
-
 - name: Install MariaDB
   apt:
     pkg:
@@ -23,12 +17,21 @@
     state: started
     enabled: yes
 
-- name: Set MySQL root password and ensure password auth
+- name: Keep root socket auth
   community.mysql.mysql_user:
     name: root
     host: localhost
+    plugin: auth_socket
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create root password login for automation
+  community.mysql.mysql_user:
+    name: root
+    host: 127.0.0.1
     password: "{{ mysql_root_password }}"
     plugin: mysql_native_password
+    priv: '*.*:ALL,GRANT'
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
