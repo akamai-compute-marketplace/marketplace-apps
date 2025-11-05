@@ -13,8 +13,16 @@
     state: present
     update_cache: true
 
-- name: install recommended nvidia drivers
-  command: ubuntu-drivers install
+- name: detect recommended nvidia driver version
+  shell: ubuntu-drivers devices | grep 'recommended' | awk '{print $3}'
+  register: recommended_driver
+  changed_when: false
+
+- name: install recommended nvidia driver package
+  apt:
+    name: "{{ recommended_driver.stdout }}"
+    state: present
+    update_cache: true
 
 - name: add nvidia container toolkit repository gpg key
   get_url:
