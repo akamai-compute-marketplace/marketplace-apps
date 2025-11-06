@@ -59,13 +59,32 @@
     - gpu_driver_link.stat.exists
     - current_driver.stdout == "nouveau"
 
-- name: bind gpu to nvidia driver
+- name: check if gpu is now bound to nvidia
+  stat:
+    path: /sys/bus/pci/devices/0000:00:02.0/driver
+  register: gpu_driver_after_modprobe
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+
+- name: get driver after nvidia module load
+  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
+  register: driver_after_modprobe
+  changed_when: false
+  when:
+    - gpu_driver_link.stat.exists
+    - current_driver.stdout == "nouveau"
+    - gpu_driver_after_modprobe.stat.exists
+
+- name: bind gpu to nvidia driver if not already bound
   shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
   args:
     executable: /bin/bash
   when:
     - gpu_driver_link.stat.exists
     - current_driver.stdout == "nouveau"
+    - driver_after_modprobe.stdout is defined
+    - driver_after_modprobe.stdout != "nvidia"
 
 - name: load nvidia-uvm module for cuda support
   community.general.modprobe:
@@ -92,4 +111,10 @@
 
 - name: configure docker to use nvidia runtime
   command: nvidia-ctk runtime configure --runtime=docker
-  notify: restart docker
+  register: nvidia_runtime_config
+
+- name: restart docker to load nvidia runtime
+  systemd_service:
+    name: docker
+    state: restarted
+  when: nvidia_runtime_config.changed
