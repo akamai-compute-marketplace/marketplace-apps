@@ -22,11 +22,11 @@ UDF_VARS["DOMAIN"]=""
 UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
 # dynamic variables
-#if [[ -n "${CHANGE_ME}" ]]; then
-#        UDF_VARS["CHANGE_ME"]="${CHANGE_ME}"
-#else
-#        UDF_VARS["CHANGE_ME"]="some value" # default
-#fi
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="['none']" # default
+fi
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

@@ -1,6 +1,6 @@
 # Linode Weaviate One-Click App
 
-Deploy a production-ready Weaviate vector database with GPU acceleration on Akamai Connected Cloud. This One-Click App provides a fully configured Weaviate instance with NVIDIA GPU support for high-performance vector similarity search and AI-powered semantic search capabilities.
+Deploy a Weaviate vector database with GPU acceleration on Akamai Connected Cloud using the latest Weaviate Docker image. This One-Click App provides a fully configured Weaviate instance with NVIDIA GPU support for high-performance vector similarity search and AI-powered semantic search capabilities. The Weaviate Docker image is ideal for single instance evaluation and deployment for small to mid-size workloads.
 
 ## Software Included
 
@@ -41,10 +41,6 @@ Make sure that the following values are updated at the top of the code block bef
 - TOKEN - Your Linode API token
 - ROOT_PASS - Root password for the Linode
 - USERNAME - System user that will be created
-- WIREGUARD_SERVER_PUBLIC_KEY - WireGuard Server Public Key (Base64)
-- WIREGUARD_SERVER_ENDPOINT - WireGuard Server Endpoint (IP:51820)
-- WIREGUARD_CLIENT_TUNNEL_IP - WireGuard Client Tunnel IP (with /32)
-- WIREGUARD_ALLOWED_IPS - Allowed IPs (comma-separated list)
 
 ### SHELL
 
@@ -54,10 +50,12 @@ curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer $TOKEN" \
     -X POST -d '{
         "region": "us-east",
-        "type": "g1-gpu-rtx4000ada-1",
-        "stackscript_id": [STACKSCRIPT_ID],
+        "type": "g2-gpu-rtx4000a1-s",
+        "label": "weaviate",
+        "stackscript_id": 0000000,
+        "authorized_users": user1,
         "stackscript_data": {
-            "user_name": "example_user",
+            "user_name": "$USERNAME",
             "disable_root": "Yes",
             "token_password": "$TOKEN",
             "soa_email_address": "user@example.com"
@@ -70,9 +68,11 @@ https://api.linode.com/v4/linode/instances
 # CLI
 linode-cli linodes create \
   --region us-east \
-  --type g1-gpu-rtx4000ada-1 \
-  --stackscript_id [STACKSCRIPT_ID] \
-  --stackscript_data '{"user_name":"example_user","disable_root":"Yes","domain":"example.com","token_password":"$TOKEN","subdomain":"www","soa_email_address":"user@example.com"}' \
+  --type g2-gpu-rtx4000a1-s \
+  --label weaviate \
+  --stackscript_id 0000000 \
+  --authorized_user user1 \
+  --stackscript_data '{"user_name":"$USERNAME","disable_root":"Yes","domain":"example.com","token_password":"$TOKEN","subdomain":"www","soa_email_address":"user@example.com"}' \
   --root_pass $ROOT_PASSWORD \
   --image linode/ubuntu24.04
 ```
