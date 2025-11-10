@@ -24,6 +24,7 @@
     plugin: auth_socket
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
 
 - name: Create root password login if needed
   community.mysql.mysql_user:
