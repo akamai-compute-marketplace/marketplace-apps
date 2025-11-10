@@ -7,26 +7,24 @@
 
 - name: Set MySQL/MariaDB service facts
   set_fact:
-    mysql_service_name: >-
-      {% if 'mysql' in ansible_facts.services %}mysql
-      {% elif 'mariadb' in ansible_facts.services %}mariadb
-      {% else %}none{% endif %}
-    mysql_service_active: >-
-      {{
-        mysql_service_name != 'none' and
-        ansible_facts.services.get(mysql_service_name, {}).state == 'running'
-      }}
+    database_service: >-
+      {% if 'mysql' in ansible_facts.services %}
+        mysql
+      {% elif 'mariadb' in ansible_facts.services %}
+        mariadb
+      {% else %}
+        none
+      {% endif %}
 
-# ---- Begin full block / rescue structure ----
 - name: Install and configure mysqld_exporter
   block:
 
-    - name: Fail if MySQL or MariaDB is not installed or running
+    - name: Mysql or Mariadb not found
       fail:
-        msg: >-
+        msg: |
           No active MySQL or MariaDB service detected — mysqld_exporter requires
           one to be running. Ensure MySQL or MariaDB is installed and started.
-      when: not mysql_service_active
+      when: database_service == 'none'
 
     - name: Create prometheus user
       import_tasks:
@@ -111,11 +109,4 @@
         enabled: true
         daemon_reload: true
 
-  rescue:
-    - name: Handle missing or inactive MySQL/MariaDB service
-      debug:
-        msg: >-
-          mysqld_exporter setup skipped —
-          {{ 'no MySQL or MariaDB installation found' if mysql_service_name == 'none'
-             else 'service exists but is not running' }}.
-          Please ensure your database is installed and active before re-running.
+

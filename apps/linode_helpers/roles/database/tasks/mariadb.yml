@@ -1,7 +1,7 @@
 ---
 - name: Generate MySQL root password
   set_fact:
-    mysql_root_password: "{{ lookup('password', '/etc/ansible/mysql_root_password length=45 chars=ascii_letters,digits') }}"
+    mysql_root_password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
 
 - name: Install MariaDB
   apt:
@@ -9,13 +9,13 @@
       - mariadb-server
       - python3-mysqldb
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Ensure MySQL service is started
   service:
     name: mariadb
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Keep root socket auth
   community.mysql.mysql_user:
