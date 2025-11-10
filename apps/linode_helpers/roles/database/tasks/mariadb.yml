@@ -17,14 +17,10 @@
     state: started
     enabled: true
 
-- name: Keep root socket auth
-  community.mysql.mysql_user:
-    name: root
-    host: localhost
-    plugin: auth_socket
-    state: present
+- name: Set root to use auth_socket
+  community.mysql.mysql_query:
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    check_implicit_admin: yes
+    query: "ALTER USER 'root'@'localhost' IDENTIFIED VIA unix_socket;"
 
 - name: Create root password login if needed
   community.mysql.mysql_user:
