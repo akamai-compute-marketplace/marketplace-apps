@@ -13,17 +13,24 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
-declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
-# dynamic variables
-#if [[ -n "${CHANGE_ME}" ]]; then
-#        UDF_VARS["CHANGE_ME"]="${CHANGE_ME}"
-#else
-#        UDF_VARS["CHANGE_ME"]="some value" # default
-#fi
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
+else
+        UDF_VARS["USER_NAME"]="admin" # default
+fi
+
+if [[ -n "${DISABLE_ROOT}" ]]; then
+        UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
+else
+        UDF_VARS["DISABLE_ROOT"]="No" # default
+fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
@@ -35,6 +42,12 @@ if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
         UDF_VARS["SUBDOMAIN"]="" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
 fi
 
 set_vars() {
