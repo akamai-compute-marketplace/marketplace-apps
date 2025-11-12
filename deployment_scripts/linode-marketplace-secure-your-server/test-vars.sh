@@ -13,6 +13,9 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
+# UDF Variables
+
+declare -A UDF_VARS
 
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
@@ -26,16 +29,10 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
-fi
-
-if [[ -n "${DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${DOMAIN}"
-else
-        UDF_VARS["DOMAIN"]="" # default
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
 if [[ -n "${SUBDOMAIN}" ]]; then
@@ -44,11 +41,24 @@ else
         UDF_VARS["SUBDOMAIN"]="" # default
 fi
 
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${DOMAIN}"
+else
+        UDF_VARS["DOMAIN"]="" # default
+fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
+fi
+
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
 fi
+
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

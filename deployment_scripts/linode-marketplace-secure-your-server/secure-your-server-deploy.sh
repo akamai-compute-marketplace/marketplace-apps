@@ -90,7 +90,7 @@ function udf {
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS 
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
