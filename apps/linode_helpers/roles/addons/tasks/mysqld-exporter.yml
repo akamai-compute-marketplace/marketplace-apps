@@ -93,7 +93,7 @@
         password: "{{ exporter_password }}"
         priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
         host: 'localhost'
-        login_unix_socket: '/var/run/mysqld/mysqld.sock'
+        login_unix_socket: '/run/mysqld/mysqld.sock'
         state: present
 
     - name: Install mysqld_exporter systemd service
