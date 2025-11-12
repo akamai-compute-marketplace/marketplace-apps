@@ -1,0 +1,63 @@
+---
+- name: create weaviate directories
+  file:
+    path: "{{ directory.path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - { path: "{{ weaviate_data_dir }}", name: "data" }
+    - { path: "{{ weaviate_compose_dir }}", name: "compose" }
+  loop_control:
+    loop_var: directory
+    label: "{{ directory.name }} directory"
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ weaviate_compose_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: pull weaviate docker images (this may take 3-5 minutes for 8GB transformer model)
+  community.docker.docker_compose_v2:
+    project_src: "{{ weaviate_compose_dir }}"
+    pull: always
+  async: 1200
+  poll: 30
+
+- name: start weaviate services with docker compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ weaviate_compose_dir }}"
+    state: present
+
+- name: wait for weaviate http api to be ready
+  wait_for:
+    host: localhost
+    port: "{{ weaviate_http_port }}"
+    timeout: 120
+
+- name: wait for weaviate service to be ready
+  uri:
+    url: "http://localhost:{{ weaviate_http_port }}/v1/.well-known/ready"
+    method: GET
+    status_code: [200, 401]  # 401 is expected with auth enabled
+  register: weaviate_health
+  until: weaviate_health.status in [200, 401]
+  retries: 30
+  delay: 2
+
+- name: verify weaviate backend accepts auth
+  uri:
+    url: "http://localhost:{{ weaviate_http_port }}/v1/meta"
+    method: GET
+    status_code: 401
+
+- name: verify weaviate api works with admin key
+  uri:
+    url: "http://localhost:{{ weaviate_http_port }}/v1/meta"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ weaviate_admin_api_key }}"
+    status_code: 200
+  no_log: true

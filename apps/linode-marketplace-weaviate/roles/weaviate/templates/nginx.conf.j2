@@ -1,0 +1,42 @@
+upstream weaviate {
+    server 127.0.0.1:{{ weaviate_http_port }};
+}
+
+server {
+    listen 80;
+    server_name {{ _domain }};
+
+    location / {
+        proxy_pass http://weaviate;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Forward Authorization header for API key authentication
+        proxy_set_header Authorization $http_authorization;
+
+        # Increase timeouts for large imports and vector operations
+        proxy_connect_timeout 600s;
+        proxy_send_timeout 600s;
+        proxy_read_timeout 600s;
+    }
+
+    # Health check endpoint (no auth required for monitoring)
+    location /v1/.well-known/ready {
+        proxy_pass http://weaviate;
+        proxy_set_header Host $host;
+        access_log off;
+    }
+
+    # Liveness check endpoint (no auth required for monitoring)
+    location /v1/.well-known/live {
+        proxy_pass http://weaviate;
+        proxy_set_header Host $host;
+        access_log off;
+    }
+}

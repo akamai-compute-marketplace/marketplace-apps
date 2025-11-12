@@ -1,0 +1,11 @@
+---
+# Default variables for Weaviate
+weaviate_version: "latest"
+weaviate_http_port: "8080"
+weaviate_grpc_port: "50051"
+weaviate_data_dir: "/var/lib/weaviate"
+weaviate_compose_dir: "/opt/weaviate"
+app_name: "weaviate"
+
+# Transformer model configuration
+weaviate_transformer_model: "sentence-transformers-multi-qa-MiniLM-L6-cos-v1"
