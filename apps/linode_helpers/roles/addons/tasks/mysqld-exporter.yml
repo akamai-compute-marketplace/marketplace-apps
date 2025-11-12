@@ -7,14 +7,10 @@
 
 - name: Set MySQL/MariaDB service facts
   set_fact:
-    database_service: >-
-      {% if 'mysql' in ansible_facts.services %}
-        mysql
-      {% elif 'mariadb' in ansible_facts.services %}
-        mariadb
-      {% else %}
-        none
-      {% endif %}
+    database_service: "{{ (
+      'mysql' if 'mysql' in ansible_facts.services
+      else 'mariadb' if 'mariadb' in ansible_facts.services
+      else 'none') | trim }}"
 
 - name: Install and configure mysqld_exporter
   block:
