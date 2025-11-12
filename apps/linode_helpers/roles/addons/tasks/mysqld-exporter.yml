@@ -93,9 +93,20 @@
         password: "{{ exporter_password }}"
         priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
         host: 'localhost'
+        login_unix_socket: '/var/run/mysqld/mysqld.sock'
+        state: present
+      when: database_service == 'mariadb'
+
+    - name: Create mysqld_exporter database user and grants
+      community.mysql.mysql_user:
+        name: 'mysqld_exporter'
+        password: "{{ exporter_password }}"
+        priv: '*.*:PROCESS,REPLICATION CLIENT,SELECT'
+        host: 'localhost'
         state: present
         login_user: root
         login_password: "{{ mysql_root_password }}"
+      when: database_service == 'mysql'
 
     - name: Install mysqld_exporter systemd service
       copy:
