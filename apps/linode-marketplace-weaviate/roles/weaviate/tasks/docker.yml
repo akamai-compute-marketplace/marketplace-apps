@@ -52,8 +52,6 @@
     url: "http://localhost:{{ weaviate_http_port }}/v1/meta"
     method: GET
     status_code: 401
-  register: auth_check
-  failed_when: auth_check.status != 401
 
 - name: verify weaviate api works with admin key
   uri:
@@ -62,3 +60,4 @@
     headers:
       Authorization: "Bearer {{ weaviate_admin_api_key }}"
     status_code: 200
+  no_log: true

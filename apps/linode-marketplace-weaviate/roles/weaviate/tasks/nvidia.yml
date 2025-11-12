@@ -24,67 +24,35 @@
     state: present
     update_cache: true
 
-- name: check if gpu is bound to nouveau
-  stat:
-    path: /sys/bus/pci/devices/0000:00:02.0/driver
-  register: gpu_driver_link
+- name: detect current gpu driver
+  include_tasks: get_gpu_driver.yml
 
-- name: get current gpu driver
-  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
-  register: current_driver
-  changed_when: false
-  when: gpu_driver_link.stat.exists
+- name: switch gpu from nouveau to nvidia driver
+  block:
+    - name: unbind gpu from nouveau driver
+      shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nouveau/unbind
+      args:
+        executable: /bin/bash
 
-- name: unbind gpu from nouveau driver
-  shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nouveau/unbind
-  args:
-    executable: /bin/bash
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
+    - name: unload nouveau module to prevent rebinding
+      community.general.modprobe:
+        name: nouveau
+        state: absent
 
-- name: unload nouveau module to prevent rebinding
-  community.general.modprobe:
-    name: nouveau
-    state: absent
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
+    - name: load nvidia kernel module
+      community.general.modprobe:
+        name: nvidia
+        state: present
 
-- name: load nvidia kernel module
-  community.general.modprobe:
-    name: nvidia
-    state: present
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
+    - name: detect gpu driver after nvidia module load
+      include_tasks: get_gpu_driver.yml
 
-- name: check if gpu is now bound to nvidia
-  stat:
-    path: /sys/bus/pci/devices/0000:00:02.0/driver
-  register: gpu_driver_after_modprobe
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
-
-- name: get driver after nvidia module load
-  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
-  register: driver_after_modprobe
-  changed_when: false
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
-    - gpu_driver_after_modprobe.stat.exists
-
-- name: bind gpu to nvidia driver if not already bound
-  shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
-  args:
-    executable: /bin/bash
-  when:
-    - gpu_driver_link.stat.exists
-    - current_driver.stdout == "nouveau"
-    - driver_after_modprobe.stdout is defined
-    - driver_after_modprobe.stdout != "nvidia"
+    - name: bind gpu to nvidia driver if not already bound
+      shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
+      args:
+        executable: /bin/bash
+      when: gpu_driver_name != "nvidia"
+  when: gpu_driver_name == "nouveau"
 
 - name: load nvidia-uvm module for cuda support
   community.general.modprobe:
@@ -99,7 +67,7 @@
 
 - name: add nvidia container toolkit repository
   apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /"
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64/"
     filename: nvidia-container-toolkit
     state: present
     update_cache: true
@@ -111,10 +79,8 @@
 
 - name: configure docker to use nvidia runtime
   command: nvidia-ctk runtime configure --runtime=docker
-  register: nvidia_runtime_config
 
 - name: restart docker to load nvidia runtime
   systemd_service:
     name: docker
     state: restarted
-  when: nvidia_runtime_config.changed

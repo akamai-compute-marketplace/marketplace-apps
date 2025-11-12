@@ -2,12 +2,9 @@
 services:
   weaviate:
     command:
-      - --host
-      - 0.0.0.0
-      - --port
-      - '{{ weaviate_http_port }}'
-      - --scheme
-      - http
+      - --host 0.0.0.0
+      - --port {{ weaviate_http_port }}
+      - --scheme http
     image: cr.weaviate.io/semitechnologies/weaviate:{{ weaviate_version }}
     ports:
       - "127.0.0.1:{{ weaviate_http_port }}:{{ weaviate_http_port }}"   # HTTP API (localhost only, proxied via NGINX)
