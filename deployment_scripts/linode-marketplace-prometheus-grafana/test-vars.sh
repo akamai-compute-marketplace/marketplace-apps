@@ -53,6 +53,36 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${AKAMAI_CLIENT_SECRET}" ]]; then
+        UDF_VARS["AKAMAI_CLIENT_SECRET"]="${AKAMAI_CLIENT_SECRET}"
+else
+        UDF_VARS["AKAMAI_CLIENT_SECRET"]="" # default
+fi
+
+if [[ -n "${AKAMAI_HOST}" ]]; then
+        UDF_VARS["AKAMAI_HOST"]="${AKAMAI_HOST}"
+else
+        UDF_VARS["AKAMAI_HOST"]="" # default
+fi
+
+if [[ -n "${AKAMAI_ACCESS_TOKEN}" ]]; then
+        UDF_VARS["AKAMAI_ACCESS_TOKEN"]="${AKAMAI_ACCESS_TOKEN}"
+else
+        UDF_VARS["AKAMAI_ACCESS_TOKEN"]="" # default
+fi
+
+if [[ -n "${AKAMAI_CLIENT_TOKEN}" ]]; then
+        UDF_VARS["AKAMAI_CLIENT_TOKEN"]="${AKAMAI_CLIENT_TOKEN}"
+else
+        UDF_VARS["AKAMAI_CLIENT_TOKEN"]="" # default
+fi
+
+if [[ -n "${INSTALL_LOKI}" ]]; then
+        UDF_VARS["INSTALL_LOKI"]="${INSTALL_LOKI}"
+else
+        UDF_VARS["INSTALL_LOKI"]="No" # default
+fi
+
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else

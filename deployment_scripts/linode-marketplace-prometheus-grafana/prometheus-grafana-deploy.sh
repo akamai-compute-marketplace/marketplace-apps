@@ -26,13 +26,13 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Akamai Datasource
-# <UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: abcdEcSnaAt123FNkBxy456z25qx9Yp5CPUxlEfQeTDkfh4QA=I" default="" />
-# <UDF name="akamai_host" label="Akamai host" example="Example:  akab-lmn789n2k53w7qrs10cxy-nfkxaa4lfk3kd6ym.luna.akamaiapis.net" default="" />
-# <UDF name="akamai_access_token" label="Akamai access_token" example="Example: akab-zyx987xa6osbli4k-e7jf5ikib5jknes3" default="" />
-# <UDF name="akamai_client_token" label="Akamai client_token" example="Example: akab-nomoflavjuc4422-fa2xznerxrm3teg7" default="" />
+#<UDF name="akamai_client_secret" label="Akamai client_secret" example="Example: abcdEcSnaAt123FNkBxy456z25qx9Yp5CPUxlEfQeTDkfh4QA=I" default="" />
+#<UDF name="akamai_host" label="Akamai host" example="Example:  akab-lmn789n2k53w7qrs10cxy-nfkxaa4lfk3kd6ym.luna.akamaiapis.net" default="" />
+#<UDF name="akamai_access_token" label="Akamai access_token" example="Example: akab-zyx987xa6osbli4k-e7jf5ikib5jknes3" default="" />
+#<UDF name="akamai_client_token" label="Akamai client_token" example="Example: akab-nomoflavjuc4422-fa2xznerxrm3teg7" default="" />
 
 ## Loki Datasource
-# <UDF name="install_loki" label="Install Loki as data source?" oneOf="Yes,No" default="No" />
+#<UDF name="install_loki" label="Install Loki as data source?" oneOf="Yes,No" default="No" />
 
 # BEGIN CI-ADDONS
 ## Addons
