@@ -79,6 +79,8 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
   # END CI-UDF-ADDON  
 EOF
 
