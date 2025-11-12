@@ -1,5 +1,5 @@
 ---
-- name: Configure UFW rules for core services
+- name: configure ufw rules for core services
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
@@ -9,7 +9,7 @@
     - "80"
     - "443"
 
-- name: Enable UFW
+- name: enable ufw
   community.general.ufw:
     state: enabled
     policy: deny 

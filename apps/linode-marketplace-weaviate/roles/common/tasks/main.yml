@@ -1,6 +1,6 @@
 ---
 # Set hostname
-- name: Setting up hostname
+- name: setting up hostname
   import_role:
     name: hostname
 
@@ -22,7 +22,7 @@
     - default_dns is not defined
 
 # Set SSH public key
-- name: Set SSH public key
+- name: set ssh public key
   import_role:
     name: sshkey
 
@@ -50,7 +50,7 @@
   import_role:
     name: fail2ban_install
 
-- name: Install required system packages
+- name: install required system packages
   apt:
     name: "{{ packages }}"
     state: present

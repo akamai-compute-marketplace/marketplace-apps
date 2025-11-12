@@ -1,5 +1,5 @@
 ---
-- name: Setting up environment
+- name: setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -8,10 +8,10 @@
     - group_vars/linode/vars
   tasks:
     # generate creds
-    - name: Generating sudo user and password
+    - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
       
-    - name: Generating Weaviate API keys
+    - name: generating weaviate api keys
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
