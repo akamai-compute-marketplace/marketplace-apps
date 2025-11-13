@@ -39,9 +39,9 @@
           wp_admin_pass: {{ WP_ADMIN_PASS }}
 
     - name: selecting the stack we are deploying in
-      lineinfile:
+      ansible.builtin.replace:
         path: site.yml
         regexp: "PROVISIONER-WEBSERVER-STACK"
-        line: "    - {{ webserver_stack | lower }}"
+        replace: "{{ webserver_stack | lower }}"
 
 

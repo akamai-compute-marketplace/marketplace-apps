@@ -24,9 +24,9 @@
           wp_admin_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
 
     - name: selecting the stack we are deploying in
-      lineinfile:
+      replace:
         path: site.yml
         regexp: "PROVISIONER-WEBSERVER-STACK"
-        line: "    - {{ webserver_stack | lower }}"
+        replace: "{{ webserver_stack | lower }}"
 
 
