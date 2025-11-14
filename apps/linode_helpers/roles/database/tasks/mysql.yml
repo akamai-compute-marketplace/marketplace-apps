@@ -28,6 +28,16 @@
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
 
+- name: Ensure password-auth root user to 127.0.0.1
+  community.mysql.mysql_user:
+    name: root
+    host: "127.0.0.1"
+    plugin: mysql_native_password
+    password: "{{ mysql_root_password }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
 - name: Remove anonymous users
   community.mysql.mysql_user:
     name: ''
