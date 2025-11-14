@@ -10,6 +10,8 @@
       - python3-mysqldb
     state: present
     update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Ensure MySQL service is started
   service:
