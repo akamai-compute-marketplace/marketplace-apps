@@ -17,12 +17,19 @@
     state: started
     enabled: true
 
-- name: Ensure root user has password auth enabled
+- name: Ensure root password is set 
   community.mysql.mysql_user:
     name: root
     host: localhost
     password: "{{ mysql_root_password }}"
-    plugin: mysql_native_password
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Ensure root uses socket authentication
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    plugin: auth_socket
     state: present
     login_unix_socket: /run/mysqld/mysqld.sock
 
