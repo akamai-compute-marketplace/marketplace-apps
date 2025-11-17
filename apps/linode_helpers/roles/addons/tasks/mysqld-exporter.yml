@@ -119,5 +119,5 @@
   rescue:
     - name: Playbook Resumed
       ansible.builtin.debug:
-        msg: "Addon installation failed — continuing without it."
+        msg: "No target service found to install mysqld_exporter. Continuing without it."
 
