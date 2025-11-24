@@ -13,24 +13,34 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
-declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["SUBDOMAIN"]=""
-UDF_VARS["DOMAIN"]=""
+# UDF Variables
 
-# dynamic variables
+declare -A UDF_VARS
+
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
+else
+        UDF_VARS["USER_NAME"]="admin" # default
+fi
+
+if [[ -n "${DISABLE_ROOT}" ]]; then
+        UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
+else
+        UDF_VARS["DISABLE_ROOT"]="No" # default
+fi
+
 if [[ -n "${DATABASE}" ]]; then
         UDF_VARS["DATABASE"]="${DATABASE}"
 else
-        UDF_VARS["DATABASE"]="mysql" # default
+        UDF_VARS["DATABASE"]="mariadb" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
-        UDF_VARS["ADD_ONS"]="['none']" # default
+        UDF_VARS["ADD_ONS"]="none" # default
 fi
+
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

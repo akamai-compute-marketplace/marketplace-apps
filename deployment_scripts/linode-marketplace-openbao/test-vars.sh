@@ -13,27 +13,26 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
+# UDF Variables
+
 declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
-UDF_VARS["COUNTRY_NAME"]="US"
-UDF_VARS["STATE_OR_PROVINCE_NAME"]="Pennsylvania"
-UDF_VARS["LOCALITY_NAME"]="Philadelphia"
-UDF_VARS["ORGANIZATION_NAME"]="Akamai"
-UDF_VARS["EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}"
 
-# dynamic variables
-#if [[ -n "${CHANGE_ME}" ]]; then
-#        UDF_VARS["CHANGE_ME"]="${CHANGE_ME}"
-#else
-#        UDF_VARS["CHANGE_ME"]="some value" # default
-#fi
-
-if [[ -n "${DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${DOMAIN}"
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
-        UDF_VARS["DOMAIN"]="" # default
+        UDF_VARS["USER_NAME"]="admin" # default
+fi
+
+if [[ -n "${DISABLE_ROOT}" ]]; then
+        UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
+else
+        UDF_VARS["DISABLE_ROOT"]="No" # default
+fi
+
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
 if [[ -n "${SUBDOMAIN}" ]]; then
@@ -42,13 +41,24 @@ else
         UDF_VARS["SUBDOMAIN"]="" # default
 fi
 
-# openbao vars
-
-if [[ -n "${CLIENT_IPS}" ]]; then
-        UDF_VARS["CLIENT_IPS"]="${CLIENT_IPS}"
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
-        UDF_VARS["CLIENT_IPS"]="" # default
+        UDF_VARS["DOMAIN"]="" # default
 fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
+fi
+
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

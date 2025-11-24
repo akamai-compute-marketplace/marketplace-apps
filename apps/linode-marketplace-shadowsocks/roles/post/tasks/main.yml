@@ -1,16 +1,22 @@
 ---
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: 'templates/motd.j2'
-      dest: '/etc/motd'
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
 
-  - name: writing creds into file
-    copy:
-      dest: '/home/{{ username }}/.credentials'
-      mode: '0600'
-      owner: '{{ username }}'
-      group: '{{ username }}'
-      content: |
-        Sudo Username: {{ username }}
-        Sudo Password: {{ password }}
-        Shadowsocks Password: {{ shadowsocks_password }} 
+- name: copy MOTD template to /etc/motd
+  template:
+    src: 'templates/motd.j2'
+    dest: '/etc/motd'
+
+- name: writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Shadowsocks Password: {{ shadowsocks_password }} 
