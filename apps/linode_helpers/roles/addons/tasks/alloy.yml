@@ -35,9 +35,6 @@
     repo: "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main"
     state: present
     filename: grafana
-
-- name: update apt cache
-  apt:
     update_cache: true
 
 - name: install grafana alloy
@@ -51,4 +48,8 @@
     state: started
     enabled: true
 
-
+- name: create alloy.sh for post install
+  template:
+    src: templates/alloy.sh.j2
+    dest: /etc/profile.d/alloy.sh
+    mode: '0755'
