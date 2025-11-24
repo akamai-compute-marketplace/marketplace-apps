@@ -1,33 +1,56 @@
 ---
+- name: Generate MySQL root password
+  set_fact:
+    mysql_root_password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
 - name: Install MySQL
   apt:
     pkg:
       - mysql-server
       - python3-mysqldb
     state: present
+    update_cache: true
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
-- name: Reset root password
+- name: Ensure MySQL service is started
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Ensure root uses socket authentication
   community.mysql.mysql_user:
     name: root
     host: localhost
+    plugin: auth_socket
+    password: "{{ mysql_root_password }}"
     state: present
-    update_password: always
-    password: '{{ mysql_root_password }}'
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: Removes all anonymous user accounts
+- name: Ensure password-auth root user to 127.0.0.1
+  community.mysql.mysql_user:
+    name: root
+    host: "127.0.0.1"
+    plugin: mysql_native_password
+    password: "{{ mysql_root_password }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Remove anonymous users
   community.mysql.mysql_user:
     name: ''
     host_all: true
     state: absent
     login_user: root
-    login_password: '{{ mysql_root_password }}'
+    login_password: "{{ mysql_root_password }}"
     login_unix_socket: /run/mysqld/mysqld.sock
 
-- name: remove test database
+- name: Remove test database
   community.mysql.mysql_db:
-    login_user: root
-    login_password: '{{ mysql_root_password }}'
-    login_unix_socket: /run/mysqld/mysqld.sock
     name: test
     state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /run/mysqld/mysqld.sock

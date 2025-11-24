@@ -47,22 +47,16 @@ else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
-else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
-fi
-
-if [[ -n "${AZURACAST_ADMIN_EMAIL}" ]]; then
-        UDF_VARS["AZURACAST_ADMIN_EMAIL"]="${AZURACAST_ADMIN_EMAIL}"
-else
-        UDF_VARS["AZURACAST_ADMIN_EMAIL"]="azura@${DEFAULT_DNS}" # default
-fi
-
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
+fi
+
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
 
