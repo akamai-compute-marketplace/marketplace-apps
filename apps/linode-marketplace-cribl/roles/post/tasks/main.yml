@@ -1,4 +1,10 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 - name: Set up MOTD
   template:
     src: motd.j2

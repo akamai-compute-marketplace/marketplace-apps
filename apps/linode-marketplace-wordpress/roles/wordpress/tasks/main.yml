@@ -34,12 +34,12 @@
     name: "{{ wp_db_name }}"
     state: present
 
-- name:  creating wordpress user
+- name: creating wordpress user
   mysql_user:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: "{{ wp_db_user }}"
     password: "{{ wp_db_pass }}"
-    priv: '*.*:ALL'
+    priv: '{{ wp_db_name }}.*:ALL'
     state: present
 
 - name: downloading wpcli
