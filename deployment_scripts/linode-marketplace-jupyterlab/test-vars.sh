@@ -53,12 +53,6 @@ else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
-        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
-else
-        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
-fi
-
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
