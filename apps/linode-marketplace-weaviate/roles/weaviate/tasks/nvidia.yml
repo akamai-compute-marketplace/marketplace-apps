@@ -67,7 +67,7 @@
 
 - name: add nvidia container toolkit repository
   apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64/"
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /"
     filename: nvidia-container-toolkit
     state: present
     update_cache: true
