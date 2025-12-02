@@ -7,6 +7,18 @@
   vars_files:
     - group_vars/linode/vars
   tasks:
+    - name: check hardware type
+      shell:
+        cmd: |
+          lspci | grep -i rtx
+      ignore_errors: true
+      register: gpu
+
+    - name: verify if hardware is gpu
+      fail:
+        msg: "Deployment failed: No GPU detected. This application requires a GPU instance."
+      when: gpu.rc != 0
+
     # generate creds
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
