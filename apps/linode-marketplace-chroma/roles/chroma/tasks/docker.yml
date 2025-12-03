@@ -42,7 +42,7 @@
 
 - name: wait for chroma to start
   uri:
-    url: "http://localhost:8000/api/v1/heartbeat"
+    url: "http://localhost:8000/api/v2/heartbeat"
     method: GET
     user: admin
     password: "{{ chroma_password }}"
