@@ -1,18 +1,24 @@
 ---
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: templates/motd.j2
-      dest: /etc/motd
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
 
-  - name: writing sudo creds into file
-    copy:
-      dest: '/home/{{ username }}/.credentials'
-      mode: '0600'
-      owner: '{{ username }}'
-      group: '{{ username }}'
-      content: |
-        Sudo Username: {{ username }}
-        Sudo Password: {{ password }}
-        Nirvashare Login: admin
-        Nirvashare Password: admin
-        *** Please ensure you change the default credentials immediately after login! ***
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: Writing sudo creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Nirvashare Login: admin
+      Nirvashare Password: admin
+      *** Please ensure you change the default credentials immediately after login! ***

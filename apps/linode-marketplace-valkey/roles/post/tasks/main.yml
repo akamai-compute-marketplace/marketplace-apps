@@ -1,12 +1,18 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # motd and cred dump
 
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: writing deployment creds into file
+- name: Writing deployment creds into file
   copy:
     dest: /home/{{ username }}/.credentials
     mode: '0600'

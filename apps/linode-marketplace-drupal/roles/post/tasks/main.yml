@@ -1,10 +1,16 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # Final system configurations and cleanup
 - name: Ensure services are started and enabled
   service:
     name: "{{ item }}"
     state: started
-    enabled: yes
+    enabled: true
   loop:
     - apache2
     - mariadb

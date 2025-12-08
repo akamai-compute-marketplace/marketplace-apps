@@ -26,6 +26,11 @@ fi
 ## WireGuard Settings
 #<UDF name="wireguard_server_address" label="WireGuard Server Tunnel Address (e.g. 10.0.0.1/24)" default="10.0.0.1/24">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -77,14 +82,16 @@ function udf {
   username: ${USER_NAME}
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
   wireguard_server_address: ${WIREGUARD_SERVER_ADDRESS}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
-
-  
 
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then

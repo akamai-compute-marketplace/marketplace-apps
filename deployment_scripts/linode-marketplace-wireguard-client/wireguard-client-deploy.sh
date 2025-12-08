@@ -29,6 +29,11 @@ fi
 #<UDF name="wireguard_client_tunnel_ip" label="WireGuard Client Tunnel IP (with /32)" example="10.0.0.2/32" default="10.0.0.2/32" />
 #<UDF name="wireguard_allowed_ips" label="Allowed IPs (comma-separated list)" example="10.0.0.1/32,192.0.2.0/24" default="10.0.0.1/32" />
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -93,6 +98,10 @@ function udf {
   wireguard_allowed_ips:
 $(echo -e "${ips_list}")
 
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS 
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
