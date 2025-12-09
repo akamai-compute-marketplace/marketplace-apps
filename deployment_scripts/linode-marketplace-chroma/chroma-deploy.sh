@@ -83,6 +83,7 @@ function udf {
   username: ${USER_NAME}
   # addons
   add_ons: [${ADD_ONS}] 
+  webserver_stack: lemp
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

@@ -6,7 +6,7 @@ services:
   server:
     image: chromadb/chroma:latest
     volumes:
-      - chroma-data:/data
+      - {{ chroma_data_dir }}:/data
       - {{ chroma_config_dir }}/server.htpasswd:/etc/chroma/server.htpasswd
     environment:
       - IS_PERSISTENT=TRUE
@@ -20,7 +20,3 @@ services:
     restart: unless-stopped
     networks:
       - net
-
-volumes:
-  chroma-data:
-    driver: local

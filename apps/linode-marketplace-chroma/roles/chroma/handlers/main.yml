@@ -11,5 +11,5 @@
 
 - name: restart chroma
   community.docker.docker_compose_v2:
-    project_src: /opt/chroma/compose
+    project_src: "{{ chroma_compose_dir }}"
     state: restarted

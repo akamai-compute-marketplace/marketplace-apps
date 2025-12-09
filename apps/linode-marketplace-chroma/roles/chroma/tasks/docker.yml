@@ -8,9 +8,9 @@
     loop_var: directory
     label: "{{ directory }}"
   loop:
-    - /opt/chroma/data
-    - /opt/chroma/config
-    - /opt/chroma/compose
+    - "{{ chroma_data_dir }}"
+    - "{{ chroma_config_dir }}"
+    - "{{ chroma_compose_dir }}"
 
 - name: generate bcrypt password hash
   set_fact:
@@ -19,25 +19,23 @@
 - name: create server.htpasswd
   copy:
     content: "admin:{{ chroma_password_hash }}\n"
-    dest: /opt/chroma/config/server.htpasswd
+    dest: "{{ chroma_config_dir }}/server.htpasswd"
     mode: '0600'
 
 - name: deploy docker-compose.yml
   template:
     src: docker-compose.yml.j2
-    dest: /opt/chroma/compose/docker-compose.yml
+    dest: "{{ chroma_compose_dir }}/docker-compose.yml"
     mode: '0644'
-  vars:
-    chroma_config_dir: /opt/chroma/config
 
 - name: pull chroma images
   community.docker.docker_compose_v2:
-    project_src: /opt/chroma/compose
+    project_src: "{{ chroma_compose_dir }}"
     pull: always
 
 - name: start chroma
   community.docker.docker_compose_v2:
-    project_src: /opt/chroma/compose
+    project_src: "{{ chroma_compose_dir }}"
     state: present
 
 - name: wait for chroma to start
