@@ -23,6 +23,12 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${GAMESERVERNAME}" ]]; then
+        UDF_VARS["GAMESERVERNAME"]="${GAMESERVERNAME}"
+else
+        UDF_VARS["GAMESERVERNAME"]="" # default
+fi
+
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
@@ -51,12 +57,6 @@ if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
         UDF_VARS["DOMAIN"]="" # default
-fi
-
-if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
-        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
-else
-        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
