@@ -16,9 +16,9 @@ while true; do
         echo "Starting configuration..." | tee -a "$LOG_FILE"
         break
     elif [[ "$CONFIGURE_ALLOY" =~ ^[Nn]$ ]]; then
-        echo "Skipping Alloy configuration. Default settings applied." | tee -a "$LOG_FILE"
-        rm -f /etc/profile.d/alloy.sh
-        exit 0
+        echo "Skipping Alloy configuration. The script will run again on your next login." | tee -a "$LOG_FILE"
+        echo "To disable this prompt permanently, run: sudo rm /etc/profile.d/alloy.sh"
+        return 0
     else
         echo "Please answer y or n."
     fi
