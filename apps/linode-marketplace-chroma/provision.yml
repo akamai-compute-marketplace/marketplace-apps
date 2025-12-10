@@ -11,8 +11,11 @@
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: generating chroma password
+      set_fact:
+        chroma_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+
+    - name: write chroma password to vars
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        line: |
-          chroma_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+        line: "chroma_password: {{ chroma_password }}"
