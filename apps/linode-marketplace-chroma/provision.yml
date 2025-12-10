@@ -9,3 +9,10 @@
   tasks:
     - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: generating chroma password
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          chroma_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
