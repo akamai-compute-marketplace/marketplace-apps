@@ -12,6 +12,10 @@
     - "{{ chroma_config_dir }}"
     - "{{ chroma_compose_dir }}"
 
+- name: generate chroma password
+  set_fact:
+    chroma_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+
 - name: generate bcrypt password hash
   set_fact:
     chroma_password_hash: "{{ chroma_password | password_hash('blowfish') }}"
