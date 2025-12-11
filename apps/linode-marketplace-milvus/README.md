@@ -57,7 +57,7 @@ curl -H "Content-Type: application/json" \
   "backups_enabled": true,
   "booted": true,
   "image": "linode/ubuntu24.04",
-  "label": "cribl-stream-server",
+  "label": "milvus-server",
   "private_ip": true,
   "region": "us-southeast",
   "root_pass": "'"${ROOT_PASS}"'",
@@ -71,7 +71,7 @@ curl -H "Content-Type: application/json" \
   },
   "stackscript_id": 00000000000,
   "type": "g6-nanode-1",
-  "tags": ["cribl"],
+  "tags": ["milvus"],
   "disk_encryption": "disabled"
 }' https://api.linode.com/v4/linode/instances
 
@@ -86,7 +86,7 @@ export SUBDOMAIN="logs"
 linode-cli linodes create \
 --image 'linode/ubuntu24.04' \
 --private_ip true \
---label cribl-stream-server \
+--label milvus-server \
 --root_pass ${ROOT_PASS} \
 --booted true \
 --stackscript_id 00000000000 \
@@ -100,7 +100,7 @@ linode-cli linodes create \
 }' \
 --region us-east \
 --type g6-nanode-1 \
---tags cribl \
+--tags milvus \
 --authorized_keys "ssh-rsa AAAA_valid_public_ssh_key_123456785== user@their-computer" \
 --authorized_users "user1" \
 --authorized_users "user2" \
@@ -112,5 +112,3 @@ linode-cli linodes create \
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript reference](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
 - [Milvus Documentation](https://milvus.io/docs)
-- [NGINX Documentation](https://nginx.org/en/docs/)
-- [Certbot Documentation](https://certbot.eff.org/) 
