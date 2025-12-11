@@ -1,5 +1,5 @@
 ---
-# Set hostname
+# set hostname
 - name: setting up hostname
   import_role:
     name: hostname
@@ -21,7 +21,7 @@
     - token_password is defined
     - default_dns is not defined
 
-# Set SSH public key
+# set ssh public key
 - name: set ssh public key
   import_role:
     name: sshkey

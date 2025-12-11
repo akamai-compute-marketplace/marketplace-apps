@@ -1,5 +1,5 @@
 ---
-- name: configure ufw rules for core services
+- name: configure ufw rules
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
