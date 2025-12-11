@@ -1,0 +1,15 @@
+---
+- name: restart docker
+  systemd_service:
+    name: docker
+    state: restarted
+
+- name: restart nginx
+  systemd_service:
+    name: nginx
+    state: restarted
+
+- name: restart weaviate
+  community.docker.docker_compose_v2:
+    project_src: "{{ weaviate_compose_dir }}"
+    state: restarted

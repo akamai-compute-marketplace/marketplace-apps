@@ -1,0 +1,102 @@
+#!/bin/bash
+# Log File
+LOG_FILE="/var/log/marketplace_addons.log"
+CONFIG_FILE="/etc/alloy/config.alloy"
+
+echo "=================================================" | tee -a "$LOG_FILE"
+echo " Grafana Alloy Post-Installation Configuration Setup" | tee -a "$LOG_FILE"
+echo "=================================================" | tee -a "$LOG_FILE"
+echo ""
+
+# Prompt user for Loki endpoint
+while true; do
+    echo ""
+    read -p "Do you want to configure Grafana Alloy to send logs to a Loki endpoint? [y/n]: " CONFIGURE_ALLOY
+    if [[ "$CONFIGURE_ALLOY" =~ ^[Yy]$ ]]; then
+        echo "Starting configuration..." | tee -a "$LOG_FILE"
+        break
+    elif [[ "$CONFIGURE_ALLOY" =~ ^[Nn]$ ]]; then
+        echo "Skipping Alloy configuration. The script will run again on your next login." | tee -a "$LOG_FILE"
+        echo "To disable this prompt permanently, run: sudo rm /etc/profile.d/alloy.sh"
+        return 0
+    else
+        echo "Please answer y or n."
+    fi
+done
+
+# Prompt for Loki Endpoint URL
+while true; do
+    echo ""
+    echo "Enter the Loki endpoint URL (e.g., https://example.com/loki/api/v1/push):"
+    read -p "Loki URL: " LOKI_URL
+    
+    if [ -n "$LOKI_URL" ]; then
+        echo "Loki URL set to: $LOKI_URL" | tee -a "$LOG_FILE"
+        break
+    else
+        echo "Loki URL cannot be empty."
+    fi
+done
+
+# Prompt for Basic Auth (Required for Marketplace Loki)
+while true; do
+    echo ""
+    echo "Username set to: loki" | tee -a "$LOG_FILE"
+    LOKI_USER="loki"
+
+    echo ""
+    read -s -p "Enter Basic Auth Password: " LOKI_PASSWORD
+    echo ""
+    
+    if [ -n "$LOKI_PASSWORD" ]; then
+        break
+    else
+        echo "Password cannot be empty."
+    fi
+done
+
+# Backup existing config
+cp "$CONFIG_FILE" "${CONFIG_FILE}.bak"
+
+# Write new config
+cat <<EOF > "$CONFIG_FILE"
+logging {
+  level = "info"
+}
+
+// Scrape logs from /var/log/*.log
+local.file_match "system_logs" {
+  path_targets = [{"__path__" = "/var/log/*.log"}]
+}
+
+loki.source.file "system_logs" {
+  targets    = local.file_match.system_logs.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+// Send logs to Loki
+loki.write "default" {
+  endpoint {
+    url = "$LOKI_URL"
+    basic_auth {
+      username = "$LOKI_USER"
+      password = "$LOKI_PASSWORD"
+    }
+  }
+}
+EOF
+
+echo "Configuration updated." | tee -a "$LOG_FILE"
+
+# Restart Alloy service
+echo "Restarting Alloy service..." | tee -a "$LOG_FILE"
+systemctl restart alloy
+
+if [ $? -eq 0 ]; then
+    echo "Alloy service restarted successfully." | tee -a "$LOG_FILE"
+else
+    echo "Failed to restart Alloy service. Please check logs." | tee -a "$LOG_FILE"
+fi
+
+# Clean up
+rm -f /etc/profile.d/alloy.sh

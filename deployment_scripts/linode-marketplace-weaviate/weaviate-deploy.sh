@@ -4,7 +4,7 @@
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # modes
-#DEBUG="NO"
+# DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -13,25 +13,27 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
 else
   set -e
 fi
+
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-## MySQL settings
-#<UDF name="database" label="Install either MySQL-Server or MariaDB-Server" oneOf="mariadb,mysql" default="mariadb">
+## Domain Settings
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy, none"  default="none">
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector, none"  default="none">
 
+#GH_USER=""
+#BRANCH=""
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
         echo "[info] git user and branch set.."
@@ -44,7 +46,7 @@ else
 fi
 
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-mysql"
+export MARKETPLACE_APP="apps/linode-marketplace-weaviate"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -63,7 +65,7 @@ function provision_failed {
      -H "Content-Type: application/json" \
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"env\":\"${ENV}\" }"
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
   
   exit $?
 }
@@ -72,20 +74,15 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
-  
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   sed 's/  //g' <<EOF > ${group_vars}
-
   # sudo username
   username: ${USER_NAME}
-  # database install option
-  database: ${DATABASE}
   # addons
-  add_ons: [${ADD_ONS}]  
+  add_ons: [${ADD_ONS}] 
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -93,15 +90,14 @@ EOF
   else echo "Leaving root login enabled";
   fi
 
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
+  fi
+
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
   else
     echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
@@ -111,6 +107,7 @@ EOF
 
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No SOA email entered";
   fi
 
   # staging or production mode (ci)
@@ -124,16 +121,14 @@ EOF
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  #git -C /tmp clone ${GIT_REPO}
-  # for a single testing branch
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
   apt install python3-venv -y
   python3 -m venv env
@@ -146,12 +141,12 @@ function run {
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-
 }
 
 function installation_complete {
   echo "Installation Complete"
 }
+
 # main
 run
 installation_complete

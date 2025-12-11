@@ -1,0 +1,32 @@
+---
+- name: setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+    - name: check hardware type
+      shell:
+        cmd: |
+          lspci | grep -i rtx
+      ignore_errors: true
+      register: gpu
+
+    - name: verify if hardware is gpu
+      fail:
+        msg: "Deployment failed: No GPU detected. This application requires a GPU instance."
+      when: gpu.rc != 0
+
+    # generate creds
+    - name: generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      
+    - name: generating weaviate api keys
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          weaviate_admin_api_key: {{ lookup('password', '/dev/null length=64 chars=hexdigits') }}
+          weaviate_user_api_key: {{ lookup('password', '/dev/null length=64 chars=hexdigits') }}
