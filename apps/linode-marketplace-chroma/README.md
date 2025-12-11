@@ -2,8 +2,6 @@
 
 Deploy a production-ready Chroma Vector Database as a server in a single-node Client/Server architecture. This One-Click App sets up a secure, persistent Chroma server intended to be the central storage and search engine for your AI applications (client).
 
-This deployment uses Chroma's `HttpClient` model (Client/Server). The server handles vector storage (SQLite) and Approximate Nearest Neighbor (ANN) search. These operations are heavily optimized for CPU and RAM. Therefore, GPU acceleration is not required for the core database server, making standard CPU instances the most cost-effective choice. See [Single-Node Chroma: Performance and Limitations](https://docs.trychroma.com/guides/deploy/performance) for more information.
-
 ## Software Included
 
 | Software | Version | Description |
@@ -90,3 +88,4 @@ linode-cli linodes create \
 
 - [ChromaDB Official Documentation](https://docs.trychroma.com/docs/overview/introduction)
 - [Marketplace App Documentation](https://www.linode.com/docs/marketplace-docs/guides/chroma/)
+- [Single-Node Chroma: Performance and Limitations](https://docs.trychroma.com/guides/deploy/performance)
