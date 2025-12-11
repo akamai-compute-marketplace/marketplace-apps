@@ -1,0 +1,129 @@
+---
+- name: Check if driver is bound to gpu
+  stat:
+    path: /sys/bus/pci/devices/0000:00:02.0/driver
+  register: gpu_driver_link_check
+
+- name: Get gpu driver name
+  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
+  register: gpu_driver_detection
+  changed_when: false
+  when: gpu_driver_link_check.stat.exists
+
+- name: Save gpu driver name
+  set_fact:
+    gpu_driver_name: "{{ gpu_driver_detection.stdout | default('none') }}"
+
+- name: Blacklist nouveau driver
+  copy:
+    dest: /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    mode: '0644'
+
+- name: Install ubuntu-drivers-common package
+  apt:
+    name: ubuntu-drivers-common
+    state: present
+    update_cache: true
+
+- name: Detect recommended nvidia driver version
+  shell: ubuntu-drivers devices | grep 'recommended' | awk '{print $3}'
+  register: recommended_driver
+  changed_when: false
+
+- name: Install recommended nvidia driver package
+  apt:
+    name: "{{ recommended_driver.stdout }}"
+    state: present
+    update_cache: true
+
+- name: Switch gpu from nouveau to nvidia driver
+  block:
+    - name: unbind gpu from nouveau driver
+      shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nouveau/unbind
+      args:
+        executable: /bin/bash
+
+    - name: Unload nouveau module to prevent rebinding
+      community.general.modprobe:
+        name: nouveau
+        state: absent
+
+    - name: Load nvidia kernel module
+      community.general.modprobe:
+        name: nvidia
+        state: present
+
+    - name: Detect gpu driver after nvidia module load
+      include_tasks: get_gpu_driver.yml
+
+    - name: Bind gpu to nvidia driver if not already bound
+      shell: echo "0000:00:02.0" > /sys/bus/pci/drivers/nvidia/bind
+      args:
+        executable: /bin/bash
+      when: gpu_driver_name != "nvidia"
+  when: gpu_driver_name == "nouveau"
+
+- name: Load nvidia-uvm module for cuda support
+  community.general.modprobe:
+    name: nvidia_uvm
+    state: present
+
+- name: Add nvidia container toolkit repository gpg key
+  get_url:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+    dest: /usr/share/keyrings/nvidia-container-toolkit-keyring.asc
+    mode: '0644'
+
+- name: Add nvidia container toolkit repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /"
+    filename: nvidia-container-toolkit
+    state: present
+    update_cache: true
+
+- name: Install nvidia container toolkit
+  apt:
+    name: nvidia-container-toolkit
+    state: present
+
+- name: Configure docker to use nvidia runtime
+  command: nvidia-ctk runtime configure --runtime=docker
+
+- name: Restart docker to load nvidia runtime
+  systemd_service:
+    name: docker
+    state: restarted
+    
+# Milvus
+- name: Create Milvus directory
+  file:
+    path: /opt/milvus
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Add Milvus config
+  template:
+    src: gpu_milvus.yaml
+    dest: /opt/milvus/milvus.yaml
+    mode: "0644"
+
+- name: Deploy docker-compose.yml
+  template:
+    src: gpu-docker-compose.yml.j2
+    dest: /opt/milvus/docker-compose.yml
+    mode: "0644"
+
+- name: Pull Milvus Docker image
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    pull: always
+
+- name: Start Milvus Compose file
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    state: present

@@ -1,0 +1,17 @@
+---
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: Writing creds to file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Minio Access Key: {{ minio_access_key }}
+      Minio Secret Key: {{ minio_secret_key }}

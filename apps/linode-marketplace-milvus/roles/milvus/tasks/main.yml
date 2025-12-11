@@ -1,0 +1,8 @@
+---
+
+# Main Milvus installation tasks
+- name: Install Milvus
+  import_tasks: install.yml
+
+- name: Configure Milvus
+  import_tasks: install.yml

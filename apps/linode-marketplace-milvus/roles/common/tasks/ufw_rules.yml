@@ -1,0 +1,13 @@
+---
+- name: Configure UFW rules
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "22"
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny 

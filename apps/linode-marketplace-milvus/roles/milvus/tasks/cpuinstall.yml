@@ -1,0 +1,28 @@
+---
+- name: Create Milvus directory
+  file:
+    path: /opt/milvus
+    state: directory
+    mode: "0755"
+
+- name: Add Milvus config
+  template:
+    src: cpu_milvus.yaml
+    dest: /opt/milvus/milvus.yaml
+    mode: "0644"
+
+- name: Deploy docker-compose.yml
+  template:
+    src: cpu-docker-compose.yml.j2
+    dest: /opt/milvus/docker-compose.yml
+    mode: "0644"
+
+- name: Pull Milvus Docker image
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    pull: always
+
+- name: Start Milvus Compose file
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    state: present
