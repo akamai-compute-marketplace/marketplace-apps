@@ -12,6 +12,15 @@
   import_role:
     name: docker
 
+- name: Installing Docker Compose
+  apt:
+    pkg: docker-compose
+    state: present
+
+- name: Configure SSL with certbot
+  import_role:
+    name: certbot_ssl
+
 - name: Include GPU tasks
   when: has_gpu
   include_tasks: gpuinstall.yml

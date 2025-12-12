@@ -27,6 +27,8 @@ services:
       - "9000:9000"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
+      - /etc/letsencrypt/live/{{ _domain }}/fullchain.pem:/root/.minio/certs/public.crt:ro
+      - /etc/letsencrypt/live/{{ _domain }}/privkey.pem:/root/.minio/certs/private.key:ro
     command: minio server /minio_data --console-address ":9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
