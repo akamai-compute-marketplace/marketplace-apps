@@ -23,8 +23,8 @@ services:
       MINIO_ACCESS_KEY: {{ minio_access_key }}
       MINIO_SECRET_KEY: {{ minio_secret_key }}
     ports:
-      - "127.0.0.1:9001:9001"
-      - "127.0.0.1:9000:9000"
+      - "9001:9001"
+      - "9000:9000"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
