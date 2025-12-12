@@ -79,6 +79,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  webserver_stack: standalone
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
