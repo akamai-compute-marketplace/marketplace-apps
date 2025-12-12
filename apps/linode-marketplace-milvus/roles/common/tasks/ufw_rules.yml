@@ -6,6 +6,8 @@
     proto: tcp
   loop:
     - "22"
+    - "80"
+    - "9001"
 
 - name: Enable UFW
   ufw:
