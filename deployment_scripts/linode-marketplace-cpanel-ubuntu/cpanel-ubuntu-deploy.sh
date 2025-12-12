@@ -14,23 +14,6 @@ else
 fi
 # END CI-MODE
 
-##Linode/SSH security settings
-#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
-#<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-
-## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
-#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-
-## harbor Settings 
-#<UDF name="soa_email_address" label="Admin Email for the Harbor server and Let's Encrypt SSL certificate">
-
-# BEGIN CI-ADDONS
-## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
-# END CI-ADDONS
-
 # BEGIN CI-GH
 #GH_USER=""
 #BRANCH=""
@@ -46,8 +29,7 @@ else
 fi
 # END CI-GH
 
-export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-harbor"
+export WORK_DIR="/root/marketplace-apps" # moved to root dir because cpanel install will remove anything in tmp
 
 # BEGIN CI-PROVISION-FUNC
 function provision_failed {
@@ -79,48 +61,65 @@ function cleanup {
   fi
 
 }
+ 
+# Check if /etc/os-release file exists
+if [ -f /etc/os-release ]; then
+    # Source the os-release file to get the distribution ID
+    . /etc/os-release
+
+    # Check the distribution ID to determine the Linux distribution
+    if [ "$ID" == "almalinux" ]; then
+        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-almalinux"
+
+        function run {
+        # install dependancies
+        yum install dnf -y
+        dnf update -y
+        dnf upgrade -y
+        dnf install -y git python3 python3-pip
+
+        dnf makecache
+        dnf install epel-release -y
+        dnf makecache
+        dnf install ansible -y
+        }
+
+    elif [ "$ID" == "rocky" ]; then
+        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-rocky"
+
+        function run {
+        # install dependancies
+        yum install dnf -y
+        dnf update -y
+        dnf upgrade -y
+        dnf install -y git python3 python3-pip
+
+        dnf makecache
+        dnf install epel-release -y
+        dnf makecache
+        dnf install ansible -y
+        }
+
+    elif [ "$ID" == "ubuntu" ]; then
+        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-ubuntu"
+        
+        function run {
+        # install dependancies
+        export DEBIAN_FRONTEND=non-interactive
+        apt-get update
+        apt-get install -y git python3 python3-pip
+        }
+
+    else
+        echo "Unknown Linux distribution: $ID"
+    fi
+else
+    echo "Unable to determine the Linux distribution."
+fi
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  sed 's/  //g' <<EOF > ${group_vars}
 
-  # sudo username
-  username: ${USER_NAME}
-  webserver_stack: lemp
-  # BEGIN CI-UDF-ADDONS
-  # addons
-  add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS    
-EOF
-  
-  if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
-  fi
-
-  # harbor vars
-  
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
-  fi
-
-  if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
-  else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
-  fi
-
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
-  fi
- 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
-  fi
-
-  # staging or production mode (ci)
   # BEGIN CI-UDF-CI-MODE
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
@@ -131,17 +130,13 @@ EOF
     echo "mode: production" >> ${group_vars}
   fi
 # END CI-UDF-CI-MODE
-}
+}  
 
-function run {
-  # install dependancies
-  apt-get update
-  apt-get install -y git python3 python3-pip
-
+function final_run {
   # clone repo and set up ansible environment
-  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  git -C /root clone -b ${BRANCH} ${GIT_REPO}
   # for a single testing branch
-  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  # git -C /root clone -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
@@ -151,13 +146,12 @@ function run {
   pip install pip --upgrade
   pip install -r requirements.txt
   ansible-galaxy install -r collections.yml
-  
 
   # populate group_vars
   udf
-  # run playbooks
-  ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-  
+
+  # run playbook
+  ansible-playbook -v site.yml
 }
 
 function installation_complete {
@@ -165,4 +159,5 @@ function installation_complete {
 }
 # main
 run
+final_run
 installation_complete
