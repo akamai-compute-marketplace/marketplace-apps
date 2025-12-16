@@ -20,8 +20,8 @@ services:
     container_name: milvus-minio
     image: minio/minio:RELEASE.2024-05-28T17-19-04Z
     environment:
-      MINIO_ACCESS_KEY: {{ minio_access_key }}
-      MINIO_SECRET_KEY: {{ minio_secret_key }}
+      MINIO_ROOT_USER: {{ minio_root_username }}
+      MINIO_ROOT_PASSWORD: {{ minio_root_password }}
     ports:
       - "9001:9001"
       - "9000:9000"
