@@ -46,6 +46,8 @@ services:
       MINIO_REGION: us-east-1
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
+      MINIO_ROOT_USER: {{ minio_root_username }}
+      MINIO_ROOT_PASSWORD: {{ minio_root_password }}
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
       - /opt/milvus/milvus.yaml:/milvus/configs/milvus.yaml
