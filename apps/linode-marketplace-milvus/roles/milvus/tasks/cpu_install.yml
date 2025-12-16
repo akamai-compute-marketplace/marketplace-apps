@@ -7,7 +7,7 @@
 
 - name: Add Milvus config
   template:
-    src: cpu_milvus.yaml
+    src: milvus.yaml
     dest: /opt/milvus/milvus.yaml
     mode: "0644"
 

@@ -108,7 +108,7 @@
 
 - name: Add Milvus config
   template:
-    src: gpu_milvus.yaml
+    src: milvus.yaml
     dest: /opt/milvus/milvus.yaml
     mode: "0644"
 

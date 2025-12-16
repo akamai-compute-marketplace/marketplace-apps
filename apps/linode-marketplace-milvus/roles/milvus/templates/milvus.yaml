@@ -115,7 +115,7 @@ minio:
   # This configuration must be set identical to the environment variable MINIO_SECRET_ACCESS_KEY, which is necessary for starting MinIO or S3.
   # The default value applies to MinIO or S3 service that started with the default docker-compose.yml file.
   secretAccessKey: {{ minio_secret_key }}
-  useSSL: false # Switch value to control if to access the MinIO or S3 service through SSL.
+  useSSL: true # Switch value to control if to access the MinIO or S3 service through SSL.
   ssl:
     tlsCACert: /path/to/public.crt # path to your CACert file
   # Name of the bucket where Milvus stores data in MinIO or S3.
