@@ -13,5 +13,5 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Minio Username: {{ minio_access_key }}
-      Minio Password: {{ minio_secret_key }}
+      Minio Username: {{ minio_root_user }}
+      Minio Password: {{ minio_root_password }}
