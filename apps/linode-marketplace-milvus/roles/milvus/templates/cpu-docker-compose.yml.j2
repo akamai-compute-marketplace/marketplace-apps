@@ -38,7 +38,7 @@ services:
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus:v2.6.7
+    image: milvusdb/milvus:2.6-20251217-6b728b3d
     command: ["milvus", "run", "standalone"]
     security_opt:
     - seccomp:unconfined
