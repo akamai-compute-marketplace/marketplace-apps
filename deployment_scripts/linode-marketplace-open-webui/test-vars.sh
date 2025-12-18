@@ -57,6 +57,12 @@ else
         UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
