@@ -37,6 +37,8 @@ services:
     container_name: milvus-standalone
     image: milvusdb/milvus:2.6-20251217-6b728b3d
     command: ["milvus", "run", "standalone"]
+    security_opt:
+    - seccomp:unconfined
     environment:
       MINIO_REGION: us-east-1
       ETCD_ENDPOINTS: etcd:2379
