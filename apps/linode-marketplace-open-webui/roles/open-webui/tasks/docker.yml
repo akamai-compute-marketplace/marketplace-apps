@@ -33,10 +33,10 @@
 - name: Verify that vLLM and Open WebUI are running
   ansible.builtin.assert:
     that:
-      - ai-sandbox-api.State == 'running'
-      - ai-sandbox-ui.State == 'running'
+      - api.State == 'running'
+      - ui.State == 'running'
   vars:
-    ai-sandbox-api: >-
+    api: >-
       {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-api") | first }}
-    ai-sandbox-ui: >-
+    ui: >-
       {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-ui") | first }}
