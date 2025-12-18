@@ -1,0 +1,25 @@
+---
+# GPU helper.
+
+# detect_gpu.yml should be called at the playbook level in the provision.yml.
+# The task should set gpu_required to True to invoke this task.
+ 
+# nvidia.yml should be called at the role level and imported as a task.
+# The task that calls nvidia.yml should pass the variable `install_nvidia`
+# as True and `gpu_device`` should already exist in the vars file. 
+# To enable docker GPU support pass `docker_gpu_enable` as bool.
+
+# This task should only be called after detect_gpu.yml as it sets the `gpu_device` var.
+
+- name: Detecting GPU
+  include_tasks:
+    file: detect_gpu.yml 
+  when: gpu_required is defined 
+
+- name: Installing and mounting NVIDIA drivers
+  include_tasks:
+    file: nvidia.yml
+  when:
+    - install_nvidia | bool == True
+    - gpu_device is defined
+    - gpu_device | bool == True

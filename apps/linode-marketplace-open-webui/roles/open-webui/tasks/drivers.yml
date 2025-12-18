@@ -1,0 +1,9 @@
+---
+# tests
+
+- name: Install NVIDIA drivers
+  import_role: 
+    name: gpu_utils
+  vars:
+    install_nvidia: True
+    docker_gpu_enable: True

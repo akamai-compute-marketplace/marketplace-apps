@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  api:
+    image: vllm/vllm-openai:latest
+    container_name: ai-sandbox-api
+    command: ["--model", "mistralai/Mistral-7B-Instruct-v0.3", "--max-model-len", "16384", "--gpu-memory-utilization", "0.95"]
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - /opt/models:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 180s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - ai-sandbox-network
+
+  ui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ai-sandbox-ui
+    ports:
+      - "127.0.0.1:3000:8080"
+    volumes:
+      - /opt/open-webui:/app/backend/data
+    environment:
+      - OPENAI_API_BASE_URL=http://api:8000/v1
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - ai-sandbox-network
+
+networks:
+  ai-sandbox-network:
+    driver: bridge

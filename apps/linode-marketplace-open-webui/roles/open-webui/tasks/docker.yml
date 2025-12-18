@@ -1,0 +1,11 @@
+---
+ # docker
+- name: install docker latest
+  import_role: 
+    name: docker
+
+- name: installing docker-compose
+  apt:
+    pkg:
+    - docker-compose
+    state: present
