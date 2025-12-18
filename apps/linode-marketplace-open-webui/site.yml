@@ -17,7 +17,7 @@
           loop:
             - common
             - open-webui
-            #- post
+            - post
         - name: deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
@@ -35,5 +35,5 @@
       loop:
         - common
         - open-webui
-        #- post
+        - post
       when: "mode == 'production'"
