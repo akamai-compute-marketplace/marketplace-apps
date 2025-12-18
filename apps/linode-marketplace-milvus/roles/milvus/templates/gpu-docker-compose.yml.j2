@@ -9,7 +9,7 @@ services:
       - ETCD_SNAPSHOT_COUNT=50000
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
-    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://127.0.0.1:2379 --data-dir /etcd
     healthcheck:
       test: ["CMD", "etcdctl", "endpoint", "health"]
       interval: 30s
@@ -23,13 +23,10 @@ services:
       MINIO_ROOT_USER: {{ minio_root_username }}
       MINIO_ROOT_PASSWORD: {{ minio_root_password }}
     ports:
-      - "9001:9001"
-      - "9000:9000"
+      - "127.0.0.1:9000:9000"
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
-      - /etc/letsencrypt/live/{{ _domain }}/fullchain.pem:/root/.minio/certs/public.crt:ro
-      - /etc/letsencrypt/live/{{ _domain }}/privkey.pem:/root/.minio/certs/private.key:ro
-    command: minio server /minio_data --console-address ":9001"
+    command: minio server /minio_data --console-address ""
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -40,17 +37,24 @@ services:
     container_name: milvus-standalone
     image: milvusdb/milvus:v2.6.7-gpu
     command: ["milvus", "run", "standalone"]
-    security_opt:
-      - seccomp:unconfined
     environment:
+      MINIO_REGION: us-east-1
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
+      MINIO_ROOT_USER: {{ minio_root_username }}
+      MINIO_ROOT_PASSWORD: {{ minio_root_password }}
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
       - /opt/milvus/milvus.yaml:/milvus/configs/milvus.yaml
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
     ports:
-      - "19530:19530"
-      - "9091:9091"
+      - "127.0.0.1:19530:19530"
+      - "127.0.0.1:9091:9091"
     deploy:
       resources:
         reservations:
