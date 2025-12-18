@@ -17,7 +17,7 @@
     dest: "{{ docker_directory }}/docker-compose.yml"
     mode: '0644'
 
-- name: Creating Docker images from compose file
+- name: Create Docker images from compose file
   community.docker.docker_compose_v2:
     project_src: "{{ docker_directory }}"
     pull: always
@@ -33,10 +33,10 @@
 - name: Verify that vLLM and Open WebUI are running
   ansible.builtin.assert:
     that:
-      - api.State == 'running'
-      - ui.State == 'running'
+      - vllm.State == 'running'
+      - openwebui.State == 'running'
   vars:
-    api: >-
-      {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-api") | first }}
-    ui: >-
-      {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-ui") | first }}
+    vllm: >-
+      {{ output.containers | selectattr("Service", "equalto", "vllm") | first }}
+    openwebui: >-
+      {{ output.containers | selectattr("Service", "equalto", "open-webui") | first }}
