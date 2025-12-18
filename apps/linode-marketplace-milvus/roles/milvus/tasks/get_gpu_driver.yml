@@ -1,0 +1,16 @@
+---
+# Detects which driver is currently bound to the GPU
+- name: Check if driver is bound to gpu
+  stat:
+    path: /sys/bus/pci/devices/0000:00:02.0/driver
+  register: gpu_driver_link_check
+
+- name: Get gpu driver name
+  shell: readlink /sys/bus/pci/devices/0000:00:02.0/driver | awk -F'/' '{print $NF}'
+  register: gpu_driver_detection
+  changed_when: false
+  when: gpu_driver_link_check.stat.exists
+
+- name: Save gpu driver name
+  set_fact:
+    gpu_driver_name: "{{ gpu_driver_detection.stdout | default('none') }}"

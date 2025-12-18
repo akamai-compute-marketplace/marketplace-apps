@@ -1,0 +1,26 @@
+---
+- name: Detect NVIDIA GPU
+  shell: "lspci | grep -qi nvidia"
+  register: gpu_check
+  failed_when: false
+
+- name: Set GPU fact
+  set_fact:
+    has_gpu: "{{ gpu_check.rc == 0 }}"
+
+- name: Install Docker
+  import_role:
+    name: docker
+
+- name: Installing Docker Compose
+  apt:
+    pkg: docker-compose
+    state: present
+
+- name: Include GPU tasks
+  when: has_gpu
+  include_tasks: gpu_install.yml
+
+- name: Include CPU tasks
+  when: not has_gpu
+  include_tasks: cpu_install.yml
