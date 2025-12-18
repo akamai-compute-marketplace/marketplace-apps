@@ -1,12 +1,13 @@
 ---
 
-- name: Test GPU drivers
-  import_tasks: drivers.yml
+# Remove in cleanup
+#- name: Test GPU drivers
+#  import_tasks: drivers.yml
 
-#- name: Install Docker and container components
-#  import_tasks: docker.yml
-
-## everything listening on localhost
+- name: Install Docker and container components
+  import_tasks: docker.yml
+  
+# everything listening on localhost
 #- name: Start container services useing docker-compose
 #  import_tasks: containers.yml
 

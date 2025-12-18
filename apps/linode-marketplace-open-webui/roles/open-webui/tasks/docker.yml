@@ -1,11 +1,42 @@
 ---
- # docker
-- name: install docker latest
+- name: Install Docker latest
   import_role: 
     name: docker
 
-- name: installing docker-compose
+- name: Installing docker-compose
   apt:
     pkg:
     - docker-compose
     state: present
+
+# docker-compose
+
+- name: Copy docker-compose file
+  copy:
+    src: docker-compose.yml
+    dest: "{{ docker_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Creating Docker images from compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    pull: always
+  #async: 1200
+  #poll: 30
+
+- name: Start containers from docker-compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: present
+  register: container_status
+
+- name: Verify that vLLM and Open WebUI are running
+  ansible.builtin.assert:
+    that:
+      - ai-sandbox-api.State == 'running'
+      - ai-sandbox-ui.State == 'running'
+  vars:
+    ai-sandbox-api: >-
+      {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-api") | first }}
+    ai-sandbox-ui: >-
+      {{ output.containers | selectattr("Service", "equalto", "ai-sandbox-ui") | first }}
