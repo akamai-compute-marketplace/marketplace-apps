@@ -38,7 +38,7 @@
           _has_gpu: {{ _has_gpu }}
           gpu_device: "{{ gpu_device }}"
 
-  when: gpu_required | bool == True
+  when: gpu_required | bool
 
 - block:
     - name: Check if GPU is present

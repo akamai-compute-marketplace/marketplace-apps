@@ -77,7 +77,7 @@
 
 - name: Install nvidia container toolkit
   apt:
-    name: Nvidia-container-toolkit
+    name: nvidia-container-toolkit
     state: present
 
 - name: Gather system services

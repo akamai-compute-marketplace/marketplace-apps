@@ -20,6 +20,6 @@
   include_tasks:
     file: nvidia.yml
   when:
-    - install_nvidia | bool == True
+    - install_nvidia | bool
     - gpu_device is defined
-    - gpu_device | bool == True
+    - _has_gpu | bool

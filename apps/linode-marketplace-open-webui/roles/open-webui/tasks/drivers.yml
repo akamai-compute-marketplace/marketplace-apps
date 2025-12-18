@@ -5,5 +5,5 @@
   import_role: 
     name: gpu_utils
   vars:
-    install_nvidia: True
-    docker_gpu_enable: True
+    install_nvidia: true
+    docker_gpu_enable: true
