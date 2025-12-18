@@ -55,7 +55,7 @@ services:
     restart: unless-stopped
     shm_size: 8g
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - vllm_data:/root/.cache/huggingface
     environment:
@@ -86,7 +86,7 @@ services:
     container_name: open-webui
     restart: unless-stopped
     ports:
-      - "3000:8080"
+      - "127:0.0.1:3000:8080"
     volumes:
       - open_webui_data:/app/backend/data
     environment:

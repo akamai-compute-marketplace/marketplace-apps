@@ -21,8 +21,6 @@
   community.docker.docker_compose_v2:
     project_src: "{{ docker_directory }}"
     pull: always
-  #async: 1200
-  #poll: 30
 
 - name: Start containers from docker-compose file
   community.docker.docker_compose_v2:
@@ -30,13 +28,22 @@
     state: present
   register: container_status
 
-- name: Verify that vLLM and Open WebUI are running
-  ansible.builtin.assert:
-    that:
-      - vllm.State == 'running'
-      - openwebui.State == 'running'
-  vars:
-    vllm: >-
-      {{ output.containers | selectattr("Service", "equalto", "vllm") | first }}
-    openwebui: >-
-      {{ output.containers | selectattr("Service", "equalto", "open-webui") | first }}
+- name: Wait for Open WebUI service to start
+  uri:
+    url: "http://localhost:3000"
+    method: GET
+    status_code: [200]
+  register: openwebui_health
+  until: openwebui_health.status in [200]
+  retries: 30
+  delay: 5
+
+- name: Wait for vLLM service to start
+  uri:
+    url: "http://localhost:8000/v1/.well-known/ready"
+    method: GET
+    status_code: [200]
+  register: vllm_health
+  until: vllm_health.status in [200]
+  retries: 30
+  delay: 10
