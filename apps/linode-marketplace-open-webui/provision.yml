@@ -1,6 +1,6 @@
 # linode ansible playbook
 
-- name: setting up environment 
+- name: Setting up environment 
   hosts: localhost
   connection: local
   any_errors_fatal: true

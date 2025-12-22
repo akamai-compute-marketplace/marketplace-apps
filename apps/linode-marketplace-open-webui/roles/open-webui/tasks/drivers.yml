@@ -1,6 +1,4 @@
 ---
-# Install NVIDIA
-
 - name: Install NVIDIA drivers
   import_role: 
     name: gpu_utils

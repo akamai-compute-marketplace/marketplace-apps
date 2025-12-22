@@ -1,5 +1,4 @@
 ---
-
 - name: Set Open WebUI initial password
   uri:
     url: "http://localhost:3000/api/v1/auths/signup"
