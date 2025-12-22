@@ -21,6 +21,10 @@ server {
     ssl_ciphers HIGH:!aNULL:!MD5;
 
     location / {
+        # Authentication
+        auth_basic "Restricted Access";
+        auth_basic_user_file /opt/chroma/config/server.htpasswd;
+
         proxy_pass http://chroma;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;

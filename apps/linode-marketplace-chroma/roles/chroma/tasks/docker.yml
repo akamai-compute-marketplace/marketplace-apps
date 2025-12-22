@@ -1,10 +1,4 @@
 ---
-- name: install docker-compose
-  get_url:
-    url: "https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64"
-    dest: /usr/local/bin/docker-compose
-    mode: '0755'
-
 - name: create chroma directories
   file:
     path: "{{ directory }}"
@@ -26,7 +20,9 @@
   copy:
     content: "admin:{{ chroma_password_hash }}\n"
     dest: "{{ chroma_config_dir }}/server.htpasswd"
-    mode: '0600'
+    mode: '0640'
+    group: www-data
+    owner: root
 
 - name: deploy docker-compose.yml
   template:
@@ -48,9 +44,6 @@
   uri:
     url: "http://localhost:8000/api/v2/heartbeat"
     method: GET
-    user: admin
-    password: "{{ chroma_password }}"
-    force_basic_auth: true
   register: result
   until: result.status == 200
   retries: 30

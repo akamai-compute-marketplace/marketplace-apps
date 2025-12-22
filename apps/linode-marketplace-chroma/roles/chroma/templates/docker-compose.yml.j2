@@ -7,12 +7,9 @@ services:
     image: chromadb/chroma:latest
     volumes:
       - {{ chroma_data_dir }}:/data
-      - {{ chroma_config_dir }}/server.htpasswd:/etc/chroma/server.htpasswd
     environment:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/data
-      - CHROMA_SERVER_AUTHN_CREDENTIALS_FILE=/etc/chroma/server.htpasswd
-      - CHROMA_SERVER_AUTHN_PROVIDER=chromadb.auth.basic_authn.BasicAuthenticationServerProvider
       - PORT=8000
       - ANONYMIZED_TELEMETRY=False
     ports:

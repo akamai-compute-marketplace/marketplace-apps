@@ -87,8 +87,9 @@ function udf {
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
+    echo "disable_root: true" >> ${group_vars};
+  else
+    echo "disable_root: false" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
