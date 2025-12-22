@@ -93,5 +93,5 @@
         name: docker
         state: restarted
   when: 
-    - docker_gpu_enable | bool == True
+    - docker_gpu_enable | bool
     - ansible_facts.services['docker'] is defined

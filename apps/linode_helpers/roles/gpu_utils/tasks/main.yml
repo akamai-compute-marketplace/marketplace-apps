@@ -1,15 +1,60 @@
 ---
+#-----------------------------------------------------
 # GPU helper.
 
-# detect_gpu.yml should be called at the playbook level in the provision.yml.
-# The task should set gpu_required to True to invoke this task.
- 
-# nvidia.yml should be called at the role level and imported as a task.
-# The task that calls nvidia.yml should pass the variable `install_nvidia`
-# as True and `gpu_device`` should already exist in the vars file. 
-# To enable docker GPU support pass `docker_gpu_enable` as bool.
+# This helper contains 2 files:
+# - detect_gpu.ym
+# - nvidia.yml
 
-# This task should only be called after detect_gpu.yml as it sets the `gpu_device` var.
+#---------------
+# detect_gpu.yml
+#---------------
+
+# detect_gpu.yml should be called at the playbook level in the provision.yml.
+# We need to set `gpu_required` to a boolean value. Here is the expect outcome
+# for each:
+
+# gpu_required: true
+# The playbook requires that the instance has GPUs. This task will write the `gpu_device` and `_has_gpu`
+# to the vars file. If no GPUs are found, the playbook will fail because the declared state can be achieved. 
+
+# gpu_required: false
+# The playbook will continue forward upon failure. This will write `_has_gpu` as false to the vars file.
+# One reason why we might want this is because some apps can be deployed on GPUs or not.
+
+# This is an example on how to call this from the provision.yml:
+
+# - name: Ensure instance has GPU before continuing
+#   import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml 
+#   vars:
+#     gpu_required: true
+
+#-----------
+# nvidia.yml
+#-----------
+
+# nvidia.yml should be called at the role level and imported as a role.
+# The task that calls nvidia.yml should pass the following variables:
+
+# install_nvidia: true
+# Passing this will unbind the default driver on the PCI bus and enable
+# the nvidia one.
+
+# docker_gpu_enable: true
+# Passing this variable along will ensure that if docker is on the system that we update the
+# runtime to use the GPU. The service is gracefully restarted.
+
+# This task should only be called after detect_gpu.yml as it utilizes the `gpu_device` to bind/unbind drivers.
+# Example, a taks that is run role-level:
+
+# - name: Install NVIDIA drivers
+#   import_role: 
+#     name: gpu_utils
+#   vars:
+#     install_nvidia: true
+#     docker_gpu_enable: true
+
+#-----------------------------------------------------
 
 - name: Detecting GPU
   include_tasks:

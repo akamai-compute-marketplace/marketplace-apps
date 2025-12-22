@@ -1,5 +1,4 @@
 ---
-
 - name: Install NVIDIA drivers
   import_tasks: drivers.yml
 

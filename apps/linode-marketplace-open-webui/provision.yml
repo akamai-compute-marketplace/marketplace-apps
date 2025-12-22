@@ -9,7 +9,7 @@
     - group_vars/linode/vars
   tasks:
 
-    - name: Test GPU utils
+    - name: Ensure instance has GPU before continuing
       import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml 
       vars:
         gpu_required: true
