@@ -1,0 +1,97 @@
+---
+# This task requires that main.yml is ran so that the `gpu_device`
+# can be set. If you have an app that requires GPU, the provision.yml
+# of the app should call the linode_helper/roles/gpu_utils/main.yml.
+ 
+# This task should be called at the role-level.
+
+- name: Blacklist nouveau driver
+  copy:
+    dest: /etc/modprobe.d/blacklist-nvidia-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    mode: '0644'
+
+- name: Install ubuntu-drivers-common package
+  apt:
+    name: 
+       - ubuntu-drivers-common
+       - alsa-utils
+    state: present
+    update_cache: true
+
+- name: Detect recommended nvidia driver version
+  shell: ubuntu-drivers devices | grep 'recommended' | awk '{print $3}'
+  register: recommended_driver
+  changed_when: false
+
+- name: Install recommended nvidia driver package
+  apt:
+    name: "{{ recommended_driver.stdout }}"
+    state: present
+    update_cache: true
+
+- name: Get GPU driver name
+  shell: readlink /sys/bus/pci/devices/{{ gpu_device }}/driver | awk -F'/' '{print $NF}'
+  changed_when: false
+  register: gpu_driver_name
+
+- name: Switch gpu from nouveau to nvidia driver
+  block:
+    - name: Unbind gpu from nouveau driver
+      shell: echo "{{ gpu_device }}" > /sys/bus/pci/drivers/nouveau/unbind
+      args:
+        executable: /bin/bash
+
+    - name: Unload nouveau module to prevent rebinding
+      community.general.modprobe:
+        name: nouveau
+        state: absent
+
+    - name: Load nvidia kernel module
+      community.general.modprobe:
+        name: nvidia
+        state: present
+  when: gpu_driver_name.stdout == "nouveau"
+
+# assumes nvidia past this point
+
+- name: Load nvidia-uvm module for cuda support
+  community.general.modprobe:
+    name: nvidia_uvm
+    state: present
+
+- name: Add nvidia container toolkit repository gpg key
+  get_url:
+    url: https://nvidia.github.io/libnvidia-container/gpgkey
+    dest: /usr/share/keyrings/nvidia-container-toolkit-keyring.asc
+    mode: '0644'
+
+- name: Add nvidia container toolkit repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.asc] https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /"
+    filename: nvidia-container-toolkit
+    state: present
+    update_cache: true
+
+- name: Install nvidia container toolkit
+  apt:
+    name: nvidia-container-toolkit
+    state: present
+
+- name: Gather system services
+  service_facts:
+
+# enable docker gpu support if requested.
+- block:
+    - name: Configure docker to use nvidia runtime
+      command: nvidia-ctk runtime configure --runtime=docker
+
+    - name: Restart docker to load nvidia runtime
+      systemd_service:
+        name: docker
+        state: restarted
+  when: 
+    - docker_gpu_enable | bool
+    - ansible_facts.services['docker'] is defined

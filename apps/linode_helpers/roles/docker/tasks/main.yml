@@ -41,5 +41,5 @@
 - name: install docker community edition
   apt:
     name: docker-ce
-    update_cache: yes
+    update_cache: true
     state: present

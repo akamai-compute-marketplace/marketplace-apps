@@ -18,6 +18,7 @@ The Linode Helper functions are static roles that can be imported into Marketpla
 | Data Exporter | Prometheus exporters that allow OS-level metrics collection | This modules allows the installation of several Promtheus exporters on the system by capturing UDF input as a list. This module allows the installation of `node_exporter` and `mysqld_exporter`. This modules creates a `prometheus` system user to run the service as. |
 | Docker | Installs the latest version of Docker Edition | Use the `import_role` to use this module in your tasks. |
 | Add-ons | Installs and manages optional Marketplace add-ons. | The Add-ons module creates `/etc/profile.d/addons.sh` from a template and includes task files for each supported add-on. Add-ons are enabled by listing them in the `add_ons` variable. Supported add-ons include `newrelic`, `node_exporter`, and `mysqld_exporter`. |
+| gpu_utils | Installs Nvidia drivers on applications that require GPUs. This writes `gpu_device` and `_has_gpu` to the `group_vars/linode/vars`. |
 
 ## Add-ons: Usage and Extending
 
