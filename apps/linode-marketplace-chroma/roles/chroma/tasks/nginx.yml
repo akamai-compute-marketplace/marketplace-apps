@@ -1,4 +1,8 @@
 ---
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+
 - name: install nginx
   apt:
     name: nginx
@@ -30,7 +34,3 @@
     name: nginx
     state: started
     enabled: true
-
-- name: setting up ssl certificate
-  import_role:
-    name: certbot_ssl

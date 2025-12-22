@@ -30,7 +30,7 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
 ## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector, none"  default="none">
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy, none"  default="none">
 
 #GH_USER=""
 #BRANCH=""
@@ -83,7 +83,7 @@ function udf {
   username: ${USER_NAME}
   # addons
   add_ons: [${ADD_ONS}] 
-  webserver_stack: lemp
+  webserver_stack: standalone
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
