@@ -44,7 +44,6 @@
   uri:
     url: "http://localhost:8000/api/v2/heartbeat"
     method: GET
-  register: result
-  until: result.status == 200
+    status_code: [200]
   retries: 30
   delay: 2

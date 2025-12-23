@@ -83,7 +83,6 @@ function udf {
   username: ${USER_NAME}
   # addons
   add_ons: [${ADD_ONS}] 
-  webserver_stack: standalone
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

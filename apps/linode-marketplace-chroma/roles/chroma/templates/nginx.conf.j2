@@ -5,20 +5,6 @@ upstream chroma {
 server {
     listen 80;
     server_name {{ _domain }};
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name {{ _domain }};
-
-    # SSL Certificates
-    ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
-
-    # SSL Settings
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
 
     location / {
         # Authentication

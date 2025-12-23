@@ -1,8 +1,4 @@
 ---
-- name: setting up ssl certificate
-  import_role:
-    name: certbot_ssl
-
 - name: install nginx
   apt:
     name: nginx
@@ -14,14 +10,12 @@
     src: nginx.conf.j2
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
-  notify: restart nginx
 
 - name: enable nginx site
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/{{ _domain }}
     state: link
-  notify: restart nginx
 
 - name: remove default nginx site configuration
   file:
@@ -34,3 +28,9 @@
     name: nginx
     state: started
     enabled: true
+
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp

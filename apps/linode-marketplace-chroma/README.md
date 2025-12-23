@@ -1,6 +1,6 @@
 # Linode Chroma Vector DB One-Click App
 
-Deploy a production-ready Chroma Vector Database as a server in a single-node Client/Server architecture. This One-Click App sets up a secure, persistent Chroma server intended to be the central storage and search engine for your AI applications (client).
+Deploy a production-ready Chroma Vector Database as a server in a single-node Client/Server configuration. This One-Click App sets up a secure, persistent Chroma server intended to be the central storage and search engine for your AI applications (client).
 
 ## Software Included
 
