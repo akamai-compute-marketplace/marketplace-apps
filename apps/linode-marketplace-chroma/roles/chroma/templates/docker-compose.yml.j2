@@ -1,0 +1,19 @@
+networks:
+  net:
+    driver: bridge
+
+services:
+  server:
+    image: chromadb/chroma:latest
+    volumes:
+      - {{ chroma_data_dir }}:/data
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/data
+      - PORT=8000
+      - ANONYMIZED_TELEMETRY=False
+    ports:
+      - "127.0.0.1:8000:8000"
+    restart: unless-stopped
+    networks:
+      - net

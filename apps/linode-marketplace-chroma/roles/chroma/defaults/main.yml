@@ -1,0 +1,5 @@
+---
+# Default directories
+chroma_data_dir: /opt/chroma/data
+chroma_config_dir: /opt/chroma/config
+chroma_compose_dir: /opt/chroma/compose
