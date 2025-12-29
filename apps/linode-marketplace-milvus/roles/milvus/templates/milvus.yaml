@@ -955,13 +955,13 @@ common:
     middlePriorityRatio: -1 # amplification ratio for middle priority tasks if disk rate limiter is enabled, value <= 0 means ratio limit is disabled
     lowPriorityRatio: -1 # amplification ratio for low priority tasks if disk rate limiter is enabled, value <= 0 means ratio limit is disabled
   security:
-    authorizationEnabled: false
+    authorizationEnabled: true
     # The superusers will ignore some system check processes,
     # like the old password verification when updating the credential
     superUsers: 
     # default password for root user. The maximum length is 72 characters. 
     # Large numeric passwords require double quotes to avoid yaml parsing precision issues.
-    defaultRootPassword: Milvus
+    defaultRootPassword: {{ milvus_password | quote }}
     rootShouldBindRole: false # Whether the root user should bind a role when the authorization is enabled.
     enablePublicPrivilege: true # Whether to enable public privilege
     rbac:

@@ -16,5 +16,5 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: | 
-          minio_root_username: {{ lookup('password', '/dev/null length=15 chars=ascii_letters,digits') }}
           minio_root_password: {{ lookup('password', '/dev/null length=30 chars=ascii_letters,digits') }}
+          milvus_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

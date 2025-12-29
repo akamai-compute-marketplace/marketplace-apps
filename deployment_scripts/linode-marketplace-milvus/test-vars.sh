@@ -23,6 +23,12 @@ else
         UDF_VARS["USER_NAME"]="admin" # default
 fi
 
+if [[ -n "${MINIO_USER}" ]]; then
+        UDF_VARS["MINIO_USER"]="${MINIO_USER}"
+else
+        UDF_VARS["MINIO_USER"]="minioadmin" # default
+fi
+
 if [[ -n "${DISABLE_ROOT}" ]]; then
         UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
 else

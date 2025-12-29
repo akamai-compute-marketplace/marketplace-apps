@@ -15,7 +15,7 @@ else
   set -e
 fi
 
-## Linode/SSH security settings
+## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
@@ -24,6 +24,9 @@ fi
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)">
+
+## Milvus Settings
+#<UDF name="minio_user" label="The Minio user name to be utilized for this deployment: *No Capital Letters or Special Characters*">
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -79,6 +82,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  minio_root_username: $MINIO_USER
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
