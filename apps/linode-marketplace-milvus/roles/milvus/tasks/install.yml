@@ -20,9 +20,7 @@
 - name: Include GPU tasks
   when: has_gpu
   include_tasks: gpu_install.yml
-  become: true
 
 - name: Include CPU tasks
   when: not has_gpu
   include_tasks: cpu_install.yml
-  become: true
