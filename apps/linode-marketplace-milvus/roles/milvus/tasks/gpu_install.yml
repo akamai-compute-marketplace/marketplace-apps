@@ -112,6 +112,12 @@
     dest: /opt/milvus/milvus.yaml
     mode: "0644"
 
+- name: Deploy Milvus environment file
+  template:
+    src: env.j2
+    dest: /opt/milvus/.env
+    mode: "0644"
+
 - name: Deploy docker-compose.yml
   template:
     src: gpu-docker-compose.yml.j2
