@@ -11,18 +11,18 @@
     dest: /opt/milvus/milvus.yaml
     mode: "0644"
 
-- name: Deploy Milvus environment file
-  template:
-    src: env.j2
-    dest: /opt/milvus/.env
-    mode: "0644"
-
 - name: Deploy docker-compose.yml
   template:
     src: cpu-docker-compose.yml.j2
     dest: /opt/milvus/docker-compose.yml
     mode: "0644"
 
+- name: Deploy Milvus environment file
+  template:
+    src: env.j2
+    dest: /opt/milvus/.env
+    mode: "0644"
+  
 - name: Pull Milvus Docker image
   community.docker.docker_compose_v2:
     project_src: /opt/milvus
