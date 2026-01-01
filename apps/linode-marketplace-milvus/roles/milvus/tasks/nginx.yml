@@ -1,0 +1,27 @@
+---
+- name: Generate SSL
+  import_role: 
+    name: certbot_ssl
+
+- name: Install nginx
+  apt:
+    pkg:
+      - nginx
+    state: latest
+
+- name: Add Nginx config
+  template:
+    src: 'templates/vhost.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: Enable vhost
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: Remove default vhost
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: restart nginx

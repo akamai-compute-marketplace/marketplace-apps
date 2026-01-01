@@ -15,3 +15,7 @@
       Sudo Password: {{ password }}
       Minio Username: {{ minio_root_username }}
       Minio Password: {{ minio_root_password }}
+      Milvus Username: root
+      Milvus Password: {{ milvus_password }}
+      ETCD Username: etcdadmin
+      ETCD Password: {{ etcd_password }}

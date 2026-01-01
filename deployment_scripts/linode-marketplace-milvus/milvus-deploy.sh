@@ -82,7 +82,9 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
-  minio_root_username: $MINIO_USER
+  webserver_stack: standalone
+  # minio
+  minio_root_username: ${MINIO_USER}
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
