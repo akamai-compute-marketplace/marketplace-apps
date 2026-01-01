@@ -4,25 +4,19 @@
     path: /opt/milvus
     state: directory
     mode: "0755"
-  become: true
 
-- name: Add Milvus config
+- name: Deploy Milvus templates
   template:
-    src: milvus.yaml
-    dest: /opt/milvus/milvus.yaml
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: "0644"
-
-- name: Deploy docker-compose.yml
-  template:
-    src: cpu-docker-compose.yml.j2
-    dest: /opt/milvus/docker-compose.yml
-    mode: "0644"
-
-- name: Deploy Milvus environment file
-  template:
-    src: env.j2
-    dest: /opt/milvus/.env
-    mode: "0644"
+  loop:
+    - src: milvus.yaml
+      dest: /opt/milvus/milvus.yaml
+    - src: cpu-docker-compose.yml.j2
+      dest: /opt/milvus/docker-compose.yml
+    - src: env.j2
+      dest: /opt/milvus/.env
   
 - name: Pull Milvus Docker image
   community.docker.docker_compose_v2:
