@@ -17,16 +17,12 @@
     pkg: docker-compose
     state: present
 
-- name: Deploy Milvus environment file
-  template:
-    src: env.j2
-    dest: /opt/milvus/.env
-    mode: "0644"
-
 - name: Include GPU tasks
   when: has_gpu
   include_tasks: gpu_install.yml
+  become: true
 
 - name: Include CPU tasks
   when: not has_gpu
   include_tasks: cpu_install.yml
+  become: true
