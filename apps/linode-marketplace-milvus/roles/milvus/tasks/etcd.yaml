@@ -1,0 +1,33 @@
+---
+- name: Create ETCD root user
+  command: >
+    docker exec milvus-etcd
+    etcdctl user add root
+    --password {{ etcd_password }}
+    --interactive=false
+
+- name: Create ETCD root role
+  command: >
+    docker exec milvus-etcd
+    etcdctl role add root
+
+- name: Grant root role to root user
+  command: >
+    docker exec milvus-etcd
+    etcdctl user grant-role root root
+
+- name: Enable ETCD authentication
+  command: >
+    docker exec milvus-etcd
+    etcdctl auth enable
+
+# Restart containers
+- name: Bring down Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    state: absent
+
+- name: Bring up Docker Compose stack
+  community.docker.docker_compose_v2:
+    project_src: /opt/milvus
+    state: present

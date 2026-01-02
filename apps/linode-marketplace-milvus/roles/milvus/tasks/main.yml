@@ -3,3 +3,6 @@
 # Main Milvus installation tasks
 - name: Install Milvus
   import_tasks: install.yml
+
+- name: Configure ETCD
+  import_tasks: etcd.yml
