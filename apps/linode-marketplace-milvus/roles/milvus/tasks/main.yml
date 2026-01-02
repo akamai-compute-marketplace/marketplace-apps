@@ -4,5 +4,8 @@
 - name: Install Milvus
   import_tasks: install.yml
 
-- name: Configure ETCD
-  import_tasks: etcd.yml
+#- name: Configure ETCD
+#  import_tasks: etcd.yml
+
+- name: Install Nginx
+  import_tasks: nginx.yml

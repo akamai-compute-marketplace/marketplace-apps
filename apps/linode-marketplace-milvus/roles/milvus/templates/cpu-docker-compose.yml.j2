@@ -12,7 +12,7 @@ services:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
     command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "--endpoints=http://localhost:2379", "--user", "${ETC_USER}:${ETCD_PASSWORD}", "endpoint", "health"]
+      test: ["CMD", "etcdctl", "--endpoints=http://localhost:2379", "--user", "${ETCD_USER}:${ETCD_PASSWORD}", "endpoint", "health"]
       interval: 30s
       timeout: 20s
       retries: 3
