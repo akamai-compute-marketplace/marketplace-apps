@@ -7,22 +7,20 @@
 - name: Create ETCD root role
   command: >
     docker exec milvus-etcd
-    etcdctl role add root
+    etcdctl user grant-role root root
 
 - name: Grant root role readwrite permissions
   command: >
     docker exec milvus-etcd
     etcdctl role grant-permission root readwrite --prefix /
 
-- name: Grant root role to root user
-  command: >
-    docker exec milvus-etcd
-    etcdctl user grant-role root root
-
 - name: Enable ETCD authentication
   command: >
     docker exec milvus-etcd
     etcdctl auth enable
+
+- name: debug
+  command: docker exec milvus-etcd etcdctl user list
 
 # Restart containers
 - name: Bring down Docker Compose stack
