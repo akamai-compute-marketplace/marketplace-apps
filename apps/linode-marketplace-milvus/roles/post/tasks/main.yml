@@ -17,5 +17,5 @@
       Minio Password: {{ minio_root_password }}
       Milvus Username: root
       Milvus Password: {{ milvus_password }}
-      ETCD Username: etcdadmin
+      ETCD Username: root
       ETCD Password: {{ etcd_password }}

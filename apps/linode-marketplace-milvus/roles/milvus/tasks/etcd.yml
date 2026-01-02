@@ -2,14 +2,17 @@
 - name: Create ETCD root user
   command: >
     docker exec milvus-etcd
-    etcdctl user add root
-    --password {{ etcd_password }}
-    --interactive=false
+    etcdctl user add root --password {{ etcd_password }} --interactive=false
 
 - name: Create ETCD root role
   command: >
     docker exec milvus-etcd
     etcdctl role add root
+
+- name: Grant root role readwrite permissions
+  command: >
+    docker exec milvus-etcd
+    etcdctl role grant-permission root readwrite --prefix /
 
 - name: Grant root role to root user
   command: >
