@@ -3,9 +3,8 @@
 
 - name: add jenkins key
   ansible.builtin.get_url:
-    url: https://pkg.jenkins.io/debian/jenkins.io-2023.key
+    url: https://pkg.jenkins.io/debian/jenkins.io-2026.key
     dest: /usr/share/keyrings/jenkins-keyring.asc
-    checksum: sha256:f1c175f9e68915d8d861e2884b40b77a9b763a32735bc996cd6a29639b2563e5
 
 - name: add jenkins repo
   apt_repository:
