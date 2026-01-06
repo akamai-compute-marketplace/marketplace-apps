@@ -17,7 +17,7 @@
   loop:
     - src: milvus.yaml
       dest: /opt/milvus/milvus.yaml
-    - src: cpu-docker-compose.yml.j2
+    - src: docker-compose.yml.j2
       dest: /opt/milvus/docker-compose.yml
     - src: env.j2
       dest: /opt/milvus/.env
