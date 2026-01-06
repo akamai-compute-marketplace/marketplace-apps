@@ -20,5 +20,5 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
-      Chroma Admin Password: {{ chroma_password }}
-      Chroma URL: https://{{ _domain }}
+      Chroma Username: admin
+      Chroma Password: {{ chroma_password }}
