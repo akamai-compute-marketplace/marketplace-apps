@@ -2,17 +2,17 @@
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
-Our Marketplace applcation deploys Mistral-7B-Instruct-v0.3 as an instruction-tuned, open-weight large language model optimized for prompt following, reasoning, and conversational tasks. It is designed for efficient inference and integrates well with self-hosted platforms like Open WebUI for general-purpose assistance, coding, and knowledge-based workflows.
+Our Marketplace application deploys Mistral-7B-Instruct-v0.3 as an instruction-tuned, open-weight large language model optimized for prompt following, reasoning, and conversational tasks. It is designed for efficient inference and integrates well with self-hosted platforms like Open WebUI for general-purpose assistance, coding, and knowledge-based workflows.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 29.1.3    | Container Management Runtime |
-| Docker Compose    | 1.29.2    | Tool for multi-container applications |
-| Nginx    | 1.24.0    | HTTP server used to serve web applications |
-| vLLM | latest tag | Library to run LLM inference models  |
-| Open WebUI | main tag | Self-hosted AI interface platform |
+| Docker    | `29.1.3`    | Container Management Runtime |
+| Docker Compose    | `1.29.2`    | Tool for multi-container applications |
+| Nginx    | `1.24.0`    | HTTP server used to serve web applications |
+| vLLM | `latest` tag | Library to run LLM inference models  |
+| Open WebUI | `main` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
 
@@ -92,3 +92,9 @@ The UI service automatically connects to the API service running on `localhost:8
 - **GPU**: Any supported Linode GPU instance type
 - **Memory**: Varies by model size (check model requirements)
 - **Storage**: Sufficient space for model files (models can be several GB)
+
+## RAG Operations in Open WebUI
+
+Open WebUI provides built-in support for RAG operations allowing users to chat with their documents. This implementation uses Nginx as a frontend web service proxy to the Open WebUI container. Users that are looking to upload documents larger than 100MBs are required to update Nginx's `client_max_body_size` to a larger value.
+
+You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.

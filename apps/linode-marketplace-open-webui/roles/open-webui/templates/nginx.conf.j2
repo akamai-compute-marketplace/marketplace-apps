@@ -9,19 +9,22 @@ server {
     location / {
         proxy_pass http://open-webui;
 
-        # Required: Set necessary headers
+        # Set necessary headers
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # Required: Enable WebSocket connections
+        # Enable WebSocket connections
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
 
-        # Optional: Extend timeouts for long AI model responses or downloads
+        # Extend timeouts for long AI model responses or downloads
         proxy_connect_timeout 60s;
         proxy_send_timeout 60s;
         proxy_read_timeout 36000s;
+
+        # Allows large documents to be uploaded to Open WebUI
+        client_max_body_size 100M;
     }
 }

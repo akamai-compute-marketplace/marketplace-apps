@@ -45,6 +45,12 @@ else
         UDF_VARS["SUBDOMAIN"]="" # default
 fi
 
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
+fi
+
 if [[ -n "${OPENWEBUI_LOGIN_NAME}" ]]; then
         UDF_VARS["OPENWEBUI_LOGIN_NAME"]="${OPENWEBUI_LOGIN_NAME}"
 else
