@@ -2,6 +2,8 @@
 - name: Generate SSL
   import_role: 
     name: certbot_ssl
+  vars:
+    webserver_stack: standalone
 
 - name: Install nginx
   apt:
