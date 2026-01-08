@@ -23,6 +23,6 @@ server {
     server_name  {{ _domain}};
 
     location / {
-        return 301 https://$host$request_uri;
+        return 301 https://{{ _domain }}$request_uri;
     }
 }
