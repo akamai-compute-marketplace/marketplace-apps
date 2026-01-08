@@ -36,7 +36,7 @@ Make sure to update the following values before running the commands:
 - `USERNAME` - System user that will be created  
 - `SOA_EMAIL_ADDRESS` - Email address for DNS & SSL  
 - `DOMAIN` - Domain name (optional)  
-- `SUBDOMAIN` - Subdomain for Cribl access (optional)
+- `SUBDOMAIN` - Subdomain for Milvus access (optional)
 
 ### SHELL:
 
