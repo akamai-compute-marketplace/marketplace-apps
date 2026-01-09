@@ -24,5 +24,4 @@
         line: | 
           minio_root_password: {{ lookup('password', '/dev/null length=30 chars=ascii_letters,digits') }}
           milvus_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
-          etcd_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
 

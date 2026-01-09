@@ -899,9 +899,9 @@ tls:
 
 # Configure internal tls.
 internaltls:
-  serverPemPath: configs/cert/server.pem
-  serverKeyPath: configs/cert/server.key
-  caPemPath: configs/cert/ca.pem
+  serverPemPath: /certs/server.crt
+  serverKeyPath: /certs/server.key
+  caPemPath: /certs/ca.crt
   sni: localhost # The server name indication (SNI) for internal TLS, should be the same as the name provided by the certificates ref: https://en.wikipedia.org/wiki/Server_Name_Indication
 
 common:
@@ -988,8 +988,8 @@ common:
           privileges: Query,Search,IndexDetail,GetFlushState,GetLoadState,GetLoadingProgress,HasPartition,ShowPartitions,DescribeCollection,DescribeAlias,GetStatistics,ListAliases,GetImportProgress,ListImport,Load,Release,Insert,Delete,Upsert,Import,Flush,Compaction,LoadBalance,CreateIndex,DropIndex,CreatePartition,DropPartition,AddCollectionField # Collection level readwrite privileges
         admin:
           privileges: Query,Search,IndexDetail,GetFlushState,GetLoadState,GetLoadingProgress,HasPartition,ShowPartitions,DescribeCollection,DescribeAlias,GetStatistics,ListAliases,GetImportProgress,ListImport,Load,Release,Insert,Delete,Upsert,Import,Flush,Compaction,LoadBalance,CreateIndex,DropIndex,CreatePartition,DropPartition,AddCollectionField,CreateAlias,DropAlias # Collection level admin privileges
-    internaltlsEnabled: false
-    tlsMode: 0
+    internaltlsEnabled: true
+    tlsMode: 2
   session:
     ttl: 15 # ttl value when session granting a lease to register service
     retryTimes: 30 # retry times when session sending etcd requests

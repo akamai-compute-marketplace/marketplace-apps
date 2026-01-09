@@ -8,7 +8,7 @@ Deploy a production-ready instance of Milvus, the open-source vector database bu
 | :----------- | :----------------- | :------------------------------------------ |
 | Milvus | Latest | Open-source vector database for AI and similarity search      |
 | Docker | Latest | Container Management tool      |
-| Nginx | Latest | HTTP server used to serve web applications |
+| Nginx | 1.24.0 | HTTP server used to serve web applications |
   
 
 **Supported Distributions:**

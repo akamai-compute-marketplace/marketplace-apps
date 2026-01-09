@@ -1,6 +1,6 @@
 ---
 # Set hostname
-- name: Setting up hostname
+- name: setting up hostname
   import_role:
     name: hostname
 
