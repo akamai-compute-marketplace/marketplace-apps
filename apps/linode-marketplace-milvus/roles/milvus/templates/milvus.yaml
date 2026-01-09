@@ -364,7 +364,7 @@ proxy:
   http:
     enabled: true # Whether to enable the http server
     debug_mode: false # Whether to enable http server debug mode
-    port:  # high-level restful api
+    port: 19121  # high-level restful api
     acceptTypeAllowInt64: true # high-level restful api, whether http client can deal with int64
     enablePprof: true # Whether to enable pprof middleware on the metrics port
     hstsMaxAge: 31536000 # Strict-Transport-Security max-age in seconds
@@ -893,9 +893,9 @@ grpc:
 
 # Configure external tls.
 tls:
-  serverPemPath: configs/cert/server.pem
-  serverKeyPath: configs/cert/server.key
-  caPemPath: configs/cert/ca.pem
+  serverPemPath: /certs/server.crt
+  serverKeyPath: /certs/server.key
+  caPemPath: /certs/ca.crt
 
 # Configure internal tls.
 internaltls:
