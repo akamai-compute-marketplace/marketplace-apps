@@ -1,0 +1,12 @@
+---
+- name: Install NVIDIA drivers
+  import_tasks: drivers.yml
+
+- name: Install Docker and container components
+  import_tasks: containers.yml
+  
+- name: Configure Open WebUI inital admin account
+  import_tasks: openwebui.yml
+
+- name: Configure Nginx and SSL certificates
+  import_tasks: nginx.yml

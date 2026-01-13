@@ -3,17 +3,17 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+# BEGIN CI-MODE
 # modes
-DEBUG="NO"
-if [ "${DEBUG}" == "NO" ]; then
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
+# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -29,6 +29,10 @@ fi
 #<UDF name="administrator_name" label="Administrator Name" example="Jane Doe">
 #<UDF name="administrator_email_address" label="Administrator Email Address" example="user@domain.tld">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
@@ -82,6 +86,10 @@ function udf {
   webserver_stack: lemp
   administrator_name: ${ADMINISTRATOR_NAME}
   administrator_email_address: ${ADMINISTRATOR_EMAIL_ADDRESS}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
