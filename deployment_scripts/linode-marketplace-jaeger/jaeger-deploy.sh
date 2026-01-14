@@ -33,6 +33,11 @@ fi
 #<UDF name="jaeger_admin_user" label="Administrator Username" example="jaegeradmin" default="jaegeradmin">
 #<UDF name="jaeger_admin_email" label="Administrator Email Address" example="user@domain.tld">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -84,6 +89,9 @@ function udf {
   username: ${USER_NAME}
   jaeger_admin_user: ${JAEGER_ADMIN_USER}
   jaeger_admin_email: ${JAEGER_ADMIN_EMAIL}
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS 
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

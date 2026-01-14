@@ -17,12 +17,6 @@ fi
 
 declare -A UDF_VARS
 
-if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
-else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
-fi
-
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
@@ -53,10 +47,16 @@ else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${INSTALL_PHPMYADMIN}" ]]; then
-        UDF_VARS["INSTALL_PHPMYADMIN"]="${INSTALL_PHPMYADMIN}"
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["INSTALL_PHPMYADMIN"]="No" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${JENKINS_VERSION}" ]]; then
+        UDF_VARS["JENKINS_VERSION"]="${JENKINS_VERSION}"
+else
+        UDF_VARS["JENKINS_VERSION"]="2.479" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
