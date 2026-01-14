@@ -28,6 +28,11 @@ fi
 #<UDF name="vnc" label="Setup VNC Remote Desktop? (recommended for Everything package; adds desktop to Default/Core)" oneOf="Yes,No" default="No">
 #<UDF name="vnc_username" label="The VNC user to be created for the Akamai Compute Instance. The username accepts only lowercase letters, numbers, dashes (-) and underscores (_)">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -103,6 +108,10 @@ function udf {
   # Other variables
   username: "${USER_NAME}"
   default_dns: "$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS    
 EOF
 
   if [ "${VNC}" = "Yes" ]; then

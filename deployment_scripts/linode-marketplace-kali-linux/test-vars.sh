@@ -13,24 +13,14 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
+# UDF Variables
+
 declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["KALI_PACKAGE"]="Default" # Options: Default, Core, Everything
-UDF_VARS["VNC"]="No" # Options: Yes, No
-UDF_VARS["VNC_USERNAME"]="kaliuser"
 
-# dynamic variables
-if [[ -n "${KALI_PACKAGE}" ]]; then
-        UDF_VARS["KALI_PACKAGE"]="${KALI_PACKAGE}"
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
-        UDF_VARS["KALI_PACKAGE"]="Default" # default (kali-linux-default)
-fi
-
-if [[ -n "${VNC}" ]]; then
-        UDF_VARS["VNC"]="${VNC}"
-else
-        UDF_VARS["VNC"]="No" # default
+        UDF_VARS["USER_NAME"]="admin" # default
 fi
 
 if [[ -n "${DISABLE_ROOT}" ]]; then
@@ -39,6 +29,31 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
+if [[ -n "${KALI_PACKAGE}" ]]; then
+        UDF_VARS["KALI_PACKAGE"]="${KALI_PACKAGE}"
+else
+        UDF_VARS["KALI_PACKAGE"]="Default" # default
+fi
+
+if [[ -n "${VNC}" ]]; then
+        UDF_VARS["VNC"]="${VNC}"
+else
+        UDF_VARS["VNC"]="No" # default
+fi
+
+if [[ -n "${VNC_USERNAME}" ]]; then
+        UDF_VARS["VNC_USERNAME"]="${VNC_USERNAME}"
+else
+        UDF_VARS["VNC_USERNAME"]="vncuser" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
+fi
+
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
@@ -46,4 +61,4 @@ set_vars() {
 }
 
 # main
-set_vars 
+set_vars
