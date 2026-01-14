@@ -1,0 +1,54 @@
+services:
+
+  #--------------------------------------------
+  # vLLM - GPU-accelerated Gemma 3 inference
+  #--------------------------------------------
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm
+    restart: unless-stopped
+    shm_size: 8g
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - vllm_data:/root/.cache/huggingface
+    environment:
+      - HF_HOME=/root/.cache/huggingface
+      - HF_TOKEN={{ hf_token }}
+    command:
+      - --model=google/gemma-3-{{ gemma3_model_size | lower }}-it
+      - --max-model-len=16384
+      - --gpu-memory-utilization=0.95
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 300s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  #--------------------------------------------
+  # Open-WebUI
+  #--------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:8080"
+    volumes:
+      - open_webui_data:/app/backend/data
+    environment:
+      - OPENAI_API_BASE_URL=http://vllm:8000/v1
+      - OPENAI_API_KEY=none
+      - ANONYMIZED_TELEMETRY=false
+
+volumes:
+  vllm_data:
+  open_webui_data:

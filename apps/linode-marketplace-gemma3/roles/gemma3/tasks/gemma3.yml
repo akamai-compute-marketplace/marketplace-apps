@@ -1,0 +1,14 @@
+---
+- name: Set Gemma 3 WebUI initial password
+  uri:
+    url: "http://localhost:3000/api/v1/auths/signup"
+    method: POST
+    body_format: json
+    status_code: [200]
+    return_content: false
+    body:
+      name: "{{ gemma3_login_name }}"
+      email: "{{ gemma3_login_email }}"
+      password: "{{ gemma3_login_password }}"
+    headers:
+      Content-Type: 'application/json'
