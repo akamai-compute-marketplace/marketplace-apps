@@ -1,27 +1,33 @@
 ---  
-  - name: Remove Archive File
-    file:
-      path: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
-      state: absent
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
 
-  - name: install nginx reverse proxy
-    include_tasks: nginx.yml
+- name: Remove Archive File
+  file:
+    path: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+    state: absent
 
-  # motd and creds gen
-  - name: copy MOTD template to /etc/motd
-    template:
-      src: templates/motd.j2
-      dest: /etc/motd
+- name: Install nginx reverse proxy
+  include_tasks: nginx.yml
 
-  - name: writing sudo creds into file
-    copy:
-      dest: '/home/{{ username }}/.credentials'
-      mode: '0600'
-      owner: '{{ username }}'
-      group: '{{ username }}'
-      content: |
-        Sudo Username: {{ username }}
-        Sudo Password: {{ password }}
-        MainConcept Live Encoder Login: admin
-        MainConcept Live Encoder Password: admin
-        *** Please ensure you change the default credentials immediately after login! ***
+# motd and creds gen
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+
+- name: Writing sudo creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      MainConcept Live Encoder Login: admin
+      MainConcept Live Encoder Password: admin
+      *** Please ensure you change the default credentials immediately after login! ***

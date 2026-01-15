@@ -17,6 +17,12 @@ fi
 
 declare -A UDF_VARS
 
+if [[ -n "${MC_PORT}" ]]; then
+        UDF_VARS["MC_PORT"]="${MC_PORT}"
+else
+        UDF_VARS["MC_PORT"]="8080" # default
+fi
+
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
@@ -35,6 +41,12 @@ else
         UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
+else
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
+fi
+
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
@@ -51,18 +63,6 @@ if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
-fi
-
-if [[ -n "${MEMGRAPH_USERNAME}" ]]; then
-        UDF_VARS["MEMGRAPH_USERNAME"]="${MEMGRAPH_USERNAME}"
-else
-        UDF_VARS["MEMGRAPH_USERNAME"]="memuser" # default
-fi
-
-if [[ -n "${MEMGRAPH_BOLT_ALLOW}" ]]; then
-        UDF_VARS["MEMGRAPH_BOLT_ALLOW"]="${MEMGRAPH_BOLT_ALLOW}"
-else
-        UDF_VARS["MEMGRAPH_BOLT_ALLOW"]="" # default
 fi
 
 

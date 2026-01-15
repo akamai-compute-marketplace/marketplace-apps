@@ -3,17 +3,17 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+# BEGIN CI-MODE
 # modes
-DEBUG="NO"
-if [ "${DEBUG}" == "NO" ]; then
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
+# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -24,6 +24,11 @@ fi
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
 
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
@@ -39,6 +44,7 @@ fi
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-mean"
 
+# BEGIN CI-PROVISION-FUNC
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
 
@@ -56,10 +62,11 @@ function provision_failed {
      -H "Content-Type: application/json" \
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\" }"
-  
+        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
+
   exit $?
 }
+# END CI-PROVISION-FUNC
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -74,6 +81,10 @@ function udf {
   username: ${USER_NAME}
   webserver_stack: lemp
   mongodb_admin_user: admin
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
