@@ -1,0 +1,49 @@
+---
+- name: create chroma directories
+  file:
+    path: "{{ directory }}"
+    state: directory
+    mode: '0755'
+  loop_control:
+    loop_var: directory
+    label: "{{ directory }}"
+  loop:
+    - "{{ chroma_data_dir }}"
+    - "{{ chroma_config_dir }}"
+    - "{{ chroma_compose_dir }}"
+
+- name: generate bcrypt password hash
+  set_fact:
+    chroma_password_hash: "{{ chroma_password | password_hash('blowfish') }}"
+
+- name: create server.htpasswd
+  copy:
+    content: "admin:{{ chroma_password_hash }}\n"
+    dest: "{{ chroma_config_dir }}/server.htpasswd"
+    mode: '0640'
+    group: www-data
+    owner: root
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ chroma_compose_dir }}/docker-compose.yml"
+    mode: '0644'
+
+- name: pull chroma images
+  community.docker.docker_compose_v2:
+    project_src: "{{ chroma_compose_dir }}"
+    pull: always
+
+- name: start chroma
+  community.docker.docker_compose_v2:
+    project_src: "{{ chroma_compose_dir }}"
+    state: present
+
+- name: wait for chroma to start
+  uri:
+    url: "http://localhost:8000/api/v2/heartbeat"
+    method: GET
+    status_code: [200]
+  retries: 30
+  delay: 2
