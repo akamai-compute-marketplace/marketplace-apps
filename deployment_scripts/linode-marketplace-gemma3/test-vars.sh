@@ -66,7 +66,7 @@ fi
 if [[ -n "${HF_TOKEN}" ]]; then
         UDF_VARS["HF_TOKEN"]="${HF_TOKEN}"
 else
-        UDF_VARS["HF_TOKEN"]="hf_test_token_placeholder" # default for CI testing
+        UDF_VARS["HF_TOKEN"]="hf_test_token_placeholder" # required, but can be a placeholder since the deploy script will error out if it's not valid
 fi
 
 if [[ -n "${GEMMA3_MODEL_SIZE}" ]]; then
