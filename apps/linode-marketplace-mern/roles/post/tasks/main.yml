@@ -1,4 +1,10 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # Final system configurations and cleanup
 - name: Ensure services are started and enabled
   systemd_service:
@@ -18,7 +24,7 @@
     group: root
     mode: '0644'
 
-- name: writing creds into file
+- name: Writing creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
