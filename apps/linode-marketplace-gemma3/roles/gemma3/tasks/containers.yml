@@ -11,6 +11,12 @@
 
 # docker-compose
 
+- name: Create docker directory
+  file:
+    path: "{{ docker_directory }}"
+    state: directory
+    mode: '0755'
+
 - name: Copy docker-compose file
   copy:
     src: docker-compose.yml
