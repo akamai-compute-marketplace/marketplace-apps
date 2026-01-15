@@ -54,7 +54,7 @@ fi
 if [[ -n "${GEMMA3_LOGIN_NAME}" ]]; then
         UDF_VARS["GEMMA3_LOGIN_NAME"]="${GEMMA3_LOGIN_NAME}"
 else
-        UDF_VARS["GEMMA3_LOGIN_NAME"]="Gemma 3" # default
+        UDF_VARS["GEMMA3_LOGIN_NAME"]="gemmaadmin" # default
 fi
 
 if [[ -n "${GEMMA3_LOGIN_EMAIL}" ]]; then

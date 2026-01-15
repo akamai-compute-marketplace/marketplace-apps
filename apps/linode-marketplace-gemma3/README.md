@@ -1,10 +1,10 @@
-# Akamai Cloud Compute - Gemma 3 and Open WebUI Deployment One-Click APP
+# Akamai Cloud Compute - Gemma 3 and Open WebUI Deployment One-Click App
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
 Our Marketplace application deploys Google Gemma 3, a state-of-the-art open-source large language model with multimodal understanding and multilingual capabilities. Built from the same technology that powers Google's Gemini models, Gemma 3 is optimized for instruction following, reasoning, and conversational tasks while maintaining efficient inference performance.
 
-During deployment, you can choose between two model sizes to match your GPU capabilities and performance requirements.
+During deployment, you can choose between two model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
 ## Software Included
 
@@ -93,59 +93,14 @@ The UI service automatically connects to the API service running on `localhost:8
 
 ## Hugging Face Authentication
 
-Gemma 3 is a gated model requiring authentication through Hugging Face. During deployment, you must provide a Hugging Face API token:
+Gemma 3 is a gated model requiring authentication through Hugging Face. During deployment, you must provide a Hugging Face API token. To get your free token, follow the below steps:
 
 1. Create a free account at [huggingface.co/join](https://huggingface.co/join)
 2. Accept the Gemma license at [huggingface.co/google/gemma-3-12b-it](https://huggingface.co/google/gemma-3-12b-it)
 3. Generate a token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) (Read-only access is sufficient)
 4. Provide the token during deployment via UDF
 
-The token is stored securely as an environment variable and used only for model downloads from Hugging Face Hub.
-
-## Model Selection
-
-During deployment, you can choose between two Gemma 3 model sizes via the deployment form:
-
-### Gemma 3 4B (Default - Recommended)
-- **Parameters**: 4 billion
-- **GPU Memory Required**: Minimum 12GB VRAM
-- **Recommended GPU**: RTX 4000 Ada (20GB) or higher
-- **VRAM Usage**: ~8.6GB
-- **Performance**: Fast inference, excellent for most use cases
-- **Use Cases**: General chat, coding assistance, document analysis, conversational AI
-
-### Gemma 3 12B (Advanced)
-- **Parameters**: 12 billion
-- **GPU Memory Required**: Minimum 24GB VRAM
-- **Recommended GPU**: RTX 6000 Ada (48GB), L40S (48GB), or higher
-- **VRAM Usage**: ~20GB
-- **Performance**: Higher quality responses, better reasoning capabilities
-- **Use Cases**: Complex reasoning, advanced analysis, specialized tasks requiring maximum model capability
-- **Important**: This model will NOT work on GPUs with less than 24GB VRAM (e.g., RTX 4000 Ada with 20GB)
-
-## Resource Requirements
-
-### For Gemma 3 4B
-- **GPU**: NVIDIA RTX 4000 Ada (20GB) or higher
-- **GPU Memory**: Minimum 12GB VRAM
-- **System Memory**: 16GB+ RAM recommended
-- **Storage**: 30GB+ for model files and cached data
-
-### For Gemma 3 12B
-- **GPU**: NVIDIA RTX 6000 Ada (48GB), L40S (48GB), or higher
-- **GPU Memory**: Minimum 24GB VRAM (strictly required)
-- **System Memory**: 32GB+ RAM recommended
-- **Storage**: 50GB+ for model files and cached data
-
-## Model Specifications
-
-Both models share the following characteristics:
-
-- **Type**: Instruction-tuned, text generation
-- **Context Length**: 16,384 tokens
-- **License**: Google Gemma Terms of Use
-- **Capabilities**: Text generation, conversational AI, instruction following, reasoning tasks
-- **Architecture**: Built from the same technology that powers Google's Gemini models
+The token is stored securely as an environment variable during deployment, and used only for model downloads from Hugging Face Hub.
 
 ## RAG Operations in Open WebUI
 
@@ -153,57 +108,26 @@ Open WebUI provides built-in support for RAG operations allowing users to chat w
 
 You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
 
-## Post-Deployment Notes
+## Service Communication
 
-### First Startup
-The initial container startup will download the selected Gemma 3 model from Hugging Face:
-- **4B Model**: ~9GB download, typically 3-5 minutes
-- **12B Model**: ~24GB download, typically 5-10 minutes
+The UI service automatically connects to the API service running on `localhost:8000`. Both services run on the same instance and communicate over the Docker network.
 
-Download time depends on network speed. Subsequent startups use the cached model and start in 1-2 minutes.
+## Resource Requirements
 
-### Accessing Credentials
-After deployment, login credentials are available at:
-```
-/home/<username>/.credentials
-```
+### For Gemma 3 4B
+- **GPU**: Any supported Linode GPU instance type
+- **Memory**: 16GB RAM or higher
+- **Storage**: Sufficient space for model files (models can be several GB)
+- **Reference**: [gemma-3-4b-it on Hugging Face](https://huggingface.co/google/gemma-3-4b-it)
 
-### Monitoring GPU Usage
-To monitor GPU utilization:
-```bash
-nvidia-smi
-# or for real-time monitoring
-watch -n 1 nvidia-smi
-```
+### For Gemma 3 12B
+- **GPU**: Any supported Linode GPU instance type
+- **Memory**: 32GB RAM or higher
+- **Storage**: Sufficient space for model files (models can be several GB)
+- **Reference**: [gemma-3-12b-it on Hugging Face](https://huggingface.co/google/gemma-3-12b-it)
 
-### Viewing Logs
-```bash
-# vLLM inference engine logs
-docker logs vllm
+## RAG Operations in Open WebUI
 
-# Open WebUI logs
-docker logs open-webui
-```
+Open WebUI provides built-in support for RAG operations allowing users to chat with their documents. This implementation uses Nginx as a frontend web service proxy to the Open WebUI container. Users that are looking to upload documents larger than 100MBs are required to update Nginx's `client_max_body_size` to a larger value.
 
-### Switching Models After Deployment
-
-If you need to switch between the 4B and 12B models after deployment:
-
-1. Edit the docker-compose configuration:
-   ```bash
-   nano /opt/gemma3/docker-compose.yml
-   ```
-
-2. Change the model in the vLLM command section:
-   ```yaml
-   command:
-     - --model=google/gemma-3-4b-it    # or google/gemma-3-12b-it
-   ```
-
-3. Restart the containers:
-   ```bash
-   cd /opt/gemma3
-   docker-compose restart
-   ```
-
-**Note**: When switching to the 12B model, ensure your GPU has at least 24GB VRAM or the container will fail to start with an out-of-memory error.
+You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.

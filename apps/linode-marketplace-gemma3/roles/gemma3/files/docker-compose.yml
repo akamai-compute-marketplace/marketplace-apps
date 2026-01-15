@@ -1,7 +1,7 @@
 services:
 
   #--------------------------------------------
-  # vLLM - GPU-accelerated Gemma 3 inference
+  # vLLM
   #--------------------------------------------
   vllm:
     image: vllm/vllm-openai:latest

@@ -104,9 +104,6 @@ function udf {
   # gemma3 model size selection
   gemma3_model_size: ${GEMMA3_MODEL_SIZE}
 
-  # docker directory
-  docker_directory: /opt/gemma3
-
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
