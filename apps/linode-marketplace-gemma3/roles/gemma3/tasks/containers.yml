@@ -17,9 +17,9 @@
     state: directory
     mode: '0755'
 
-- name: Copy docker-compose file
-  copy:
-    src: docker-compose.yml
+- name: Template docker-compose file
+  template:
+    src: docker-compose.yml.j2
     dest: "{{ docker_directory }}/docker-compose.yml"
     mode: '0644'
 
