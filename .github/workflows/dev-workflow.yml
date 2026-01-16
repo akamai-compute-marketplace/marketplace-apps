@@ -8,9 +8,6 @@ jobs:
     name: static code analysis
     runs-on: ubuntu-latest
     steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-
       - name: run static code analysis
         run: |
           echo "Running static code analysis..."
