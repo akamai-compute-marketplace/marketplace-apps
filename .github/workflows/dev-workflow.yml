@@ -1,0 +1,13 @@
+name: development workflow
+
+on:
+  workflow_dispatch:
+
+jobs:
+  static-code-analysis:
+    name: static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: run static code analysis
+        run: |
+          echo "Running static code analysis..."
