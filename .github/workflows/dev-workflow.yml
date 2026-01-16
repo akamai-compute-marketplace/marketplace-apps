@@ -11,3 +11,7 @@ jobs:
       - name: run static code analysis
         run: |
           echo "Running static code analysis..."
+
+      - name: run static code analysis 2
+        run: |
+          echo "Running static code analysis..."
