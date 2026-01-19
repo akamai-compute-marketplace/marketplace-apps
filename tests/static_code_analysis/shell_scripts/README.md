@@ -44,6 +44,10 @@ SHELLCHECK_OPTS="--exclude=SC1091,SC2154 --severity=warning"
     - `info` – Show errors, warnings, and info messages.
     - `style` – Show errors, warnings, info, and style suggestions.
 
+`--severity='error'` is set by default for GitHub Actions workflows.
+
+`--severity='style'` is set by default for local runs.
+
 ---
 
 ## References
