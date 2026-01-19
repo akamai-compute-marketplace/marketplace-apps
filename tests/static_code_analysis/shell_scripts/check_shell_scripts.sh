@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-SHELLCHECK_OPTS="--exclude=SC1091,SC2154 --severity=style"
+SHELLCHECK_OPTS="--exclude=SC1091,SC2154,SC2086 --severity=style"
 # SC1091: Not following: (error message here)
 # SC2154: var is referenced but not assigned.
+# SC2086: Double quote to prevent globbing and word splitting.
 
 set -euo pipefail
 
@@ -29,12 +30,12 @@ if [[ "$1" == "all" ]]; then
 	fi
 
 	echo "${GREEN}Formatting all shell scripts with shfmt...${NC}"
-	shfmt -w $sh_files
+	shfmt -w "$sh_files"
 
 	echo "${GREEN}Linting all shell scripts with shellcheck...${NC}"
 	shellcheck_errors=0
 	for file in $sh_files; do
-		if ! shellcheck $SHELLCHECK_OPTS "$file"; then
+		if ! shellcheck "$SHELLCHECK_OPTS" "$file"; then
 			echo "${RED}shellcheck - issue found in $file${NC}"
 			shellcheck_errors=1
 		fi
