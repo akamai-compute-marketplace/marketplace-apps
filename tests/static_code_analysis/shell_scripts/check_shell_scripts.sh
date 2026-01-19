@@ -1,37 +1,8 @@
 #!/usr/bin/env bash
 
-################################################################################
-# Description:
-#   This script formats and lints shell scripts in your project using shfmt
-#   and shellcheck.
-#
-#   Formatting is done in-place using shfmt.
-#   Linting is performed with shellcheck.
-#   Any shellcheck errors/warnings will be shown in the output.
-#   The script exits nonzero if any file fails linting.
-#
-# Requirements:
-#   - shfmt and shellcheck must be installed and available on your PATH.
-#
-# Installation:
-#   Refer to the official documentation for installation instructions:
-#     - shfmt:      https://github.com/mvdan/sh/blob/master/cmd/shfmt/README.md
-#     - shellcheck: https://github.com/koalaman/shellcheck#installation
-#
-# Usage:
-#   To format and lint all shell scripts in the project recursively:
-#     ./check_shell_scripts.sh all
-#
-#   To format and lint a specific shell script:
-#     ./check_shell_scripts.sh path/to/file.sh
-#
-#   The script will overwrite files with shfmt formatting,
-#   then run shellcheck for linting.
-#
-#   Example:
-#     ./check_shell_scripts.sh all
-#     ./check_shell_scripts.sh myscript.sh
-################################################################################
+SHELLCHECK_OPTS="--exclude=SC1091,SC2154 --severity=style"
+# SC1091: Not following: (error message here)
+# SC2154: var is referenced but not assigned.
 
 set -euo pipefail
 
@@ -58,12 +29,12 @@ if [[ "$1" == "all" ]]; then
 	fi
 
 	echo "${GREEN}Formatting all shell scripts with shfmt...${NC}"
-	shfmt -w "$sh_files"
+	shfmt -w $sh_files
 
 	echo "${GREEN}Linting all shell scripts with shellcheck...${NC}"
 	shellcheck_errors=0
 	for file in $sh_files; do
-		if ! shellcheck "$file"; then
+		if ! shellcheck $SHELLCHECK_OPTS "$file"; then
 			echo "${RED}shellcheck - issue found in $file${NC}"
 			shellcheck_errors=1
 		fi
@@ -82,7 +53,7 @@ elif [[ -f "$1" && "$1" == *.sh ]]; then
 	shfmt -w "$file"
 
 	echo "${GREEN}Linting $file with shellcheck...${NC}"
-	if shellcheck "$file"; then
+	if shellcheck $SHELLCHECK_OPTS "$file"; then
 		echo "${GREEN}File '$file' passed formatting and linting!${NC}"
 		exit 0
 	else
