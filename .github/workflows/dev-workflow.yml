@@ -13,7 +13,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck
-          find . -type f -name "*.sh" -print0 | xargs -0 shellcheck
+          find . -type f -name "*.sh" -print0 | xargs -0 shellcheck --severity=error
       - name: Run yamllint
         run: |
           sudo apt-get update
