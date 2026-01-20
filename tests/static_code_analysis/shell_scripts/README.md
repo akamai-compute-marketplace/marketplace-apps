@@ -22,6 +22,11 @@ This folder contains a utility script for **formatting** and **linting** shell s
 ./check_shell_scripts.sh all
 ```
 
+**Format and lint all shell scripts under specified directory:**
+```sh
+./check_shell_scripts.sh path/to/directory
+```
+
 **Format and lint a specific shell script:**
 ```sh
 ./check_shell_scripts.sh path/to/script.sh
