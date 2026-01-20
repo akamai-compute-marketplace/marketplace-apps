@@ -15,3 +15,8 @@ jobs:
           sudo apt-get install -y shellcheck
           find . -type f -name "*.sh" -print0 | xargs -0 shellcheck --severity=error
           echo "✅ ShellCheck passed: no error-level issues found."
+      - name: Run yamllint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yamllint
+          find . -type f \( -name "*.yml" -o -name "*.yaml" \) -print0 | xargs -0 yamllint
