@@ -52,14 +52,6 @@ The service is installed directly on the system, managed by `systemd`, and confi
   - ACID-compliant transactional storage
   - Optimized configuration for production workloads
 
-## Directory Structure
-
-The following directories are used on the deployed instance:
-
-- `/var/lib/postgresql/16/main` - PostgreSQL data directory
-- `/etc/postgresql/16/main` - PostgreSQL configuration files
-- `/var/log/postgresql` - PostgreSQL logs
-
 ## Service Communication
 
 Client applications connect directly to PostgreSQL over TCP on port `5432`. Network access is restricted by UFW firewall rules, and secure authentication is enforced using PostgreSQL role-based access control. TLS can be enabled for encrypted client connections when required.
