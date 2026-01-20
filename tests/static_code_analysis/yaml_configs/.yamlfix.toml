@@ -1,0 +1,12 @@
+[general]
+line_length = 120
+indent = 2
+preserve_quotes = false
+
+[fixes]
+remove_trailing_spaces = true
+indent_sequences = true
+blank_lines_between_top_level_collections = false
+newline_after_multiline = true
+compact_top_level_lists = false
+key_order = []
