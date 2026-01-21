@@ -14,19 +14,15 @@ Install the required tools:
 ## How to Use
 **Running the script:**
 
-   - To check all YAML files recursively:
-     ```sh
-     ./check_yaml_scripts.sh all
-     ```
-   - To check a specific file:
-     ```sh
-     ./check_yaml_scripts.sh path/to/file.yaml
-     ```
+**Lint all YAML files under specified directory:**
+```sh
+./check_yaml_configs.sh path/to/directory
+```
 
-   The script will:
-   - Auto-format files with yamlfix using `.yamlfix.toml` from this folder
-   - Lint them with yamllint using `.yamllint.yml` from this folder
-   - Report and stop if any file fails the lint
+**Lint a specific YAML file:**
+```sh
+./check_yaml_configs.sh path/to/script.sh
+```
 
 ## Configuration
 
