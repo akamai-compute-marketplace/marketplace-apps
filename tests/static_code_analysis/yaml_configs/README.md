@@ -14,12 +14,12 @@ Install the required tools:
 ## How to Use
 **Running the script:**
 
-**Lint all YAML files under specified directory:**
+**Format and lint all YAML files under specified directory:**
 ```sh
 ./check_yaml_configs.sh path/to/directory
 ```
 
-**Lint a specific YAML file:**
+**Format and lint a specific YAML file:**
 ```sh
 ./check_yaml_configs.sh path/to/script.sh
 ```
