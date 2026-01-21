@@ -23,4 +23,3 @@ jobs:
           if find . -type f \( -name "*.yml" -o -name "*.yaml" \) -print0 | xargs -0 yamllint -c tests/static_code_analysis/yaml_configs/.yamllint.yml; then
             echo "✅ yamllint passed: no issues found."
           fi
-
