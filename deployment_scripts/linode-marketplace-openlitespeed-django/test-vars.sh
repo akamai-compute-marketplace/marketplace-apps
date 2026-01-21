@@ -29,6 +29,18 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
+if [[ -n "${DJANGO_SUPERUSER_USERNAME}" ]]; then
+        UDF_VARS["DJANGO_SUPERUSER_USERNAME"]="${DJANGO_SUPERUSER_USERNAME}"
+else
+        UDF_VARS["DJANGO_SUPERUSER_USERNAME"]="djangouser" # default
+fi
+
+if [[ -n "${DJANGO_SUPERUSER_EMAIL}" ]]; then
+        UDF_VARS["DJANGO_SUPERUSER_EMAIL"]="${DJANGO_SUPERUSER_EMAIL}"
+else
+        UDF_VARS["DJANGO_SUPERUSER_EMAIL"]="djangouser@${DEFAULT_DNS}" # default
+fi
+
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
         UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
@@ -50,7 +62,7 @@ fi
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

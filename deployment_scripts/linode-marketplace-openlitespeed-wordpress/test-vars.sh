@@ -29,6 +29,30 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
+if [[ -n "${SITE_TITLE}" ]]; then
+        UDF_VARS["SITE_TITLE"]="${SITE_TITLE}"
+else
+        UDF_VARS["SITE_TITLE"]="My WP Site" # default
+fi
+
+if [[ -n "${WP_ADMIN_USER}" ]]; then
+        UDF_VARS["WP_ADMIN_USER"]="${WP_ADMIN_USER}"
+else
+        UDF_VARS["WP_ADMIN_USER"]="wpadmin" # default
+fi
+
+if [[ -n "${WP_DB_USER}" ]]; then
+        UDF_VARS["WP_DB_USER"]="${WP_DB_USER}"
+else
+        UDF_VARS["WP_DB_USER"]="wpuser" # default
+fi
+
+if [[ -n "${WP_DB_NAME}" ]]; then
+        UDF_VARS["WP_DB_NAME"]="${WP_DB_NAME}"
+else
+        UDF_VARS["WP_DB_NAME"]="wpdb" # default
+fi
+
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
         UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
@@ -50,7 +74,7 @@ fi
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

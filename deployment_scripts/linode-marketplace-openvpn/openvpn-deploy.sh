@@ -1,6 +1,18 @@
 #!/bin/bash
-set -e
-trap "cleanup $? $LINENO" EXIT
+# enable logging
+exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
+
+# BEGIN CI-MODE
+# modes
+#DEBUG="NO"
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  fi
+else
+  trap "cleanup $? $LINENO" EXIT
+fi
+# END CI-MODE
 
 ##Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -14,13 +26,29 @@ trap "cleanup $? $LINENO" EXIT
 ## OpenVPN Settings 
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
-# git repo
-export GIT_REPO="https://github.com/akamai-compute-marketplace/marketplace-apps.git"
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
+# BEGIN CI-GH
+#GH_USER=""
+#BRANCH=""
+# git user and branch
+if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
+        echo "[info] git user and branch set.."
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+
+else
+        export GH_USER="akamai-compute-marketplace"
+        export BRANCH="main"
+        export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
+fi
+# END CI-GH
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-openvpn"
 
-# enable logging
-exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -35,6 +63,10 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -64,6 +96,17 @@ EOF
   else echo "No API token entered";
   fi
 
+  # staging or production mode (ci)
+  # BEGIN CI-UDF-CI-MODE
+  # staging or production mode (ci)
+  if [[ "${MODE}" == "staging" ]]; then
+    echo "[info] running in staging mode..."
+    echo "mode: ${MODE}" >> ${group_vars}
+  else
+    echo "[info] running in production mode..."
+    echo "mode: production" >> ${group_vars}
+  fi
+# END CI-UDF-CI-MODE
 }
 
 function run {
@@ -72,7 +115,7 @@ function run {
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone ${GIT_REPO}
+  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
   # for a single testing branch
   # git -C /tmp clone --single-branch --branch ${BRANCH} ${GIT_REPO}
 
@@ -97,5 +140,5 @@ function installation_complete {
   echo "Installation Complete"
 }
 # main
-run && installation_complete
-cleanup
+run
+installation_complete

@@ -37,6 +37,11 @@ fi
 #<UDF name="neo4j_http_allow" label="IP addresses allowed to access Neo4j UI" example="192.0.2.21, 198.51.100.17" default="">
 #<UDF name="neo4j_bolt_allow" label="IP addresses allowed to access Bolt" example="192.0.2.21, 198.51.100.17" default="">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
+
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -87,6 +92,10 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   neo4j_username: neo4j
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
