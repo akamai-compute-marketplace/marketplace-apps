@@ -20,7 +20,7 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Gemma3 Open WebUI admin name: {{ gemma3_login_name }}
-      Gemma3 Open WebUI admin email: {{ gemma3_login_email }}
-      Gemma3 Open WebUI admin password: {{ gemma3_login_password }}
+      Open WebUI admin name: {{ openwebui_login_name }}
+      Open WebUI admin email: {{ openwebui_login_email }}
+      Open WebUI admin password: {{ openwebui_login_password }}
       

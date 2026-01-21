@@ -39,8 +39,8 @@ fi
 # END CI-ADDONS
 
 ## Gemma 3 Configuration
-#<UDF name="gemma3_login_name" label="The initial admin login name">
-#<UDF name="gemma3_login_email" label="Email address for Gemma 3 WebUI admin account">
+#<UDF name="openwebui_login_name" label="The initial admin login name for Open WebUI">
+#<UDF name="openwebui_login_email" label="Email address for Open WebUI admin account">
 #<UDF name="hf_token" label="Hugging Face API token (required)" example="Get free token: https://huggingface.co/settings/tokens">
 #<UDF name="gemma3_model_size" label="Gemma 3 Model Size" oneOf="4B,12B" default="4B">
 
@@ -94,9 +94,9 @@ function udf {
   # sudo username
   username: ${USER_NAME}
 
-  # gemma3 admin credentials
-  gemma3_login_name: ${GEMMA3_LOGIN_NAME}
-  gemma3_login_email: ${GEMMA3_LOGIN_EMAIL}
+  # open webui admin credentials
+  openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
+  openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
 
   # hugging face token for gated model access
   hf_token: ${HF_TOKEN}

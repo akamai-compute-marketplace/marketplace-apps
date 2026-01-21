@@ -17,9 +17,9 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    - name: Generating Gemma 3 WebUI password
+    - name: Generating Open WebUI password
       blockinfile:
         insertafter: EOF
         path: group_vars/linode/vars
         block: |
-          gemma3_login_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          openwebui_login_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

@@ -1,5 +1,5 @@
 ---
-- name: Set Gemma 3 Open WebUI initial password
+- name: Set Open WebUI initial password
   uri:
     url: "http://localhost:3000/api/v1/auths/signup"
     method: POST
@@ -7,8 +7,8 @@
     status_code: [200]
     return_content: false
     body:
-      name: "{{ gemma3_login_name }}"
-      email: "{{ gemma3_login_email }}"
-      password: "{{ gemma3_login_password }}"
+      name: "{{ openwebui_login_name }}"
+      email: "{{ openwebui_login_email }}"
+      password: "{{ openwebui_login_password }}"
     headers:
       Content-Type: 'application/json'

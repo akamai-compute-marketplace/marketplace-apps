@@ -5,7 +5,7 @@
 - name: Install Docker and container components
   import_tasks: containers.yml
 
-- name: Configure Gemma 3 Open WebUI initial admin account
+- name: Configure Open WebUI initial admin account
   import_tasks: gemma3.yml
 
 - name: Configure Nginx and SSL certificates

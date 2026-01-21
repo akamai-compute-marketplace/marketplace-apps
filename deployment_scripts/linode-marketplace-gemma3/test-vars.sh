@@ -51,16 +51,16 @@ else
         UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
-if [[ -n "${GEMMA3_LOGIN_NAME}" ]]; then
-        UDF_VARS["GEMMA3_LOGIN_NAME"]="${GEMMA3_LOGIN_NAME}"
+if [[ -n "${OPENWEBUI_LOGIN_NAME}" ]]; then
+        UDF_VARS["OPENWEBUI_LOGIN_NAME"]="${OPENWEBUI_LOGIN_NAME}"
 else
-        UDF_VARS["GEMMA3_LOGIN_NAME"]="gemmaadmin" # default
+        UDF_VARS["OPENWEBUI_LOGIN_NAME"]="Open WebUI" # default
 fi
 
-if [[ -n "${GEMMA3_LOGIN_EMAIL}" ]]; then
-        UDF_VARS["GEMMA3_LOGIN_EMAIL"]="${GEMMA3_LOGIN_EMAIL}"
+if [[ -n "${OPENWEBUI_LOGIN_EMAIL}" ]]; then
+        UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="${OPENWEBUI_LOGIN_EMAIL}"
 else
-        UDF_VARS["GEMMA3_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
+        UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${HF_TOKEN}" ]]; then
