@@ -13,7 +13,6 @@ NC=$(tput sgr0)
 
 usage() {
 	echo "Usage:"
-	echo "  $0 all                  # Format and lint all *.sh files recursively"
 	echo "  $0 path/to/directory    # Format and lint all *.sh files under specified directory"
 	echo "  $0 path/to/file.sh      # Format and lint a specific shell script"
 }
@@ -63,13 +62,7 @@ if [[ $# -ne 1 ]]; then
 	exit 1
 fi
 
-if [[ "$1" == "all" ]]; then
-	files=()
-	while IFS= read -r file; do
-		files+=("$file")
-	done < <(find . -type f -name "*.sh")
-	lint_and_format_files "${files[@]}"
-elif [[ -d "$1" ]]; then
+if [[ -d "$1" ]]; then
 	files=()
 	while IFS= read -r file; do
 		files+=("$file")
