@@ -16,7 +16,6 @@ jobs:
           if find . -type f -name "*.sh" -print0 | xargs -0 shellcheck --severity=error; then
             echo "✅ ShellCheck passed: no error-level issues found."
           fi
-            - name: Run yamllint
       - name: Run yamllint
         run: |
           sudo apt-get update
