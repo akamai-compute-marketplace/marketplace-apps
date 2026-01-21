@@ -10,6 +10,3 @@
   # generate creds
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
-    - name: Generate mysql root password
-      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml

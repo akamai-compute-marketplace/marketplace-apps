@@ -1,0 +1,38 @@
+---
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: create nginx site configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ _domain }}
+    mode: '0644'
+  notify: restart nginx
+
+- name: enable  nginx site
+  file:
+    src: /etc/nginx/sites-available/{{ _domain }}
+    dest: /etc/nginx/sites-enabled/{{ _domain }}
+    state: link
+  notify: restart nginx
+
+- name: remove default nginx site configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
+- name: enable and start nginx service
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
