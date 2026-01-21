@@ -1,4 +1,10 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # certbot is installed to venv w/ pip in deploy.sh
 
 - name: run certbot dry-run
