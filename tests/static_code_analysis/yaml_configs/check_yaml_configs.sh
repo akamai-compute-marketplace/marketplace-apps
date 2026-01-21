@@ -73,7 +73,7 @@ if [[ -d "$1" ]]; then
 		files+=("$file")
 	done < <(find "$1" -type f \( -name "*.yml" -o -name "*.yaml" \))
 	lint_and_format_files "${files[@]}"
-elif [[ -f "$1" && "$1" == *.sh ]]; then
+elif [[ -f "$1" && ( "$1" == *.yml || "$1" == *.yaml ) ]]; then
 	lint_and_format_file "$1"
 else
 	usage
