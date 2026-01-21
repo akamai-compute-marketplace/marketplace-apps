@@ -39,7 +39,10 @@ lint_and_format_files() {
 		exit 0
 	fi
 
+  echo "${GREEN}Formatting files with shfmt...${NC}"
 	shfmt -w "${files[@]}"
+
+	echo "${GREEN}Linting files with shellcheck...${NC}"
 	shellcheck_errors=0
 	for file in "${files[@]}"; do
 		if ! shellcheck $SHELLCHECK_OPTS "$file"; then
