@@ -1,10 +1,32 @@
 ---
 extends: default
+
 rules:
-  line-length:
-    max: 180
-    allow-non-breakable-words: true
-    allow-non-breakable-inline-mappings: true
+  braces:
+    max-spaces-inside: 1
+    level: error
+  brackets:
+    max-spaces-inside: 1
+    level: error
+  colons:
+    max-spaces-after: -1
+    level: error
+  commas:
+    max-spaces-after: -1
+    level: error
+  comments: enable
   comments-indentation: enable
-  indentation:
-    spaces: 2
+  document-start: enable
+  empty-lines:
+    max: 3
+    level: error
+  hyphens:
+    level: error
+  indentation: enable
+  key-duplicates: enable
+  line-length: disable
+  new-line-at-end-of-file: enable
+  new-lines:
+    type: unix
+  trailing-spaces: enable
+  truthy: disable

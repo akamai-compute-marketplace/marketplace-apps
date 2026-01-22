@@ -18,7 +18,6 @@ jobs:
       - name: Run yamllint
         if: always()
         run: |
-          sudo apt-get update
-          sudo apt-get install -y yamllint
+          pip install yamllint
           yamllint -c tests/static_code_analysis/yaml_configs/.yamllint.yml .
           echo "✅ yamllint passed: no errors found."

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-CONFIG_DIR="tests/static_code_analysis/yaml_configs"
-YAMLLINT_CONFIG="$CONFIG_DIR/.yamllint.yml"
-YAMLFIX_CONFIG="$CONFIG_DIR/.yamlfix.toml"
+YAMLLINT_CONFIG="tests/static_code_analysis/yaml_configs/.yamllint.yml"
 
 set -euo pipefail
 
@@ -12,14 +10,12 @@ NC=$(tput sgr0)
 
 usage() {
     echo "Usage:"
-    echo "  $0 path/to/dir       # Auto-format and lint all *.yml and *.yaml files recursively in directory"
-    echo "  $0 path/to/file.yml  # Auto-format and lint a specific YAML file"
+    echo "  $0 path/to/dir       # Lint all *.yml and *.yaml files recursively in directory"
+    echo "  $0 path/to/file.yml  # Lint a specific YAML file"
 }
 
 lint_and_format() {
   local path="$1"
-  echo "${GREEN}Auto-formatting with yamlfix...${NC}"
-  yamlfix --config-file "$YAMLFIX_CONFIG" "$path"
 
   echo "${GREEN}Linting with yamllint...${NC}"
   if yamllint -c "$YAMLLINT_CONFIG" "$path"; then
