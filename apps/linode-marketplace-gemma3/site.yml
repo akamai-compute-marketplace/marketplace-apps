@@ -1,0 +1,38 @@
+# linode ansible playbook
+
+- name: Gemma3 with Open Webui setup
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+
+  tasks:
+    - block:
+        - name: run roles
+          include_role:
+            name: "{{ item }}"
+          loop:
+            - common
+            - gemma3
+            - post
+        - name: deployment passed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'successful'
+      rescue:
+        - name: deployment failed
+          import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
+          vars:
+            deploy_status: 'failed'
+      when: "mode == 'staging'"
+
+    - name: running app normally
+      include_role:
+        name: "{{ item }}"
+      loop:
+        - common
+        - gemma3
+        - post
+      when: "mode == 'production'"
