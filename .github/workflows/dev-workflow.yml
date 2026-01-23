@@ -35,6 +35,7 @@ jobs:
       - name: Install ansible-lint
         run: |
           pip install ansible-lint
+          echo -e '[defaults]\ndeprecation_warnings = False' > ansible.cfg
       - name: Install required ansible collections
         run: |
           ansible-galaxy collection install community.general community.docker community.postgresql community.crypto community.mysql community.mongodb
