@@ -32,8 +32,13 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Run ansible-lint
+      - name: Install ansible-lint
         run: |
           pip install ansible-lint
+      - name: Install required ansible collections
+        run: |
+          ansible-galaxy collection install community.general community.docker community.postgresql community.crypto community.mysql community.mongodb
+      - name: Run ansible-lint
+        run: |
           ansible-lint -c tests/static_code_analysis/ansible_playbooks/.ansible-lint.yaml
           echo "✅ ansible-lint passed: no errors found."
