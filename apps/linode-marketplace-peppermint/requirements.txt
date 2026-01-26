@@ -1,4 +1,4 @@
-ansible==12.0.0
+ansible==11.8.0
 PyMySQL==1.0.2
 yamllint==1.37.1
 ansible-lint==25.11.1
