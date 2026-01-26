@@ -25,6 +25,7 @@ fi
 
 ## Peppermint setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="admin_email" label="Admin email address for Peppermint login" example="admin@domain.tld" default="admin@admin.com">
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -101,6 +102,12 @@ EOF
 
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  fi
+
+  if [[ -n ${ADMIN_EMAIL} ]]; then
+    echo "admin_email: ${ADMIN_EMAIL}" >> ${group_vars};
+  else
+    echo "admin_email: admin@admin.com" >> ${group_vars};
   fi
 
   if [[ -n ${DOMAIN} ]]; then

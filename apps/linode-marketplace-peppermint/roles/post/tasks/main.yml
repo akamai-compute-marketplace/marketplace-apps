@@ -19,6 +19,13 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Peppermint Login: admin@admin.com
-      Peppermint Password: 1234
-      *** Please ensure you change the default credentials immediately after login! ***
+
+      PostgreSQL Database:
+        Username: peppermint
+        Password: {{ postgres_password }}
+        Database: peppermint
+
+      Peppermint Web Interface:
+        URL: https://{{ _domain }}
+        Admin Email: {{ admin_email | default('admin@admin.com') }}
+        Admin Password: {{ peppermint_admin_password }}

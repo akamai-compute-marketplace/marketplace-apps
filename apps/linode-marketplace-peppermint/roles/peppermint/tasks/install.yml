@@ -1,0 +1,25 @@
+---
+- name: Configure service file
+  template:
+    src: peppermint.service
+    dest: "/etc/systemd/system/peppermint.service"
+
+- name: create docker compose directory
+  file:
+    path: /etc/docker/compose/peppermint/
+    state: directory
+
+- name: create docker compose file
+  template:
+    src: docker-compose.yaml
+    dest: "/etc/docker/compose/peppermint/docker-compose.yml"
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: true
+
+- name: start peppermint service
+  systemd:
+    name: peppermint.service
+    state: started
+    enabled: true

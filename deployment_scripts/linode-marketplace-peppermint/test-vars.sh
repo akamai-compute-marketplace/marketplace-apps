@@ -53,6 +53,12 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${ADMIN_EMAIL}" ]]; then
+        UDF_VARS["ADMIN_EMAIL"]="${ADMIN_EMAIL}"
+else
+        UDF_VARS["ADMIN_EMAIL"]="admin@admin.com" # default
+fi
+
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
