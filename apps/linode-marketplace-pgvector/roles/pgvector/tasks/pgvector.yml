@@ -12,7 +12,7 @@
   apt:
     name: "postgresql-{{ postgres_version }}-pgvector"
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Enable pgvector extension
   community.postgresql.postgresql_ext:

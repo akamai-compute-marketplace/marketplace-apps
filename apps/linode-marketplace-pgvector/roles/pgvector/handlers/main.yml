@@ -3,8 +3,3 @@
   systemd_service:
     name: docker
     state: restarted
-
-- name: restart nginx
-  systemd_service:
-    name: nginx
-    state: restarted
