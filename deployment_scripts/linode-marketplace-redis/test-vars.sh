@@ -29,22 +29,28 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${TOKEN_PASSWORD}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+if [[ -n "${COUNTRY_NAME}" ]]; then
+        UDF_VARS["COUNTRY_NAME"]="${COUNTRY_NAME}"
 else
-        UDF_VARS["TOKEN_PASSWORD"]="" # default
+        UDF_VARS["COUNTRY_NAME"]="US" # default
 fi
 
-if [[ -n "${SUBDOMAIN}" ]]; then
-        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
+if [[ -n "${STATE_OR_PROVINCE_NAME}" ]]; then
+        UDF_VARS["STATE_OR_PROVINCE_NAME"]="${STATE_OR_PROVINCE_NAME}"
 else
-        UDF_VARS["SUBDOMAIN"]="" # default
+        UDF_VARS["STATE_OR_PROVINCE_NAME"]="Pennsylvania" # default
 fi
 
-if [[ -n "${DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${DOMAIN}"
+if [[ -n "${LOCALITY_NAME}" ]]; then
+        UDF_VARS["LOCALITY_NAME"]="${LOCALITY_NAME}"
 else
-        UDF_VARS["DOMAIN"]="" # default
+        UDF_VARS["LOCALITY_NAME"]="Philadelphia" # default
+fi
+
+if [[ -n "${ORGANIZATION_NAME}" ]]; then
+        UDF_VARS["ORGANIZATION_NAME"]="${ORGANIZATION_NAME}"
+else
+        UDF_VARS["ORGANIZATION_NAME"]="Akamai Technologies" # default
 fi
 
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
@@ -53,10 +59,16 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${APP_NAME}" ]]; then
-        UDF_VARS["APP_NAME"]="${APP_NAME}"
+if [[ -n "${CA_COMMON_NAME}" ]]; then
+        UDF_VARS["CA_COMMON_NAME"]="${CA_COMMON_NAME}"
 else
-        UDF_VARS["APP_NAME"]="myapp" # default
+        UDF_VARS["CA_COMMON_NAME"]="Redis CA" # default
+fi
+
+if [[ -n "${CLIENT_COUNT}" ]]; then
+        UDF_VARS["CLIENT_COUNT"]="${CLIENT_COUNT}"
+else
+        UDF_VARS["CLIENT_COUNT"]="1" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
@@ -64,7 +76,6 @@ if [[ -n "${ADD_ONS}" ]]; then
 else
         UDF_VARS["ADD_ONS"]="none" # default
 fi
-
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

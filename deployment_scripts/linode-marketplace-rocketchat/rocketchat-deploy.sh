@@ -33,6 +33,10 @@ fi
 #<UDF name="rocketchat_admin_name" label="Administrator Name" example="Jane Doe">
 #<UDF name="rocketchat_admin_email" label="Administrator Email Address" example="user@domain.tld">
 
+# BEGIN CI-ADDONS
+## Addons
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
@@ -86,6 +90,10 @@ function udf {
   webserver_stack: lemp
   rocketchat_admin_name: ${ROCKETCHAT_ADMIN_NAME}
   rocketchat_admin_email: ${ROCKETCHAT_ADMIN_EMAIL}
+  # BEGIN CI-UDF-ADDONS
+  # addons
+  add_ons: [${ADD_ONS}]
+  # END CI-UDF-ADDONS   
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
