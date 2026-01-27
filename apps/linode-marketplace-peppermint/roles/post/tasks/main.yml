@@ -27,5 +27,5 @@
 
       Peppermint Web Interface:
         URL: https://{{ _domain }}
-        Admin Email: {{ admin_email | default('admin@admin.com') }}
+        Admin Email: {{ admin_email }}
         Admin Password: {{ peppermint_admin_password }}
