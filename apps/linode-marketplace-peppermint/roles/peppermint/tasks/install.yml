@@ -1,9 +1,4 @@
 ---
-- name: Configure service file
-  template:
-    src: peppermint.service
-    dest: "/etc/systemd/system/peppermint.service"
-
 - name: create docker compose directory
   file:
     path: /etc/docker/compose/peppermint/
@@ -14,12 +9,7 @@
     src: docker-compose.yaml
     dest: "/etc/docker/compose/peppermint/docker-compose.yml"
 
-- name: Reload systemd daemon
-  systemd:
-    daemon_reload: true
-
-- name: start peppermint service
-  systemd:
-    name: peppermint.service
-    state: started
-    enabled: true
+- name: start peppermint containers with docker compose
+  community.docker.docker_compose_v2:
+    project_src: /etc/docker/compose/peppermint/
+    state: present
