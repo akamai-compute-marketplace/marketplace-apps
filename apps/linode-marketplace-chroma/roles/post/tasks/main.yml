@@ -1,0 +1,24 @@
+---
+# Install Addons if requested
+- name: add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: set up motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+
+- name: write credentials file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Chroma Username: admin
+      Chroma Password: {{ chroma_password }}
