@@ -6,8 +6,8 @@ Open source alternative to paid ticket management solutions with essential featu
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | 20.10    | Container Management tool |
-| Docker-Compose  | 1.29   | Container Management tool |
+| Docker    | 29.2.0    | Container Management tool |
+| Docker-Compose  | v2   | Container Management tool |
 | pepperlabs/peppermint:latest | Latest | Simple yet scalable open source ticket management. |
 | postgres | latest | Free and open-source relational database management system |
 
