@@ -33,7 +33,7 @@
 
 - name: Set mise tarball
   set_fact:
-    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ mise_version }}/mise-{{ mise_version }}-linux-x64.tar.zst"
+    mise_tarball: "https://github.com/jdx/mise/releases/download/v2026.{{ mise_version }}/mise-v2026.{{ mise_version }}-linux-x64.tar.zst"
 
 - name: Create tempdir
   tempfile:
