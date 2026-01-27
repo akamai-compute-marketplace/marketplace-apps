@@ -53,10 +53,28 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${APP_NAME}" ]]; then
-        UDF_VARS["APP_NAME"]="${APP_NAME}"
+if [[ -n "${ALLOWED_IPS_AMQP}" ]]; then
+        UDF_VARS["ALLOWED_IPS_AMQP"]="${ALLOWED_IPS_AMQP}"
 else
-        UDF_VARS["APP_NAME"]="myapp" # default
+        UDF_VARS["ALLOWED_IPS_AMQP"]="" # default
+fi
+
+if [[ -n "${RABBITMQ_VERSION}" ]]; then
+        UDF_VARS["RABBITMQ_VERSION"]="${RABBITMQ_VERSION}"
+else
+        UDF_VARS["RABBITMQ_VERSION"]="latest" # default
+fi
+
+if [[ -n "${RABBITMQ_ADMIN_USERNAME}" ]]; then
+        UDF_VARS["RABBITMQ_ADMIN_USERNAME"]="${RABBITMQ_ADMIN_USERNAME}"
+else
+        UDF_VARS["RABBITMQ_ADMIN_USERNAME"]="rabbitadmin" # default
+fi
+
+if [[ -n "${RABBITMQ_USERNAME}" ]]; then
+        UDF_VARS["RABBITMQ_USERNAME"]="${RABBITMQ_USERNAME}"
+else
+        UDF_VARS["RABBITMQ_USERNAME"]="rabbituser" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
