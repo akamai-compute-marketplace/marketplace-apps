@@ -6,40 +6,84 @@ jobs:
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Run ShellCheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-          find . -type f -name "*.sh" -print0 | xargs -0 shellcheck --severity=error
-          echo "✅ ShellCheck passed: no error-level issues found."
+        run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
     name: Static code analysis - yamllint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Run yamllint
-        run: |
-          pip install yamllint
-          yamllint -c tests/static_code_analysis/yaml_configs/.yamllint.yml .
-          echo "✅ yamllint passed: no errors found."
-  static-code-analysis-ansible-lint:
+        run: bash .github/scripts/static-code-yamllint.sh
+  static-code-analysis-ansbible-lint:
     name: Static code analysis - ansible-lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Install ansible-lint
-        run: |
-          pip install ansible-lint
-          echo -e '[defaults]\ndeprecation_warnings = False' > ansible.cfg
-      - name: Install required ansible collections
-        run: |
-          ansible-galaxy collection install community.general community.docker community.postgresql community.crypto community.mysql community.mongodb
       - name: Run ansible-lint
-        run: |
-          ansible-lint -c tests/static_code_analysis/ansible_playbooks/.ansible-lint.yaml
-          echo "✅ ansible-lint passed: no errors found."
+        run: bash .github/scripts/static-code-ansible-lint.sh
+  get-changes-from-pr:
+    name: Getting changes from PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs:
+      - static-code-analysis-shellcheck
+      - static-code-analysis-yamllint
+      - static-code-analysis-ansbible-lint
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Find app folders under apps
+        id: set-matrix
+        run: bash .github/scripts/get-changes-from-pr.sh
+  combined-job:
+    name: App deployment and testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: get-changes-from-pr
+    if: needs.get-changes-from-pr.outputs.matrix != '{"include":[]}'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.get-changes-from-pr.outputs.matrix) }}
+    env:
+      LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
+      LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+      - name: Get Linode configuration for ${{ matrix.app }}
+        run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
+      - name: Provisioning Linode for ${{ matrix.app }}
+        id: linode-provisioning
+        env:
+          APP_NAME: ${{ matrix.app }}
+        run: bash .github/scripts/linode-provisioning.sh
+      - name: Deploying ${{ matrix.app }}
+        env:
+          APP_NAME: ${{ matrix.app }}
+          GITHUB_HEAD_REF: ${{ github.head_ref }}
+          GITHUB_CLONE_URL: ${{ github.event.pull_request.head.repo.clone_url }}
+          LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
+        run: bash .github/scripts/app-installation.sh
+      - name: Deleting Linode for ${{ matrix.app }}
+        if: always()
+        env:
+          LINODE_ID: ${{ steps.linode-provisioning.outputs.LINODE_ID }}
+        run: bash .github/scripts/linode-deletion.sh
