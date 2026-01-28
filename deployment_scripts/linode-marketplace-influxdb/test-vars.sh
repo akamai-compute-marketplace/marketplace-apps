@@ -26,19 +26,19 @@ fi
 if [[ -n "${ADMIN_USERNAME}" ]]; then
         UDF_VARS["ADMIN_USERNAME"]="${ADMIN_USERNAME}"
 else
-        UDF_VARS["ADMIN_USERNAME"]="" # default
+        UDF_VARS["ADMIN_USERNAME"]="influxadmin" # default
 fi
 
 if [[ -n "${ORG_NAME}" ]]; then
         UDF_VARS["ORG_NAME"]="${ORG_NAME}"
 else
-        UDF_VARS["ORG_NAME"]="" # default
+        UDF_VARS["ORG_NAME"]="Akamai Technologies" # default
 fi
 
 if [[ -n "${BUCKET_NAME}" ]]; then
         UDF_VARS["BUCKET_NAME"]="${BUCKET_NAME}"
 else
-        UDF_VARS["BUCKET_NAME"]="" # default
+        UDF_VARS["BUCKET_NAME"]="testbucket" # default
 fi
 
 if [[ -n "${USER_NAME}" ]]; then

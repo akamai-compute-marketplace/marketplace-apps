@@ -1,0 +1,53 @@
+---
+services:
+  weaviate:
+    command:
+      - --host 
+      - 0.0.0.0
+      - --port 
+      - "{{ weaviate_http_port }}"
+      - --scheme 
+      - http
+    image: cr.weaviate.io/semitechnologies/weaviate:{{ weaviate_version }}
+    ports:
+      - "127.0.0.1:{{ weaviate_http_port }}:{{ weaviate_http_port }}"   # HTTP API (localhost only, proxied via NGINX)
+      - "127.0.0.1:{{ weaviate_grpc_port }}:{{ weaviate_grpc_port }}"   # gRPC (localhost only)
+    volumes:
+      - {{ weaviate_data_dir }}:/var/lib/weaviate
+    restart: unless-stopped
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      # Authentication configuration
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'false'
+      AUTHENTICATION_APIKEY_ENABLED: 'true'
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: '{{ weaviate_admin_api_key }},{{ weaviate_user_api_key }}'
+      AUTHENTICATION_APIKEY_USERS: 'admin,user'
+      # Authorization with RBAC
+      AUTHORIZATION_ENABLE_RBAC: 'true'
+      AUTHORIZATION_RBAC_ROOT_USERS: 'admin'
+      # Persistence configuration
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      CLUSTER_HOSTNAME: 'node1'
+      # Module configuration
+      DEFAULT_VECTORIZER_MODULE: 'text2vec-transformers'
+      ENABLE_MODULES: 'text2vec-transformers'
+      TRANSFORMERS_INFERENCE_API: 'http://text2vec-transformers:8080'
+      # Resource limits
+      LIMIT_RESOURCES: 'true'
+      LOG_LEVEL: 'info'
+    depends_on:
+      - text2vec-transformers
+
+  text2vec-transformers:
+    image: cr.weaviate.io/semitechnologies/transformers-inference:{{ weaviate_transformer_model }}
+    environment:
+      ENABLE_CUDA: '1'
+      NVIDIA_VISIBLE_DEVICES: 'all'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped

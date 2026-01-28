@@ -1,0 +1,80 @@
+---
+# The task calling this helper should pass along the following variable:
+# gpu_required: BOOL: True|False
+ 
+# This task will detect if a GPU is bound to the instance. If gpu_required=true,
+# is set the app requires a GPU to be installed for app provisioning. If none found,
+# the provision.yml will kill the play because this is required.
+ 
+# If gpu_required=false is set, the app might have GPU or CPU support. In this case,
+# gpu_required=false will fail to detect a GPU on the instance, but will return
+# variable _has_gpu=false and will not kill the play.
+
+# This helper sets _has_gpu a variable to True|False which can be utilized for handling.
+# This helper should be run at playbook-level (provision.yml).
+
+- block:
+    - name: Check if GPU is present
+      shell:
+        cmd: lspci -D | grep VGA | grep RTX
+      changed_when: false
+      register: gpu
+
+    - name: Ensure that GPU is attached on instance
+      fail:
+        msg: "Deployment failed: No GPU detected. This application requires a GPU instance."
+      when: gpu.rc != 0
+
+    - name: Set GPU variable
+      set_fact:
+        _has_gpu: true
+        gpu_device: "{{ gpu.stdout.split()[0] }}"
+    
+    - name: Writing GPU variables to vars file
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          _has_gpu: {{ _has_gpu }}
+          gpu_device: "{{ gpu_device }}"
+
+  when: gpu_required | bool
+
+- block:
+    - name: Check if GPU is present
+      shell:
+        cmd: lspci -D | grep VGA | grep RTX
+      changed_when: false
+      register: gpu
+
+    - name: Ensure that GPU is attached on instance
+      fail:
+        msg: "No GPU detected. Continuing..."
+      when: gpu.rc != 0
+
+    - name: Set GPU variable
+      set_fact:
+        _has_gpu: true
+        gpu_device: "{{ gpu.stdout.split()[0] }}"
+
+    - name: Writing GPU variables to vars file
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          _has_gpu: {{ _has_gpu }}
+          gpu_device: "{{ gpu_device }}"          
+
+  rescue:
+    - name: Set GPU variable
+      set_fact:
+        _has_gpu: False
+
+    - name: Writing GPU variables to vars file
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          _has_gpu: {{ _has_gpu }}
+
+  when: gpu_required | bool == False

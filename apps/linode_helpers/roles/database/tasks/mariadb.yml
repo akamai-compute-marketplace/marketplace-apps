@@ -1,28 +1,50 @@
 ---
-- name: install MariaDB
+- name: Generate MySQL root password
+  set_fact:
+    mysql_root_password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+
+- name: Install MariaDB
   apt:
     pkg:
       - mariadb-server
       - python3-mysqldb
     state: present
+    update_cache: true
 
-- name: update mysql root password
-  mysql_query:
+- name: Ensure MySQL service is started
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Set root to use auth_socket
+  community.mysql.mysql_query:
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    login_db: mysql
     query: "ALTER USER 'root'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('{{ mysql_root_password }}') OR unix_socket;"
 
-- name: removes all anonymous user accounts
-  mysql_user:
+- name: Create root password login if needed
+  community.mysql.mysql_user:
+    name: root
+    host: 127.0.0.1
+    password: "{{ mysql_root_password }}"
+    plugin: mysql_native_password
+    priv: '*.*:ALL,GRANT'
+    state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove all anonymous user accounts
+  community.mysql.mysql_user:
     name: ''
     host_all: true
     state: absent
     login_user: root
-
-- name: remove test database
-  mysql_db:
+    login_password: "{{ mysql_root_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
-    login_user: root
+
+- name: Remove test database
+  community.mysql.mysql_db:
     name: test
     state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock

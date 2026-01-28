@@ -1,0 +1,15 @@
+---
+- name: configure ufw rules for core services
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - "22"
+    - "80"
+    - "443"
+
+- name: enable ufw
+  community.general.ufw:
+    state: enabled
+    policy: deny 
