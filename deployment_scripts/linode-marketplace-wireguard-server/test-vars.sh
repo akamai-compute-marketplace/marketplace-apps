@@ -13,17 +13,34 @@ if [[ -n ${INSTANCE_ENV} ]]; then
   done
 fi
 
-declare -A UDF_VARS
-UDF_VARS["USER_NAME"]="admin"
-UDF_VARS["DISABLE_ROOT"]="No"
-UDF_VARS["WIREGUARD_SERVER_ADDRESS"]="10.0.0.1/24"
+# UDF Variables
 
-# dynamic variables
-#if [[ -n "${CHANGE_ME}" ]]; then
-#        UDF_VARS["CHANGE_ME"]="${CHANGE_ME}"
-#else
-#        UDF_VARS["CHANGE_ME"]="some value" # default
-#fi
+declare -A UDF_VARS
+
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
+else
+        UDF_VARS["USER_NAME"]="admin" # default
+fi
+
+if [[ -n "${DISABLE_ROOT}" ]]; then
+        UDF_VARS["DISABLE_ROOT"]="${DISABLE_ROOT}"
+else
+        UDF_VARS["DISABLE_ROOT"]="No" # default
+fi
+
+if [[ -n "${WIREGUARD_SERVER_ADDRESS}" ]]; then
+        UDF_VARS["WIREGUARD_SERVER_ADDRESS"]="${WIREGUARD_SERVER_ADDRESS}"
+else
+        UDF_VARS["WIREGUARD_SERVER_ADDRESS"]="10.0.0.1/24" # default
+fi
+
+if [[ -n "${ADD_ONS}" ]]; then
+        UDF_VARS["ADD_ONS"]="${ADD_ONS}"
+else
+        UDF_VARS["ADD_ONS"]="none" # default
+fi
+
 
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do

@@ -29,28 +29,10 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${WIREGUARD_SERVER_PUBLIC_KEY}" ]]; then
-        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="${WIREGUARD_SERVER_PUBLIC_KEY}"
+if [[ -n "${VALKEY_VERSION}" ]]; then
+        UDF_VARS["VALKEY_VERSION"]="${VALKEY_VERSION}"
 else
-        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="Aok+csm4V2GoT81orYzU4Y+AgZT1WHkvDnGv4Hb4CWQ=" # default
-fi
-
-if [[ -n "${WIREGUARD_SERVER_ENDPOINT}" ]]; then
-        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="${WIREGUARD_SERVER_ENDPOINT}"
-else
-        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="127.0.0.1:51820" # default
-fi
-
-if [[ -n "${WIREGUARD_CLIENT_TUNNEL_IP}" ]]; then
-        UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="${WIREGUARD_CLIENT_TUNNEL_IP}"
-else
-        UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="10.0.0.2/32" # default
-fi
-
-if [[ -n "${WIREGUARD_ALLOWED_IPS}" ]]; then
-        UDF_VARS["WIREGUARD_ALLOWED_IPS"]="${WIREGUARD_ALLOWED_IPS}"
-else
-        UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32" # default
+        UDF_VARS["VALKEY_VERSION"]="8.0.1" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
