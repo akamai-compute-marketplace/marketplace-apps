@@ -19,21 +19,16 @@
     group: "{{ username }}"
     mode: 0755
 
-- name: Get mise version
+- name: Get latest mise release info from GitHub
   uri:
     method: GET
     url: https://api.github.com/repos/jdx/mise/releases/latest
     return_content: true
-    body_format: json
   register: version_output
 
-- name: Set mise version
+- name: Set mise tarball URL
   set_fact:
-    mise_version: "{{ version_output.content | from_json | json_query('name') }}"
-
-- name: Set mise tarball
-  set_fact:
-    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ mise_version }}/mise-{{ mise_version }}-linux-x64.tar.zst"
+    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ (version_output.content | from_json).tag_name }}/mise-{{ (version_output.content | from_json).tag_name }}-linux-x64.tar.zst"
 
 - name: Create tempdir
   tempfile:
