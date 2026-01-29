@@ -29,28 +29,46 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${WIREGUARD_SERVER_PUBLIC_KEY}" ]]; then
-        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="${WIREGUARD_SERVER_PUBLIC_KEY}"
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
 else
-        UDF_VARS["WIREGUARD_SERVER_PUBLIC_KEY"]="Aok+csm4V2GoT81orYzU4Y+AgZT1WHkvDnGv4Hb4CWQ=" # default
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
 fi
 
-if [[ -n "${WIREGUARD_SERVER_ENDPOINT}" ]]; then
-        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="${WIREGUARD_SERVER_ENDPOINT}"
+if [[ -n "${SUBDOMAIN}" ]]; then
+        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["WIREGUARD_SERVER_ENDPOINT"]="127.0.0.1:51820" # default
+        UDF_VARS["SUBDOMAIN"]="" # default
 fi
 
-if [[ -n "${WIREGUARD_CLIENT_TUNNEL_IP}" ]]; then
-        UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="${WIREGUARD_CLIENT_TUNNEL_IP}"
+if [[ -n "${DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
-        UDF_VARS["WIREGUARD_CLIENT_TUNNEL_IP"]="10.0.0.2/32" # default
+        UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${WIREGUARD_ALLOWED_IPS}" ]]; then
-        UDF_VARS["WIREGUARD_ALLOWED_IPS"]="${WIREGUARD_ALLOWED_IPS}"
+if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["WIREGUARD_ALLOWED_IPS"]="10.0.0.1/32" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${YEMAIL}" ]]; then
+        UDF_VARS["YEMAIL"]="${YEMAIL}"
+else
+        UDF_VARS["YEMAIL"]="admin@yacht.local" # default
+fi
+
+if [[ -n "${COMPOSE_SUPPORT}" ]]; then
+        UDF_VARS["COMPOSE_SUPPORT"]="${COMPOSE_SUPPORT}"
+else
+        UDF_VARS["COMPOSE_SUPPORT"]="Yes" # default
+fi
+
+if [[ -n "${YTHEME}" ]]; then
+        UDF_VARS["YTHEME"]="${YTHEME}"
+else
+        UDF_VARS["YTHEME"]="Default" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

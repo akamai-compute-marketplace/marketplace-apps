@@ -14,20 +14,19 @@ else
 fi
 # END CI-MODE
 
-##Linode/SSH security settings
+## Simplex Settings
+# <UDF name="smp_password" label="Set password for smp-server." example="123qwe" default="" />
+# <UDF name="xftp_quota" label="Set xftp-server file storage quota in GB." example="1/5/10/100gb" default="10gb" />
+
+## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Domain Settings
-#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your Linode's DNS records" default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record. (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
-
-## Yacht Settings 
-#<UDF name="yemail" Label="Yacht Email" example="admin@yacht.local" default="admin@yacht.local" />
-#<UDF name="compose_support" Label="Yacht Compose Support" example="Yes" default="Yes" oneof="Yes,No" />
-#<UDF name="ytheme" Label="Yacht Theme" example="Default" default="Default" oneof="Default,RED,OMV" />
+#<UDF name="soa_email_address" label="SOA Email" example="user@domain.tld" default="">
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -50,7 +49,7 @@ fi
 # END CI-GH
 
 export WORK_DIR="/tmp/marketplace-apps" 
-export MARKETPLACE_APP="apps/linode-marketplace-yacht"
+export MARKETPLACE_APP="apps/linode-marketplace-simplex-chat"
 
 # BEGIN CI-PROVISION-FUNC
 function provision_failed {
@@ -89,50 +88,60 @@ function udf {
 
   # sudo username
   username: ${USER_NAME}
-  webserver_stack: lemp
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS
+  # END CI-UDF-ADDONS   
 EOF
+  # Simplex variables
+  
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    if [[ -n ${DOMAIN} && -n ${SUBDOMAIN} ]]; then
+      echo "addr: ${SUBDOMAIN}.${DOMAIN}" >> ${group_vars}
+    elif [[ -n ${DOMAIN} ]]; then
+      echo "addr: ${DOMAIN}" >> ${group_vars}
+    else
+      echo "addr: $(hostname -I | awk '{print $1}')" >> ${group_vars}
+    fi
+  else
+    echo "addr: $(hostname -I | awk '{print $1}')" >> ${group_vars}
+  fi
+
+  if [[ -n ${SMP_PASSWORD} ]]; then
+    echo "smp_password: ${SMP_PASSWORD}" >> ${group_vars};
+  fi
+
+  if [[ -n ${XFTP_QUOTA} ]]; then
+    case ${XFTP_QUOTA} in
+      *gb) echo "xftp_quota: ${XFTP_QUOTA}" >> ${group_vars} ;;
+      *) echo "xftp_quota: ${XFTP_QUOTA}gb" >> ${group_vars} ;;
+    esac
+  fi
+
+  # Linode variables
+
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No email entered";
+  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
 
-  # yacht vars
-  
-  if [[ -n ${YEMAIL} ]]; then
-    echo "yemail: ${YEMAIL}" >> ${group_vars};
-  fi
-
-  if [[ -n ${COMPOSE_SUPPORT} ]]; then
-    echo "compose_support: ${COMPOSE_SUPPORT}" >> ${group_vars};
-  fi
-
-  if [[ -n ${YTHEME} ]]; then
-    echo "yacht_theme: ${YTHEME}" >> ${group_vars};
-  fi
-
-  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
   fi
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
     echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
-  fi
-
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
   fi
 
   # staging or production mode (ci)
@@ -171,7 +180,6 @@ function run {
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-  
 }
 
 function installation_complete {

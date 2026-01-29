@@ -1,15 +1,21 @@
 ---
-- name: restart Apache2
+# Install Addons if requested
+#- name: Add addons
+#  import_role:
+#    name: addons
+#  when: add_ons != ['none']
+
+- name: Restart Apache2
   systemd:
     name: apache2.service
     state: restarted
   when: webserver_stack == 'lamp'
 
-- name: configuring domain with certbot
+- name: Configuring domain with certbot
   import_role:
     name: certbot_ssl
 
-- name: moving vhost_ssl template 
+- name: Moving vhost_ssl template 
   template: 
     src: ../../lemp/templates/vhost_ssl.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
@@ -18,7 +24,7 @@
     mode: 0644 
   when: webserver_stack == 'lemp'
 
-- name: restart Nginx
+- name: Restart Nginx
   systemd:
     name: nginx.service
     state: restarted
@@ -26,7 +32,7 @@
 
 # data exporter
 
-- name: adding prometheus exporters
+- name: Adding prometheus exporters
   import_role:
     name: data_exporter
   when: prometheus_exporter != 'none'

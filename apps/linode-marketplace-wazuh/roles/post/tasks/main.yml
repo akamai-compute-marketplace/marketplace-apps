@@ -1,6 +1,12 @@
 ---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
 # motd and creds gen
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
@@ -10,7 +16,7 @@
     src: /tmp/wazuh-install-files/wazuh-passwords.txt
   register: wazuh_passwords_content
 
-- name: writing wazuh creds into file
+- name: Writing wazuh creds into file
   copy:
     dest: /home/{{ username }}/.credentials
     owner: "{{ username }}"
