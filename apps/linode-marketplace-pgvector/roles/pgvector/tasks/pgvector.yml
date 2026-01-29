@@ -1,0 +1,25 @@
+---
+- name: Detect installed PostgreSQL major version
+  command: psql -V
+  register: psql_version
+  changed_when: false
+
+- name: Set postgres_version variable
+  set_fact:
+    postgres_version: "{{ psql_version.stdout | regex_replace('^.* ([0-9]+)\\..*$', '\\1') }}"
+
+- name: Install pgvector for detected PostgreSQL version
+  apt:
+    name: "postgresql-{{ postgres_version }}-pgvector"
+    state: present
+    update_cache: true
+
+- name: Enable pgvector extension
+  community.postgresql.postgresql_ext:
+    name: vector
+    db: "{{ postgresql_app_db }}"
+    state: present
+    login_user: postgres
+    login_unix_socket: /var/run/postgresql
+  become: true
+  become_user: postgres
