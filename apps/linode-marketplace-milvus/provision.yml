@@ -1,0 +1,27 @@
+---
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+
+    - name: Ensure instance has GPU before continuing
+      import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml 
+      vars:
+        gpu_required: false
+        
+    # generate creds
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Writing Milvus to vars
+      lineinfile: 
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: | 
+          minio_root_password: {{ lookup('password', '/dev/null length=30 chars=ascii_letters,digits') }}
+          milvus_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+

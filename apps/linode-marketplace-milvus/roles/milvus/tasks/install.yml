@@ -1,0 +1,38 @@
+---
+
+- name: Install Docker
+  import_role:
+    name: docker
+
+- name: Installing Docker Compose
+  apt:
+    pkg: docker-compose
+    state: present
+
+- name: Deploy Milvus templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - src: milvus.yaml
+      dest: "{{ milvus_directory }}/milvus.yaml"
+    - src: docker-compose.yml.j2
+      dest: "{{ milvus_directory }}/docker-compose.yml"
+    - src: env.j2
+      dest: "{{ milvus_directory }}/.env"
+  
+- name: Pull Milvus Docker images
+  community.docker.docker_compose_v2:
+    project_src: "{{ milvus_directory }}"
+    pull: always
+    state: present
+  register: compose_result
+  retries: 5
+  delay: 10
+  until: compose_result is succeeded
+
+- name: Start Milvus Compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ milvus_directory }}"
+    state: present
