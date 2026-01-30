@@ -16,15 +16,15 @@
     mode: "0644"
   loop:
     - src: milvus.yaml
-      dest: /opt/milvus/milvus.yaml
+      dest: "{{ milvus_directory }}/milvus.yaml"
     - src: docker-compose.yml.j2
-      dest: /opt/milvus/docker-compose.yml
+      dest: "{{ milvus_directory }}/docker-compose.yml"
     - src: env.j2
-      dest: /opt/milvus/.env
+      dest: "{{ milvus_directory }}/.env"
   
 - name: Pull Milvus Docker images
   community.docker.docker_compose_v2:
-    project_src: /opt/milvus
+    project_src: "{{ milvus_directory }}"
     pull: always
     state: present
   register: compose_result
@@ -34,5 +34,5 @@
 
 - name: Start Milvus Compose file
   community.docker.docker_compose_v2:
-    project_src: /opt/milvus
+    project_src: "{{ milvus_directory }}"
     state: present

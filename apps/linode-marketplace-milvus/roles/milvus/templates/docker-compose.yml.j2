@@ -61,7 +61,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
-      - /opt/milvus/milvus.yaml:/milvus/configs/milvus.yaml
+      - {{ milvus_directory }}/milvus.yaml:/milvus/configs/milvus.yaml
       - ./certs:/certs:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
