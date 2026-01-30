@@ -1,0 +1,14 @@
+---
+- name: update peppermint admin email in database
+  community.docker.docker_container_exec:
+    container: peppermint_postgres
+    command: >
+      psql -U peppermint -d peppermint -c
+      "UPDATE \"User\"
+       SET email = '{{ admin_email }}',
+           \"updatedAt\" = CURRENT_TIMESTAMP
+       WHERE email = 'admin@admin.com';"
+    env:
+      PGPASSWORD: "{{ postgres_password }}"
+  no_log: true
+  when: admin_email is defined and admin_email != 'admin@admin.com'

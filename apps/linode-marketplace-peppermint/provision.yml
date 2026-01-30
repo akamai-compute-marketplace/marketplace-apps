@@ -8,5 +8,14 @@
     - group_vars/linode/vars
   tasks:
   # generate creds
-    - name: generating sudo user and password 
+    - name: generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: generate peppermint secrets
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          postgres_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          peppermint_secret: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          peppermint_admin_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

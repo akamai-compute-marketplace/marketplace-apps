@@ -14,7 +14,6 @@
             name: "{{ item }}"
           loop:
             - common
-            - docker
             - peppermint
             - post
         - name: deployment passed
@@ -33,7 +32,6 @@
         name: "{{ item }}"
       loop:
         - common
-        - docker
         - peppermint
         - post
       when: "mode == 'production'"

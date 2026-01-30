@@ -1,0 +1,25 @@
+---
+- name: Install Docker latest
+  import_role: 
+    name: docker
+
+- name: Installing docker-compose
+  apt:
+    pkg:
+    - docker-compose
+    state: present
+
+- name: create docker compose directory
+  file:
+    path: "{{ docker_directory }}"
+    state: directory
+
+- name: create docker compose file
+  template:
+    src: docker-compose.yaml
+    dest: "{{ docker_directory }}/docker-compose.yml"
+
+- name: start peppermint containers with docker compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: present

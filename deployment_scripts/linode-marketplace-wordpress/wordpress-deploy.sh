@@ -33,7 +33,7 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Misc
-#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter,none"  default="">
+#<UDF name="prometheus_exporter" label="Add Prometheus data exporter" manyOf="node_exporter,mysqld_exporter,none"  default="none">
 
 # BEGIN CI-GH
 #GH_USER=""
