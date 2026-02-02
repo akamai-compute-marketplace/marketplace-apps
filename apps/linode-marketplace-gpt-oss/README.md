@@ -2,7 +2,7 @@
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
-Our Marketplace application deploys OpenAI GPT-OSS, a family of open-weight large language models designed for powerful reasoning, agentic tasks, and versatile developer use cases. GPT-OSS models feature MXFP4 quantization of mixture-of-experts weights, enabling efficient deployment on a wide range of GPU hardware.
+Our Marketplace application deploys OpenAI GPT-OSS, a family of open-weight large language models designed for powerful reasoning, agentic tasks, and versatile developer use cases. These models are released under the permissive Apache 2.0 license, allowing developers to build freely without copyleft restrictions or patent risk.
 
 During deployment, you can choose between two model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
@@ -10,10 +10,10 @@ During deployment, you can choose between two model sizes to match your GPU capa
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | `29.1.3`    | Container Management Runtime |
-| Docker Compose    | `1.29.2`    | Tool for multi-container applications |
+| Docker    | `29.2.0`    | Container Management Runtime |
+| Docker Compose    | `5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
-| vLLM | `v0.12.0` tag | Library to run LLM inference models  |
+| vLLM | `gptoss` tag | Library to run LLM inference models  |
 | Open WebUI | `main` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
@@ -50,7 +50,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 ### API Service (vLLM)
 
 - **Port**: `localhost:8000`
-- **Container**: `vllm/vllm-openai:v0.12.0`
+- **Container**: `vllm/vllm-openai:gptoss`
 - **Model**: `openai/gpt-oss-20b` or `openai/gpt-oss-120b` (user selectable)
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
@@ -91,25 +91,12 @@ The following directories are used on the deployed instance:
 
 The UI service automatically connects to the API service running on `localhost:8000`. Both services run on the same instance and communicate over the Docker network.
 
-## Model Access
-
-GPT-OSS models are publicly accessible on Hugging Face and do not require authentication. The models are automatically downloaded during the first startup, which may take several minutes depending on your network speed.
-
-- [openai/gpt-oss-20b on Hugging Face](https://huggingface.co/openai/gpt-oss-20b)
-- [openai/gpt-oss-120b on Hugging Face](https://huggingface.co/openai/gpt-oss-120b)
-
-## RAG Operations in Open WebUI
-
-Open WebUI provides built-in support for RAG operations allowing users to chat with their documents. This implementation uses Nginx as a frontend web service proxy to the Open WebUI container. Users that are looking to upload documents larger than 100MBs are required to update Nginx's `client_max_body_size` to a larger value.
-
-You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
-
 ## Resource Requirements
 
 ### For GPT-OSS 20B
-- **GPU**: 16-24GB VRAM (RTX 4000 Ada, RTX 4090, A100, etc.)
+- **GPU**: 16GB+ VRAM minimum (RTX 4000 Ada, RTX 4090, A100, etc.)
 - **Memory**: 16GB RAM or higher
-- **Storage**: Sufficient space for model files (~15GB)
+- **Storage**: Sufficient space for model files (~22GB)
 - **Reference**: [gpt-oss-20b on Hugging Face](https://huggingface.co/openai/gpt-oss-20b)
 
 ### For GPT-OSS 120B
@@ -118,4 +105,9 @@ You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/$
 - **Storage**: Sufficient space for model files (~60GB)
 - **Reference**: [gpt-oss-120b on Hugging Face](https://huggingface.co/openai/gpt-oss-120b)
 
-**Note**: The 120B model requires high-end datacenter GPUs. Standard consumer GPUs and most cloud GPU instances will only support the 20B model.
+## RAG Operations in Open WebUI
+
+Open WebUI provides built-in support for RAG operations allowing users to chat with their documents. This implementation uses Nginx as a frontend web service proxy to the Open WebUI container. Users that are looking to upload documents larger than 100MBs are required to update Nginx's `client_max_body_size` to a larger value.
+
+You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
+
