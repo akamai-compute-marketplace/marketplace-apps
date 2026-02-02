@@ -13,7 +13,7 @@ During deployment, you can choose between two model sizes to match your GPU capa
 | Docker    | `29.2.0`    | Container Management Runtime |
 | Docker Compose    | `5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
-| vLLM | `gptoss` tag | Library to run LLM inference models  |
+| vLLM | `v0.12.0` tag | Library to run LLM inference models  |
 | Open WebUI | `main` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
@@ -50,7 +50,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 ### API Service (vLLM)
 
 - **Port**: `localhost:8000`
-- **Container**: `vllm/vllm-openai:gptoss`
+- **Container**: `vllm/vllm-openai:v0.12.0`
 - **Model**: `openai/gpt-oss-20b` or `openai/gpt-oss-120b` (user selectable)
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
@@ -93,14 +93,16 @@ The UI service automatically connects to the API service running on `localhost:8
 
 ## Resource Requirements
 
+### GPU Compatibility
+
 ### For GPT-OSS 20B
-- **GPU**: Any supported Linode GPU instance type
+- **GPU**: RTX4000 Ada
 - **Memory**: 16GB RAM or higher
 - **Storage**: Sufficient space for model files (~22GB)
 - **Reference**: [gpt-oss-20b on Hugging Face](https://huggingface.co/openai/gpt-oss-20b)
 
 ### For GPT-OSS 120B
-- **GPU**: Any supported Linode GPU instance type
+- **GPU**: RTX4000 Ada
 - **Memory**: 64GB RAM or higher
 - **Storage**: Sufficient space for model files (~60GB)
 - **Reference**: [gpt-oss-120b on Hugging Face](https://huggingface.co/openai/gpt-oss-120b)
