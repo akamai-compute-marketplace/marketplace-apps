@@ -93,8 +93,6 @@ The UI service automatically connects to the API service running on `localhost:8
 
 ## Resource Requirements
 
-### GPU Compatibility
-
 ### For GPT-OSS 20B
 - **GPU**: RTX4000 Ada
 - **Memory**: 16GB RAM or higher
