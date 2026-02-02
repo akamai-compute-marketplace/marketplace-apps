@@ -94,13 +94,13 @@ The UI service automatically connects to the API service running on `localhost:8
 ## Resource Requirements
 
 ### For GPT-OSS 20B
-- **GPU**: 16GB+ VRAM minimum (RTX 4000 Ada, RTX 4090, A100, etc.)
+- **GPU**: Any supported Linode GPU instance type
 - **Memory**: 16GB RAM or higher
 - **Storage**: Sufficient space for model files (~22GB)
 - **Reference**: [gpt-oss-20b on Hugging Face](https://huggingface.co/openai/gpt-oss-20b)
 
 ### For GPT-OSS 120B
-- **GPU**: 80GB VRAM required (NVIDIA H100, H200, or AMD MI300X)
+- **GPU**: Any supported Linode GPU instance type
 - **Memory**: 64GB RAM or higher
 - **Storage**: Sufficient space for model files (~60GB)
 - **Reference**: [gpt-oss-120b on Hugging Face](https://huggingface.co/openai/gpt-oss-120b)
