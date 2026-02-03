@@ -13,7 +13,7 @@ During deployment, you can choose between two model sizes to match your GPU capa
 | Docker    | `29.2.0`    | Container Management Runtime |
 | Docker Compose    | `5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
-| vLLM | `v0.12.0` tag | Library to run LLM inference models  |
+| vLLM | `v0.14.0` tag | Library to run LLM inference models  |
 | Open WebUI | `main` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
@@ -50,7 +50,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 ### API Service (vLLM)
 
 - **Port**: `localhost:8000`
-- **Container**: `vllm/vllm-openai:v0.12.0`
+- **Container**: `vllm/vllm-openai:v0.14.0`
 - **Model**: `openai/gpt-oss-20b` or `openai/gpt-oss-120b` (user selectable)
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
@@ -58,7 +58,7 @@ Both services are managed via Docker Compose and configured to restart automatic
   - GPU-accelerated inference
   - MXFP4 quantized mixture-of-experts architecture
   - Optimized for production workloads
-  - 8,192 token context length
+  - 16,384 token context length
 
 ### UI Service (Open WebUI)
 
