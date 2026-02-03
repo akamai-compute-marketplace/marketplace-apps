@@ -18,7 +18,7 @@ services:
     command:
       - --model=openai/gpt-oss-{{ gpt_oss_model_size | lower }}
       - --max-model-len=16384
-      - --gpu-memory-utilization=0.95
+      - --gpu-memory-utilization=0.90
     healthcheck:
       test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
       interval: 10s
