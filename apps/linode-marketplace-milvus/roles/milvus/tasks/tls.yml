@@ -1,0 +1,94 @@
+- name: Ensure cert directory exists
+  file:
+    path: "{{ milvus_directory }}/certs"
+    state: directory
+    mode: '0755'
+
+# CA
+- name: Generate CA private key
+  community.crypto.openssl_privatekey:
+    path: "{{ milvus_directory }}/certs/ca.key"
+    size: 4096
+    type: RSA
+    state: present
+
+- name: Generate CA CSR
+  community.crypto.openssl_csr:
+    path: "{{ milvus_directory }}/certs/ca.csr"
+    privatekey_path: "{{ milvus_directory }}/certs/ca.key"
+    common_name: milvus-etcd-ca
+    basic_constraints:
+      - CA:TRUE
+    key_usage:
+      - keyCertSign
+      - cRLSign
+
+- name: Generate self-signed CA certificate
+  community.crypto.x509_certificate:
+    path: "{{ milvus_directory }}/certs/ca.crt"
+    csr_path: "{{ milvus_directory }}/certs/ca.csr"
+    privatekey_path: "{{ milvus_directory }}/certs/ca.key"
+    provider: selfsigned
+    state: present
+
+# ETCD Server
+- name: Generate etcd server private key
+  community.crypto.openssl_privatekey:
+    path: "{{ milvus_directory }}/certs/server.key"
+    size: 4096
+    type: RSA
+    state: present
+
+- name: Generate etcd server CSR
+  community.crypto.openssl_csr:
+    path: "{{ milvus_directory }}/certs/server.csr"
+    privatekey_path: "{{ milvus_directory }}/certs/server.key"
+    common_name: milvus-etcd
+    subject_alt_name:
+      - DNS:milvus-etcd
+      - DNS:localhost
+      - IP:127.0.0.1
+    extended_key_usage:
+      - serverAuth
+
+- name: Sign etcd server certificate
+  community.crypto.x509_certificate:
+    path: "{{ milvus_directory }}/certs/server.crt"
+    csr_path: "{{ milvus_directory }}/certs/server.csr"
+    provider: ownca
+    ownca_path: "{{ milvus_directory }}/certs/ca.crt"
+    ownca_privatekey_path: "{{ milvus_directory }}/certs/ca.key"
+    state: present
+
+# ETCD Client
+- name: Generate etcd client private key
+  community.crypto.openssl_privatekey:
+    path: "{{ milvus_directory }}/certs/client.key"
+    size: 4096
+    type: RSA
+    state: present
+
+- name: Generate etcd client CSR
+  community.crypto.openssl_csr:
+    path: "{{ milvus_directory }}/certs/client.csr"
+    privatekey_path: "{{ milvus_directory }}/certs/client.key"
+    common_name: milvus-client
+    extended_key_usage:
+      - clientAuth
+
+- name: Sign etcd client certificate
+  community.crypto.x509_certificate:
+    path: "{{ milvus_directory }}/certs/client.crt"
+    csr_path: "{{ milvus_directory }}/certs/client.csr"
+    provider: ownca
+    ownca_path: "{{ milvus_directory }}/certs/ca.crt"
+    ownca_privatekey_path: "{{ milvus_directory }}/certs/ca.key"
+    state: present
+
+- name: Set cert permissions
+  file:
+    path: "{{ milvus_directory }}/certs"
+    recurse: true
+    owner: root
+    group: root
+    mode: '0644'
