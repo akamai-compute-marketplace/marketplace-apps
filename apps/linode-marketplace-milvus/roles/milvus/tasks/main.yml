@@ -1,0 +1,13 @@
+---
+# Milvus
+- name: Generate SSL Certs
+  import_tasks: tls.yml
+
+- name: Install NVIDIA (If Required) 
+  import_tasks: drivers.yml
+
+- name: Install Milvus
+  import_tasks: install.yml
+
+- name: Install Nginx
+  import_tasks: nginx.yml
