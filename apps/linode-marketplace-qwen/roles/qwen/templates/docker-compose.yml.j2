@@ -14,17 +14,21 @@ services:
       - vllm_data:/root/.cache/huggingface
     environment:
       - HF_HOME=/root/.cache/huggingface
-      - HF_TOKEN={{ hf_token }}
     command:
-      - --model=google/gemma-3-{{ gemma3_model_size | lower }}-it
-      - --max-model-len=16384
+      # Qwen model (pick size that fits your GPU)
+      - --model=Qwen/Qwen2.5-7B-Instruct
+      # REQUIRED for Qwen
+      - --trust-remote-code
+      # Qwen handles longer context well
+      - --max-model-len=32768
       - --gpu-memory-utilization=0.95
+      - --dtype=auto
     healthcheck:
       test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 300s
+      start_period: 180s
     deploy:
       resources:
         reservations:
@@ -52,3 +56,4 @@ services:
 volumes:
   vllm_data:
   open_webui_data:
+
