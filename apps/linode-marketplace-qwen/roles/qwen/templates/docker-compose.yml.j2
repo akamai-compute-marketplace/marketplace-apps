@@ -10,6 +10,10 @@ services:
     shm_size: 8g
     ports:
       - "127.0.0.1:8000:8000"
+    volumes:
+      - vllm_data:/root/.cache/huggingface
+    environment:
+      - HF_HOME=/root/.cache/huggingface
     command:
       - --model=Qwen/Qwen2.5-7B-Instruct
       - --trust-remote-code
@@ -47,6 +51,8 @@ services:
       - ANONYMIZED_TELEMETRY=false
 
 volumes:
+  vllm_data:
   open_webui_data:
+
 
 
