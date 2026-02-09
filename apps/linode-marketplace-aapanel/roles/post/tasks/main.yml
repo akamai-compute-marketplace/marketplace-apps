@@ -4,11 +4,13 @@
   import_role:
     name: addons
   when: add_ons != ['none']
-
 - name: Copy MOTD template to /etc/motd
   template:
     src: 'templates/motd.j2'
     dest: '/etc/motd'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing creds into file
   copy:
