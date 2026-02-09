@@ -9,7 +9,7 @@ RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
 	-H "Content-Type: application/json" \
 	-H "Authorization: Bearer $LINODE_API_SECRET" \
 	-X POST -d "{
-                \"image\": \"linode/ubuntu22.04\",
+                \"image\": \"${IMAGE}\",
                 \"maintenance_policy\": \"linode/migrate\",
                 \"private_ip\": false,
                 \"region\": \"${REGION}\",
