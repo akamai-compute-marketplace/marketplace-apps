@@ -1,20 +1,18 @@
+---
 # antmedia
-- name: setting up environment 
+- name: Setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
-  # generate creds
-    - name: generating sudo user and password 
+    # generate creds
+    - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-      
-    - name: writing ant media password to vars
+    - name: Writing ant media password to vars
       blockinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        block: | 
+        block: |
           antmedia_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}
-

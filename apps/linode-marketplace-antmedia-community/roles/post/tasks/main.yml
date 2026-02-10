@@ -10,7 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
-
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 - name: Writing antmedia creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
