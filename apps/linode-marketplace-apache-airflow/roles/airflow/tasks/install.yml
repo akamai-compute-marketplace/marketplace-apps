@@ -1,8 +1,8 @@
+---
 - name: Create airflow Group
   group:
     name: airflow
     state: present
-
 - name: Create airflow user
   user:
     name: airflow
@@ -11,23 +11,15 @@
     shell: /usr/sbin/nologin
     create_home: true
     state: present
-
 - name: Ensure system dependencies are installed
   apt:
-    name:
-      - build-essential
-      - libssl-dev
-      - libffi-dev
-      - python3-dev
-      - curl
+    name: [build-essential, libssl-dev, libffi-dev, python3-dev, curl]
     state: present
     update_cache: true
-
 - name: Get latest Apache Airflow & set URL
   set_fact:
     airflow_version: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
-    python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
-
+    airflow_python_version: "{{ ansible_facts.airflow_python_version.split('.')[0:2] | join('.') }}"
 - name: Create Airflow directories
   file:
     path: "{{ airflow_home }}"
@@ -35,28 +27,23 @@
     owner: airflow
     group: airflow
     mode: '0755'
-
 - name: Create virtual environment for Airflow
   command: python3 -m venv {{ airflow_venv }}
   args:
     creates: "{{ airflow_venv }}/bin/activate"
-
 - name: Upgrade pip in venv
   command: "{{ airflow_venv }}/bin/pip install --upgrade pip setuptools wheel"
-
 - name: Install Airflow with constraints
   pip:
     virtualenv: "{{ airflow_venv }}"
     virtualenv_command: python3 -m venv
     name: "apache-airflow=={{ airflow_version }}"
-    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version }}.txt"
+    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ airflow_python_version }}.txt"
     state: present
-
 - name: Initialize Airflow metadata database
   command: "{{ airflow_venv }}/bin/airflow db migrate"
   args:
     creates: "{{ airflow_home }}/airflow.db"
-
 - name: Template Airflow systemd services
   template:
     src: "{{ item.src }}"
@@ -67,7 +54,6 @@
   loop:
     - { src: "airflow-scheduler.service.j2", dest: "/etc/systemd/system/airflow-scheduler.service" }
     - { src: "airflow-api.service.j2", dest: "/etc/systemd/system/airflow-api.service" }
-
 - name: Start Airflow Services
   systemd_service:
     name: "airflow-{{ service.name }}"
@@ -79,7 +65,6 @@
     - { name: "scheduler" }
   loop_control:
     loop_var: service
-
 - name: Wait until Airflow password file exists
   stat:
     path: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
@@ -87,12 +72,10 @@
   until: airflow_password_file_stat.stat.exists
   retries: 10
   delay: 5
-
 - name: Read Airflow generated password file
   slurp:
     src: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file
-
 - name: Parse JSON and set password as var
   set_fact:
     airflow_admin_password: "{{ (airflow_password_file['content'] | b64decode | from_json).admin }}"

@@ -4,34 +4,26 @@
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
-
+  vars_files: [group_vars/linode/vars]
   tasks:
-    - block:
-        - name: run roles
+    - name: Run roles on staging
+      when: mode == 'staging'
+      block:
+        - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop:
-            - common
-            - airflow
-            - post
-        - name: deployment passed
+          loop: [common, airflow, post]
+        - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'successful'
       rescue:
-        - name: deployment failed
+        - name: Deployment failed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'failed'
-      when: "mode == 'staging'"
-
-    - name: running app normally
+    - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop:
-        - common
-        - airflow
-        - post
-      when: "mode == 'production'"
+      loop: [common, airflow, post]
+      when: mode == 'production'
