@@ -6,7 +6,6 @@
     home: "/opt/arangodb3"
     shell: /usr/sbin/nologin
     state: present
-
 - name: Set up ArangoDB directories and permissions
   file:
     path: "{{ item }}"
@@ -21,20 +20,17 @@
     - "/opt/arangodb3/etc/arangodb3"
     - "/opt/arangodb3/usr/share/arangodb3/js/apps"
     - "/opt/arangodb3/usr/share/arangodb3/js/apps/_db"
-
 - name: Download ArangoDB tarball
   get_url:
     url: "https://download.arangodb.com/arangodb312/Community/Linux/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
     dest: "/tmp/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
     mode: '0644'
-
 - name: Extract ArangoDB tarball
   unarchive:
     src: "/tmp/arangodb3-linux-{{ arangodb_version }}-3_x86_64.tar.gz"
     dest: "/opt/arangodb3"
     remote_src: true
     extra_opts: ["--strip-components=1"]
-
 - name: Generate arangod.conf
   template:
     src: arangod.conf.j2
@@ -42,38 +38,36 @@
     owner: arangodb
     group: arangodb
     mode: '0644'
-
 - name: Create ArangoDB systemd service file
   template:
     src: arangodb.service.j2
     dest: /etc/systemd/system/arangodb3.service
     mode: '0644'
-
 - name: Reload systemd daemon and start ArangoDB service
   systemd:
     name: arangodb3
     state: started
     enabled: true
     daemon_reload: true
-
 - name: Wait for ArangoDB to be ready
   wait_for:
     port: 8529
     host: 127.0.0.1
     delay: 5
     timeout: 60
-
 - name: Set ArangoDB root password
   shell: |
-    echo 'require("@arangodb/users").update("root", "{{ arangodb_root_password }}");' | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 --server.username root --server.password '' --configuration none --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js
-
+    set -euo pipefail
+    echo 'require("@arangodb/users").update("root", "{{ arangodb_root_password }}");' \
+      | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 \
+        --server.username root --server.password '' --configuration none \
+        --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js
 - name: Enable authentication in arangod.conf
   lineinfile:
     path: "/opt/arangodb3/etc/arangodb3/arangod.conf"
     regexp: '^authentication ='
     line: 'authentication = true'
     state: present
-
 - name: Restart ArangoDB
   systemd:
     name: arangodb3
