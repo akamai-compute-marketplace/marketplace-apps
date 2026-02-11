@@ -6,6 +6,7 @@
     home: "/opt/arangodb3"
     shell: /usr/sbin/nologin
     state: present
+
 - name: Set up ArangoDB directories and permissions
   file:
     path: "{{ item }}"

@@ -5,6 +5,7 @@
     port: "{{ item }}"
     proto: tcp
   loop: ["22", "80", "443"]
+
 - name: Enable UFW
   ufw:
     state: enabled

@@ -5,11 +5,13 @@
     antmedia_install_script_url: 'https://raw.githubusercontent.com/ant-media/Scripts/master/install_ant-media-server.sh'
     antmedia_zip_remote_url: 'https://antmedia.io/download/latest.zip'
     antmedia_zip_local_path: '/tmp/ams.zip'
+
 - name: Download install_ant-media-server.sh script
   get_url:
     url: "{{ antmedia_install_script_url }}"
     dest: '/tmp/install_ant-media-server.sh'
     mode: '0755'
+
 - name: Download ams.zip file from a remote location
   get_url:
     url: "{{ antmedia_zip_remote_url }}"
@@ -26,6 +28,7 @@
     host: localhost
     port: 5080
   timeout: 60
+
 - name: Send POST request
   uri:
     url: http://localhost:5080/rest/v2/users/initial
@@ -47,6 +50,7 @@
 - name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
+
 - name: Set facts for letsencrypt certs
   set_fact:
     antmedia_full: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
