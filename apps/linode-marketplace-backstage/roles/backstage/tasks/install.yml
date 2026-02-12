@@ -1,7 +1,6 @@
 ---
 # install system packages
-
-- name: install required packages
+- name: Install required packages
   apt:
     pkg:
       - curl
@@ -15,43 +14,43 @@
     state: latest
     update_cache: true
 
-- name: get nvm latest version
+- name: Get nvm latest version
   uri:
     url: https://api.github.com/repos/nvm-sh/nvm/releases/latest
     return_content: true
     status_code: 200
     body_format: json
-  register: latest_release
+  register: backstage_latest_release
 
-- name: set nvm latest version
+- name: Set nvm latest version
   set_fact:
-    nvm_latest_version: "{{ latest_release.json.tag_name }}"
+    backstage_nvm_latest_version: "{{ backstage_latest_release.json.tag_name }}"
 
-- name: download nvm latest binary
+- name: Download nvm latest binary
   get_url:
-    url: 'https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_latest_version }}/install.sh'
-    dest: '{{ username_directory }}/install.sh'
+    url: 'https://raw.githubusercontent.com/nvm-sh/nvm/{{ backstage_nvm_latest_version }}/install.sh'
+    dest: '{{ backstage_username_directory }}/install.sh'
     owner: '{{ username }}'
     group: '{{ username }}'
-    mode: 0700
-  register: install_sh
+    mode: '0700'
+  register: backstage_install_sh
 
-- name: install nvm
-  shell: '{{ install_sh.dest }}' 
+- name: Install nvm
+  shell: '{{ backstage_install_sh.dest }}'
   become: true
-  become_method: su
+  become_method: ansible.builtin.su
   become_user: '{{ username }}'
 
-- name: remove install.sh
+- name: Remove install.sh
   file:
-    path: '{{ install_sh.dest }}'
+    path: '{{ backstage_install_sh.dest }}'
     state: absent
 
-- name: install docker latest
-  import_role: 
+- name: Install docker latest
+  import_role:
     name: docker
 
-- name: stop docker service
+- name: Stop docker service
   systemd:
     name: docker
     state: stopped
