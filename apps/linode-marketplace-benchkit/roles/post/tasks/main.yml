@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo creds into file
   copy:
@@ -21,7 +24,7 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
-- name: Export jmeter path 
+- name: Export jmeter path
   lineinfile:
     path: '/home/{{ username }}/.bashrc'
     line: "export PATH=\"$PATH:{{ jmeter_path }}\""

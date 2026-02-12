@@ -1,7 +1,6 @@
 ---
 # apache benchmark
-
-- name: install apache benchmark
+- name: Install apache benchmark
   apt:
     pkg: apache2-utils
     state: present

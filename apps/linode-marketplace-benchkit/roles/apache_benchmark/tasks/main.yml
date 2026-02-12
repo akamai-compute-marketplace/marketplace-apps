@@ -1,4 +1,4 @@
 ---
 # install apache benchmark
-- name: install apache benchmark
+- name: Install apache benchmark
   import_tasks: install.yml

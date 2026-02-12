@@ -1,4 +1,4 @@
 ---
 # install siege
-- name: install siege
+- name: Install siege
   import_tasks: install.yml
