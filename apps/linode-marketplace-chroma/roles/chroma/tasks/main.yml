@@ -1,10 +1,10 @@
 ---
-- name: install docker
+- name: Install docker
   import_role:
     name: docker
 
-- name: import docker tasks
+- name: Import docker tasks
   import_tasks: docker.yml
 
-- name: import nginx tasks
+- name: Import nginx tasks
   import_tasks: nginx.yml
