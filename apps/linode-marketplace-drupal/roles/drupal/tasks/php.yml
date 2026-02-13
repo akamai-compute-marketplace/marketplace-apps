@@ -3,13 +3,13 @@
   apt_repository:
     repo: "ppa:ondrej/php"
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Install PHP and extensions
   apt:
     name: "{{ php_packages }}"
     state: present
-    update_cache: yes
+    update_cache: true
   vars:
     php_packages:
       - php8.3
@@ -24,4 +24,4 @@
       - php8.3-zip
       - php8.3-bcmath
       - libapache2-mod-php8.3
-  notify: restart apache
+  notify: Restart apache
