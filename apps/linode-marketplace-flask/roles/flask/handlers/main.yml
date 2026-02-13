@@ -1,10 +1,10 @@
 ---
-- name: restart nginx
+- name: Restart nginx
   service:
     name: nginx
     state: restarted
 
-- name: restart gunicorn
+- name: Restart gunicorn
   service:
     name: gunicorn
     state: restarted
