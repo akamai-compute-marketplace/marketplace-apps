@@ -13,7 +13,8 @@
     group: root
     mode: '0644'
 
-- name: Create tmpfiles.d configuration for gunicorn to create socket directory on reboot
+- name: Create tmpfiles.d configuration for gunicorn to create socket directory
+    on reboot
   template:
     src: gunicorn-tmpfiles.conf.j2
     dest: /etc/tmpfiles.d/gunicorn.conf
@@ -39,11 +40,11 @@
 
 - name: Reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Enable and start gunicorn service
   systemd:
     name: gunicorn
-    enabled: yes
+    enabled: true
     state: started
-  notify: restart gunicorn
+  notify: Restart gunicorn
