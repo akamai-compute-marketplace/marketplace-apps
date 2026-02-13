@@ -1,19 +1,21 @@
 ---
-- name: configure gunicorn socket
+- name: Configure gunicorn socket
   copy:
     src: "files/gunicorn.socket"
     dest: "/etc/systemd/system/gunicorn.socket"
+    mode: "0644"
 
-- name: configure Gunicorn systemd service
+- name: Configure Gunicorn systemd service
   template:
     src: "gunicorn.service.j2"
     dest: "/etc/systemd/system/gunicorn.service"
+    mode: "0644"
 
-- name: reload systemd daemon
+- name: Reload systemd daemon
   systemd:
     daemon_reload: true
 
-- name: start and enable Gunicorn service
+- name: Start and enable Gunicorn service
   systemd:
     name: "gunicorn"
     state: started
