@@ -1,0 +1,37 @@
+# linode ansible playbook
+
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files:
+    - group_vars/linode/vars
+  tasks:
+
+    - name: Ensure instance has GPU before continuing
+      import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml
+      vars:
+        gpu_required: true
+
+    - name: Count available GPUs for tensor parallelism
+      shell:
+        cmd: nvidia-smi --query-gpu=name --format=csv,noheader | wc -l
+      changed_when: false
+      register: gpu_count_result
+
+    - name: Write tensor parallel size to vars file
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: "tensor_parallel_size: {{ gpu_count_result.stdout | trim }}"
+
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Generating Open WebUI password
+      blockinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        block: |
+          openwebui_login_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
