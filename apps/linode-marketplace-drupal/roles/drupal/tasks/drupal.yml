@@ -5,9 +5,9 @@
     dest: "{{ item.dest }}"
     mode: "{{ item.mode }}"
   loop:
-    - { url: "https://composer.github.io/installer.sig", dest: "/tmp/composer-setup.sig", mode: "0644" }
-    - { url: "https://getcomposer.org/installer", dest: "/tmp/composer-setup.php", mode: "0755" }
-
+    - {url: "https://composer.github.io/installer.sig", dest: "/tmp/composer-setup.sig",
+       mode: "0644"}
+    - {url: "https://getcomposer.org/installer", dest: "/tmp/composer-setup.php", mode: "0755"}
 - name: Verify Composer installer checksum
   block:
     - name: Calculate actual checksum of the downloaded installer
@@ -41,7 +41,8 @@
         msg: "Checksum validation failed. Installation aborted."
 
 - name: Install Composer 2.8.3 globally
-  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer --version=2.8.3
+  command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    --version=2.8.3
   args:
     creates: /usr/local/bin/composer
 
@@ -52,7 +53,7 @@
     owner: www-data
     group: www-data
     mode: '0755'
-    recurse: yes
+    recurse: true
   loop:
     - ""  # Creates the base composer directory
     - "repo"
@@ -72,17 +73,14 @@
     command: create-project
     arguments: "drupal/recommended-project:10.4.1 /var/www/{{ _domain }} --no-interaction"
     working_dir: /var/www
-  become: yes
+  become: true
   become_user: www-data
 
 - name: Clean up Composer installer files
   file:
     path: "{{ item }}"
     state: absent
-  loop:
-    - /tmp/composer-setup.php
-    - /tmp/composer-setup.sig
-
+  loop: [/tmp/composer-setup.php, /tmp/composer-setup.sig]
 - name: Create files directory
   file:
     path: /var/www/{{ _domain }}/web/sites/default/files
@@ -95,7 +93,7 @@
   copy:
     src: /var/www/{{ _domain }}/web/sites/default/default.settings.php
     dest: /var/www/{{ _domain }}/web/sites/default/settings.php
-    remote_src: yes
+    remote_src: true
     owner: www-data
     group: www-data
     mode: '0644'

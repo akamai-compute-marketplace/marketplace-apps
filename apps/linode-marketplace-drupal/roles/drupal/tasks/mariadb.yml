@@ -3,7 +3,7 @@
   service:
     name: mariadb
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Import securemysql passgen
   import_role:
@@ -19,7 +19,7 @@
     name: drupaldb
     state: present
     login_user: root
-    login_password: "{{ mysql_root_password }}" 
+    login_password: "{{ mysql_root_password }}"
 
 - name: Create Drupal database user
   mysql_user:
@@ -30,4 +30,4 @@
     state: present
     login_user: root
     login_password: "{{ mysql_root_password }}"
-  notify: restart mariadb
+  notify: Restart mariadb
