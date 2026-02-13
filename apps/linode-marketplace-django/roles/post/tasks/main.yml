@@ -6,12 +6,15 @@
   when: add_ons != ['none']
 
 # motd and creds gen
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
 
-- name: writing django creds into file
+- name: Writing django creds into file
   copy:
     dest: "/home/{{ username }}/.credentials"
     owner: "{{ username }}"
@@ -23,6 +26,6 @@
 
       Postgres user: {{ postgres_db_user }}
       Postgres Django DB password: {{ postgres_db_password }}
-      
+
       Django user: {{ django_user }}
       Django password: {{ django_password }}

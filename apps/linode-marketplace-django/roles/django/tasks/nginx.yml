@@ -1,43 +1,43 @@
 ---
-- name: install required packages
+- name: Install required packages
   apt:
     name: "{{ item }}"
     state: present
-  with_items:
-    - nginx
-    - certbot
+  with_items: [nginx, certbot]
 
-- name: update default config file 
+- name: Update default config file
   template:
     src: "templates/default.conf.j2"
-    dest: "/etc/nginx/sites-available/{{ _domain }}"  
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: "0644"
 
-- name: stop nginx to run certbot standalone
+- name: Stop nginx to run certbot standalone
   systemd:
     name: nginx
     state: stopped
 
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
 
-- name: vhost file 
+- name: File vhost
   template:
     src: "templates/vhost.j2"
-    dest: "/etc/nginx/sites-available/{{ _domain }}"   
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: "0644"
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: "/etc/nginx/sites-enabled/default"
     state: absent
 
-- name: start nginx after certbot gen
+- name: Start nginx after certbot gen
   systemd:
     name: nginx
     state: started

@@ -1,27 +1,24 @@
 ---
-- name: install required packages
+- name: Install required packages
   apt:
     name: "{{ item }}"
     state: present
-  with_items:
-    - postgresql
-    - postgresql-contrib
-    - python3-psycopg2
+  with_items: [postgresql, postgresql-contrib, python3-psycopg2]
 
-- name: set postgresql system user and db user facts
-  set_fact: 
+- name: Set postgresql system user and db user facts
+  set_fact:
     postgres_system_user: "postgres"
     postgres_db_user: "django"
     postgres_db_name: "django"
 
-- name: configure PostgreSQL
+- name: Configure PostgreSQL
   postgresql_db:
     name: "{{ postgres_db_name }}"
     state: present
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: create PostgreSQL user
+- name: Create PostgreSQL user
   postgresql_user:
     name: "{{ postgres_db_user }}"
     password: "{{ postgres_db_password }}"
@@ -30,7 +27,7 @@
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: grant database privileges to django user
+- name: Grant database privileges to django user
   postgresql_privs:
     db: "{{ postgres_db_name }}"
     privs: ALL
@@ -39,7 +36,7 @@
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: grant schema privileges to django user
+- name: Grant schema privileges to django user
   postgresql_privs:
     db: "{{ postgres_db_name }}"
     privs: ALL
@@ -49,17 +46,16 @@
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: set client_encoding for django
+- name: Set client_encoding for django
   postgresql_query:
     db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
     login_unix_socket: /var/run/postgresql
-    query:
-      - "ALTER ROLE {{ postgres_db_user }} SET client_encoding TO 'utf8';"
+    query: ["ALTER ROLE {{ postgres_db_user }} SET client_encoding TO 'utf8';"]
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: set default_transaction_isolation for django
+- name: Set default_transaction_isolation for django
   postgresql_query:
     db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
@@ -68,7 +64,7 @@
   become: true
   become_user: "{{ postgres_system_user }}"
 
-- name: set timezone for django
+- name: Set timezone for django
   postgresql_query:
     db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
