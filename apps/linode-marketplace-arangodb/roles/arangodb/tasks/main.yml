@@ -2,5 +2,6 @@
 # Main ArangoDB installation tasks
 - name: Import ArangoDB install and config tasks
   import_tasks: arangodb.yml
+
 - name: Import NGINX tasks
   import_tasks: nginx.yml

@@ -1,6 +1,6 @@
 ---
 - name: Install Docker latest
-  import_role: 
+  import_role:
     name: docker
 
 - name: Install Docker Compose plugin

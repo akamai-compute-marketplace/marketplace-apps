@@ -24,9 +24,17 @@ wait_for_ssh() {
   done
 }
 
-run_remote_deploy() {
+ubuntu_deploy() {
   set +e
-  sshpass -p "$LINODE_ROOT_PASS" ssh -o StrictHostKeyChecking=no root@"$LINODE_IPV4" "
+  sshpass -p "$LINODE_ROOT_PASS" ssh \
+  -o StrictHostKeyChecking=no \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=10 \
+  -o TCPKeepAlive=yes \
+  root@"$LINODE_IPV4" "
+    set +o history
+    export LINODE_API_SECRET=\"${LINODE_API_SECRET}\"
+    export LINODE_DOMAIN=\"${LINODE_DOMAIN}\"
     git clone --depth 1 --branch \"${GITHUB_HEAD_REF}\" \"${GITHUB_CLONE_URL}\" /root/repo &&
     cd /root/repo/deployment_scripts/\"$APP_NAME\" &&
     chmod +x test-vars.sh $DEPLOYMENT_SCRIPT &&
@@ -44,6 +52,37 @@ run_remote_deploy() {
   if [ "$rc" -ne 0 ]; then
     echo "Remote deployment failed with exit code $rc"
     exit "$rc"
+  fi
+}
+
+almalinux_deploy() {
+  set -e
+  sshpass -p "$LINODE_ROOT_PASS" ssh \
+  -o StrictHostKeyChecking=no \
+  -o ServerAliveInterval=30 \
+  -o ServerAliveCountMax=10 \
+  -o TCPKeepAlive=yes \
+  root@"$LINODE_IPV4" "
+    set +o history
+    dnf -y install git
+    git clone --depth 1 --branch \"$GITHUB_HEAD_REF\" \"$GITHUB_CLONE_URL\" /root/repo
+    cd \"/root/repo/deployment_scripts/$APP_NAME\"
+    chmod +x test-vars.sh \"$DEPLOYMENT_SCRIPT\"
+    . ./test-vars.sh
+    ./$DEPLOYMENT_SCRIPT
+  "
+}
+
+run_remote_deploy() {
+  if [[ "$IMAGE" == *"ubuntu"* ]]; then
+    echo "Detected Ubuntu image"
+    ubuntu_deploy
+  elif [[ "$IMAGE" == *"almalinux"* ]]; then
+    echo "Detected AlmaLinux image"
+    almalinux_deploy
+  else
+    echo "Unsupported image distribution: $IMAGE" >&2
+    exit 1
   fi
 }
 

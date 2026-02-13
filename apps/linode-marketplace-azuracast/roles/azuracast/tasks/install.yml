@@ -17,10 +17,14 @@
   loop_control:
     loop_var: file
   loop:
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env", dest: "{{ azuracast_dir }}/.env" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env", dest: "{{ azuracast_dir }}/azuracast.env" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.sample.yml", dest: "{{ azuracast_dir }}/docker-compose.yml" }
-    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.installer.yml", dest: "{{ azuracast_dir }}/docker-compose.installer.yml" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/sample.env",
+        dest: "{{ azuracast_dir }}/.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/azuracast.sample.env",
+        dest: "{{ azuracast_dir }}/azuracast.env" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.sample.yml",
+        dest: "{{ azuracast_dir }}/docker-compose.yml" }
+    - { url: "https://raw.githubusercontent.com/AzuraCast/AzuraCast/stable/docker-compose.installer.yml",
+        dest: "{{ azuracast_dir }}/docker-compose.installer.yml" }
 
 - name: Set AZURACAST_VERSION to stable in .env
   lineinfile:
@@ -35,8 +39,7 @@
       - docker-compose.installer.yml
     project_name: azuracast_installer
     pull: always
-    services:
-      - installer
+    services: [installer]
 
 - name: Remove docker-compose.installer.yml
   file:
@@ -64,13 +67,18 @@
     command: azuracast_install
     state: started
     auto_remove: true
-    volumes:
-      - "{{ azuracast_dir }}:/{{ azuracast_dir }}"
+    volumes: ["{{ azuracast_dir }}:/{{ azuracast_dir }}"]
     env_file: "{{ azuracast_dir }}/azuracast.env"
     env:
-      MARIADB_ROOT_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
+      MARIADB_ROOT_PASSWORD: >-
+        {{ (azuracast_env_pre.content | b64decode).split('\n')
+        | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first
+        | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}
       MARIADB_USER: azuracast
-      MARIADB_PASSWORD: "{{ (azuracast_env_pre.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
+      MARIADB_PASSWORD: >-
+        {{ (azuracast_env_pre.content | b64decode).split('\n')
+        | select('match', '^MYSQL_PASSWORD=') | list | first
+        | regex_replace('^MYSQL_PASSWORD=', '') }}
       MARIADB_DATABASE: azuracast
   no_log: true
 
@@ -93,10 +101,10 @@
   community.docker.docker_container_exec:
     container: azuracast
     command: bash -c "echo > /dev/tcp/localhost/3306"
-  register: mysql_ready
+  register: azuracast_mysql_ready
   retries: 20
   delay: 5
-  until: mysql_ready.rc == 0
+  until: azuracast_mysql_ready.rc == 0
   changed_when: false
 
 - name: Restart AzuraCast container to reset database state
@@ -118,10 +126,10 @@
   community.docker.docker_container_exec:
     container: azuracast
     command: bash -c "echo > /dev/tcp/localhost/3306"
-  register: mysql_ready_restart
+  register: azuracast_mysql_ready_restart
   retries: 20
   delay: 5
-  until: mysql_ready_restart.rc == 0
+  until: azuracast_mysql_ready_restart.rc == 0
   changed_when: false
 
 - name: Initialize AzuraCast with azuracast_install command
@@ -141,8 +149,14 @@
 
 - name: Set DB password fact
   set_fact:
-    azuracast_db_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_PASSWORD=') | list | first | regex_replace('^MYSQL_PASSWORD=', '') }}"
-    azuracast_db_root_password: "{{ (azuracast_env.content | b64decode).split('\n') | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}"
+    azuracast_db_password: >-
+      {{ (azuracast_env.content | b64decode).split('\n')
+      | select('match', '^MYSQL_PASSWORD=') | list | first
+      | regex_replace('^MYSQL_PASSWORD=', '') }}
+    azuracast_db_root_password: >-
+      {{ (azuracast_env.content | b64decode).split('\n')
+      | select('match', '^MYSQL_ROOT_PASSWORD=') | list | first
+      | regex_replace('^MYSQL_ROOT_PASSWORD=', '') }}
   no_log: true
 
 - name: Copy AzuraCast admin user creation script to host
@@ -165,10 +179,10 @@
 
 - name: Wait for Redis socket in container
   command: docker exec azuracast test -S /run/redis/redis.sock
-  register: redis_socket_check
+  register: azuracast_redis_socket_check
   retries: 10
   delay: 5
-  until: redis_socket_check.rc == 0
+  until: azuracast_redis_socket_check.rc == 0
   changed_when: false
 
 - name: Set super admin user with AzuraCast CLI
@@ -195,10 +209,10 @@
   community.docker.docker_container_exec:
     container: azuracast
     command: curl -s -o /dev/null -w "%{http_code}" http://localhost/
-  register: web_ready
+  register: azuracast_web_ready
   retries: 20
   delay: 5
-  until: web_ready.stdout is search("^(2|3)[0-9][0-9]$")
+  until: azuracast_web_ready.stdout is search("^(2|3)[0-9][0-9]$")
   changed_when: false
 
 - name: Set up Let's Encrypt certificate with AzuraCast CLI

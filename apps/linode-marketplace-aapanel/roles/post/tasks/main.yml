@@ -4,6 +4,7 @@
   import_role:
     name: addons
   when: add_ons != ['none']
+
 - name: Copy MOTD template to /etc/motd
   template:
     src: 'templates/motd.j2'

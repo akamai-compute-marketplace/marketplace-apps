@@ -1,5 +1,5 @@
 ---
-- name: install required packages
+- name: Install required packages
   apt:
     pkg:
       - nginx
@@ -15,7 +15,7 @@
       - libsqlite3-0
       - libsqlite3-dev
       - sqlite3
-      - libxml2-dev 
+      - libxml2-dev
       - libxslt1-dev
       - autoconf
       - libc6-dev
@@ -30,49 +30,52 @@
     update_cache: true
 
 # Nginx
-- name: config file setup
+- name: Config file setup
   template:
-      src: 'templates/nginx.conf.j2'
-      dest: '/etc/nginx/sites-available/{{ _domain }}'
+    src: 'templates/nginx.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: create certs dir
+- name: Create certs dir
   file:
     path: '/var/www/certs/.well-known'
     state: directory
-    recurse: yes
+    recurse: true
 
-- name: changing owner on certs dir
+- name: Changing owner on certs dir
   file:
     path: '/var/www/certs/'
     state: directory
-    recurse: yes
+    recurse: true
     owner: www-data
     group: www-data
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: '/etc/nginx/sites-available/{{ _domain }}'
     dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: '/etc/nginx/sites-enabled/default'
     state: absent
   notify: reload nginx service
 
 # ssl_certbot
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
 
-# beef setup    
-- name: create beef group
+# beef setup
+- name: Create beef group
   group:
     name: beef
     state: present
 
-- name: create beef user
+- name: Create beef user
   user:
     name: beef
     shell: /sbin/nologin
@@ -80,45 +83,53 @@
     system: true
     create_home: false
 
-- name: clone beef repo
+- name: Clone beef repo
   git:
     repo: https://github.com/beefproject/beef.git
     dest: '/home/beef'
+    version: master
 
-- name: changing beef dir owner
+- name: Changing beef dir owner
   file:
     path: /home/beef
     owner: beef
     group: beef
     recurse: true
 
-- name: copying lets encrypt certs to beef dir
+- name: Copying lets encrypt certs to beef dir
   copy:
-    src: '{{ item.src }}' 
+    src: '{{ item.src }}'
     dest: '{{ item.dest }}'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
   loop:
-    - { src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", dest: "/home/beef" } 
+    - { src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", dest: "/home/beef" }
     - { src: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", dest: "/home/beef" }
 
-- name: adding config file
-  template: 
+- name: Adding config file
+  template:
     src: 'beef_config.yaml.j2'
     dest: '/home/beef/config.yaml'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 # update bundler gem
-- name: manually update bundler
+- name: Manually update bundler
   shell: gem install bundler
   args:
     chdir: /home/beef
+
 # Bundler module doesn't support the config set so using command
-- name: bundle config setup
+- name: Bundle config setup
   command: bundle config set --local path /home/beef/.gem
   become_user: beef
   become: true
   args:
-   chdir: /home/beef
+    chdir: /home/beef
 
-- name: install dependencies using bundle
+- name: Install dependencies using bundle
   community.general.bundler:
     executable: bundle
     state: present
@@ -126,44 +137,47 @@
   become_user: beef
   become: true
 
-- name: install xmlrpc gem
+- name: Install xmlrpc gem
   community.general.gem:
     name: xmlrpc
-    state: latest 
+    state: latest
 
-- name: adding startup script
+- name: Adding startup script
   template:
     src: 'beef_startup.j2'
     dest: '/home/beef/start_beef'
     mode: a+x
 
-- name: adding service file
+- name: Adding service file
   template:
     src: 'beef_service.j2'
     dest: '/etc/systemd/system/beef.service'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: reload systemd daemon
+- name: Reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
-- name: start beef service
+- name: Start beef service
   systemd:
     name: beef.service
     state: started
-    enabled: yes    
+    enabled: true
 
-- name: adding ssl renew script
+- name: Adding ssl renew script
   template:
     src: 'ssl_cron_renew.bash.j2'
     dest: '/root/certbot-beef-renewal.sh'
     mode: '0775'
 
-- name: backup existing crontab
+- name: Backup existing crontab
   shell: crontab -l > /tmp/cron_backup || true
   args:
     creates: /tmp/cron_backup
 
-- name: add new cron job
+- name: Add new cron job
   cron:
     name: 'certbot beef renewal'
     minute: '*'
@@ -171,8 +185,7 @@
     weekday: '1'
     job: 'bash /root/certbot-beef-renewal.sh'
 
-- name: remove temporary file
+- name: Remove temporary file
   file:
     path: '/tmp/cron_backup'
     state: absent
-

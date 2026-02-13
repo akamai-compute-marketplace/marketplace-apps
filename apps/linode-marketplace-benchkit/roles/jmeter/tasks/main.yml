@@ -1,4 +1,4 @@
 ---
 # install jmeter
-- name: install jmeter
+- name: Install jmeter
   import_tasks: install.yml

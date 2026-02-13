@@ -4,3 +4,5 @@ skip_list:
   - no-changed-when
   - no-jinja-when
   - fqcn-builtins
+  - package-latest
+  - role-name

@@ -1,7 +1,8 @@
+---
 collections:
- - name: linode.cloud
-   version: 0.37.1
- - name: community.crypto
-   version: 2.26.0 
- - name: community.docker
-   version: 4.5.0
+  - name: linode.cloud
+    version: 0.37.1
+  - name: community.crypto
+    version: 2.26.0
+  - name: community.docker
+    version: 4.5.0

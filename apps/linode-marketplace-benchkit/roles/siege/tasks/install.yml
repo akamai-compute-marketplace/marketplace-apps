@@ -1,7 +1,6 @@
 ---
 # siege
-
-- name: install siege
+- name: Install siege
   apt:
     pkg: siege
     state: present

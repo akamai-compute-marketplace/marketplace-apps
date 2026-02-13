@@ -3,45 +3,48 @@
 
 # install dependancy
 
-- name: install default-jdk
+- name: Install default-jdk
   apt:
     pkg: default-jdk
     state: present
 
-- name: get the latest version of jmeter
+- name: Get the latest version of jmeter
   uri:
     method: GET
     url: https://api.github.com/repos/apache/jmeter/releases/latest
     return_content: true
     body_format: json
-  register: version_output
+  register: jmeter_version_output
 
-- name: set jmeter version
+- name: Set jmeter version
   set_fact:
-    jmeter_version: "{{ version_output.content | from_json | json_query('name') | regex_replace('^v', '') }}"
+    jmeter_version: "{{ jmeter_version_output.content | from_json | json_query('name') | regex_replace('^v', '') }}"
 
-- name: set jmeter path
+- name: Set jmeter path
   set_fact:
     jmeter_path: "/opt/apache-jmeter-{{ jmeter_version }}/bin"
 
-- name: download jmeter {{ jmeter_version }} tar
+- name: Download jmeter tar for {{ jmeter_version }}
   get_url:
     url: "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-{{ jmeter_version }}.tgz"
-    dest: "/tmp/apache-jmeter-{{ jmeter_version }}.tgz" 
+    dest: "/tmp/apache-jmeter-{{ jmeter_version }}.tgz"
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: create jmeter directory
+- name: Create jmeter directory
   file:
     path: "/opt/apache-jmeter-{{ jmeter_version }}"
     state: directory
-    mode: 0755
+    mode: '0755'
 
-- name: untar jmeter archive
+- name: Untar jmeter archive
   unarchive:
     src: "/tmp/apache-jmeter-{{ jmeter_version }}.tgz"
     dest: "/opt/apache-jmeter-{{ jmeter_version }}"
     extra_opts: [--strip-components=1]
- 
-- name: export jmeter path 
+
+- name: Export jmeter path
   lineinfile:
     path: /root/.bashrc
     line: "export PATH=\"$PATH:{{ jmeter_path }}\""
