@@ -68,6 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         app: ${{ fromJson(needs.get-list-of-apps.outputs.configs) }}
+      max-parallel: 10
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
@@ -85,8 +86,9 @@ jobs:
       - name: Deploying ${{ matrix.app }}
         env:
           APP_NAME: ${{ matrix.app }}
-          GITHUB_HEAD_REF: ${{ github.head_ref }}
-          GITHUB_CLONE_URL: ${{ github.event.pull_request.head.repo.clone_url }}
+          BRANCH: ${{ github.head_ref }}
+          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url }}
+          GH_USER: ${{ github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
         run: bash .github/scripts/app-installation.sh
       - name: Deleting Linode for ${{ matrix.app }}

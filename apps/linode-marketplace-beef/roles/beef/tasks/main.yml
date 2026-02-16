@@ -62,7 +62,7 @@
   file:
     path: '/etc/nginx/sites-enabled/default'
     state: absent
-  notify: reload nginx service
+  notify: Reload nginx service
 
 # ssl_certbot
 - name: Setting up ssl certificate
