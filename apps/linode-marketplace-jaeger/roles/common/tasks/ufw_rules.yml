@@ -14,4 +14,4 @@
 - name: Enable UFW
   community.general.ufw:
     state: enabled
-    policy: deny 
+    policy: deny
