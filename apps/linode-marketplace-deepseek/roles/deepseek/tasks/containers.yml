@@ -9,12 +9,6 @@
     - docker-compose
     state: present
 
-- name: Ensure nvidia-persistenced is running
-  systemd_service:
-    name: nvidia-persistenced
-    state: started
-    enabled: true
-
 - name: Create docker directory
   file:
     path: "{{ docker_directory }}"

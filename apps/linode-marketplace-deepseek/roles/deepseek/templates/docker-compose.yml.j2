@@ -6,7 +6,6 @@ services:
   vllm:
     image: vllm/vllm-openai:v0.14.0
     container_name: vllm
-    runtime: nvidia
     restart: unless-stopped
     shm_size: 8g
     ports:
@@ -16,7 +15,6 @@ services:
     environment:
       - HF_HOME=/root/.cache/huggingface
       - PYTORCH_ALLOC_CONF=expandable_segments:True
-      - NVIDIA_VISIBLE_DEVICES=all
     command:
       - --model=deepseek-ai/DeepSeek-R1-Distill-Qwen-{{ deepseek_model_size }}
       - --max-model-len=16384
@@ -29,6 +27,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 300s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   #--------------------------------------------
   # Open-WebUI
