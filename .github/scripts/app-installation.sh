@@ -39,6 +39,7 @@ ubuntu_deploy() {
    export GIT_REPO='$GIT_REPO'; \
    export APP_NAME='$APP_NAME'; \
    export DEPLOYMENT_SCRIPT='$DEPLOYMENT_SCRIPT'; \
+   export HF_TOKEN='$HF_TOKEN'; \
    git clone --depth 1 --branch \"\$BRANCH\" \"\$GIT_REPO\" /root/repo; \
    cd /root/repo/deployment_scripts/\"\$APP_NAME\"; \
    chmod +x test-vars.sh \"\$DEPLOYMENT_SCRIPT\"; \

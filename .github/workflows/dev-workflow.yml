@@ -90,6 +90,7 @@ jobs:
           GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url }}
           GH_USER: ${{ github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: bash .github/scripts/app-installation.sh
       - name: Deleting Linode for ${{ matrix.app }}
         if: always()
