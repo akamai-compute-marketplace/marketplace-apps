@@ -1,12 +1,12 @@
 ---
 # install system packages
 
-- name: set distro release codename
+- name: Set distro release codename
   set_fact:
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
     os: "ubuntu"
 
-- name: install required packages
+- name: Install required packages
   apt:
     pkg:
       - curl
@@ -19,55 +19,57 @@
     state: latest
     update_cache: true
 
-- name: add gitlab gpg key
+- name: Add gitlab gpg key
   get_url:
     url: https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey
     dest: /tmp/gitlab-key.gpg
+    mode: '0600'
 
-- name: dearmouring gitlab key
+- name: Dearmouring gitlab key
   shell: gpg --dearmor < /tmp/gitlab-key.gpg > //etc/apt/trusted.gpg.d/gitlab_gitlab-ce.gpg
 
-- name: add gitlab deb repository to sources list
+- name: Add gitlab deb repository to sources list
   apt_repository:
     repo: "deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
     state: present
     filename: "gitlab_gitlab-ce"
 
-- name: add gitlab deb-source repository to sources list
+- name: Add gitlab deb-source repository to sources list
   apt_repository:
     repo: "deb-src https://packages.gitlab.com/gitlab/gitlab-ce/{{ os }} {{ distribution_release }} main"
     state: present
     filename: "gitlab_gitlab-ce"
 
-- name: install gitlab
+- name: Install gitlab
   apt:
     name: gitlab-ce
     state: latest
     update_cache: true
 
-- name: configure gitlab
+- name: Configure gitlab
   template:
     src: gitlab.rb.j2
     dest: /etc/gitlab/gitlab.rb
+    mode: '0600'
 
-- name: reconfigure gitlab
+- name: Reconfigure gitlab
   command: gitlab-ctl reconfigure
   async: 600
   poll: 10
 
-- name: obtain default password
+- name: Obtain default password
   slurp:
     src: /etc/gitlab/initial_root_password
   register: gitlab_password
   no_log: true
 
-- name: extract the password using regex
+- name: Extract the password using regex
   set_fact:
     gitlab_root_password: "{{ gitlab_password['content'] | b64decode | regex_findall('Password: (.+)') | first }}"
   no_log: true
 
-- name: disable gitlab user signups
+- name: Disable gitlab user signups
   command: >
     gitlab-rails runner 'ApplicationSetting.find_by(id: 1)&.update!(signup_enabled: false)'
-  become: yes
+  become: true
   become_user: git
