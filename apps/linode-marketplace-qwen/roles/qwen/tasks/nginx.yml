@@ -33,4 +33,4 @@
     name: certbot_ssl
   vars:
     webserver_stack: lemp
-  notify: restart nginx
+  notify: Restart nginx
