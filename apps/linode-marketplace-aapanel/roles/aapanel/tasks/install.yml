@@ -10,6 +10,8 @@
   shell: |
     set -o pipefail
     echo "y" | /tmp/install_7.0_en.sh aapanel
+  args:
+    executable: /bin/bash
 
 - name: Obtain credentials
   command: bt 14

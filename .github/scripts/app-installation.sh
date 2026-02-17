@@ -31,16 +31,20 @@ ubuntu_deploy() {
   -o ServerAliveInterval=30 \
   -o ServerAliveCountMax=10 \
   -o TCPKeepAlive=yes \
-  root@"$LINODE_IPV4" "
-    set +o history
-    export LINODE_API_SECRET=\"${LINODE_API_SECRET}\"
-    export LINODE_DOMAIN=\"${LINODE_DOMAIN}\"
-    git clone --depth 1 --branch \"${GITHUB_HEAD_REF}\" \"${GITHUB_CLONE_URL}\" /root/repo &&
-    cd /root/repo/deployment_scripts/\"$APP_NAME\" &&
-    chmod +x test-vars.sh $DEPLOYMENT_SCRIPT &&
-    . ./test-vars.sh &&
-    ./$DEPLOYMENT_SCRIPT
-  "
+  root@"$LINODE_IPV4" \
+  "export LINODE_API_SECRET='$LINODE_API_SECRET'; \
+   export LINODE_DOMAIN='$LINODE_DOMAIN'; \
+   export GH_USER='$GH_USER'; \
+   export BRANCH='$BRANCH'; \
+   export GIT_REPO='$GIT_REPO'; \
+   export APP_NAME='$APP_NAME'; \
+   export DEPLOYMENT_SCRIPT='$DEPLOYMENT_SCRIPT'; \
+   git clone --depth 1 --branch \"\$BRANCH\" \"\$GIT_REPO\" /root/repo; \
+   cd /root/repo/deployment_scripts/\"\$APP_NAME\"; \
+   chmod +x test-vars.sh \"\$DEPLOYMENT_SCRIPT\"; \
+   . ./test-vars.sh; \
+   ./\"\$DEPLOYMENT_SCRIPT\""
+
   local rc=$?
   set -e
 
@@ -56,21 +60,25 @@ ubuntu_deploy() {
 }
 
 almalinux_deploy() {
-  set -e
   sshpass -p "$LINODE_ROOT_PASS" ssh \
-  -o StrictHostKeyChecking=no \
-  -o ServerAliveInterval=30 \
-  -o ServerAliveCountMax=10 \
-  -o TCPKeepAlive=yes \
-  root@"$LINODE_IPV4" "
-    set +o history
-    dnf -y install git
-    git clone --depth 1 --branch \"$GITHUB_HEAD_REF\" \"$GITHUB_CLONE_URL\" /root/repo
-    cd \"/root/repo/deployment_scripts/$APP_NAME\"
-    chmod +x test-vars.sh \"$DEPLOYMENT_SCRIPT\"
-    . ./test-vars.sh
-    ./$DEPLOYMENT_SCRIPT
-  "
+    -o StrictHostKeyChecking=no \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=10 \
+    -o TCPKeepAlive=yes \
+    root@"$LINODE_IPV4" \
+    "export LINODE_API_SECRET='${LINODE_API_SECRET}'; \
+     export LINODE_DOMAIN='${LINODE_DOMAIN}'; \
+     export GH_USER='${GH_USER}'; \
+     export BRANCH='${BRANCH}'; \
+     export GIT_REPO='${GIT_REPO}'; \
+     export APP_NAME='${APP_NAME}'; \
+     export DEPLOYMENT_SCRIPT='${DEPLOYMENT_SCRIPT}'; \
+     dnf -y install git; \
+     git clone --depth 1 --branch \"\$BRANCH\" \"\$GIT_REPO\" /root/repo; \
+     cd \"/root/repo/deployment_scripts/\$APP_NAME\"; \
+     chmod +x test-vars.sh \"\$DEPLOYMENT_SCRIPT\"; \
+     . ./test-vars.sh; \
+     ./\"\$DEPLOYMENT_SCRIPT\""
 }
 
 run_remote_deploy() {
@@ -89,3 +97,4 @@ run_remote_deploy() {
 wait_for_ssh
 run_remote_deploy
 wait_for_ssh
+
