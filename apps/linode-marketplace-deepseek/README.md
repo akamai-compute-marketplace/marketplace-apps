@@ -104,15 +104,13 @@ You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/$
 ## Resource Requirements
 
 ### For DeepSeek R1 Distill Qwen 14B
-- **GPU**: Any supported Linode GPU instance type (minimum 1x GPU with 20GB+ VRAM)
-- **VRAM**: ~30GB at FP16 (2 bytes per parameter)
+- **GPU**: Multi-GPU instance required (minimum 2x GPUs with 20GB+ VRAM each)
 - **Memory**: 32GB RAM or higher
 - **Storage**: Sufficient space for model files (~28GB download)
 - **Reference**: [DeepSeek-R1-Distill-Qwen-14B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B)
 
 ### For DeepSeek R1 Distill Qwen 32B
-- **GPU**: Multi-GPU instance required (e.g., g1-gpu-rtx6000-4 with 4x RTX 6000)
-- **VRAM**: ~66GB at FP16 (requires tensor parallelism across multiple GPUs)
+- **GPU**: Multi-GPU instance required (minimum 4x GPUs with 20GB+ VRAM each)
 - **Memory**: 64GB RAM or higher
 - **Storage**: Sufficient space for model files (~64GB download)
 - **Reference**: [DeepSeek-R1-Distill-Qwen-32B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)

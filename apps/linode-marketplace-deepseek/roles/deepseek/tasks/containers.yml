@@ -9,6 +9,16 @@
     - docker-compose
     state: present
 
+- name: Count available GPUs for tensor parallelism
+  shell:
+    cmd: nvidia-smi --query-gpu=name --format=csv,noheader | wc -l
+  changed_when: false
+  register: gpu_count_result
+
+- name: Set tensor parallel size
+  set_fact:
+    tensor_parallel_size: "{{ gpu_count_result.stdout | trim }}"
+
 - name: Create docker directory
   file:
     path: "{{ docker_directory }}"

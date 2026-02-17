@@ -14,18 +14,6 @@
       vars:
         gpu_required: true
 
-    - name: Count available GPUs for tensor parallelism
-      shell:
-        cmd: lspci -D | grep VGA | grep RTX | wc -l
-      changed_when: false
-      register: gpu_count_result
-
-    - name: Write tensor parallel size to vars file
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: "tensor_parallel_size: {{ gpu_count_result.stdout | trim }}"
-
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
