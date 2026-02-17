@@ -2,6 +2,7 @@
 name: Development Workflow
 on:
   workflow_dispatch:
+  pull_request:
 jobs:
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
@@ -42,6 +43,7 @@ jobs:
       - static-code-analysis-shellcheck
       - static-code-analysis-yamllint
       - static-code-analysis-ansbible-lint
+    if: always()
     outputs:
       configs: ${{ steps.configs-matrix.outputs.configs }}
     steps:
@@ -63,7 +65,7 @@ jobs:
     permissions:
       contents: read
     needs: get-list-of-apps
-    if: needs.get-list-of-apps.outputs.configs != '[]'
+    if: always() && needs.get-list-of-apps.outputs.configs != '[]'
     strategy:
       fail-fast: false
       matrix:
