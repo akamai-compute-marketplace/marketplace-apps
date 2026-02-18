@@ -29,12 +29,6 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${PUBKEY}" ]]; then
-        UDF_VARS["PUBKEY"]="${PUBKEY}"
-else
-        UDF_VARS["PUBKEY"]="" # default
-fi
-
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else

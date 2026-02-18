@@ -11,18 +11,26 @@
     src: templates/motd.j2
     dest: /etc/motd
 
-- name: Writing passbolt creds into file
+- name: Writing Passbolt creds into file
   copy:
     dest: /home/{{ username }}/.credentials
     owner: '{{ username }}'
     group: '{{ username }}'
     mode: '0600'
     content: |
+      # System
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Passbolt Admin Database User: passboltadmin
-      Passbolt Database: passboltdb
-      Passbolt Database Password: {{ passbolt_db_admin_password }}
-      Mysql Root Password: {{ mysql_root_password }}
-      Passbolt Login: admin
-      Passbolt GPG Key Passphrase: {{ gpg_key_passphrase }}
+
+      # Passbolt
+      Passbolt DB username: {{ passbolt_db_user }}
+      Passbolt DB name: {{ passbolt_db_name }}
+      Passbolt DB password: {{ passbolt_db_password }}
+      
+      # Passbolt registration
+      Passbolt user first name: {{ passbolt_user_firstname }}
+      Passbolt user last name: {{ passbolt_user_lastname }}
+      Passbolt user login email: {{ passbolt_user_email }}
+
+      # MySQL
+      MySQL root password: {{ mysql_root_password }}

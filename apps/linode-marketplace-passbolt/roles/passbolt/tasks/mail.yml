@@ -1,0 +1,21 @@
+---
+
+- name: Updating postfix inet_interfaces
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^inet_interfaces ='
+    line: 'inet_interfaces = 127.0.0.1'
+
+- name: Updating postfix mynetwork
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    regexp: '^mynetworks ='
+    line: 'mynetworks = 127.0.0.0/8'
+
+- name: Set smtpd_recipient_restrictions in /etc/postfix/main.cf
+  ansible.builtin.lineinfile:
+    path: /etc/postfix/main.cf
+    line: "smtpd_recipient_restrictions = permit_mynetworks, reject_unauth_destination"
+    create: no
+    state: present
+  notify: Restart postfix

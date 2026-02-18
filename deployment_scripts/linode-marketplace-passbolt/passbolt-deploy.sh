@@ -4,7 +4,7 @@ exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # BEGIN CI-MODE
 # modes
-#DEBUG="NO"
+# DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -12,22 +12,27 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
+fi
 # END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
-#<UDF name="pubkey" label="The SSH Public Key that will be used to access the Linode (Recommended)" default="">
 
 ## Passbolt Settings
-#<UDF name="domain" label="Domain name for your Passbolt instance." example="domain.tld" />
+#<UDF name="domain" label="Domain name for your Passbolt instance." example="example.com" />
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
 #<UDF name="token_password" label="Your Linode API token" />
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@example.com" />
 
-#<UDF name="passbolt_first_admin_username" label="First admin user for Passbolt." *No Special Characters* />
-#<UDF name="passbolt_first_admin_surname" label="Surname for your first admin user in Passbolt." *No Special Characters* />
-#<UDF name="passbolt_first_admin_email" label="Email address for your first admin user in Passbolt." example="user@domain.tld" />
+#<UDF name="passbolt_user_firstname" label="Passbolt user first name" *No Special Characters* example="Akamai"/>
+#<UDF name="passbolt_user_lastname" label="Passbolt user last name" *No Special Characters* example="Technologies"/>
+#<UDF name="passbolt_user_email" label="Passbolt user email address" example="user@example.com" />
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -90,7 +95,6 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webuser: www-data
-  passbolt_checksum_value: e1a2efad6a53aa874842a09073ca9ac5880a7e55ae4e4276c0ddc6e0ba4a4faeea9b89d0371eedbeceee1e11864ed544bcc9a553031fa4ff7cc6aa7bcf774ba5
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
@@ -98,49 +102,41 @@ function udf {
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
-    echo "disable_root: yes" >> ${group_vars};
-  else echo "Leaving root login enabled";
+    echo "disable_root: yes" >> ${group_vars}
+  else echo "Leaving root login enabled"
   fi
 
-  if [[ -n ${PUBKEY} ]]; then
-    echo "pubkey: ${PUBKEY}" >> ${group_vars};
-  else echo "No pubkey entered";
-  fi
-
-  # passbolt vars
+  # Passbolt vars
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
-    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
   fi
 
   if [[ -n ${DOMAIN} ]]; then
-    echo "domain: ${DOMAIN}" >> ${group_vars};
+    echo "domain: ${DOMAIN}" >> ${group_vars}
   else
-    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
   fi
 
   if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
-  else echo "subdomain: www" >> ${group_vars};
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
+  else echo "subdomain: www" >> ${group_vars}
   fi
 
   if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
-  else echo "No API token entered";
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
+  else echo "No API token entered"
   fi
 
-  if [[ -n ${PASSBOLT_FIRST_ADMIN_USERNAME} ]]; then
-    echo "passbolt_first_admin_username: ${PASSBOLT_FIRST_ADMIN_USERNAME}" >> ${group_vars};
-  else echo "No Passbolt first admin user entered";
+  if [[ -n ${PASSBOLT_USER_FIRSTNAME} ]]; then
+    echo "passbolt_user_firstname: ${PASSBOLT_USER_FIRSTNAME}" >> ${group_vars}
   fi
 
-  if [[ -n ${PASSBOLT_FIRST_ADMIN_SURNAME} ]]; then
-    echo "passbolt_first_admin_surname: ${PASSBOLT_FIRST_ADMIN_SURNAME}" >> ${group_vars};
-  else echo "No Passbolt first admin surname entered";
+  if [[ -n ${PASSBOLT_USER_LASTNAME} ]]; then
+    echo "passbolt_user_lastname: ${PASSBOLT_USER_LASTNAME}" >> ${group_vars}
   fi
 
-  if [[ -n ${PASSBOLT_FIRST_ADMIN_EMAIL} ]]; then
-    echo "passbolt_first_admin_email: ${PASSBOLT_FIRST_ADMIN_EMAIL}" >> ${group_vars};
-  else echo "No Passbolt first admin email entered";
+  if [[ -n ${PASSBOLT_USER_EMAIL} ]]; then
+    echo "passbolt_user_email: ${PASSBOLT_USER_EMAIL}" >> ${group_vars}
   fi
 
   # staging or production mode (ci)
@@ -163,13 +159,11 @@ function run {
 
   # clone repo and set up ansible environment
   git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
-  # for a single testing branch
-  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt

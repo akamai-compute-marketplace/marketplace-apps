@@ -1,0 +1,34 @@
+---
+
+- name: Adding Passbolt configuration
+  template:
+    src: templates/passbolt.php
+    dest: /var/www/passbolt_api/config/passbolt.php
+    mode: 0644
+    owner: www-data
+    group: www-data
+  
+- name: Performing Passbolt installation
+  block:
+    - name: Install Passbolt
+      shell: /var/www/passbolt_api/bin/cake passbolt install --no-admin --force
+      args:
+        executable: /bin/bash
+
+    - name: Creating initial admin user
+      shell: "/var/www/passbolt_api/bin/cake passbolt register_user -u {{ passbolt_user_email }} -f {{ passbolt_user_firstname }} -l {{ passbolt_user_lastname }} -r admin"
+      args:
+        executable: /bin/bash
+      register: admin_registration_output
+
+  become: true
+  become_method: sudo
+  become_user: www-data
+
+- name: Extract registration URL
+  set_fact:
+    passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('https://' + _domain | regex_escape + '/setup/start/[a-z0-9-]+/[a-z0-9-]+') }}"
+
+- name: Debug 
+  debug:
+    msg: "--> {{ admin_registration_output }}"
