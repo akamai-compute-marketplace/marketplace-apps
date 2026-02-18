@@ -11,7 +11,7 @@
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
 
-- name: Enable {{ domain }} vhost
+- name: Enable {{ _domain }} vhost
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/{{ _domain }}
@@ -33,4 +33,4 @@
     name: certbot_ssl
   vars:
     webserver_stack: lemp
-  notify: Restart nginx
+  notify: restart nginx

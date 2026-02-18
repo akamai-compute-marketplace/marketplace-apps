@@ -4,7 +4,7 @@ Open WebUI is an open-source, self-hosted web interface for interacting with and
 
 Our Marketplace application deploys DeepSeek R1 distilled models (Qwen2.5-based) with vLLM as the inference backend and Open WebUI as the chat interface. These models are distilled from the full 671B DeepSeek-R1, providing enhanced chain-of-thought reasoning capabilities in smaller, deployable sizes.
 
-During deployment, you can choose between two model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
+During deployment, you can choose between three model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
 ## Software Included
 
@@ -32,7 +32,7 @@ During deployment, you can choose between two model sizes to match your GPU capa
 | Sudo User  | Creates limited `sudo` user with variable supplied username.  | Creates limited user from UDF supplied `username.` Note that usernames containing illegal characters will cause the play to fail. |
 | SSH Key   | Writes SSH pubkey to `sudo` user's `authorized_keys`.  | Writes UDF supplied `pubkey` to `/home/$username/.ssh/authorized_keys`. To add a SSH key to `root` please use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/).   |
 | Update Packages   | Performs standard apt updates and upgrades. | The Update Packages module performs apt update and upgrade actions as root.  |
-| GPU Utils| Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_device` and `_has_gpu` to `group_vars/linode/vars` |
+| GPU Utils| Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_devices`, `gpu_count`, and `_has_gpu` to `group_vars/linode/vars` |
 
 # Architecture
 
@@ -51,7 +51,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 
 - **Port**: `localhost:8000`
 - **Container**: `vllm/vllm-openai:v0.14.0`
-- **Model**: `deepseek-ai/DeepSeek-R1-Distill-Qwen-14B` or `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` (user selectable)
+- **Model**: `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B`, `14B`, or `32B` (user selectable)
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
   - OpenAI-compatible REST API
@@ -102,6 +102,12 @@ Open WebUI provides built-in support for RAG operations allowing users to chat w
 You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
 
 ## Resource Requirements
+
+### For DeepSeek R1 Distill Qwen 7B
+- **GPU**: Single GPU with 24GB+ VRAM (e.g., 1x RTX 4000 Ada or RTX 6000)
+- **Memory**: 16GB RAM or higher
+- **Storage**: Sufficient space for model files (~14GB download)
+- **Reference**: [DeepSeek-R1-Distill-Qwen-7B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B)
 
 ### For DeepSeek R1 Distill Qwen 14B
 - **GPU**: Multi-GPU instance required (minimum 2x GPUs with 20GB+ VRAM each)

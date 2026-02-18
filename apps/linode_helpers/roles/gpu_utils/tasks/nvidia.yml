@@ -1,8 +1,8 @@
 ---
-# This task requires that main.yml is ran so that the `gpu_device`
+# This task requires that main.yml is ran so that `gpu_devices`
 # can be set. If you have an app that requires GPU, the provision.yml
 # of the app should call the linode_helper/roles/gpu_utils/main.yml.
- 
+
 # This task should be called at the role-level.
 
 - name: Blacklist nouveau driver
@@ -15,7 +15,7 @@
 
 - name: Install ubuntu-drivers-common package
   apt:
-    name: 
+    name:
        - ubuntu-drivers-common
        - alsa-utils
     state: present
@@ -32,28 +32,30 @@
     state: present
     update_cache: true
 
-- name: Get GPU driver name
-  shell: readlink /sys/bus/pci/devices/{{ gpu_device }}/driver | awk -F'/' '{print $NF}'
-  changed_when: false
-  register: gpu_driver_name
+- name: Unbind GPUs from nouveau
+  shell: echo "{{ item }}" > /sys/bus/pci/drivers/nouveau/unbind
+  loop: "{{ gpu_devices }}"
+  when: >
+    lookup('pipe', 'readlink /sys/bus/pci/devices/' + item + '/driver 2>/dev/null || true') is search('nouveau')
+  failed_when: false
 
-- name: Switch gpu from nouveau to nvidia driver
-  block:
-    - name: Unbind gpu from nouveau driver
-      shell: echo "{{ gpu_device }}" > /sys/bus/pci/drivers/nouveau/unbind
-      args:
-        executable: /bin/bash
+- name: Unload nouveau module
+  community.general.modprobe:
+    name: nouveau
+    state: absent
+  failed_when: false
 
-    - name: Unload nouveau module to prevent rebinding
-      community.general.modprobe:
-        name: nouveau
-        state: absent
+- name: Load nvidia kernel module
+  community.general.modprobe:
+    name: nvidia
+    state: present
 
-    - name: Load nvidia kernel module
-      community.general.modprobe:
-        name: nvidia
-        state: present
-  when: gpu_driver_name.stdout == "nouveau"
+- name: Bind all GPUs to nvidia driver
+  shell: echo "{{ item }}" > /sys/bus/pci/drivers/nvidia/bind
+  loop: "{{ gpu_devices }}"
+  when: >
+    lookup('pipe', 'readlink /sys/bus/pci/devices/' + item + '/driver 2>/dev/null || true') is not search('nvidia')
+  failed_when: false
 
 # assumes nvidia past this point
 
@@ -92,6 +94,6 @@
       systemd_service:
         name: docker
         state: restarted
-  when: 
+  when:
     - docker_gpu_enable | bool
     - ansible_facts.services['docker'] is defined

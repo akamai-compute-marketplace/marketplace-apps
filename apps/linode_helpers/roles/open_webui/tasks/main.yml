@@ -1,0 +1,47 @@
+---
+#-----------------------------------------------------
+# Open WebUI helper.
+
+# This helper contains 3 task files:
+# - passgen.yml
+# - setup.yml
+# - nginx.yml
+
+#--------------
+# passgen.yml
+#--------------
+
+# passgen.yml should be called at the playbook level in the provision.yml.
+# This generates a random password for the Open WebUI admin account and
+# writes it to the vars file.
+
+# Example usage from provision.yml:
+#
+# - name: Generating Open WebUI password
+#   import_tasks: ../linode_helpers/roles/open_webui/tasks/passgen.yml
+
+#-----------
+# setup.yml
+#-----------
+
+# setup.yml waits for the Open WebUI service to become healthy, then
+# creates the initial admin account via the signup API.
+
+# nginx.yml installs NGINX, creates a reverse proxy vhost for Open WebUI,
+# disables the default vhost, and configures SSL with certbot.
+
+# Both setup.yml and nginx.yml run when this role is imported:
+#
+# - name: Configure Open WebUI
+#   import_role:
+#     name: open_webui
+
+#-----------------------------------------------------
+
+- name: Setting up Open WebUI admin account
+  include_tasks:
+    file: setup.yml
+
+- name: Configuring NGINX for Open WebUI
+  include_tasks:
+    file: nginx.yml

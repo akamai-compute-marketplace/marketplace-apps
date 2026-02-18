@@ -41,7 +41,7 @@ fi
 ## DeepSeek R1 Configuration
 #<UDF name="openwebui_login_name" label="The initial admin login name for Open WebUI">
 #<UDF name="openwebui_login_email" label="Email address for Open WebUI admin account">
-#<UDF name="deepseek_model_size" label="DeepSeek R1 Model Size" oneOf="14B,32B" default="14B">
+#<UDF name="deepseek_model_size" label="DeepSeek R1 Model Size" oneOf="7B,14B,32B" default="14B">
 
 #GH_USER=""
 #BRANCH=""
