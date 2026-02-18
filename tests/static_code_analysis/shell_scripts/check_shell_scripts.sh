@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-SHELLCHECK_OPTS="--exclude=SC1091,SC2154,SC2086 --severity=style"
+SHELLCHECK_OPTS="--exclude=SC1091,SC2154,SC2086,SC1071 --severity=style"
 # SC1091: Not following: (error message here)
 # SC2154: var is referenced but not assigned.
 # SC2086: Double quote to prevent globbing and word splitting.
+# SC1071: ShellCheck only supports sh/bash/dash/ksh scripts
 
 set -euo pipefail
 
