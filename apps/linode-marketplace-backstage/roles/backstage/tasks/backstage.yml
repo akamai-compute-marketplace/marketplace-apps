@@ -19,11 +19,11 @@
   become_flags: '-i'
   become_user: '{{ username }}'
   block:
-    - name: Install lts/iron
+    - name: Install lts/krypton
       shell:
         cmd: |
           source .nvmvars
-          nvm install lts/iron
+          nvm install lts/krypton
       args:
         chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
