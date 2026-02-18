@@ -14,7 +14,7 @@ RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
                 \"private_ip\": false,
                 \"region\": \"${REGION}\",
                 \"type\": \"${LINODE_TYPE}\",
-                \"label\": \"ubuntu-${APP_NAME}\",
+                \"label\": \"github-${APP_NAME}\",
                 \"root_pass\": \"$LINODE_ROOT_PASS\",
                 \"disk_encryption\": \"enabled\"
             }" https://api.linode.com/v4/linode/instances)
