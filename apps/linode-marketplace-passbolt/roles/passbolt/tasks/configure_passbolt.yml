@@ -8,14 +8,16 @@
     owner: www-data
     group: www-data
   
-- name: Updating jwt directory permission
+- name: Creating jwt keys
+  shell: /var/www/passbolt_api/bin/cake passbolt create_jwt_keys
+
+- name: Updating jwt directory ownership
   file:
     path: /var/www/passbolt_api/config/jwt
     owner: root
     group: www-data
     recurse: true
     state: directory
-    
 
 - name: Performing Passbolt installation
   block:
