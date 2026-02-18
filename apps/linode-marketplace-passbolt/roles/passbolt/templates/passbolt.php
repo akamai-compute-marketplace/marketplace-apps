@@ -61,7 +61,7 @@ return [
             'host' => env('DATASOURCES_DEFAULT_HOST', 'localhost'),
             'port' => env('DATASOURCES_DEFAULT_PORT', 3306),
             'username' => env('DATASOURCES_DEFAULT_USERNAME', '{{ passbolt_db_user }}'),
-            'password' => env('DATASOURCES_DEFAULT_PASSWORD', '{{ passbolt_db_password'),
+            'password' => env('DATASOURCES_DEFAULT_PASSWORD', '{{ passbolt_db_password }}'),
             'database' => env('DATASOURCES_DEFAULT_DATABASE', '{{ passbolt_db_name }}'),
         ],
     ],

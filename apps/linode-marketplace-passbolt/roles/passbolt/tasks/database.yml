@@ -20,7 +20,7 @@
 - name: Creating Passbolt user
   community.mysql.mysql_user:
     name: "{{ passbolt_db_user }}"
-    password: "{{ passbolt_db_passwords }}"
+    password: "{{ passbolt_db_password }}"
     host: localhost
     priv: "{{ passsbolt_db_name }}.*:ALL"
     login_unix_socket: /var/run/mysqld/mysqld.sock

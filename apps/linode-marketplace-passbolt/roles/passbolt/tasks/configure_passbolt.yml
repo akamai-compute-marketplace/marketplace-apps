@@ -8,6 +8,15 @@
     owner: www-data
     group: www-data
   
+- name: Updating jwt directory permission
+  file:
+    path: /var/www/passbolt_api/config/jwt
+    owner: root
+    group: www-data
+    recurse: true
+    state: directory
+    
+
 - name: Performing Passbolt installation
   block:
     - name: Install Passbolt
@@ -28,7 +37,3 @@
 - name: Extract registration URL
   set_fact:
     passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('https://' + _domain | regex_escape + '/setup/start/[a-z0-9-]+/[a-z0-9-]+') }}"
-
-- name: Debug 
-  debug:
-    msg: "--> {{ admin_registration_output }}"
