@@ -16,7 +16,6 @@
         path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
-          gpg_key_passphrase: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           mysql_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           passbolt_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           
