@@ -18,4 +18,6 @@
         block: |
           mysql_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           passbolt_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          passbolt_db_user: passbolt
+          passbolt_db_name: passbolt
           
