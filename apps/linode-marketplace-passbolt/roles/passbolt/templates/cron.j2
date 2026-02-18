@@ -1,0 +1,7 @@
+# Cronjob to process emails for the Passbolt Web Service every minute.
+
+PATH=/bin:/usr/local/bin:/usr/bin
+PASSBOLT_BASE_DIR=/var/www/passbolt_api
+PASSBOLT_LOG_DIR=/var/www/passbolt_api/logs
+
+* * * * * www-data $PASSBOLT_BASE_DIR/bin/cron > $PASSBOLT_LOG_DIR/cron.log 2> $PASSBOLT_LOG_DIR/cron-error.log

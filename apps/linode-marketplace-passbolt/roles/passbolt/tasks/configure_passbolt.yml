@@ -37,3 +37,11 @@
 - name: Extract registration URL
   set_fact:
     passbolt_admin_registration_url: "{{ admin_registration_output.stdout | regex_search('https://' + _domain | regex_escape + '/setup/start/[a-z0-9-]+/[a-z0-9-]+') }}"
+
+- name: Set Passbolt email cron
+  template:
+    src: templates/cron.j2
+    dest: /etc/cron.d/passbolt-server
+    mode: 0644
+    owner: root
+    group: root
