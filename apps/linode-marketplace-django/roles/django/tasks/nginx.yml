@@ -20,7 +20,7 @@
   import_role:
     name: certbot_ssl
 
-- name: File vhost
+- name: Add vhost file
   template:
     src: "templates/vhost.j2"
     dest: "/etc/nginx/sites-available/{{ _domain }}"
