@@ -1,11 +1,11 @@
 ---
 # main
 
-- name: install jenkins
+- name: Install jenkins
   import_tasks: install.yml
 
-- name: obtain let's encrypt certificate
+- name: Obtain let's encrypt certificate
   import_tasks: ssl.yml
 
-- name: configure jenkins
+- name: Configure jenkins
   import_tasks: configure.yml

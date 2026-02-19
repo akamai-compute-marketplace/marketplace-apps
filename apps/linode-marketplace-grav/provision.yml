@@ -4,8 +4,7 @@
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
     # generate creds
     - name: Generating sudo user and password
@@ -23,8 +22,9 @@
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        line: |
-          grav_hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt', lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
+        line: >
+          grav_hashed_admin_password: "{{ grav_admin_password | password_hash('bcrypt',
+          lookup('password', '/dev/null chars=ascii_letters,digits length=22'), rounds=10) }}"
 
     - name: Creating Redis credentials
       lineinfile:

@@ -1,8 +1,8 @@
 ---
 # handlers
-- name: restart jenkins
+- name: Restart jenkins
   systemd:
     name: jenkins
     state: restarted
     daemon_reload: true
-    enabled: yes
+    enabled: true

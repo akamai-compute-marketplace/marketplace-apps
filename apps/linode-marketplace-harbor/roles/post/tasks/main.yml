@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo + Harbor creds into file
   copy:
@@ -21,7 +24,4 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
       Harbor user: admin
-      Harbor admin password: {{ harbor_admin_pass }} 
-
-
-
+      Harbor admin password: {{ harbor_admin_pass }}

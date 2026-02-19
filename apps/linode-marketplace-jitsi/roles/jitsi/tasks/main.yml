@@ -1,33 +1,34 @@
 ---
 # jitsi
 
-- name: add jitsi GPG key
+- name: Add jitsi GPG key
   get_url:
     url: https://download.jitsi.org/jitsi-key.gpg.key
     dest: /tmp/jitsi-key.gpg
+    mode: '0644'
 
-- name: dearmouring jitsi key
+- name: Dearmouring jitsi key
   shell: gpg --dearmor < /tmp/jitsi-key.gpg > //usr/share/keyrings/jitsi-keyring.gpg
 
-- name: add jitsi repo
+- name: Add jitsi repo
   ansible.builtin.apt_repository:
     filename: jitsi-stable
     repo: 'deb [signed-by=/usr/share/keyrings/jitsi-keyring.gpg] https://download.jitsi.org stable/'
 
-- name: apt update
+- name: Apt update
   apt:
-    update_cache: yes
+    update_cache: true
 
 # install jitsi-meet instance
 
-- name: set jitsi jvb conf
+- name: Set jitsi jvb conf
   debconf:
     name: jitsi-videobridge
     question: jitsi-videobridge/jvb-hostname
     value: "{{ _domain }}"
     vtype: string
 
-- name: set jitsi web config
+- name: Set jitsi web config
   debconf:
     name: jitsi-meet-web-config
     question: jitsi-meet/cert-choice
@@ -35,11 +36,15 @@
     vtype: select
 
 # installs nginx as a pkg dep
-- name: installing full jitsi-meet suite
+- name: Installing full jitsi-meet suite
   apt:
     pkg: jitsi-meet
     state: present
     lock_timeout: 5
 
-- name: installing let's encrypt certificate
-  shell: echo {{ soa_email_address }} | /usr/share/jitsi-meet/scripts/install-letsencrypt-cert.sh
+- name: Installing let's encrypt certificate
+  shell: |
+    set -o pipefail
+    echo {{ soa_email_address }} | /usr/share/jitsi-meet/scripts/install-letsencrypt-cert.sh
+  args:
+    executable: /bin/bash

@@ -21,7 +21,7 @@
     path: /etc/php/8.3/fpm/php.ini
     regexp: ';cgi.fix_pathinfo=1'
     line: 'cgi.fix_pathinfo=0'
-  notify: restart php8.3-fpm
+  notify: Restart php8.3-fpm
 
 - name: Create web directory with proper ownership
   file:
@@ -85,10 +85,7 @@
   file:
     path: "/var/www/grav/bin/{{ item }}"
     mode: '0755'
-  loop:
-    - gpm
-    - grav
-    - plugin
+  loop: [gpm, grav, plugin]
 
 - name: Ensure Grav directories have correct permissions
   file:
@@ -158,10 +155,7 @@
     mode: '0644'
     owner: www-data
     group: www-data
-  loop:
-    - classes
-    - blueprints
-    - templates
+  loop: [classes, blueprints, templates]
 
 - name: Clear Grav cache
   command: bin/grav clearcache

@@ -10,7 +10,7 @@
     name: jaeger-service
     uid: 10001
     group: jaeger-service
-    system: yes
+    system: true
     shell: /usr/sbin/nologin
     create_home: false
     comment: "Jaeger service user"

@@ -1,65 +1,69 @@
 ---
 # harbor
 
-- name: create harbor data directory
+- name: Create harbor data directory
   file:
     path: /data/harbor
     state: directory
+    mode: '0755'
 
-- name: download and extract offline harbor installion files
+- name: Download and extract offline harbor installion files
   unarchive:
     src: https://github.com/goharbor/harbor/releases/download/v2.9.0/harbor-offline-installer-v2.9.0.tgz
     dest: /root/
-    remote_src: yes
+    remote_src: true
+    mode: '0755'
 
-- name: copy harbor.yaml template
+- name: Copy harbor.yaml template
   template:
     src: templates/harbor.yaml.j2
     dest: /root/harbor/harbor.yml
+    mode: '0644'
 
-- name: execute install script
+- name: Execute install script
   shell: bash /root/harbor/install.sh
 
 # nginx
-- name: install nginx
+- name: Install nginx
   apt:
-    pkg:
-      - nginx
+    pkg: [nginx]
     state: present
- 
-- name: config file setup
+
+- name: Config file setup
   template:
     src: templates/nginx.conf.j2
-    dest: "/etc/nginx/sites-available/{{ _domain }}"   
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: "/etc/nginx/sites-enabled/default"
     state: absent
-  notify: reload nginx service
+  notify: Reload nginx service
 
 # ssl_certbot
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
-    name: certbot_ssl 
+    name: certbot_ssl
 
-- name: copy harbor.service template
+- name: Copy harbor.service template
   template:
     src: templates/harbor.service.j2
     dest: /etc/systemd/system/harbor.service
+    mode: '0644'
 
 - name: Reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
-- name: start harbor service
+- name: Start harbor service
   systemd:
     name: harbor.service
     state: started
-    enabled: yes
+    enabled: true
