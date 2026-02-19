@@ -1,6 +1,5 @@
 ---
 # install phpmyadmin
-
-- name: install phpmyadmin
+- name: Install phpmyadmin
   import_tasks: phpmyadmin.yml
-  when: install_phpmyadmin | bool 
+  when: install_phpmyadmin | bool

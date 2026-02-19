@@ -1,27 +1,26 @@
 ---
-
-- name: configure phpmyadmin db admin user
+- name: Configure phpmyadmin db admin user
   debconf:
     name: phpmyadmin
     question: phpmyadmin/mysql/admin-user
     value: root
-    vtype: select  
+    vtype: select
 
-- name: configure phpmyadmin webserver
+- name: Configure phpmyadmin webserver
   debconf:
     name: phpmyadmin
     question: phpmyadmin/reconfigure-webserver
     value: apache2
     vtype: select
 
-- name: configure phpmyadmin dbconf
+- name: Configure phpmyadmin dbconf
   debconf:
     name: phpmyadmin
     question: phpmyadmin/dbconfig-install
     value: 'true'
     vtype: select
 
-- name: install phpmyadmin
+- name: Install phpmyadmin
   apt:
     name: phpmyadmin
     update_cache: true
