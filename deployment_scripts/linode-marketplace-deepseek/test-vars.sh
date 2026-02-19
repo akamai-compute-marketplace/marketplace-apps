@@ -66,7 +66,7 @@ fi
 if [[ -n "${DEEPSEEK_MODEL_SIZE}" ]]; then
         UDF_VARS["DEEPSEEK_MODEL_SIZE"]="${DEEPSEEK_MODEL_SIZE}"
 else
-        UDF_VARS["DEEPSEEK_MODEL_SIZE"]="14B" # default
+        UDF_VARS["DEEPSEEK_MODEL_SIZE"]="7B" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
