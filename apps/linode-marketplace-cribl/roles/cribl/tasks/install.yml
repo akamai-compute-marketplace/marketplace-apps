@@ -22,9 +22,10 @@
     dest: /opt/
     remote_src: true
 
-- name: Update ownership of "{{ cribl_dir }}" to cribl user
+- name: Update ownership to cribl user for "{{ cribl_dir }}"
   file:
     path: "{{ cribl_dir }}"
+    mode: '0755'
     owner: cribl
     group: cribl
     recurse: true

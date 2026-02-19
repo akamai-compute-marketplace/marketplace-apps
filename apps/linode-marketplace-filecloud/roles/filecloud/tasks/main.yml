@@ -1,45 +1,42 @@
+---
 # FileCloud installation
 - name: Adding Keys for MongoDB
   get_url:
-      url: https://pgp.mongodb.com/server-6.0.asc
-      dest: /usr/share/keyrings/mongodb-server-6.0.asc
-      mode: '0644'
-      force: true 
+    url: https://pgp.mongodb.com/server-6.0.asc
+    dest: /usr/share/keyrings/mongodb-server-6.0.asc
+    mode: '0644'
+    force: true
 
-- name: adding mongodb repo
+- name: Adding mongodb repo
   apt_repository:
     repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.asc ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse"
     state: present
 
 - name: Adding Keys for FileCloud
   get_url:
-      url: https://repo.filecloudlabs.com/static/pgp/filecloud.asc
-      dest: /usr/share/keyrings/filecloud.asc
-      mode: '0644'
-      force: true
+    url: https://repo.filecloudlabs.com/static/pgp/filecloud.asc
+    dest: /usr/share/keyrings/filecloud.asc
+    mode: '0644'
+    force: true
 
-- name: adding filecloud repo
+- name: Adding filecloud repo
   apt_repository:
     repo: "deb [ arch=amd64 signed-by=/usr/share/keyrings/filecloud.asc ] https://repo.filecloudlabs.com/apt/ubuntu jammy/filecloud/23.232 main"
     state: present
 
-- name: running apt-get update
+- name: Running apt-get update
   apt:
-    update_cache: yes
-    upgrade: yes
-
+    update_cache: true
+    upgrade: true
 - name: Installing the Apache and MongoDB servers.
   apt:
-    name:
-    - apache2
-    - mongodb-org
-    - pigz
+    name: [apache2, mongodb-org, pigz]
     state: present
 
 - name: Installing PHP 8.2 and dependencies
   apt:
     name: php8.2*
-    install_recommends: no
+    install_recommends: false
     state: present
 
 - name: Installing FileCloud! :)
@@ -48,44 +45,48 @@
     state: present
 
 # reset admin password
-- name: run PHP script to reset admin password
+- name: Run PHP script to reset admin password
   command: 'php resetadminpw.php -p "{{ filecloud_admin_password }}"'
   args:
     chdir: '/var/www/html/resources/backup/'
 
 # configure filecloud
-- name: logging into filecloud
+- name: Logging into filecloud
   uri:
-    url: http://{{ ansible_default_ipv4.address }}/admin/adminlogin?adminuser=admin&adminpassword={{ filecloud_admin_password }}
+    url: http://{{ ansible_default_ipv4.address }}/admin/adminlogin?adminuser=admin&adminpassword={{
+      filecloud_admin_password }}
     method: POST
     body_format: form-urlencoded
     status_code: 200
-    force_basic_auth: yes
+    force_basic_auth: true
   register: login_cookies
 
-- name: saving cookies to variable
+- name: Saving cookies to variable
   set_fact:
     login: "{{ login_cookies.cookies }}"
 
-- name: extracting tonidocloud_ah value
+- name: Extracting tonidocloud_ah value
   set_fact:
     tonidocloud_ah: "{{ login['tonidocloud-ah'] }}"
 
-- name: extracting tonidocloud_as value
+- name: Extracting tonidocloud_as value
   set_fact:
     tonidocloud_as: "{{ login['tonidocloud-as'] }}"
 
-- name: extracting x_xsrf_token value
+- name: Extracting x_xsrf_token value
   set_fact:
     x_xsrf_token: "{{ login['X-XSRF-TOKEN'] }}"
 
-- name: configuring GEO IP
+- name: Configuring GEO IP
   uri:
     url: http://{{ ansible_default_ipv4.address }}/admin/
     method: POST
     headers:
       Content-Type: application/x-www-form-urlencoded
-      Cookie: X-XSRF-TOKEN-admin={{ x_xsrf_token }}; X-XSRF-TOKEN={{ x_xsrf_token }}; tonidocloud-au=admin; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-au=admin
+      Cookie: X-XSRF-TOKEN-admin={{ x_xsrf_token }}; X-XSRF-TOKEN={{ x_xsrf_token }};
+        tonidocloud-au=admin; tonidocloud-as={{ tonidocloud_as }}; tonidocloud-ah={{ tonidocloud_ah }};
+        tonidocloud-ah={{ tonidocloud_ah }}; tonidocloud-as={{ tonidocloud_as }};
+        tonidocloud-au=admin
     body_format: form-urlencoded
     body:
       op: "setconfigsetting"
@@ -94,36 +95,34 @@
       value0: "1"
 
 # Apache ssl
-- name: stop apache2
+- name: Stop apache2
   systemd:
     name: apache2
     state: stopped
 
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
 
-- name: moving vhost template
+- name: Moving vhost template
   template:
     src: templates/vhost.j2
     dest: "/etc/apache2/sites-available/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
-- name: symlinking our vhost
+- name: Symlinking our vhost
   file:
     src: "/etc/apache2/sites-available/{{ _domain }}.conf"
     dest: "/etc/apache2/sites-enabled/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
     state: link
 
-- name: disable apache default site
+- name: Disable apache default site
   file:
     path: /etc/apache2/sites-enabled/000-default.conf
     state: absent
-  notify: start apache2
-   
-
+  notify: Start apache2
