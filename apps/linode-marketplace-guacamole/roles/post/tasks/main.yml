@@ -10,7 +10,10 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
-    
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
 - name: Writing creds to file
   copy:
     dest: '/home/{{ username }}/.credentials'
@@ -20,10 +23,10 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
+
       Guacamole Admin Username: guacadmin
       Guacamole Admin Password: {{ guacamole_admin_password }}
-      
+
       PostgreSQL User: guacamole_user
       PostgreSQL Password: {{ postgres_user_password }}
       Database Name: guacamole_db

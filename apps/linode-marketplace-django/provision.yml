@@ -1,20 +1,20 @@
+---
 # django
-- name: setting up environment 
+- name: Setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
     # generate creds
-    - name: generating sudo user and password 
+    - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-    
-    - name: writing passwords to vars
+
+    - name: Writing passwords to vars
       blockinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        block: | 
+        block: |
           postgres_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           django_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

@@ -1,16 +1,14 @@
 ---
 - name: Install Docker latest
-  import_role: 
+  import_role:
     name: docker
 
 - name: Installing docker-compose
   apt:
-    pkg:
-    - docker-compose
+    pkg: [docker-compose]
     state: present
 
 # docker-compose
-
 - name: Create docker directory
   file:
     path: "{{ docker_directory }}"

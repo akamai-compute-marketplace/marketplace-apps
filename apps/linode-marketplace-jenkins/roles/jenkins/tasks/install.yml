@@ -1,19 +1,20 @@
 ---
 # install jenkins
 
-- name: add jenkins key
+- name: Add jenkins key
   ansible.builtin.get_url:
     url: https://pkg.jenkins.io/debian/jenkins.io-2026.key
     dest: /usr/share/keyrings/jenkins-keyring.asc
+    mode: '0644'
 
-- name: add jenkins repo
+- name: Add jenkins repo
   apt_repository:
     repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/'
     filename: jenkins
     update_cache: true
     state: present
 
-- name: installing jenkins version {{ jenkins_version }}
+- name: Installing jenkins version {{ jenkins_version }}
   apt:
     name: jenkins={{ jenkins_version }}
     state: present

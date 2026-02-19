@@ -13,6 +13,7 @@
     mode: '0600'
     owner: '{{ username }}'
     group: '{{ username }}'
+
 - name: Writing antmedia creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'

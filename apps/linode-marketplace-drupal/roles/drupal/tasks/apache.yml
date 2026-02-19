@@ -3,12 +3,8 @@
   apache2_module:
     name: "{{ item }}"
     state: present
-  loop:
-    - rewrite
-    - headers
-    - ssl
-    - socache_shmcb
-  notify: restart apache
+  loop: [rewrite, headers, ssl, socache_shmcb]
+  notify: Restart apache
 
 - name: Create Apache log directory for Drupal
   file:
@@ -21,9 +17,7 @@
     path: "/var/log/apache2/{{ item }}"
     state: touch
     mode: '0644'
-  loop:
-    - "drupal-error.log"
-    - "drupal-access.log"
+  loop: ["drupal-error.log", "drupal-access.log"]
 
 - name: Configure Apache virtual host
   template:
@@ -37,11 +31,11 @@
   file:
     path: /etc/apache2/sites-enabled/000-default.conf
     state: absent
-  notify: restart apache
+  notify: Restart apache
 
 - name: Enable Drupal site
   file:
     src: /etc/apache2/sites-available/{{ _domain }}.conf
     dest: /etc/apache2/sites-enabled/{{ _domain }}.conf
     state: link
-  notify: restart apache 
+  notify: Restart apache

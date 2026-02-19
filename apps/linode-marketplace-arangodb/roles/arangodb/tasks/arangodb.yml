@@ -6,6 +6,7 @@
     home: "/opt/arangodb3"
     shell: /usr/sbin/nologin
     state: present
+
 - name: Set up ArangoDB directories and permissions
   file:
     path: "{{ item }}"
@@ -62,6 +63,8 @@
       | /opt/arangodb3/usr/bin/arangosh --server.endpoint tcp://127.0.0.1:8529 \
         --server.username root --server.password '' --configuration none \
         --javascript.startup-directory /opt/arangodb3/usr/share/arangodb3/js
+  args:
+    executable: /bin/bash
 - name: Enable authentication in arangod.conf
   lineinfile:
     path: "/opt/arangodb3/etc/arangodb3/arangod.conf"

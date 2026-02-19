@@ -2,10 +2,9 @@
 # configure backstage app
 
 # create app
-
-- name: create nvm vars
+- name: Create nvm vars
   copy:
-    dest: '{{ username_directory }}/.nvmvars'
+    dest: '{{ backstage_username_directory }}/.nvmvars'
     mode: '0644'
     owner: '{{ username }}'
     group: '{{ username }}'
@@ -14,78 +13,78 @@
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-- name: configure backstage
+- name: Configure backstage
+  become: true
+  become_method: ansible.builtin.sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'
   block:
-    - name: install lts/iron
-      shell: 
+    - name: Install lts/krypton
+      shell:
         cmd: |
           source .nvmvars
-          nvm install lts/iron
+          nvm install lts/krypton
       args:
-        chdir: '{{ username_directory }}'
+        chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
-    - name: enable corepack
+    - name: Enable corepack
       shell:
         cmd: |
           source .nvmvars
           corepack enable
       args:
-        chdir: '{{ username_directory }}'
+        chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
-    - name: set yarn version
+    - name: Set yarn version
       shell:
         cmd: |
           source .nvmvars
           yarn set version 4.4.1
       args:
-        chdir: '{{ username_directory }}'
+        chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
-    - name: create {{ app_name }} backstage app
-      shell: 
+    - name: Create backstage app for {{ app_name }}
+      shell:
         cmd: |
+          set -o pipefail
           source .nvmvars
-          echo {{ app_name }} | npx @backstage/create-app@latest    
+          echo {{ app_name }} | npx @backstage/create-app@latest
       args:
-        chdir: '{{ username_directory }}'
+        chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
-    - name: add auth provider to backend
+    - name: Add auth provider to backend
       shell:
         cmd: |
           source ../.nvmvars
           yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-github-provider
       args:
-        chdir: '{{ app_directory }}'
+        chdir: '{{ backstage_app_directory }}'
         executable: /bin/bash
-  become: true
-  become_method: sudo
-  become_flags: '-i'
-  become_user: '{{ username }}'
 
 # configure app
-
-- name: add certs to gitignore
+- name: Add certs to gitignore
   lineinfile:
-    path: '{{ app_directory }}/.gitignore'
+    path: '{{ backstage_app_directory }}/.gitignore'
     line: 'certs/*'
     insertafter: EOF
     state: present
 
-- name: adding our application config files
+- name: Adding our application config files
   template:
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
     owner: '{{ username }}'
     group: '{{ username }}'
-    mode: 0644
+    mode: '0644'
   loop:
-    - { src: 'templates/app-config.local.yaml.j2', dest: '{{ app_directory }}/app-config.local.yaml'}
-    - { src: 'templates/app-config.yaml.j2', dest: '{{ app_directory }}/app-config.yaml'}
+    - { src: 'templates/app-config.local.yaml.j2', dest: '{{ backstage_app_directory }}/app-config.local.yaml'}
+    - { src: 'templates/app-config.yaml.j2', dest: '{{ backstage_app_directory }}/app-config.yaml'}
 
-- name: adding github user to org file
-  lineinfile: 
+- name: Adding github user to org file
+  lineinfile:
     insertafter: EOF
-    path: '{{ app_directory }}/examples/org.yaml'
-    line: | 
+    path: '{{ backstage_app_directory }}/examples/org.yaml'
+    line: |
       ---
       apiVersion: backstage.io/v1alpha1
       kind: User
@@ -94,18 +93,18 @@
       spec:
         memberOf: [guests]
 
-- name: add github auth provider (1/2)
+- name: Add github auth provider (1/2)
   lineinfile:
-    path: '{{ app_directory }}/packages/app/src/App.tsx'
+    path: '{{ backstage_app_directory }}/packages/app/src/App.tsx'
     insertafter: 'import { catalogEntityCreatePermission }'
     line: |
       import { githubAuthApiRef } from '@backstage/core-plugin-api';
 
-- name: add github auth provider (2/2)
+- name: Add github auth provider (2/2)
   lineinfile:
-    path: '{{ app_directory }}/packages/app/src/App.tsx'
+    path: '{{ backstage_app_directory }}/packages/app/src/App.tsx'
     regexp: "providers=\\{\\['guest'\\]\\}"
-    backrefs: yes
+    backrefs: true
     line: |2
           SignInPage: props => <SignInPage {...props} auto providers={['guest', {
                   id: 'github-auth-provider',
@@ -113,10 +112,10 @@
                   message: 'Sign in using GitHub',
                   apiRef: githubAuthApiRef,
                   }, ]} />,
-            
-- name: add github provider module to backend
+
+- name: Add github provider module to backend
   lineinfile:
-    path: '{{ app_directory }}/packages/backend/src/index.ts'
+    path: '{{ backstage_app_directory }}/packages/backend/src/index.ts'
     insertafter: "^backend\\.add\\(import\\('@backstage/plugin-auth-backend'\\)\\);$"
     line: |
       backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));

@@ -5,13 +5,18 @@
     url: "{{ aapanel_script_url }}"
     dest: "/tmp/install_7.0_en.sh"
     mode: '0755'
+
 - name: Run aaPanel installation script
   shell: |
     set -o pipefail
     echo "y" | /tmp/install_7.0_en.sh aapanel
+  args:
+    executable: /bin/bash
+
 - name: Obtain credentials
   command: bt 14
   register: aapanel_credentials
+
 - name: Gather deployment details
   set_fact:
     aapanel_internal_url: "{{ aapanel_credentials.stdout | regex_search('https?://[\\d\\.]+(:\\d+)?(/[\\S]*)?') }}"

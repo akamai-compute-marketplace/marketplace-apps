@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -e
 
 REGION="us-ord"
 LINODE_TYPE="g6-dedicated-4"

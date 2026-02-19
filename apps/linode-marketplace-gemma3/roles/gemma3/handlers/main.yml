@@ -1,10 +1,10 @@
 ---
-- name: restart docker
+- name: Restart docker
   systemd_service:
     name: docker
     state: restarted
 
-- name: restart nginx
+- name: Restart nginx
   systemd_service:
     name: nginx
     state: restarted

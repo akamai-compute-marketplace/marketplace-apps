@@ -11,9 +11,7 @@
     name: "{{ item }}"
     state: started
     enabled: true
-  loop:
-    - nginx
-    - gitea
+  loop: [nginx, gitea]
 
 - name: Set up MOTD
   template:
@@ -35,5 +33,3 @@
       Gitea Admin User: {{ gitea_admin_user }}
       Gitea Admin Password: {{ gitea_admin_password }}
       PostgreSQL Password: {{ postgresql_password }}
-
-  

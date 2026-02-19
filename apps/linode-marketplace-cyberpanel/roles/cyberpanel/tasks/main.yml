@@ -1,31 +1,31 @@
 ---
- # cyberpanel tasks as block
- # cyberpanel scripts want to be ran in /root/
-  - name: Install Cyberpanel
-    block:
-    - name: download Cyberpanel
-      ansible.builtin.get_url: 
-        url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/cybersetup.sh  
-        dest: /root/cybersetup.sh 
-        mode: 0755
-    
-    - name: run Cyberpanel installer
-      ansible.builtin.command: 
+# cyberpanel tasks as block
+# cyberpanel scripts want to be ran in /root/
+- name: Install Cyberpanel
+  block:
+    - name: Download Cyberpanel
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/cybersetup.sh
+        dest: /root/cybersetup.sh
+        mode: '0755'
+
+    - name: Run Cyberpanel installer
+      ansible.builtin.command:
         chdir: /root
         cmd: ./cybersetup.sh
 
-    - name: download Cyberpanel init script
+    - name: Download Cyberpanel init script
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh
         dest: /root/per-instance.sh
-        mode: 0755
+        mode: '0755'
 
-    - name: run Cyberpanel init script
+    - name: Run Cyberpanel init script
       ansible.builtin.command:
         chdir: /root
-        cmd: ./per-instance.sh  
+        cmd: ./per-instance.sh
 
-    - name: remove temporary httpd dir
+    - name: Remove temporary httpd dir
       ansible.builtin.file:
         path: /tmp/lshttpd/
         state: absent

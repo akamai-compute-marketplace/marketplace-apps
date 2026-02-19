@@ -1,0 +1,54 @@
+---
+- name: Install Docker latest
+  import_role: 
+    name: docker
+
+- name: Installing docker-compose
+  apt:
+    pkg:
+    - docker-compose
+    state: present
+
+# docker-compose
+
+- name: Create docker directory
+  file:
+    path: "{{ docker_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Template docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ docker_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Create Docker images from compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    pull: always
+
+- name: Start containers from docker-compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: present
+
+- name: Wait for Open WebUI service to start
+  uri:
+    url: "http://localhost:3000"
+    method: GET
+    status_code: [200]
+  register: openwebui_health
+  until: openwebui_health.status in [200]
+  retries: 30
+  delay: 5
+
+- name: Wait for vLLM service to start
+  uri:
+    url: "http://localhost:8000/v1/models"
+    method: GET
+    status_code: [200]
+  register: vllm_health
+  until: vllm_health.status in [200]
+  retries: 30
+  delay: 10

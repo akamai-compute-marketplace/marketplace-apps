@@ -10,6 +10,9 @@
   template:
     src: motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Write credentials file
   copy:
@@ -19,10 +22,10 @@
     group: '{{ username }}'
     content: |
       # Akamai Connected Cloud Jaeger Marketplace App Credentials
-      
+
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
+
       Jaeger Username: {{ jaeger_admin_user }}
       Jaeger Password: {{ jaeger_admin_password }}
 
@@ -30,8 +33,7 @@
       CA Certificate: /home/{{ username }}/.jaeger-client-certs/ca-cert.pem
       Client Certificate: /home/{{ username }}/.jaeger-client-certs/client-cert.pem
       Client Private Key: /home/{{ username }}/.jaeger-client-certs/client-key.pem
-      
+
       # OTLP Endpoints
       - gRPC: {{ _domain }}:4317 (with TLS)
       - HTTP: https://{{ _domain }}:4318/v1/traces (with TLS)
-      

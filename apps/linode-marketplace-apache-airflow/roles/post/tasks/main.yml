@@ -11,6 +11,7 @@
     mode: '0600'
     owner: '{{ username }}'
     group: '{{ username }}'
+
 - name: Writing creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'

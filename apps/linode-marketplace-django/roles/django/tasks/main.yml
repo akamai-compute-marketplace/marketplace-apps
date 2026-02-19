@@ -1,9 +1,9 @@
 ---
-- name: import django tasks
+- name: Import django tasks
   import_tasks: install.yml
 
-- name: import gunicorn tasks
+- name: Import gunicorn tasks
   import_tasks: gunicorn.yml
 
-- name: import nginx tasks
+- name: Import nginx tasks
   import_tasks: nginx.yml

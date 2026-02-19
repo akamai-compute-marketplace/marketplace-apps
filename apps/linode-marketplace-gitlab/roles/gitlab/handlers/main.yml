@@ -1,5 +1,6 @@
+---
 # handlers
-- name: restart postfix
+- name: Restart postfix
   systemd:
     name: postfix
     state: restarted

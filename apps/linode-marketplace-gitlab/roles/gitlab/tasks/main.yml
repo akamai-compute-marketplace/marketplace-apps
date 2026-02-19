@@ -1,8 +1,8 @@
 ---
 # main
 
-- name: install required packages
+- name: Install required packages
   import_tasks: install.yml
 
-- name: install postfix
+- name: Install postfix
   import_tasks: postfix.yml

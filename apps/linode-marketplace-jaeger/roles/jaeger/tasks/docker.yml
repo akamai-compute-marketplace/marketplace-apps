@@ -35,7 +35,7 @@
       COLLECTOR_OTLP_GRPC_TLS_CERT: "{{ jaeger_tls_dir }}/server-cert.pem"
       COLLECTOR_OTLP_GRPC_TLS_KEY: "{{ jaeger_tls_dir }}/server-key.pem"
       COLLECTOR_OTLP_GRPC_TLS_CLIENT_CA: "{{ jaeger_tls_dir }}/ca-cert.pem"
-      # TLS configuration for OTLP HTTP endpoint  
+      # TLS configuration for OTLP HTTP endpoint
       COLLECTOR_OTLP_HTTP_TLS_ENABLED: "true"
       COLLECTOR_OTLP_HTTP_TLS_CERT: "{{ jaeger_tls_dir }}/server-cert.pem"
       COLLECTOR_OTLP_HTTP_TLS_KEY: "{{ jaeger_tls_dir }}/server-key.pem"

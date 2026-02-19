@@ -1,6 +1,6 @@
 ---
 # set_hostname
-- name: setting system hostname
+- name: Setting system hostname
   hostname:
     name: "cpanel"
 
@@ -8,9 +8,9 @@
   get_url:
     url: https://securedownloads.cpanel.net/latest
     dest: /home/installer
-    mode: 0755
-    force: yes
-    validate_certs: false  
+    mode: '0755'
+    force: true
+    validate_certs: false
 
 - name: Run the script with flags
   script: /home/installer --skiplicensecheck
@@ -19,18 +19,21 @@
   file:
     path: /etc/cpupdate.conf
     state: absent
-  
+
 - name: Write .bash_profile
   template:
     src: templates/bashprofile.j2
     dest: /root/.bash_profile
+    mode: '0644'
 
 - name: Write motd.sh
   template:
     src: templates/motd.j2
     dest: /etc/motd.sh
-  
+    mode: '0644'
+
 - name: Create cpinit.done file
   file:
     path: /var/cpanel/cpinit.done
     state: touch
+    mode: '0644'

@@ -66,7 +66,7 @@ fi
 if [[ -n "${HF_TOKEN}" ]]; then
         UDF_VARS["HF_TOKEN"]="${HF_TOKEN}"
 else
-        UDF_VARS["HF_TOKEN"]="${{ secrets.HF_TOKEN }}" # Github secrets
+        UDF_VARS["HF_TOKEN"]="" # default
 fi
 
 if [[ -n "${GEMMA3_MODEL_SIZE}" ]]; then

@@ -11,9 +11,7 @@
     name: "{{ item }}"
     state: started
     enabled: true
-  loop:
-    - apache2
-    - mariadb
+  loop: [apache2, mariadb]
 
 - name: Set up MOTD
   template:
@@ -23,7 +21,7 @@
     group: root
     mode: '0644'
 
-- name: writing creds into file
+- name: Writing creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'

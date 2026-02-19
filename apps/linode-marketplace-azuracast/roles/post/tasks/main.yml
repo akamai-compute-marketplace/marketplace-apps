@@ -10,6 +10,9 @@
   template:
     src: motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing creds into file
   copy:
@@ -22,4 +25,3 @@
       Sudo Password: {{ password }}
       Azuracast Admin Email: {{ azuracast_admin_email }}
       Azuracast Admin Password: {{ azuracast_admin_password }}
-      

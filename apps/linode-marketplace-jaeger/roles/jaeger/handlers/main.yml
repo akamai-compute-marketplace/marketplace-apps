@@ -1,12 +1,12 @@
 ---
 # Handlers for Jaeger
-- name: restart jaeger
+- name: Restart jaeger
   community.docker.docker_container:
     name: jaeger
     state: started
     restart: true
 
-- name: restart nginx
+- name: Restart nginx
   systemd_service:
     name: nginx
     state: restarted
