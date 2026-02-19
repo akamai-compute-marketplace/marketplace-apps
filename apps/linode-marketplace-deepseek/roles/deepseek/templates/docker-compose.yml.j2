@@ -15,13 +15,6 @@ services:
     environment:
       - HF_HOME=/root/.cache/huggingface
       - PYTORCH_ALLOC_CONF=expandable_segments:True
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     command:
       - --model=deepseek-ai/DeepSeek-R1-Distill-Qwen-{{ deepseek_model_size }}
       - --max-model-len=16384
@@ -34,6 +27,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 300s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   #--------------------------------------------
   # Open-WebUI

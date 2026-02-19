@@ -10,11 +10,11 @@ During deployment, you can choose between three model sizes to match your GPU ca
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | `29.1.3`    | Container Management Runtime |
-| Docker Compose    | `1.29.2`    | Tool for multi-container applications |
+| Docker    | `29.2.1`    | Container Management Runtime |
+| Docker Compose    | `v5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
 | vLLM | `v0.14.0` | Library to run LLM inference models  |
-| Open WebUI | `main` tag | Self-hosted AI interface platform |
+| Open WebUI | `magin` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
 
@@ -32,7 +32,7 @@ During deployment, you can choose between three model sizes to match your GPU ca
 | Sudo User  | Creates limited `sudo` user with variable supplied username.  | Creates limited user from UDF supplied `username.` Note that usernames containing illegal characters will cause the play to fail. |
 | SSH Key   | Writes SSH pubkey to `sudo` user's `authorized_keys`.  | Writes UDF supplied `pubkey` to `/home/$username/.ssh/authorized_keys`. To add a SSH key to `root` please use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/).   |
 | Update Packages   | Performs standard apt updates and upgrades. | The Update Packages module performs apt update and upgrade actions as root.  |
-| GPU Utils| Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_devices`, `gpu_count`, and `_has_gpu` to `group_vars/linode/vars` |
+| GPU Utils | Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_devices`, `gpu_count`, and `_has_gpu` to `group_vars/linode/vars` |
 
 # Architecture
 
@@ -55,7 +55,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
   - OpenAI-compatible REST API
-  - GPU-accelerated inference with automatic tensor parallelism
+  - GPU-accelerated inference with automatic tensor parallelism (required for 14B and 32B models)
   - MIT licensed models (no authentication required)
   - Chain-of-thought reasoning with `<think>` traces
   - 16,384 token context length
@@ -93,7 +93,7 @@ The UI service automatically connects to the API service running on `localhost:8
 
 ## Tensor Parallelism
 
-The deployment automatically detects the number of available GPUs and configures vLLM to use tensor parallelism across all of them. This is required for the 32B model (which doesn't fit on a single GPU) and beneficial for the 14B model (faster inference).
+The deployment automatically detects the number of available GPUs and configures vLLM to use tensor parallelism across all of them. This is required for the 14B and 32B models (which do not fit on a single GPU).
 
 ## RAG Operations in Open WebUI
 
@@ -104,19 +104,22 @@ You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/$
 ## Resource Requirements
 
 ### For DeepSeek R1 Distill Qwen 7B
-- **GPU**: Single GPU with 24GB+ VRAM (e.g., 1x RTX 4000 Ada or RTX 6000)
-- **Memory**: 16GB RAM or higher
+- **GPU**: Any 1-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 16GB or higher
 - **Storage**: Sufficient space for model files (~14GB download)
+- **Compatible Plans**: All Ada 1-GPU plans, Quadro RTX 6000 1-GPU
 - **Reference**: [DeepSeek-R1-Distill-Qwen-7B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B)
 
 ### For DeepSeek R1 Distill Qwen 14B
-- **GPU**: Multi-GPU instance required (minimum 2x GPUs with 20GB+ VRAM each)
-- **Memory**: 32GB RAM or higher
+- **GPU**: Any 2-GPU instance or higher (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 32GB or higher
 - **Storage**: Sufficient space for model files (~28GB download)
+- **Compatible Plans**: All Ada 2-GPU and 4-GPU plans, Quadro RTX 6000 2-GPU, 3-GPU, and 4-GPU
 - **Reference**: [DeepSeek-R1-Distill-Qwen-14B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B)
 
 ### For DeepSeek R1 Distill Qwen 32B
-- **GPU**: Multi-GPU instance required (minimum 4x GPUs with 20GB+ VRAM each)
-- **Memory**: 64GB RAM or higher
+- **GPU**: Any 4-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 128GB or higher
 - **Storage**: Sufficient space for model files (~64GB download)
+- **Compatible Plans**: Ada 4-GPU plans, Quadro RTX 6000 4-GPU
 - **Reference**: [DeepSeek-R1-Distill-Qwen-32B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
