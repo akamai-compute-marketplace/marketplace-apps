@@ -1,52 +1,51 @@
 ---
-  - name: Set Download URL
-    set_fact:
-      mainconcept_url: "https://www.mainconcept.com/akamai-live-encoder"
+- name: Set Download URL
+  set_fact:
+    mainconcept_url: https://www.mainconcept.com/akamai-live-encoder
 
-  - name: Download MainConcept Live Encoder
-    get_url:
-      url: "{{ mainconcept_url }}"
-      dest: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+- name: Download MainConcept Live Encoder
+  get_url:
+    url: "{{ mainconcept_url }}"
+    dest: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+    mode: '0644'
 
-  - name: Extract Installation
-    unarchive:
-      src: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
-      dest: "/tmp/"  
+- name: Extract Installation
+  unarchive:
+    src: "/tmp/MainConcept_Live_Encoder_Linux64_Setup_DEMO.tar.bz2"
+    dest: "/tmp/"
 
-  - name: Find .rpm files
-    find:
-      paths: /tmp/payload/
-      patterns: "*.rpm"
-    register: rpm_files  
+- name: Find .rpm files
+  find:
+    paths: /tmp/payload/
+    patterns: "*.rpm"
+  register: rpm_files
 
-  - name: Install MainConcept Live Encoder RPM
-    command: "yum --nogpgcheck localinstall -y {{ item.path }}"
-    loop: "{{ rpm_files.files }}"
-    when: rpm_files.matched > 0
-    args:
-      chdir: /tmp/payload/
+- name: Install MainConcept Live Encoder RPM
+  command: "yum --nogpgcheck localinstall -y {{ item.path }}"
+  loop: "{{ rpm_files.files }}"
+  when: rpm_files.matched > 0
+  args:
+    chdir: /tmp/payload/
 
-  - name: Add port 8080/tcp to the internal zone
-    ansible.builtin.command: firewall-cmd --zone=internal --add-port=8080/tcp --permanent
-    become: yes
+- name: Add port 8080/tcp to the internal zone
+  ansible.builtin.command: firewall-cmd --zone=internal --add-port=8080/tcp --permanent
+  become: true
 
-  - name: Add ports 6000-61000/tcp to the public zone
-    ansible.builtin.command: firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
-    become: yes
+- name: Add ports 6000-61000/tcp to the public zone
+  ansible.builtin.command: firewall-cmd --zone=public --add-port=6000-6100/tcp --permanent
+  become: true
 
-  - name: Reload Firewall Configuration
-    ansible.builtin.command: firewall-cmd --reload
-    become: yes
+- name: Reload Firewall Configuration
+  ansible.builtin.command: firewall-cmd --reload
+  become: true
 
 # - name: Start MainConcept Live Encoder
 #   shell: /opt/McLiveEncoder/engine/run.sh &
 #   args:
 #     chdir: /opt/McLiveEncoder/engine/
 
-  - name: start mcliveencodingwebd service
-    systemd:
-      name: mcliveencodingwebd.service
-      state: started
-      enabled: yes
-
-
+- name: Start mcliveencodingwebd service
+  systemd:
+    name: mcliveencodingwebd.service
+    state: started
+    enabled: true

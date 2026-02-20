@@ -1,57 +1,57 @@
 ---
-  # set_hostname
-  - name: setting up hostname
-    import_role:
-      name: hostname
+# set_hostname
+- name: Setting up hostname
+  import_role:
+    name: hostname
 
-  # sets account ssh pubkey to limited user
-  - name: set ssh pubkey
-    import_role:
-      name: sshkey
+# sets account ssh pubkey to limited user
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
 
-  # write _domain to vars.
-  - name: write _domain to vars
-    lineinfile: 
-      insertafter: EOF
-      path: group_vars/linode/vars
-      line: | 
-        _domain: {{ _domain }}
+# write _domain to vars.
+- name: Write _domain to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
 
-  # dns creation
-  - name: create dns A record
-    import_role:
-      name: create_dns_record
-    when: 
-      - token_password is defined
-      - default_dns is not defined
+# dns creation
+- name: Create dns A record
+  import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - default_dns is not defined
 
-  # apt_setup_update
-  - name: update system packages
-    dnf:
-      name: '*'
-      state: latest        
-    become: true
+# apt_setup_update
+- name: Update system packages
+  dnf:
+    name: '*'
+    state: latest
+  become: true
 
-  - name: allow http
-    shell: 
-      cmd: firewall-cmd --zone=public --add-port=80/tcp --permanent
+- name: Allow http
+  shell:
+    cmd: firewall-cmd --zone=public --add-port=80/tcp --permanent
 
-  - name: allow https
-    shell: 
-      cmd: firewall-cmd --zone=public --add-port=443/tcp --permanent
+- name: Allow https
+  shell:
+    cmd: firewall-cmd --zone=public --add-port=443/tcp --permanent
 
-  # MainConcept  
-  - name: Install packages
-    yum:
-      name: tar
-      state: present
+# MainConcept
+- name: Install packages
+  yum:
+    name: tar
+    state: present
 
-  - name: Install bzip2
-    yum:
-      name: bzip2
-      state: present
+- name: Install bzip2
+  yum:
+    name: bzip2
+    state: present
 
-  - name: Install wget
-    yum:
-      name: wget
-      state: present
+- name: Install wget
+  yum:
+    name: wget
+    state: present
