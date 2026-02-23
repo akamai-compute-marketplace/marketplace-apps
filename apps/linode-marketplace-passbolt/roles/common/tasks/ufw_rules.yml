@@ -17,15 +17,3 @@
     rule: allow
     port: '443'
     proto: tcp
-
-- name: Allow all access to tcp port 25
-  community.general.ufw:
-    rule: allow
-    port: '25'
-    proto: tcp
-
-- name: Allow all access to tcp port 587
-  community.general.ufw:
-    rule: allow
-    port: '587'
-    proto: tcp

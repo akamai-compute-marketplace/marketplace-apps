@@ -1,6 +1,6 @@
 ---
 - name: Install NVIDIA drivers
-  import_role: 
+  import_role:
     name: gpu_utils
   vars:
     install_nvidia: true

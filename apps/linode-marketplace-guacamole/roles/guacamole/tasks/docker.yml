@@ -12,10 +12,11 @@
     loop_var: directory
 
 - name: Install Docker latest
-  import_role: 
+  import_role:
     name: docker
 
 - name: Create Docker Compose configuration
   template:
     src: docker-compose.yml.j2
     dest: "{{ guacamole_base_dir }}/docker-compose.yml"
+    mode: '0644'

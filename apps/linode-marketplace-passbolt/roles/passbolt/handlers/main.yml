@@ -1,5 +1,10 @@
-# passbolt handlers
-  - name: restart postfix
-    systemd:
+# handlers
+  - name: Restart Postfix
+    systemd_service:
       name: postfix
+      state: restarted
+
+  - name: Restart Nginx
+    systemd_service:
+      name: nginx
       state: restarted

@@ -6,9 +6,7 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0755'
-  loop:
-    - static
-    - templates
+  loop: [static, templates]
 
 - name: Copy sample Flask application
   copy:
@@ -25,9 +23,7 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0644'
-  loop:
-    - sample_app.css
-    - sample_app.js
+  loop: [sample_app.css, sample_app.js]
 
 - name: Copy template files
   copy:

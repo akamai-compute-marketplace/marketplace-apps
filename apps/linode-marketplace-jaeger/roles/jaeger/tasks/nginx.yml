@@ -1,9 +1,7 @@
 ---
 - name: Install NGINX and apache2-utils
   apt:
-    name:
-      - nginx
-      - apache2-utils
+    name: [nginx, apache2-utils]
     state: present
     update_cache: true
 
@@ -21,20 +19,20 @@
     src: nginx.conf.j2
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Enable Jaeger NGINX site
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/jaeger-basic-auth
     state: link
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Remove default NGINX site configuration
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Enable and start NGINX service
   systemd_service:
@@ -42,7 +40,7 @@
     state: started
     enabled: true
 
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
   vars:

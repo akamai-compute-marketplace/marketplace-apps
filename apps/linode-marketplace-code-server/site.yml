@@ -1,37 +1,29 @@
 ---
-- name: code-server setup
+- name: Setup code-server
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
-
+  vars_files: [group_vars/linode/vars]
   tasks:
-    - block:
-        - name: run roles
+    - name: Running app in staging mode
+      when: "mode == 'staging'"
+      block:
+        - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop:
-            - common
-            - code-server
-            - post
-        - name: deployment passed
+          loop: [common, code-server, post]
+        - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
-            deploy_status: 'successful'
+            deploy_status: "successful"
       rescue:
-        - name: deployment failed
+        - name: Deployment failed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
-            deploy_status: 'failed'
-      when: "mode == 'staging'"
-
-    - name: running app normally
+            deploy_status: "failed"
+    - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop:
-        - common
-        - code-server
-        - post
+      loop: [common, code-server, post]
       when: "mode == 'production'"

@@ -1,10 +1,10 @@
 ---
-- name: restart postgresql
+- name: Restart postgresql
   systemd:
     name: postgresql
     state: restarted
 
-- name: restart gitea
+- name: Restart gitea
   systemd:
     name: gitea
     state: restarted

@@ -1,10 +1,10 @@
 ---
-- name: restart apache
+- name: Restart apache
   service:
     name: apache2
     state: restarted
 
-- name: restart mariadb
+- name: Restart mariadb
   service:
     name: mariadb
     state: restarted

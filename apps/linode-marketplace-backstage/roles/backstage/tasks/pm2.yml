@@ -1,38 +1,36 @@
 ---
 # PM2 process manager
-
-- name: install pm2 globally
+- name: Install pm2 globally
   community.general.npm:
     name: pm2
     global: true
-
-- name: starting backstage application
+- name: Starting backstage application
+  become: true
+  become_method: ansible.builtin.sudo
+  become_flags: '-i'
+  become_user: '{{ username }}'
   block:
-    - name: start backstage frontend
+    - name: Start backstage frontend
       shell:
         cmd: |
           source ../.nvmvars
           pm2 start "yarn start" --name backstage-frontend
       args:
-        chdir: '{{ app_directory }}'
+        chdir: '{{ backstage_app_directory }}'
         executable: /bin/bash
-    - name: start backstage backend
+    - name: Start backstage backend
       shell:
         cmd: |
           source ../.nvmvars
           pm2 start "yarn start-backend" --name backstage-backend
       args:
-        chdir: '{{ app_directory }}'
+        chdir: '{{ backstage_app_directory }}'
         executable: /bin/bash
-    - name: saving application state
+    - name: Saving application state
       shell:
         cmd: |
           source ../.nvmvars
-          pm2 save  
+          pm2 save
       args:
-        chdir: '{{ app_directory }}'
+        chdir: '{{ backstage_app_directory }}'
         executable: /bin/bash
-  become: true
-  become_method: sudo
-  become_flags: '-i'
-  become_user: '{{ username }}'  

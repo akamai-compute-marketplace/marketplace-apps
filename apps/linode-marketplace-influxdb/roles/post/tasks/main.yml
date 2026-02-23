@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo + Influx creds into file
   copy:

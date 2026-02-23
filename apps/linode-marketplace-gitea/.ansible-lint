@@ -7,4 +7,4 @@ skip_list:
 exclude_paths:
   - .cache/
   - .github/
-  - tests/ 
+  - tests/

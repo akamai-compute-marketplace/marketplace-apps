@@ -1,0 +1,27 @@
+---
+- name: Installing MariaDB
+  apt:
+    pkg:
+    - mariadb-server
+    state: present
+
+- name: Running mysql secure installation
+  import_role:
+    name: securemysql
+
+# create db and user
+
+- name: Creating Passbolt database
+  community.mysql.mysql_db:
+    name: "{{ passbolt_db_name }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+
+- name: Creating Passbolt user
+  community.mysql.mysql_user:
+    name: "{{ passbolt_db_user }}"
+    password: "{{ passbolt_db_password }}"
+    host: localhost
+    priv: "{{ passbolt_db_name }}.*:ALL"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present

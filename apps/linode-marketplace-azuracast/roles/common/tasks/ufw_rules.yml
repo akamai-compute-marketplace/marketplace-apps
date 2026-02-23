@@ -4,11 +4,7 @@
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop:
-    - "22"
-    - "80"
-    - "443"
-    - "2022"
+  loop: ["22", "80", "443", "2022"]
 
 - name: Configure UFW rules for AzuraCast streaming ports
   ufw:
@@ -157,7 +153,7 @@
     - "8470"
     - "8475"
     - "8476"
-    - "8480"  
+    - "8480"
     - "8485"
     - "8486"
     - "8490"
@@ -167,4 +163,4 @@
 - name: Enable UFW
   ufw:
     state: enabled
-    policy: deny 
+    policy: deny

@@ -3,7 +3,7 @@
 set -e
 
 pip install ansible-lint
-echo -e '[defaults]\ndeprecation_warnings = False' >ansible.cfg
 ansible-galaxy collection install community.general community.docker community.postgresql community.crypto community.mysql community.mongodb
+export ANSIBLE_CONFIG="tests/static_code_analysis/ansible_playbooks/ansible.cfg"
 ansible-lint -c tests/static_code_analysis/ansible_playbooks/.ansible-lint.yaml
 echo "✅ ansible-lint passed: no errors found."

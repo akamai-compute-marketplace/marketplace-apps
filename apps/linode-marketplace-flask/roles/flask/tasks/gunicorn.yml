@@ -39,11 +39,11 @@
 
 - name: Reload systemd daemon
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Enable and start gunicorn service
   systemd:
     name: gunicorn
-    enabled: yes
+    enabled: true
     state: started
-  notify: restart gunicorn
+  notify: Restart gunicorn

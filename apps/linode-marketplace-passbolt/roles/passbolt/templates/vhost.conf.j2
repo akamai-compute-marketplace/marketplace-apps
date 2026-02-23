@@ -1,0 +1,41 @@
+server {
+
+  listen [::]:443 ssl ipv6only=on;
+  listen 443 ssl;
+  ssl_certificate /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
+
+  server_name {{ _domain }};
+
+  client_body_buffer_size     100K;
+  client_header_buffer_size   1K;
+  client_max_body_size        5M;
+
+  client_body_timeout   10;
+  client_header_timeout 10;
+  keepalive_timeout     5 5;
+  send_timeout          10;
+
+  root /var/www/passbolt_api/webroot/;
+  index index.php;
+  error_log /var/log/nginx/passbolt-error.log info;
+  access_log /var/log/nginx/passbolt-access.log;
+
+
+  location / {
+    try_files $uri $uri/ /index.php?$args;
+  }
+
+  location ~ \.php$ {
+    try_files                $uri =404;
+    include                  fastcgi_params;
+    fastcgi_pass             unix:/run/php/php{{ php_version.stdout }}-fpm.sock;
+    fastcgi_index            index.php;
+    fastcgi_intercept_errors on;
+    fastcgi_split_path_info  ^(.+\.php)(.+)$;
+    fastcgi_param            SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param            SERVER_NAME $http_host;
+    fastcgi_param PHP_VALUE  "upload_max_filesize=5M \n post_max_size=5M";
+  }
+
+}
