@@ -1,5 +1,5 @@
 ---
-- name: restart memgraph
+- name: Restart memgraph
   systemd_service:
     name: memgraph
     state: restarted
