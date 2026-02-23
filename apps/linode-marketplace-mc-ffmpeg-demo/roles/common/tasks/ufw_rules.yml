@@ -4,4 +4,3 @@
     rule: allow
     port: '22'
     proto: tcp
-
