@@ -1,0 +1,29 @@
+---
+
+# avoid access while configuring (handler reloads at the end)
+- name: Stopping Nginx
+  systemd_service:
+    name: nginx
+    state: stopped
+
+- name: Clone Passbolt repo
+  git:
+    repo: https://github.com/passbolt/passbolt_api.git
+    dest: /var/www/passbolt_api
+
+- name: Update www-data directory ownership
+  file:
+    path: /var/www
+    state: directory
+    owner: www-data
+    group: www-data 
+    recurse: true
+
+- name: Install Passbolt PHP deps
+  community.general.composer:
+    command: install
+    no_dev: true
+    working_dir: /var/www/passbolt_api
+  become: true
+  become_method: sudo
+  become_user: www-data

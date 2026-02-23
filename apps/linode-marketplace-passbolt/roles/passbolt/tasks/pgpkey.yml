@@ -1,0 +1,35 @@
+---
+
+- name: Configuring GPG keys
+  block:
+    - name: Create new GPG
+      shell: gpg --no-tty --quick-gen-key --pinentry-mode=loopback --passphrase '' '{{ passbolt_user_firstname }} {{ passbolt_user_lastname }} <{{ passbolt_user_email }}>' default default never
+
+    - name:  Export GPG secret key
+      shell: gpg --no-tty --armor --export-secret-keys {{ passbolt_user_email }} > /var/www/passbolt_api/config/gpg/serverkey_private.asc
+
+    - name: Export public GPG key
+      shell: gpg --no-tty --armor --export {{ passbolt_user_email }} > /var/www/passbolt_api/config/gpg/serverkey.asc
+
+    - name: List GPG keys
+      shell: gpg --list-keys
+      register: show_keys
+
+    - name: Set GPG fingerprint
+      set_fact:
+        gpg_fingerprint: "{{ show_keys.stdout | regex_search('[A-F0-9]{40}') }}"
+
+    - name: Updating PGP key permissions
+      file:
+        path: "/var/www/passbolt_api/config/gpg/{{ item }}"
+        owner: www-data
+        group: www-data
+        mode: 0440
+        state: file
+      loop:
+        - serverkey.asc
+        - serverkey_private.asc
+    
+  become: true
+  become_method: sudo
+  become_user: www-data

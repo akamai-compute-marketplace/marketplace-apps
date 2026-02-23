@@ -1,0 +1,42 @@
+---
+
+- name: Generate SSL
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: standalone
+
+- name: Install Nginx
+  apt:
+    pkg:
+      - nginx
+      - nginx-common
+    state: latest
+
+- name: Set PHP version
+  shell:
+    cmd: "php -r \"echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;\""
+  register: php_version
+
+- name: Add Passbolt vhost
+  template:
+    src: 'templates/vhost.conf.j2'
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+
+- name: Enable Passbolt vhost
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: Remove default Nginx vhost
+  file:
+    path: '/etc/nginx/sites-enabled/default'
+    state: absent
+  notify: Restart Nginx
+
+- name: Starting php{{ php_version.stdout }}-fpm
+  service:
+    name: "php{{ php_version.stdout }}-fpm"
+    state: started
+    enabled: true
