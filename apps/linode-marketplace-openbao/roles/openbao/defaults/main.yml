@@ -1,5 +1,6 @@
 ---
-## OpenBao is still in active development, so the openbao_download_link and the openbao_deb_file will need to actively be monitored for latest released here https://openbao.org/downloads/
+## OpenBao is still in active development, so the openbao_download_link and the openbao_deb_file will need to actively be monitored
+## for latest released here https://openbao.org/downloads/
 
 # global vars
 openbao_config: /etc/openbao/openbao.hcl

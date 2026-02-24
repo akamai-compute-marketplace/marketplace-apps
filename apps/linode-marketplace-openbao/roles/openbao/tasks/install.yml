@@ -1,37 +1,34 @@
 ---
- # openbao
-- name: get latest openbao release version
+# openbao
+- name: Get latest openbao release version
   set_fact:
     openbao_version: "{{ (lookup('url', 'https://api.github.com/repos/openbao/openbao/releases') | from_json)[0].tag_name | regex_replace('^v', '') }}"
 
-- name: build openbao download link
+- name: Build openbao download link
   set_fact:
     openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/openbao-hsm_{{ openbao_version }}_linux_amd64.deb"
     openbao_deb_file: "/tmp/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
     listen_address: "{{ (ansible_all_ipv4_addresses | select('search', '^192\\.168\\.') | list | first) | default('0.0.0.0') }}"
 
-- name: install required packages
+- name: Install required packages
   apt:
     name: "{{ item }}"
     state: present
-  with_items:
-    - wget
-    - unzip
+  with_items: [wget, unzip]
 
-- name: download openbao {{ openbao_version }}
-  get_url: 
+- name: Download openbao {{ openbao_version }}
+  get_url:
     url: "{{ openbao_download_link }}"
     dest: "{{ openbao_deb_file }}"
+    mode: '0644'
 
-- name: install the .deb package
+- name: Install the .deb package
   apt:
     deb: "{{ openbao_deb_file }}"
 
-- name: add VAULT_ADDR to .bashrc
+- name: Add VAULT_ADDR to .bashrc
   lineinfile:
     path: "{{ item }}"
     line: 'export VAULT_ADDR=https://{{ listen_address }}:8200'
     insertbefore: EOF
-  with_items:
-    - "~/.bashrc"
-    - "/home/{{ username }}/.bashrc"
+  with_items: ["~/.bashrc", "/home/{{ username }}/.bashrc"]
