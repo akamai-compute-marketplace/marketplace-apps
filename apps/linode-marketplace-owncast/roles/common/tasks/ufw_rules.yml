@@ -9,13 +9,8 @@
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop:
-    - "22"   # SSH
-    - "80"   # HTTP
-    - "443"  # HTTPS
-    - "1935" # RTMP for streaming
-
+  loop: ["22", "80", "443", "1935"]
 - name: Enable UFW
   ufw:
     state: enabled
-    policy: deny 
+    policy: deny
