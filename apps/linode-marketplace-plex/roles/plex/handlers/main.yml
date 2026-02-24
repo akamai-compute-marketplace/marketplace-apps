@@ -4,4 +4,3 @@
     name: nginx.service
     state: restarted
     enabled: true
-
