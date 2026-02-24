@@ -1,8 +1,7 @@
 ---
 - name: Install required packages for nginx
   apt:
-    name:
-      - nginx
+    name: [nginx]
     state: present
     update_cache: true
 
@@ -30,7 +29,7 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: restart nginx
+  notify: Restart nginx
 
 - name: Configure SSL with certbot
   import_role:

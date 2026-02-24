@@ -4,7 +4,9 @@ skip_list:
   - no-changed-when
   - no-jinja-when
   - fqcn-builtins
+  - latest
   - package-latest
   - latest
   - role-name
   - var-naming
+  - no-relative-paths

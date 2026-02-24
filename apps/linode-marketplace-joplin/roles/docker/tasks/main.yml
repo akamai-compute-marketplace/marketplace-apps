@@ -1,8 +1,6 @@
 ---
- # docker
-- name: installing docker docker-compose
+# docker
+- name: Installing docker docker-compose
   apt:
-    pkg:
-    - docker
-    - docker-compose
+    pkg: [docker, docker-compose]
     state: present
