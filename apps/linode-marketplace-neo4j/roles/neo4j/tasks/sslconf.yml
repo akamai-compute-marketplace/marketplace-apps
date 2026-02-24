@@ -15,7 +15,7 @@
     state: present
   when: neo4j_http_allow is defined
 
-#https
+# https
 
 - name: Enable HTTPS in neo4j
   lineinfile:
@@ -44,7 +44,7 @@
     - { search: '^\#dbms.ssl.policy.https.public_certificate', replace: 'dbms.ssl.policy.https.public_certificate=public.crt' }
     - { search: '^\#dbms.ssl.policy.https.client_auth', replace: 'dbms.ssl.policy.https.client_auth=NONE' }
 
-#bolt
+# bolt
 
 - name: Enable ssl policy for bolt
   lineinfile:
@@ -61,4 +61,4 @@
     - { search: '^\#dbms.ssl.policy.bolt.private_key', replace: 'dbms.ssl.policy.bolt.private_key=private.key' }
     - { search: '^\#dbms.ssl.policy.bolt.public_certificate', replace: 'dbms.ssl.policy.bolt.public_certificate=public.crt' }
     - { search: '^\#dbms.ssl.policy.bolt.client_auth', replace: 'dbms.ssl.policy.bolt.client_auth=NONE' }
-  notify: restart neo4j
+  notify: Restart neo4j
