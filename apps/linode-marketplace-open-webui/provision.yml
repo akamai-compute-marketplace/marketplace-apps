@@ -1,20 +1,19 @@
+---
 # linode ansible playbook
-
-- name: Setting up environment 
+- name: Setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
 
     - name: Ensure instance has GPU before continuing
-      import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml 
+      import_tasks: ../linode_helpers/roles/gpu_utils/tasks/main.yml
       vars:
         gpu_required: true
 
-    - name: Generating sudo user and password 
+    - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: Generating Open WebUI password

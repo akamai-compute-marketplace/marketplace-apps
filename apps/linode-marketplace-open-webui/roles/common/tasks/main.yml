@@ -5,18 +5,16 @@
 
 - name: Set ssh pubkey
   import_role:
-      name: sshkey
-      
+    name: sshkey
+
 - name: Create dns A record
   import_role:
     name: create_dns_record
-  when: 
-    - token_password is defined
-    - default_dns is not defined
+  when: [token_password is defined, default_dns is not defined]
 
 - name: Secure ssh
   import_role:
-      name: securessh
+    name: securessh
   when: disable_root is defined
 
 - name: Update system packages
