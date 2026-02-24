@@ -18,4 +18,8 @@
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: Generating Open WebUI password
-      import_tasks: ../linode_helpers/roles/open_webui/tasks/passgen.yml
+      blockinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        block: |
+          openwebui_login_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

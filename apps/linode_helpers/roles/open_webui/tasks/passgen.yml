@@ -1,7 +1,0 @@
----
-- name: Writing Open WebUI login password to vars
-  blockinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    block: |
-      openwebui_login_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

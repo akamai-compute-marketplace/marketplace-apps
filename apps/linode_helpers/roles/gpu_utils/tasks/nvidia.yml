@@ -33,14 +33,25 @@
     update_cache: true
 
 - name: Unbind GPUs from nouveau
-  shell: echo "{{ pci_device }}" > /sys/bus/pci/drivers/nouveau/unbind
+  block:
+    - name: Check current driver symlink
+      stat:
+        path: "/sys/bus/pci/devices/{{ pci_device }}/driver"
+        follow: false
+      register: driver_link
+
+    - name: Unbind GPU from nouveau driver
+      command: echo {{ pci_device }} > /sys/bus/pci/drivers/nouveau/unbind
+      args:
+        executable: /bin/bash
+      when: >
+        driver_link.stat.exists and
+        driver_link.stat.lnk_source is search('nouveau')
+      changed_when: true
   loop: "{{ gpu_devices }}"
   loop_control:
     loop_var: pci_device
     label: "{{ pci_device }}"
-  when: >
-    lookup('pipe', 'readlink /sys/bus/pci/devices/' + pci_device + '/driver 2>/dev/null || true') is search('nouveau')
-  failed_when: false
 
 - name: Unload nouveau module
   community.general.modprobe:
@@ -53,15 +64,26 @@
     name: nvidia
     state: present
 
-- name: Bind all GPUs to nvidia driver
-  shell: echo "{{ pci_device }}" > /sys/bus/pci/drivers/nvidia/bind
+- name: Bind GPUs to nvidia driver
+  block:
+    - name: Check current driver symlink
+      stat:
+        path: "/sys/bus/pci/devices/{{ pci_device }}/driver"
+        follow: false
+      register: driver_link
+
+    - name: Bind GPU to nvidia driver
+      command: echo {{ pci_device }} > /sys/bus/pci/drivers/nvidia/bind
+      args:
+        executable: /bin/bash
+      when: >
+        not driver_link.stat.exists or
+        driver_link.stat.lnk_source is not search('nvidia')
+      changed_when: true
   loop: "{{ gpu_devices }}"
   loop_control:
     loop_var: pci_device
     label: "{{ pci_device }}"
-  when: >
-    lookup('pipe', 'readlink /sys/bus/pci/devices/' + pci_device + '/driver 2>/dev/null || true') is not search('nvidia')
-  failed_when: false
 
 # assumes nvidia past this point
 

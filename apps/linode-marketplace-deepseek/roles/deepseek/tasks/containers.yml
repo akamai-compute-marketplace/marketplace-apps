@@ -9,15 +9,6 @@
     - docker-compose
     state: present
 
-- name: Configure Docker to use nvidia runtime
-  command: nvidia-ctk runtime configure --runtime=docker
-  changed_when: true
-
-- name: Restart Docker to load nvidia runtime
-  systemd_service:
-    name: docker
-    state: restarted
-
 - name: Set tensor parallel size
   set_fact:
     tensor_parallel_size: "{{ gpu_count | default(1) }}"

@@ -5,6 +5,9 @@
 - name: Install Docker and container components
   import_tasks: containers.yml
 
-- name: Configure Open WebUI
+- name: Configure Open WebUI initial admin account
   import_role:
     name: open_webui
+
+- name: Configure Nginx and SSL certificates
+  import_tasks: nginx.yml
