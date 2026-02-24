@@ -1,52 +1,52 @@
 ---
- # apache
-- name: installing apache
+# apache
+- name: Installing apache
   apt:
     pkg:
-    - apache2
+      - apache2
     state: present
 
-- name: enabling apache on boot
+- name: Enabling apache on boot
   service:
     name: apache2
-    enabled: yes
+    enabled: true
 
-- name: enable apache rewrite module
+- name: Enable apache rewrite module
   apache2_module:
     name: rewrite
     state: present
-  notify: reload apache2
+  notify: Reload apache2
 
-- name: disable apache default site
+- name: Disable apache default site
   file:
     path: /etc/apache2/sites-enabled/000-default.conf
     state: absent
 
-- name: apache configs for customer domain
+- name: Apache configs for customer domain
   import_tasks: apache_configs.yml
 
 # mysql
-- name: installing mariadb
+- name: Installing mariadb
   apt:
     pkg:
-    - mariadb-server
-    - python3-mysqldb
+      - mariadb-server
+      - python3-mysqldb
     state: present
   register: mariadb
 
-- name: running mysql secure installation
+- name: Running mysql secure installation
   import_role:
     name: securemysql
 
 # php
-- name: install php
+- name: Install php
   apt:
     pkg:
-    - php-common
-    - libapache2-mod-php
-    - php-mysql
+      - php-common
+      - libapache2-mod-php
+      - php-mysql
     state: present
 
-- name: configuring domain with certbot
+- name: Configuring domain with certbot
   import_role:
     name: certbot_ssl

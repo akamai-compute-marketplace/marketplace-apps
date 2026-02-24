@@ -1,0 +1,29 @@
+---
+# Passbolt deps
+- name: Installing required packages
+  apt:
+    pkg:
+    - php-fpm
+    - php-mysql
+    - php-common
+    - php-cli
+    - php-opcache
+    - php-readline
+    - php-mbstring
+    - php-xml
+    - php-gd
+    - php-curl
+    - php-imagick
+    - php-gnupg
+    - php-ldap
+    - php-imap
+    - php-zip
+    - php-bz2
+    - php-intl
+    - php-gmp
+    - composer
+    - postfix
+    - mailutils
+    - haveged
+    state: present 
+    update_cache: true

@@ -1,5 +1,5 @@
 # passbolt
-- name: setting up environment 
+- name: Setting up environment 
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -8,17 +8,16 @@
     - group_vars/linode/vars
   tasks:
   # generate creds
-    - name: generating sudo user and password 
+    - name: Generating sudo user and password 
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    - name: writing deployment variables to vars file
+    - name: Writing deployment variables to vars file
       blockinfile:
         path: ./group_vars/linode/vars
         marker: "# {mark} INSTANCE VARS"
         block: |
-          gpg_key_passphrase: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }} 
-          passbolt_db_admin_password: {{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}          
-          passbolt_mysql_user: passboltadmin
-
-    - name: generating mysql root password
-      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
+          mysql_root_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          passbolt_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          passbolt_db_user: passbolt
+          passbolt_db_name: passbolt
+          

@@ -1,5 +1,5 @@
 ---
-- name: passbolt deploy
+- name: Passbolt deploy
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -9,25 +9,25 @@
 
   tasks:
     - block:
-        - name: run roles
+        - name: Run roles
           include_role:
             name: "{{ item }}"
           loop:
             - common
             - passbolt
             - post
-        - name: deployment passed
+        - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'successful'
       rescue:
-        - name: deployment failed
+        - name: Deployment failed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'failed'
       when: "mode == 'staging'"
 
-    - name: running app normally
+    - name: Running app normally
       include_role:
         name: "{{ item }}"
       loop:

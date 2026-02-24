@@ -29,12 +29,6 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${PUBKEY}" ]]; then
-        UDF_VARS["PUBKEY"]="${PUBKEY}"
-else
-        UDF_VARS["PUBKEY"]="" # default
-fi
-
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
@@ -59,22 +53,22 @@ else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${PASSBOLT_FIRST_ADMIN_USERNAME}" ]]; then
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_USERNAME"]="${PASSBOLT_FIRST_ADMIN_USERNAME}"
+if [[ -n "${PASSBOLT_USER_FIRSTNAME}" ]]; then
+        UDF_VARS["PASSBOLT_USER_FIRSTNAME"]="${PASSBOLT_USER_FIRSTNAME}"
 else
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_USERNAME"]="passboltadmin" # default
+        UDF_VARS["PASSBOLT_USER_FIRSTNAME"]="passbolt_firstname" # default
 fi
 
-if [[ -n "${PASSBOLT_FIRST_ADMIN_SURNAME}" ]]; then
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_SURNAME"]="${PASSBOLT_FIRST_ADMIN_SURNAME}"
+if [[ -n "${PASSBOLT_USER_LASTNAME}" ]]; then
+        UDF_VARS["PASSBOLT_USER_LASTNAME"]="${PASSBOLT_USER_LASTNAME}"
 else
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_SURNAME"]="passboltsurname" # default
+        UDF_VARS["PASSBOLT_USER_LASTNAME"]="passbolt_lastname" # default
 fi
 
-if [[ -n "${PASSBOLT_FIRST_ADMIN_EMAIL}" ]]; then
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_EMAIL"]="${PASSBOLT_FIRST_ADMIN_EMAIL}"
+if [[ -n "${PASSBOLT_USER_EMAIL}" ]]; then
+        UDF_VARS["PASSBOLT_USER_EMAIL"]="${PASSBOLT_USER_EMAIL}"
 else
-        UDF_VARS["PASSBOLT_FIRST_ADMIN_EMAIL"]="passbolt@{DEFAULT_DNS}" # default
+        UDF_VARS["PASSBOLT_USER_EMAIL"]="passbolt@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

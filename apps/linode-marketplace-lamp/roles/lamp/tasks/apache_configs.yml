@@ -1,35 +1,35 @@
 ---
-- name: creating document root
+- name: Creating document root
   file:
     path: /var/www/{{ _domain }}/public_html
     owner: www-data
     group: www-data
-    mode: 0755
+    mode: '0755'
     state: directory
   register: document_root
 
-- name: move index.html template
+- name: Move index.html template
   copy:
     src: files/index.html
     dest: "{{ document_root.path }}/index.html"
     owner: www-data
     group: www-data
-    mode: 0644
+    mode: '0644'
 
-- name: moving vhost template
+- name: Moving vhost template
   template:
     src: templates/vhost.conf.j2
     dest: "/etc/apache2/sites-available/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
-- name: symlinking our vhost
+- name: Symlinking our vhost
   file:
     src: "/etc/apache2/sites-available/{{ _domain }}.conf"
     dest: "/etc/apache2/sites-enabled/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     state: link
-  notify: reload apache2
+  notify: Reload apache2
