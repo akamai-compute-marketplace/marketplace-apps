@@ -2,7 +2,7 @@
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
-Our Marketplace application deploys DeepSeek R1 distilled models (Qwen2.5-based) with vLLM as the inference backend and Open WebUI as the chat interface. These models are distilled from the full 671B DeepSeek-R1, providing enhanced chain-of-thought reasoning capabilities in smaller, deployable sizes.
+Our Quick Deploy application deploys DeepSeek R1 distilled models (Qwen2.5-based) with vLLM as the inference backend and Open WebUI as the chat interface. These models are distilled from the full 671B DeepSeek-R1, providing enhanced chain-of-thought reasoning capabilities in smaller, deployable sizes.
 
 During deployment, you can choose between three model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
