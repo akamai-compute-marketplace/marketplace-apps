@@ -1,5 +1,5 @@
 ---
-- name: update peppermint admin email in database
+- name: Update peppermint admin email in database
   community.docker.docker_container_exec:
     container: peppermint_postgres
     command: >
