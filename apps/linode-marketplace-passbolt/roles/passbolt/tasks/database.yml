@@ -1,8 +1,7 @@
 ---
 - name: Installing MariaDB
   apt:
-    pkg:
-    - mariadb-server
+    pkg: [mariadb-server]
     state: present
 
 - name: Running mysql secure installation
