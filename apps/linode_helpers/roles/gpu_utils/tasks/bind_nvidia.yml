@@ -6,9 +6,7 @@
   register: driver_link
 
 - name: Bind GPU to nvidia driver
-  command: echo {{ pci_device }} > /sys/bus/pci/drivers/nvidia/bind
-  args:
-    executable: /bin/bash
+  shell: echo "{{ pci_device }}" > /sys/bus/pci/drivers/nvidia/bind
   when: >
     not driver_link.stat.exists or
     driver_link.stat.lnk_source is not search('nvidia')
