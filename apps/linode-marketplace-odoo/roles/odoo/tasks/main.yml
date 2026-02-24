@@ -1,69 +1,63 @@
 ---
-- name: create docker Volume
+- name: Create docker Volume
   docker_volume:
     name: "odoo-db"
 
-- name: create docker volume
+- name: Create docker volume
   docker_volume:
     name: "odoo-data"
 
-- name: run postgres docker container
+- name: Run postgres docker container
   docker_container:
     name: db
     image: postgres:13
     restart_policy: always
     state: started
-    volumes:
-      - "odoo-db:/var/lib/postgresql/data"
+    volumes: ["odoo-db:/var/lib/postgresql/data"]
     env:
       POSTGRES_USER: "odoo"
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "postgres"
 
-- name: run odoo docker container
+- name: Run odoo docker container
   docker_container:
     name: odoo
     image: odoo
     restart_policy: always
     state: started
-    links:
-    - "db:db"
-    ports:
-    - "8069:8069"
-    volumes:
-      - "odoo-data:/var/lib/odoo"
+    links: ["db:db"]
+    ports: ["8069:8069"]
+    volumes: ["odoo-data:/var/lib/odoo"]
     env:
       POSTGRES_USER: "odoo"
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       POSTGRES_DB: "postgres"
 
 # Nginx
-- name: install nginx
+- name: Install nginx
   apt:
-    pkg:
-      - nginx
+    pkg: [nginx]
     state: present
 
-- name: config file setup
+- name: Config file setup
   template:
     src: templates/nginx.conf.j2
-    dest: "/etc/nginx/sites-available/{{ _domain }}"      
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: "/etc/nginx/sites-enabled/default"
     state: absent
-  notify: reload nginx service
+  notify: Reload nginx service
 
 # ssl_certbot
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl
-
-    
