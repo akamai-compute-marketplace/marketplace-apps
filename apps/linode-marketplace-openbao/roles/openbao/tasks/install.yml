@@ -6,7 +6,7 @@
 
 - name: build openbao download link
   set_fact:
-    openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
+    openbao_download_link: "https://github.com/openbao/openbao/releases/download/v{{ openbao_version }}/openbao-hsm_{{ openbao_version }}_linux_amd64.deb"
     openbao_deb_file: "/tmp/bao-hsm_{{ openbao_version }}_linux_amd64.deb"
     listen_address: "{{ (ansible_all_ipv4_addresses | select('search', '^192\\.168\\.') | list | first) | default('0.0.0.0') }}"
 
