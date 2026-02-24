@@ -33,21 +33,8 @@
     update_cache: true
 
 - name: Unbind GPUs from nouveau
-  block:
-    - name: Check current driver symlink
-      stat:
-        path: "/sys/bus/pci/devices/{{ pci_device }}/driver"
-        follow: false
-      register: driver_link
-
-    - name: Unbind GPU from nouveau driver
-      command: echo {{ pci_device }} > /sys/bus/pci/drivers/nouveau/unbind
-      args:
-        executable: /bin/bash
-      when: >
-        driver_link.stat.exists and
-        driver_link.stat.lnk_source is search('nouveau')
-      changed_when: true
+  include_tasks:
+    file: unbind_nouveau.yml
   loop: "{{ gpu_devices }}"
   loop_control:
     loop_var: pci_device
@@ -65,21 +52,8 @@
     state: present
 
 - name: Bind GPUs to nvidia driver
-  block:
-    - name: Check current driver symlink
-      stat:
-        path: "/sys/bus/pci/devices/{{ pci_device }}/driver"
-        follow: false
-      register: driver_link
-
-    - name: Bind GPU to nvidia driver
-      command: echo {{ pci_device }} > /sys/bus/pci/drivers/nvidia/bind
-      args:
-        executable: /bin/bash
-      when: >
-        not driver_link.stat.exists or
-        driver_link.stat.lnk_source is not search('nvidia')
-      changed_when: true
+  include_tasks:
+    file: bind_nvidia.yml
   loop: "{{ gpu_devices }}"
   loop_control:
     loop_var: pci_device
