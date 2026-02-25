@@ -30,3 +30,6 @@ rules:
     type: unix
   trailing-spaces: enable
   truthy: disable
+
+ignore:
+  - apps/linode_helpers/
