@@ -11,10 +11,7 @@
     name: "{{ item }}"
     state: started
     enabled: true
-  loop:
-    - nginx
-    - express
-    - mongod
+  loop: [nginx, express, mongod]
 
 - name: Set up MOTD
   template:

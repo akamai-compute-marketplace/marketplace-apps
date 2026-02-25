@@ -24,7 +24,7 @@
   rescue:
     - name: Installing Memgraph for Ubuntu 24.04
       apt:
-        deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/ubuntu-24.04/memgraph_{{ memgraph_version }}-1_amd64.deb"    
+        deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/ubuntu-24.04/memgraph_{{ memgraph_version }}-1_amd64.deb"
 
 - name: Stopping Memgraph service
   systemd_service:

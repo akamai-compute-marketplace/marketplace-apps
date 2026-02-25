@@ -5,7 +5,7 @@
     regexp: "^# --bolt-address=0.0.0.0"
     line: "--bolt-address=127.0.0.1"
     state: present
-  notify: restart memgraph
+  notify: Restart memgraph
 
 - name: Start Memgraph
   systemd_service:
@@ -16,10 +16,12 @@
   wait_for:
     host: localhost
     port: 7687
-    timeout: 30  
+    timeout: 30
 
 - name: Creating Memgraph username
   shell:
-    cmd: >
+    cmd: |
+      set -o pipefail
       echo "CREATE USER {{ memgraph_username }} IDENTIFIED BY '{{ memgraph_password }}';" | mgconsole
+    executable: /bin/bash
   no_log: true
