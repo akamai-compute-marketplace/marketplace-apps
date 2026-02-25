@@ -1,5 +1,5 @@
 ---
-- name: run database helper
+- name: Run database helper
   import_role:
     name: database
   vars:
