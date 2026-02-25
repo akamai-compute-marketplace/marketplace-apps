@@ -11,7 +11,7 @@
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
 
-- name: Enable {{ domain }} vhost
+- name: Enable vhost for {{ domain }}
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/{{ _domain }}
