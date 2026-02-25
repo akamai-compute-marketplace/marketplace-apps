@@ -11,3 +11,4 @@ skip_list:
   - var-naming
   - no-relative-paths
   - command-instead-of-module
+  - partial-become

@@ -18,9 +18,11 @@
 
 - name: Import NodeSource GPG key
   shell: |
+    set -o pipefail
     cat /tmp/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
   args:
     creates: /etc/apt/keyrings/nodesource.gpg
+    executable: /bin/bash
 
 - name: Add NodeSource repository
   apt_repository:

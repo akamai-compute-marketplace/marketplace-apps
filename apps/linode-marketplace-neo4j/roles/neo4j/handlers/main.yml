@@ -1,5 +1,5 @@
 ---
-- name: restart neo4j
+- name: Restart neo4j
   systemd_service:
     name: neo4j
     state: restarted

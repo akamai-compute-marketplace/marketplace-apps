@@ -33,7 +33,7 @@
     proto: tcp
     src: '{{ item }}'
   loop: '{{ neo4j_http_allow }}'
-  when: neo4j_http_allow is defined  
+  when: neo4j_http_allow is defined
 
 - name: Allow Neo4j Bolt IPs
   ufw:

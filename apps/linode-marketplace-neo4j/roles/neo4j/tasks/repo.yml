@@ -3,7 +3,8 @@
   ansible.builtin.get_url:
     url: https://debian.neo4j.com/neotechnology.gpg.key
     dest: /tmp/neo4j.gpg.key
- 
+    mode: '0644'
+
 - name: Add neo4j GPG key
   apt_key:
     file: /tmp/neo4j.gpg.key
