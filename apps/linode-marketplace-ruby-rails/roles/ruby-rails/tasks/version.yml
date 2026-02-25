@@ -15,7 +15,7 @@
 - name: Update Ruby gems
   shell:
     cmd: |
-      eval "$(~/.local/bin/mise activate)" 
+      eval "$(~/.local/bin/mise activate)"
       gem update --system
   become: true
   become_user: "{{ username }}"
