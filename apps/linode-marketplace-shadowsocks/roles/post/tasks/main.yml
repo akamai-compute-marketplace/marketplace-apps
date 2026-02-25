@@ -5,12 +5,15 @@
     name: addons
   when: add_ons != ['none']
 
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: 'templates/motd.j2'
     dest: '/etc/motd'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: writing creds into file
+- name: Writing creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
@@ -19,4 +22,4 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Shadowsocks Password: {{ shadowsocks_password }} 
+      Shadowsocks Password: {{ shadowsocks_password }}
