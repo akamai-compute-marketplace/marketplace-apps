@@ -1,6 +1,6 @@
 ---
-- name: install docker latest
-  import_role: 
+- name: Install docker latest
+  import_role:
     name: docker
 
 - name: Create Rocket.Chat directory
