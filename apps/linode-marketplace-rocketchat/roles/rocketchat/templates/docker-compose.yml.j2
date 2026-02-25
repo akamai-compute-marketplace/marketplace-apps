@@ -7,10 +7,10 @@ networks:
 
 services:
   mongodb:
-    image: bitnami/mongodb:7.0
+    image: mongo:7.0
     restart: always
     volumes:
-      - mongodb_data:/bitnami/mongodb
+      - mongodb_data:/mongodb
     networks:
       - rocketchat-net
     environment:
