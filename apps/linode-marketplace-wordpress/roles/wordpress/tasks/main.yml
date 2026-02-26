@@ -1,40 +1,40 @@
 ---
 # php
-- name: install packages for wordpress deployment
+- name: Install packages for wordpress deployment
   apt:
     pkg:
-    - php-curl
-    - openssl
-    - php-imagick
-    - php-json
-    - php-mbstring
-    - php-mysql
-    - pcre2-utils
-    - php-xml
-    - php-zip
-    - unzip
-    - sendmail-bin
-    - sendmail
+      - php-curl
+      - openssl
+      - php-imagick
+      - php-json
+      - php-mbstring
+      - php-mysql
+      - pcre2-utils
+      - php-xml
+      - php-zip
+      - unzip
+      - sendmail-bin
+      - sendmail
     state: present
 
-- name: getting php version
+- name: Getting php version
   shell:
     cmd: "php -r \"echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;\""
   register: php_version
 
 # wordpress
-- name:  removing any default index pages
+- name: Removing any default index pages
   file:
     path: "/var/www/{{ _domain }}/public_html/index.html"
     state: absent
 
-- name: creating wordpress database
+- name: Creating wordpress database
   mysql_db:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: "{{ wp_db_name }}"
     state: present
 
-- name: creating wordpress user
+- name: Creating wordpress user
   mysql_user:
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: "{{ wp_db_user }}"
@@ -42,46 +42,46 @@
     priv: '{{ wp_db_name }}.*:ALL'
     state: present
 
-- name: downloading wpcli
+- name: Downloading wpcli
   get_url:
     url: https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
     dest: /usr/local/bin/wp
     group: root
     owner: root
-    mode: 0755
+    mode: '0755'
   register: wpcli
 
-#- name: downloading wordpress lastest
-#  shell:
-#    chdir: "/var/www/{{ _domain }}/public_html"
-#    cmd: wp core download --allow-root
+# - name: downloading wordpress lastest
+#   shell:
+#     chdir: "/var/www/{{ _domain }}/public_html"
+#     cmd: wp core download --allow-root
 
-- name: downloading wordpress latest
+- name: Downloading wordpress latest
   get_url:
     url: https://wordpress.org/latest.tar.gz
     dest: /tmp/latest.tar.gz
     group: root
     owner: root
-    mode: 0755
+    mode: '0755'
 
-- name: unzip wp-latest
+- name: Unzip wp-latest
   ansible.builtin.unarchive:
     src: /tmp/latest.tar.gz
     dest: "/tmp"
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
-- name: moving WP to document root
+- name: Moving WP to document root
   ansible.builtin.copy:
-    src: /tmp/wordpress/ 
+    src: /tmp/wordpress/
     dest: "/var/www/{{ _domain }}/public_html"
-    remote_src: yes
+    remote_src: true
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
-- name: configuring wordpress site
+- name: Configuring wordpress site
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
@@ -91,7 +91,7 @@
         --dbuser="{{ wp_db_user }}" \
         --dbpass="{{ wp_db_pass }}" \
 
-- name: configuring admin info
+- name: Configuring admin info
   shell:
     chdir: "/var/www/{{ _domain }}/public_html"
     cmd: |
@@ -103,10 +103,10 @@
           --admin_password="{{ wp_admin_pass }}" \
           --path="/var/www/{{ _domain }}/public_html"
 
-- name: updating document root ownership
+- name: Updating document root ownership
   file:
     path: "/var/www/{{ _domain }}/public_html"
     state: directory
-    recurse: yes
+    recurse: true
     owner: www-data
     group: www-data
