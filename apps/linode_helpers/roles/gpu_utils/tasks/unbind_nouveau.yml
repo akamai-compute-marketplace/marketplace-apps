@@ -1,0 +1,13 @@
+---
+- name: Check current driver symlink
+  stat:
+    path: "/sys/bus/pci/devices/{{ pci_device }}/driver"
+    follow: false
+  register: driver_link
+
+- name: Unbind GPU from nouveau driver
+  shell: echo "{{ pci_device }}" > /sys/bus/pci/drivers/nouveau/unbind
+  when: >
+    driver_link.stat.exists and
+    driver_link.stat.lnk_source is search('nouveau')
+  changed_when: true

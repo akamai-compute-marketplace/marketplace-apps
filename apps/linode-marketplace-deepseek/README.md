@@ -1,20 +1,20 @@
-# Akamai Cloud Compute - GPT-OSS and Open WebUI Deployment One-Click App
+# Akamai Cloud Compute - DeepSeek R1 and Open WebUI Deployment One-Click App
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
-Our Marketplace application deploys OpenAI GPT-OSS, a family of open-weight large language models designed for powerful reasoning, agentic tasks, and versatile developer use cases. These models are released under the permissive Apache 2.0 license, allowing developers to build freely without copyleft restrictions or patent risk.
+Our Quick Deploy application deploys DeepSeek R1 distilled models (Qwen2.5-based) with vLLM as the inference backend and Open WebUI as the chat interface. These models are distilled from the full 671B DeepSeek-R1, providing enhanced chain-of-thought reasoning capabilities in smaller, deployable sizes.
 
-During deployment, you can choose between two model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
+During deployment, you can choose between three model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | `29.2.0`    | Container Management Runtime |
-| Docker Compose    | `5.0.2`    | Tool for multi-container applications |
+| Docker    | `29.2.1`    | Container Management Runtime |
+| Docker Compose    | `v5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
-| vLLM | `v0.14.0` tag | Library to run LLM inference models  |
-| Open WebUI | `main` tag | Self-hosted AI interface platform |
+| vLLM | `v0.14.0` | Library to run LLM inference models  |
+| Open WebUI | `magin` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
 
@@ -32,15 +32,15 @@ During deployment, you can choose between two model sizes to match your GPU capa
 | Sudo User  | Creates limited `sudo` user with variable supplied username.  | Creates limited user from UDF supplied `username.` Note that usernames containing illegal characters will cause the play to fail. |
 | SSH Key   | Writes SSH pubkey to `sudo` user's `authorized_keys`.  | Writes UDF supplied `pubkey` to `/home/$username/.ssh/authorized_keys`. To add a SSH key to `root` please use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/).   |
 | Update Packages   | Performs standard apt updates and upgrades. | The Update Packages module performs apt update and upgrade actions as root.  |
-| GPU Utils| Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_devices`, `gpu_count`, and `_has_gpu` to `group_vars/linode/vars` |
+| GPU Utils | Detects GPU on the instance and install NVIDIA drivers | Writes `gpu_devices`, `gpu_count`, and `_has_gpu` to `group_vars/linode/vars` |
 
 # Architecture
 
 ## Overview
 
-The GPT-OSS LLM consists of two containerized services that work together to provide a complete AI inference stack:
+The DeepSeek R1 deployment consists of two containerized services that work together to provide a complete AI inference stack:
 
-1. **API Service** (`vLLM`): High-performance inference engine
+1. **API Service** (`vLLM`): High-performance inference engine with tensor parallelism
 2. **UI Service** (`Open WebUI`): Feature-rich chat interface
 
 Both services are managed via Docker Compose and configured to restart automatically.
@@ -51,13 +51,13 @@ Both services are managed via Docker Compose and configured to restart automatic
 
 - **Port**: `localhost:8000`
 - **Container**: `vllm/vllm-openai:v0.14.0`
-- **Model**: `openai/gpt-oss-20b` or `openai/gpt-oss-120b` (user selectable)
+- **Model**: `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B`, `14B`, or `32B` (user selectable)
 - **Purpose**: High-performance inference engine with OpenAI-compatible REST API
 - **Features**:
   - OpenAI-compatible REST API
-  - GPU-accelerated inference
-  - MXFP4 quantized mixture-of-experts architecture
-  - Optimized for production workloads
+  - GPU-accelerated inference with automatic tensor parallelism (required for 14B and 32B models)
+  - MIT licensed models (no authentication required)
+  - Chain-of-thought reasoning with `<think>` traces
   - 16,384 token context length
 
 ### UI Service (Open WebUI)
@@ -83,7 +83,7 @@ Both services are managed via Docker Compose and configured to restart automatic
 
 The following directories are used on the deployed instance:
 
-- `/opt/gpt-oss` - Application directory containing docker-compose.yml
+- `/opt/deepseek` - Application directory containing docker-compose.yml
 - `vllm_data` volume - Model cache directory (stores downloaded models)
 - `open_webui_data` volume - Chat UI persistent data (chat history, settings)
 
@@ -91,19 +91,9 @@ The following directories are used on the deployed instance:
 
 The UI service automatically connects to the API service running on `localhost:8000`. Both services run on the same instance and communicate over the Docker network.
 
-## Resource Requirements
+## Tensor Parallelism
 
-### For GPT-OSS 20B
-- **GPU**: RTX4000 Ada
-- **Memory**: 16GB RAM or higher
-- **Storage**: Sufficient space for model files (~22GB)
-- **Reference**: [gpt-oss-20b on Hugging Face](https://huggingface.co/openai/gpt-oss-20b)
-
-### For GPT-OSS 120B
-- **GPU**: RTX4000 Ada
-- **Memory**: 64GB RAM or higher
-- **Storage**: Sufficient space for model files (~60GB)
-- **Reference**: [gpt-oss-120b on Hugging Face](https://huggingface.co/openai/gpt-oss-120b)
+The deployment automatically detects the number of available GPUs and configures vLLM to use tensor parallelism across all of them. This is required for the 14B and 32B models (which do not fit on a single GPU).
 
 ## RAG Operations in Open WebUI
 
@@ -111,3 +101,25 @@ Open WebUI provides built-in support for RAG operations allowing users to chat w
 
 You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
 
+## Resource Requirements
+
+### For DeepSeek R1 Distill Qwen 7B
+- **GPU**: Any 1-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 16GB or higher
+- **Storage**: Sufficient space for model files (~14GB download)
+- **Compatible Plans**: All Ada 1-GPU plans, Quadro RTX 6000 1-GPU
+- **Reference**: [DeepSeek-R1-Distill-Qwen-7B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B)
+
+### For DeepSeek R1 Distill Qwen 14B
+- **GPU**: Any 2-GPU instance or higher (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 32GB or higher
+- **Storage**: Sufficient space for model files (~28GB download)
+- **Compatible Plans**: All Ada 2-GPU and 4-GPU plans, Quadro RTX 6000 2-GPU, 3-GPU, and 4-GPU
+- **Reference**: [DeepSeek-R1-Distill-Qwen-14B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B)
+
+### For DeepSeek R1 Distill Qwen 32B
+- **GPU**: Any 4-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
+- **RAM**: 128GB or higher
+- **Storage**: Sufficient space for model files (~64GB download)
+- **Compatible Plans**: Ada 4-GPU plans, Quadro RTX 6000 4-GPU
+- **Reference**: [DeepSeek-R1-Distill-Qwen-32B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
