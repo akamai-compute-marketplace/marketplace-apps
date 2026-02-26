@@ -1,16 +1,19 @@
 ---
 # Install Addons if requested
-- name: add addons
+- name: Add addons
   import_role:
     name: addons
   when: add_ons != ['none']
 
-- name: set up motd
+- name: Set up motd
   template:
     src: motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: write credentials file
+- name: Write credentials file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
