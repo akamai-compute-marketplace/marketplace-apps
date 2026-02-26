@@ -1,12 +1,11 @@
+---
 services:
   peppermint_postgres:
     container_name: peppermint_postgres
     image: postgres:latest
     restart: always
-    ports:
-      - 5432:5432
-    volumes:
-      - pgdata:/var/lib/postgresql
+    ports: [5432:5432]
+    volumes: [pgdata:/var/lib/postgresql]
     environment:
       POSTGRES_USER: peppermint
       POSTGRES_PASSWORD: "{{ postgres_password }}"
@@ -15,12 +14,9 @@ services:
   peppermint:
     container_name: peppermint
     image: pepperlabs/peppermint:latest
-    ports:
-      - 3000:3000
-      - 5003:5003
+    ports: [3000:3000, 5003:5003]
     restart: always
-    depends_on:
-      - peppermint_postgres
+    depends_on: [peppermint_postgres]
     healthcheck:
       test: ["CMD", "sh", "-c", "pgrep -f 'node' || exit 1"]
       interval: 30s
@@ -34,4 +30,4 @@ services:
       API_URL: "http://localhost:5003"
 
 volumes:
- pgdata:
+  pgdata:

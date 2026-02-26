@@ -1,5 +1,6 @@
-- name: reload lsws
+---
+- name: Reload lsws
   ansible.builtin.systemd:
     name: lsws
     state: restarted
-    enabled: yes
+    enabled: true

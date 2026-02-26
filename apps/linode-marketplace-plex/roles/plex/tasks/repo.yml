@@ -5,7 +5,7 @@
     dest: '/tmp/PlexSign.key'
     owner: root
     group: root
-    mode: 0744
+    mode: '0744'
   register: plex_signing_key
 
 - name: Dearmoring signing key

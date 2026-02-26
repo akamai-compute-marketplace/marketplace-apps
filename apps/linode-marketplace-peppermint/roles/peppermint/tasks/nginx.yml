@@ -1,26 +1,27 @@
 ---
-- name: install nginx
+- name: Install nginx
   apt:
     pkg: nginx
     state: present
 
-- name: config file setup
+- name: Config file setup
   template:
     src: templates/nginx.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: "/etc/nginx/sites-enabled/default"
     state: absent
-  notify: reload nginx service
+  notify: Reload nginx service
 
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl

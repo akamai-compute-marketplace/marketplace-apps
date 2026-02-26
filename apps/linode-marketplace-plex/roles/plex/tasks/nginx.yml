@@ -1,8 +1,7 @@
 ---
 - name: Install nginx
   apt:
-    pkg:
-      - nginx-full
+    pkg: [nginx-full]
     state: present
 
 - name: Set default vhost
@@ -11,7 +10,7 @@
     dest: '/etc/nginx/sites-available/{{ _domain }}'
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
 - name: Create a symbolic link for the nginx configuration
   file:
@@ -29,8 +28,9 @@
   import_role:
     name: certbot_ssl
 
-- name: set ssl vhost file
+- name: Set ssl vhost file
   template:
     src: 'templates/vhost_ssl.conf.j2'
     dest: '/etc/nginx/sites-available/{{ _domain }}'
+    mode: '0755'
   notify: Restart nginx

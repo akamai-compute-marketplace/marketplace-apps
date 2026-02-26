@@ -10,6 +10,7 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
 
 - name: Writing creds into file
   copy:

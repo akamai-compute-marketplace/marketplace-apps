@@ -1,7 +1,6 @@
 ---
 - name: Install plex from repo
   apt:
-    pkg:
-      - plexmediaserver
+    pkg: [plexmediaserver]
     state: present
     update_cache: true

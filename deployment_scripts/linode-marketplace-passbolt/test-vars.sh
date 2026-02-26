@@ -31,6 +31,8 @@ fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
+elif [[ -n "${LINODE_DOMAIN}" ]]; then
+        UDF_VARS["DOMAIN"]="${LINODE_DOMAIN}"
 else
         UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
 fi
@@ -43,6 +45,8 @@ fi
 
 if [[ -n "${TOKEN_PASSWORD}" ]]; then
         UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+elif [[ -n "${LINODE_API_SECRET}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${LINODE_API_SECRET}"
 else
         UDF_VARS["TOKEN_PASSWORD"]="HugsAreWorthMoreThanHandshakes" # default
 fi
