@@ -11,7 +11,7 @@
     creates: /usr/share/keyrings/com.rabbitmq.team.gpg
 
 - name: Ensure correct permissions on keyring
-  ansible.builtin.file:
+  file:
     path: /usr/share/keyrings/com.rabbitmq.team.gpg
     owner: root
     group: root
@@ -22,7 +22,7 @@
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
 
 - name: Add RabbitMQ apt repository
-  ansible.builtin.copy:
+  copy:
     dest: /etc/apt/sources.list.d/rabbitmq.list
     owner: root
     group: root
