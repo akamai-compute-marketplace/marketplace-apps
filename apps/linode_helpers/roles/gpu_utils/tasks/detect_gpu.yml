@@ -25,14 +25,11 @@
         msg: "Deployment failed: No GPU detected. This application requires a GPU instance."
       when: gpu.rc != 0
 
-    - name: Set GPU variable
+    - name: Set GPU variables
       set_fact:
         _has_gpu: true
         gpu_devices: "{{ gpu.stdout_lines | map('regex_replace', ' .*', '') | list }}"
-
-    - name: Set GPU count
-      set_fact:
-        gpu_count: "{{ gpu_devices | length }}"
+        gpu_count: "{{ gpu.stdout_lines | length }}"
 
     - name: Writing GPU variables to vars file
       lineinfile:
@@ -57,14 +54,11 @@
         msg: "No GPU detected. Continuing..."
       when: gpu.rc != 0
 
-    - name: Set GPU variable
+    - name: Set GPU variables
       set_fact:
         _has_gpu: true
         gpu_devices: "{{ gpu.stdout_lines | map('regex_replace', ' .*', '') | list }}"
-
-    - name: Set GPU count
-      set_fact:
-        gpu_count: "{{ gpu_devices | length }}"
+        gpu_count: "{{ gpu.stdout_lines | length }}"
 
     - name: Writing GPU variables to vars file
       lineinfile:
