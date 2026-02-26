@@ -12,3 +12,6 @@ skip_list:
   - no-relative-paths
   - command-instead-of-module
   - partial-become
+
+exclude_paths:
+  - apps/linode_helpers/

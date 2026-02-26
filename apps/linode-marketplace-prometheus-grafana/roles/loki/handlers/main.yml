@@ -1,11 +1,11 @@
 ---
-- name: restart loki
+- name: Restart loki
   systemd:
     name: loki
     state: restarted
     enabled: true
 
-- name: restart nginx
+- name: Restart nginx
   systemd_service:
     name: nginx
     state: restarted

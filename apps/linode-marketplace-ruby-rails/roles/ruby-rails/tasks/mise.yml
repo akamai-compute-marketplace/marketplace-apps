@@ -11,13 +11,13 @@
     state: present
     update_cache: true
 
-- name: Creating {{ username }} bin path for mise
+- name: Creating bin path for mise with {{ username }}
   file:
     path: "/home/{{ username }}/.local/bin"
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: 0755
+    mode: '0755'
 
 - name: Get latest mise release info from GitHub
   uri:
@@ -26,9 +26,13 @@
     return_content: true
   register: version_output
 
+- name: Set mise version
+  set_fact:
+    mise_version: "{{ (version_output.content | from_json).tag_name }}"
+
 - name: Set mise tarball URL
   set_fact:
-    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ (version_output.content | from_json).tag_name }}/mise-{{ (version_output.content | from_json).tag_name }}-linux-x64.tar.zst"
+    mise_tarball: "https://github.com/jdx/mise/releases/download/{{ mise_version }}/mise-{{ mise_version }}-linux-x64.tar.zst"
 
 - name: Create tempdir
   tempfile:
@@ -39,6 +43,7 @@
   get_url:
     url: "{{ mise_tarball }}"
     dest: "{{ tempdir.path }}"
+    mode: '0644'
   register: tarball
 
 - name: Extract mise tarball
@@ -47,13 +52,13 @@
     dest: "{{ tempdir.path }}"
     extra_opts: [--strip-components=1]
 
-- name: Move mise binary to {{ username }} path
+- name: Move mise binary path to {{ username }}
   copy:
     src: "{{ tempdir.path }}/bin/mise"
     dest: "/home/{{ username }}/.local/bin/mise"
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: 0755
+    mode: '0755'
 
 - name: Load mise env on login
   lineinfile:

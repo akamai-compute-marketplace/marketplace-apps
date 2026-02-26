@@ -9,6 +9,9 @@
   template:
     src: 'templates/motd.j2'
     dest: '/etc/motd'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing creds into file
   copy:
@@ -19,4 +22,4 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Postgresql Password: {{postgresql_password }}
+      Postgresql Password: {{ postgresql_password }}

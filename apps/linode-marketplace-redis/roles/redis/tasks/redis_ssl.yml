@@ -1,5 +1,5 @@
 ---
-- name: generate ca key
+- name: Generate ca key
   community.crypto.openssl_privatekey:
     path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
     passphrase: '{{ ca_password }}'
@@ -10,7 +10,7 @@
   no_log: true
   register: ca_key
 
-- name: generate ca csr
+- name: Generate ca csr
   community.crypto.openssl_csr:
     path: '{{ redis_ssl_ca_directory }}/ca-csr'
     privatekey_path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
@@ -22,15 +22,14 @@
     email_address: '{{ soa_email_address }}'
     common_name: '{{ ca_common_name }}'
     use_common_name_for_san: false
-    basic_constraints:
-      - 'CA:TRUE'
+    basic_constraints: [CA:TRUE]
     basic_constraints_critical: true
     create_subject_key_identifier: true
     owner: redis
     group: redis
   register: ca_csr
-  
-- name: generate ca crt
+
+- name: Generate ca crt
   community.crypto.x509_certificate:
     path: '{{ redis_ssl_ca_directory }}/ca.crt'
     privatekey_path: '{{ redis_ssl_ca_directory }}/ca-key.key.pem'
@@ -46,14 +45,14 @@
 
 # gen ssl keys
 
-- name: generate server key
+- name: Generate server key
   community.crypto.openssl_privatekey:
     path: '{{ redis_ssl_server_key }}'
     owner: redis
     group: redis
     mode: '0600'
- 
-- name: generate client key
+
+- name: Generate client key
   community.crypto.openssl_privatekey:
     path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'
     owner: redis
@@ -63,7 +62,7 @@
 
 # gen csrs
 
-- name: generate server csr
+- name: Generate server csr
   community.crypto.openssl_csr:
     path: '{{ redis_ssl_reqs_directory }}/redis.csr'
     privatekey_path: '{{ redis_ssl_server_key }}'
@@ -74,14 +73,12 @@
     email_address: '{{ soa_email_address }}'
     common_name: 'Redis Server'
     use_common_name_for_san: false
-    key_usage:
-      - digitalSignature
-      - keyEncipherment
+    key_usage: [digitalSignature, keyEncipherment]
     create_subject_key_identifier: true
     owner: redis
     group: redis
-  
-- name: generate client csr
+
+- name: Generate client csr
   community.crypto.openssl_csr:
     path: '{{ redis_ssl_reqs_directory }}/client{{ item }}.csr'
     privatekey_path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'
@@ -92,9 +89,7 @@
     email_address: '{{ soa_email_address }}'
     common_name: 'Redis Client {{ item }}'
     use_common_name_for_san: false
-    key_usage:
-      - digitalSignature
-      - keyEncipherment
+    key_usage: [digitalSignature, keyEncipherment]
     create_subject_key_identifier: true
     owner: redis
     group: redis
@@ -102,7 +97,7 @@
 
 # sign cert with ca and get client cert
 
-- name: generate server cert signed with ca cert
+- name: Generate server cert signed with ca cert
   community.crypto.x509_certificate:
     path: '{{ redis_ssl_server_cert }}'
     privatekey_path: '{{ redis_ssl_server_key }}'
@@ -117,7 +112,7 @@
     group: redis
     mode: '0640'
 
-- name: generate client cert signed with ca cert
+- name: Generate client cert signed with ca cert
   community.crypto.x509_certificate:
     path: '{{ redis_ssl_certs_directory }}/client{{ item }}.crt'
     privatekey_path: '{{ redis_ssl_keys_directory }}/client{{ item }}.key.pem'

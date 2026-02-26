@@ -1,42 +1,43 @@
 ---
 ## install nginx
 
-- name: install nginx pkgs
-  apt: 
-    pkg: 
-      - nginx
-      - apache2-utils
+- name: Install nginx pkgs
+  apt:
+    pkg: [nginx, apache2-utils]
     state: present
 
-- name: add nginx config
+- name: Add nginx config
   template:
     src: 'templates/nginx.conf.j2'
     dest: '/etc/nginx/sites-available/{{ _domain }}'
+    mode: '0644'
 
-- name: secure prometheus with htaccess
+- name: Secure prometheus with htaccess
   community.general.htpasswd:
     path: '/etc/nginx/.prometheus_htpasswd'
     name: prometheus
     password: '{{ prometheus_htpasswd }}'
     state: present
     create: true
+    mode: '0644'
 
-- name: secure loki with htaccess
+- name: Secure loki with htaccess
   community.general.htpasswd:
     path: '/etc/nginx/.loki_htpasswd'
     name: loki
     password: '{{ loki_htpasswd }}'
     state: present
     create: true
+    mode: '0644'
   when: install_loki | bool
 
-- name: enable grafana vhost
-  file: 
+- name: Enable grafana vhost
+  file:
     src: '/etc/nginx/sites-available/{{ _domain }}'
     dest: '/etc/nginx/sites-enabled/{{ _domain }}'
     state: link
 
-- name: add connection upgrade to nginx config
+- name: Add connection upgrade to nginx config
   blockinfile:
     path: '/etc/nginx/nginx.conf'
     insertafter: '^http {'
@@ -45,9 +46,9 @@
                  default upgrade;
                  '' close;
               }
- 
-- name: remove default vhost
-  file: 
+
+- name: Remove default vhost
+  file:
     path: '/etc/nginx/sites-enabled/default'
     state: absent
-  notify: restart nginx
+  notify: Restart nginx
