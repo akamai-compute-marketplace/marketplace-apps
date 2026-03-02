@@ -1,8 +1,8 @@
 ---
 # prometheus
 
-- name: install prometheus
+- name: Install prometheus
   import_tasks: install.yml
 
-- name: configure prometheus
+- name: Configure prometheus
   import_tasks: prometheus.yml

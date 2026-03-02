@@ -3,7 +3,7 @@
 
 # latest
 
-- name: get rabbitmq latest version
+- name: Get rabbitmq latest version
   uri:
     url: https://api.github.com/repos/rabbitmq/signing-keys/releases/latest
     return_content: true
@@ -12,17 +12,17 @@
   register: latest_release
 
 # return list of dicts
-- name: get json output for assets
+- name: Get json output for assets
   set_fact:
     rabbitmq_assets: "{{ latest_release.json.assets }}"
 
-- name: set erlang url
+- name: Set erlang url
   set_fact:
     erlang_url: "{{ item.browser_download_url }}"
   loop: "{{ rabbitmq_assets }}"
   when: item.browser_download_url is search('cloudsmith.rabbitmq-erlang.[A-Z0-9]+.key')
 
-- name: set server url
+- name: Set server url
   set_fact:
     server_url: "{{ item.browser_download_url }}"
   loop: "{{ rabbitmq_assets }}"
@@ -34,7 +34,7 @@
 # Example: https://github.com/rabbitmq/signing-keys/releases/download/3.0/cloudsmith.rabbitmq-erlang.E495BB49CC4BBE5B.key
 # output: E495BB49CC4BBE5B.key
 
-- name: setting key id for writing
+- name: Setting key id for writing
   set_fact:
     "{{ item.name }}": "{{ item.var }}"
   loop:
@@ -45,13 +45,14 @@
 
 # signing key
 
-- name: download rabbitmq signing key
+- name: Download rabbitmq signing key
   get_url:
     url: "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA"
     dest: "/tmp/com.rabbitmq.team.asc"
+    mode: '0644'
   register: rabbitmq_signing_key
 
-- name: dearmoring signing key
+- name: Dearmoring signing key
   command:
     cmd: |
       gpg --dearmor --output
@@ -59,13 +60,14 @@
 
 # erlang repository
 
-- name: download rabbitmq erlang key
+- name: Download rabbitmq erlang key
   get_url:
     url: "{{ erlang_url }}"
     dest: "/tmp/cloudsmith.rabbitmq-erlang.asc"
+    mode: '0644'
   register: rabbitmq_erlang_key
 
-- name: dearmoring erlang key
+- name: Dearmoring erlang key
   command:
     cmd: |
       gpg --dearmor --output
@@ -73,13 +75,14 @@
 
 # rabbitmq repository
 
-- name: download rabbitmq signing key
+- name: Download rabbitmq signing key
   get_url:
     url: "{{ server_url }}"
     dest: "/tmp/cloudsmith.rabbitmq-server.asc"
+    mode: '0644'
   register: rabbitmq_server_key
 
-- name: dearmoring signing key
+- name: Dearmoring signing key
   command:
     cmd: |
       gpg --dearmor --output
@@ -87,14 +90,14 @@
 
 # add sources.list.d/rabbitmq.list
 
-- name: set distro release codename
+- name: Set distro release codename
   set_fact:
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
 
-- name: add apt repository
+- name: Add apt repository
   template:
     src: templates/rabbitmq.list.j2
     dest: /etc/apt/sources.list.d/rabbitmq.list
     group: root
     owner: root
-    mode: 0644
+    mode: '0644'

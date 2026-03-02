@@ -3,12 +3,10 @@
   community.docker.docker_compose_v2:
     project_src: /opt/rocketchat
     state: present
-    services:
-      - mongodb
+    services: [mongodb]
 
 - name: Start Rocket.Chat container
   community.docker.docker_compose_v2:
     project_src: /opt/rocketchat
     state: present
-    services:
-      - rocketchat
+    services: [rocketchat]

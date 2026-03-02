@@ -1,19 +1,19 @@
 ---
 # install Loki
-- name: install required dependencies for loki install
+- name: Install required dependencies for loki install
   apt:
     name: unzip
     state: present
     update_cache: true
 
-- name: create loki user
+- name: Create loki user
   user:
     name: loki
     system: true
     create_home: false
     shell: /usr/sbin/nologin
 
-- name: create loki directories
+- name: Create loki directories
   file:
     path: '{{ loki_dir }}'
     state: directory
@@ -28,16 +28,16 @@
   loop_control:
     loop_var: loki_dir
 
-- name: get loki latest release metadata
+- name: Get loki latest release metadata
   uri:
     url: https://api.github.com/repos/grafana/loki/releases/latest
   register: latest_loki
 
-- name: set loki version
+- name: Set loki version
   set_fact:
     loki_version: '{{ latest_loki.json.tag_name | regex_replace("^v", "") }}'
 
-- name: download loki latest
+- name: Download loki latest
   get_url:
     url: 'https://github.com/grafana/loki/releases/download/v{{ loki_version }}/loki-linux-amd64.zip'
     dest: '/tmp/loki-{{ loki_version }}.zip'
@@ -45,7 +45,7 @@
     group: loki
     mode: '0644'
 
-- name: untar loki archive
+- name: Untar loki archive
   unarchive:
     src: '/tmp/loki-{{ loki_version }}.zip'
     dest: '/tmp/'
@@ -55,7 +55,7 @@
     creates: '/tmp/loki-linux-amd64'
     remote_src: true
 
-- name: install loki binary to /usr/local/bin
+- name: Install loki binary to /usr/local/bin
   copy:
     src: '/tmp/loki-linux-amd64'
     dest: '/usr/local/bin/loki'
@@ -64,7 +64,7 @@
     mode: '0755'
     remote_src: true
 
-- name: create loki config
+- name: Create loki config
   template:
     src: 'templates/loki-config.yml.j2'
     dest: '/etc/loki/loki-config.yml'
@@ -72,40 +72,36 @@
     group: loki
     mode: '0644'
 
-- name: create loki systemd service file
+- name: Create loki systemd service file
   template:
     src: 'templates/loki.service.j2'
     dest: '/etc/systemd/system/loki.service'
     mode: '0644'
-  notify: 
-    - restart loki
-    - restart nginx
+  notify: [Restart loki, Restart nginx]
 
-- name: reload systemd and enable/start loki
+- name: Reload systemd and enable/start loki
   systemd:
     name: loki
     daemon_reload: true
     enabled: true
     state: started
 
-- name: cleanup temporary loki files
+- name: Cleanup temporary loki files
   file:
     path: '/tmp/{{ loki_temp_file }}'
     state: absent
-  loop:
-    - 'loki-{{ loki_version }}.zip'
-    - 'loki-linux-amd64'
+  loop: ['loki-{{ loki_version }}.zip', 'loki-linux-amd64']
   loop_control:
     loop_var: loki_temp_file
 
-- name: confirm grafana is ready
+- name: Confirm grafana is ready
   wait_for:
     host: localhost
     port: 3000
     sleep: 5
     timeout: 60
 
-- name: add loki datasource to grafana
+- name: Add loki datasource to grafana
   uri:
     url: 'http://localhost:3000/api/datasources'
     method: POST

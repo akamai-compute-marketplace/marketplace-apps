@@ -1,12 +1,12 @@
 ---
 # grafana
 
-- name: install and configure nginx
+- name: Install and configure nginx
   import_tasks: nginx.yml
 
-- name: install node_exporter
-  import_role: 
+- name: Install node_exporter
+  import_role:
     name: data_exporter
 
-- name: install grafana
+- name: Install grafana
   import_tasks: grafana.yml

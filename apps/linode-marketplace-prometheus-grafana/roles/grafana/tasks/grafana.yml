@@ -1,40 +1,41 @@
---- 
+---
 # install grafana
 
-- name: add grafana key
+- name: Add grafana key
   get_url:
     url: 'https://apt.grafana.com/gpg.key'
     dest: '/usr/share/keyrings/grafana.key'
+    mode: '0644'
 
-- name: add grafana repo
-  apt_repository: 
+- name: Add grafana repo
+  apt_repository:
     repo: 'deb [signed-by=/usr/share/keyrings/grafana.key] https://apt.grafana.com stable main'
     state: present
     update_cache: true
 
-- name: install grafana
+- name: Install grafana
   apt:
     pkg: grafana
     state: present
 
-- name: update grafana config
+- name: Update grafana config
   lineinfile:
     path: '/etc/grafana/grafana.ini'
     regex: '^\;admin_user = admin'
     line: admin_user = admin
 
-- name: update grafana password
+- name: Update grafana password
   lineinfile:
     path: '/etc/grafana/grafana.ini'
     regex: '^\;admin_password = admin'
     line: 'admin_password = {{ grafana_password }}'
 
-- name: start and enable grafana
-  systemd: 
+- name: Start and enable grafana
+  systemd:
     name: grafana-server
     state: started
     enabled: true
 
-- name: run certbot
-  import_role: 
+- name: Run certbot
+  import_role:
     name: certbot_ssl
