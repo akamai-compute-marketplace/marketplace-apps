@@ -1,9 +1,9 @@
 ---
 # Install Addons if requested
-#- name: Add addons
-#  import_role:
-#    name: addons
-#  when: add_ons != ['none']
+# - name: Add addons
+#   import_role:
+#     name: addons
+#   when: add_ons != ['none']
 
 - name: Restart Apache2
   systemd:
@@ -15,13 +15,13 @@
   import_role:
     name: certbot_ssl
 
-- name: Moving vhost_ssl template 
-  template: 
+- name: Moving vhost_ssl template
+  template:
     src: ../../lemp/templates/vhost_ssl.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644 
+    mode: '0644'
   when: webserver_stack == 'lemp'
 
 - name: Restart Nginx
@@ -38,12 +38,15 @@
   when: prometheus_exporter != 'none'
 
 # motd and creds gen
-- name: copy MOTD template to /etc/motd
+- name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
-- name: writing sudo creds into file
+- name: Writing sudo creds into file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'

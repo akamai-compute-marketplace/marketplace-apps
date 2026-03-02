@@ -4,8 +4,7 @@
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop:
-    - "22"
+  loop: ["22"]
 
 - name: Configure WireGuard server endpoint
   ufw:
@@ -21,4 +20,4 @@
 - name: Enable UFW
   ufw:
     state: enabled
-    policy: deny 
+    policy: deny

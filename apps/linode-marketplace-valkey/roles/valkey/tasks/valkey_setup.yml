@@ -1,35 +1,34 @@
---- 
-- name: install dependencies
+---
+- name: Install dependencies
   apt:
-    pkg:
-    - libssl-dev
-    - libsystemd-dev
+    pkg: [libssl-dev, libsystemd-dev]
 
-- name: add disable THP
-  copy: 
+- name: Add disable THP
+  copy:
     src: 'files/disable-thp.service'
     dest: '/etc/systemd/system/disable-thp.service'
+    mode: '0644'
 
-- name: start disable THP
-  systemd: 
+- name: Start disable THP
+  systemd:
     name: disable-thp.service
     state: started
     enabled: true
     daemon-reload: true
 
-- name: set vm.overcommit
+- name: Set vm.overcommit
   ansible.posix.sysctl:
     name: vm.overcommit_memory
     value: '1'
     state: present
 
-- name: create valkey group
+- name: Create valkey group
   group:
     name: valkey
     state: present
     system: true
 
-- name: create valkey user
+- name: Create valkey user
   user:
     name: valkey
     group: valkey
@@ -40,18 +39,19 @@
     system: true
     state: present
 
-- name: create valkey directories
-  file: 
+- name: Create valkey directories
+  file:
     path: '{{ item }}'
     state: directory
     owner: valkey
     group: valkey
+    mode: '0750'
   loop:
     - '{{ valkey_conf_directory }}'
     - '{{ valkey_data_directory }}'
     - '{{ valkey_install_directory }}'
     - '{{ valkey_ssl_directory }}'
-    - '{{ valkey_ssl_ca_directory}}'
-    - '{{ valkey_ssl_reqs_directory}}'
-    - '{{ valkey_ssl_keys_directory}}'
-    - '{{ valkey_ssl_certs_directory}}'
+    - '{{ valkey_ssl_ca_directory }}'
+    - '{{ valkey_ssl_reqs_directory }}'
+    - '{{ valkey_ssl_keys_directory }}'
+    - '{{ valkey_ssl_certs_directory }}'

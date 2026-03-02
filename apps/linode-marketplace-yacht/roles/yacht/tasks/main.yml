@@ -1,15 +1,14 @@
 ---
-- name: create docker volume
+- name: Create docker volume
   docker_volume:
     name: "{{ 'yacht_data' if compose_support == True else 'yacht' }}"
 
-- name: run yacht docker container
+- name: Run yacht docker container
   docker_container:
     name: yacht
     image: selfhostedpro/yacht:latest
     state: started
-    ports:
-      - "8000:8000"
+    ports: ["8000:8000"]
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "{{ 'yacht_data:/config' if compose_support == True else 'yacht:/config' }}"
@@ -21,50 +20,54 @@
 
 - name: If compose_support is true
   block:
-  - name: Create Dir
-    file:
-      path: /opt/Yacht/compose/example
-      state: directory
+    - name: Create Dir
+      file:
+        path: /opt/Yacht/compose/example
+        state: directory
+        mode: '0755'
 
-# templates/docker-compose.yml is grabbed from https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml
-- name: add docker-compose.yml
+# templates/docker-compose.yml is grabbed
+# from https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/yacht/Template/Compose/example/docker-compose.yml
+- name: Add docker-compose.yml
   template:
     src: templates/docker-compose.yml
     dest: "/opt/Yacht/compose/example/docker-compose.yml"
-  when: compose_support == True
+    mode: '0644'
+  when: compose_support
 
-- name: send motd message
+- name: Send motd message
   lineinfile:
     path: "/etc/update-motd.d/99-yacht"
     line: "The default compose directory is /opt/Yacht/compose.\nAn example project has been added there."
-    create: yes
-  when: compose_support == True
+    create: true
+    mode: '0755'
+  when: compose_support
 
 # Nginx
-- name: install nginx
+- name: Install nginx
   apt:
-    pkg:
-      - nginx
+    pkg: [nginx]
     state: present
 
-- name: config file setup
+- name: Config file setup
   template:
     src: templates/nginx.conf.j2
-    dest: "/etc/nginx/sites-available/{{ _domain }}"      
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
 
-- name: create a symbolic link for the nginx configuration
+- name: Create a symbolic link for the nginx configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: unlink the default nginx configuration
+- name: Unlink the default nginx configuration
   file:
     path: "/etc/nginx/sites-enabled/default"
     state: absent
-  notify: reload nginx service
+  notify: Reload nginx service
 
 # ssl_certbot
-- name: setting up ssl certificate
+- name: Setting up ssl certificate
   import_role:
     name: certbot_ssl

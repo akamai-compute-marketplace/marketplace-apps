@@ -3,8 +3,7 @@ skip_list:
   - command-instead-of-shell
   - no-changed-when
   - no-jinja-when
-  - fqcn-builtins
-  - latest
+  - fqcn
   - package-latest
   - latest
   - role-name
