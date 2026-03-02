@@ -1,19 +1,18 @@
 ---
-- name: install shadowsocks 
+- name: Install shadowsocks
   apt:
-    pkg:
-      - shadowsocks-libev
+    pkg: [shadowsocks-libev]
     state: present
 
-- name: create shadowsocks config
+- name: Create shadowsocks config
   template:
     src: config.json.j2
     dest: /etc/shadowsocks-libev/config.json
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
-- name: restart and enable shadowsocks
+- name: Restart and enable shadowsocks
   systemd_service:
     name: shadowsocks-libev
     state: restarted

@@ -1,5 +1,5 @@
 ---
 # loki datasource
-- name: install loki
+- name: Install loki
   import_tasks: loki.yml
   when: install_loki | bool

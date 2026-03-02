@@ -4,18 +4,16 @@
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
 
   tasks:
-    - block:
+    - name: Running in staging mode
+      when: "mode == 'staging'"
+      block:
         - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop:
-            - common
-            - passbolt
-            - post
+          loop: [common, passbolt, post]
         - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
@@ -25,13 +23,9 @@
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'failed'
-      when: "mode == 'staging'"
 
     - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop:
-        - common
-        - passbolt
-        - post
+      loop: [common, passbolt, post]
       when: "mode == 'production'"

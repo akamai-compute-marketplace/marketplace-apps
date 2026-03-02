@@ -1,6 +1,6 @@
 ---
 # install ssl certs
 
-- name: get ssl certificates for rabbitmq
-  import_role: 
+- name: Get ssl certificates for rabbitmq
+  import_role:
     name: certbot_ssl

@@ -1,14 +1,14 @@
+---
 # passbolt
-- name: Setting up environment 
+- name: Setting up environment
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
-  # generate creds
-    - name: Generating sudo user and password 
+    # generate creds
+    - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
     - name: Writing deployment variables to vars file
@@ -20,4 +20,3 @@
           passbolt_db_password: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           passbolt_db_user: passbolt
           passbolt_db_name: passbolt
-          

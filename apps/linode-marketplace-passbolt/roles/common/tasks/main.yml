@@ -6,9 +6,7 @@
 - name: Create dns A record
   import_role:
     name: create_dns_record
-  when: 
-    - token_password is defined
-    - default_dns is not defined
+  when: [token_password is defined, default_dns is not defined]
 
 - name: Create MX record for domain
   linode.cloud.domain_record:
@@ -38,11 +36,11 @@
 
 - name: Set ssh pubkey
   import_role:
-      name: sshkey
+    name: sshkey
 
 - name: Secure SSH
   import_role:
-      name: securessh
+    name: securessh
   when: disable_root is defined
 
 - name: Update system packages

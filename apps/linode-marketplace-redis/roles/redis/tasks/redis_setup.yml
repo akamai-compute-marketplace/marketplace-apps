@@ -1,11 +1,11 @@
 ---
-- name: create redis group
+- name: Create redis group
   group:
     name: redis
     state: present
     system: true
 
-- name: create redis user
+- name: Create redis user
   user:
     name: redis
     group: redis
@@ -15,16 +15,17 @@
     system: true
     state: present
 
-- name: create redis directories
+- name: Create redis directories
   file:
     path: '{{ item }}'
     state: directory
     owner: redis
     group: redis
+    mode: '0755'
   loop:
     - '{{ redis_conf_directory }}'
     - '{{ redis_ssl_directory }}'
-    - '{{ redis_ssl_ca_directory}}'
-    - '{{ redis_ssl_reqs_directory}}'
-    - '{{ redis_ssl_keys_directory}}'
-    - '{{ redis_ssl_certs_directory}}'
+    - '{{ redis_ssl_ca_directory }}'
+    - '{{ redis_ssl_reqs_directory }}'
+    - '{{ redis_ssl_keys_directory }}'
+    - '{{ redis_ssl_certs_directory }}'

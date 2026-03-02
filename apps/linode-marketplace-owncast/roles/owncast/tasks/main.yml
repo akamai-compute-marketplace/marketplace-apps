@@ -5,6 +5,6 @@
 - name: Configure SSL with certbot
   import_role:
     name: certbot_ssl
-  
+
 - name: Download and install Owncast
-  include_tasks: owncast.yml 
+  include_tasks: owncast.yml

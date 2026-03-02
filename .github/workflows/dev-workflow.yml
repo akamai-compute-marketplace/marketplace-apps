@@ -57,13 +57,31 @@ jobs:
         run: bash .github/scripts/get-app-configs.sh
         env:
           APPS: ${{ steps.app-matrix.outputs.apps }}
-  combined-job:
-    name: App deployment and testing
+  setup-job:
+    name: Setup data for deployment and testing
     runs-on: ubuntu-latest
     permissions:
       contents: read
     needs: get-list-of-apps
     if: needs.get-list-of-apps.outputs.configs != '[]'
+    env:
+      LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
+      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check and clean up domain records
+        run: bash .github/scripts/setup-domain-records-cleanup.sh
+  deployment-job:
+    name: App deployment and testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: [get-list-of-apps, setup-job]
+    if: always() && needs.get-list-of-apps.outputs.configs != '[]'
     strategy:
       fail-fast: false
       matrix:
@@ -73,6 +91,7 @@ jobs:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
       LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -97,3 +116,8 @@ jobs:
         env:
           LINODE_ID: ${{ steps.linode-provisioning.outputs.LINODE_ID }}
         run: bash .github/scripts/linode-deletion.sh
+      - name: Deleting domain records for ${{ matrix.app }}
+        if: always()
+        env:
+          LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
+        run: bash .github/scripts/teardown-domain-records-cleanup.sh

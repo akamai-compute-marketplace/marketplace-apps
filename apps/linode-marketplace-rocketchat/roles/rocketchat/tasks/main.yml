@@ -5,7 +5,7 @@
   import_tasks: docker.yml
 
 - name: Import Rocket.Chat tasks
-  import_tasks: container.yml 
+  import_tasks: container.yml
 
 - name: Import Nginx tasks
   import_tasks: nginx.yml

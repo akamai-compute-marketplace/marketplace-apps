@@ -1,12 +1,12 @@
 ---
-- name: import install tasks
+- name: Import install tasks
   import_tasks: install.yml
 
-- name: import nginx tasks
+- name: Import nginx tasks
   import_tasks: nginx.yml
 
-- name: import user tasks
+- name: Import user tasks
   import_tasks: user.yml
 
-- name: import credentials tasks
+- name: Import credentials tasks
   import_tasks: credentials.yml

@@ -8,9 +8,7 @@
 
 - name: Install Nginx
   apt:
-    pkg:
-      - nginx
-      - nginx-common
+    pkg: [nginx, nginx-common]
     state: latest
 
 - name: Set PHP version
@@ -22,6 +20,7 @@
   template:
     src: 'templates/vhost.conf.j2'
     dest: '/etc/nginx/sites-available/{{ _domain }}'
+    mode: '0644'
 
 - name: Enable Passbolt vhost
   file:
@@ -35,7 +34,7 @@
     state: absent
   notify: Restart Nginx
 
-- name: Starting php{{ php_version.stdout }}-fpm
+- name: Starting php{{ php_version.stdout }}
   service:
     name: "php{{ php_version.stdout }}-fpm"
     state: started

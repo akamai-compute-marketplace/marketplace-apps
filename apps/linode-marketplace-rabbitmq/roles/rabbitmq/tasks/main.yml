@@ -1,20 +1,20 @@
 ---
 # main
 
-- name: install required packages
+- name: Install required packages
   import_tasks: packages.yml
 
-- name: add rabbitmq repository
+- name: Add rabbitmq repository
   import_tasks: repo.yml
 
-- name: install rabbitmq  
+- name: Install rabbitmq
   import_tasks: install.yml
 
-- name: configure rabbitmq
+- name: Configure rabbitmq
   import_tasks: rabbitmq.yml
 
-- name: configure nginx proxy
+- name: Configure nginx proxy
   import_tasks: nginx.yml
 
-- name: install ssl certs
+- name: Install ssl certs
   import_tasks: ssl.yml

@@ -3,7 +3,7 @@
   uri:
     url: https://api.github.com/repos/owncast/owncast/releases/latest
     method: GET
-    return_content: yes
+    return_content: true
   register: github_response
 
 - name: Download latest Owncast release version
@@ -19,9 +19,7 @@
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0755'
-  loop:
-    - /opt/owncast
-    - /opt/owncast/data
+  loop: [/opt/owncast, /opt/owncast/data]
 
 - name: Extract Owncast
   unarchive:
@@ -29,8 +27,8 @@
     dest: "/opt/owncast/"
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: 0755
-    remote_src: yes
+    mode: '0755'
+    remote_src: true
 
 - name: Create Owncast service file
   template:
@@ -43,14 +41,14 @@
   args:
     chdir: /opt/owncast
   register: owncast_result
-  become: yes
+  become: true
   become_user: "{{ username }}"
-  no_log: yes
+  no_log: true
   failed_when: owncast_result.rc not in [0, 124]
 
 - name: Start and enable Owncast service
   systemd:
     name: owncast
     state: started
-    enabled: yes
-    daemon_reload: yes
+    enabled: true
+    daemon_reload: true

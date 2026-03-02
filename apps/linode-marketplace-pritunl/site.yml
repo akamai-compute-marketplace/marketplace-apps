@@ -1,39 +1,31 @@
 ---
-- name: pritunl setup
+- name: Pritunl setup
   hosts: localhost
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
 
   tasks:
-    - block:
-        - name: run roles
+    - name: Running in staging mode
+      when: "mode == 'staging'"
+      block:
+        - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop:
-            - common
-            - mongo
-            - pritunl
-            - post
-        - name: deployment passed
+          loop: [common, mongo, pritunl, post]
+        - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'successful'
       rescue:
-        - name: deployment failed
+        - name: Deployment failed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'failed'
-      when: "mode == 'staging'"
 
-    - name: running app normally
+    - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop:
-        - common
-        - mongo
-        - pritunl
-        - post
+      loop: [common, mongo, pritunl, post]
       when: "mode == 'production'"

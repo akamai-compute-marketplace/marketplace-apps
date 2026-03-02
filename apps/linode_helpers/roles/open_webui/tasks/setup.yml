@@ -1,0 +1,24 @@
+---
+- name: Wait for Open WebUI service to start
+  uri:
+    url: "http://localhost:3000"
+    method: GET
+    status_code: [200]
+  register: openwebui_health
+  until: openwebui_health.status in [200]
+  retries: 30
+  delay: 5
+
+- name: Set Open WebUI initial admin account
+  uri:
+    url: "http://localhost:3000/api/v1/auths/signup"
+    method: POST
+    body_format: json
+    status_code: [200]
+    return_content: false
+    body:
+      name: "{{ openwebui_login_name }}"
+      email: "{{ openwebui_login_email }}"
+      password: "{{ openwebui_login_password }}"
+    headers:
+      Content-Type: 'application/json'
