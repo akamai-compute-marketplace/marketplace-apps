@@ -1,0 +1,23 @@
+---
+#-----------------------------------------------------
+# Open WebUI helper.
+
+# This helper waits for the Open WebUI service to become healthy,
+# then creates the initial admin account via the signup API.
+
+# The following variables must be set before importing this role:
+# - openwebui_login_name
+# - openwebui_login_email
+# - openwebui_login_password
+
+# Example usage from a role's tasks/main.yml:
+#
+# - name: Configure Open WebUI initial admin account
+#   import_role:
+#     name: open_webui
+
+#-----------------------------------------------------
+
+- name: Setting up Open WebUI admin account
+  include_tasks:
+    file: setup.yml
