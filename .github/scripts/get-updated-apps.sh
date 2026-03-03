@@ -2,6 +2,11 @@
 
 set -e
 
+CHANGED_FILES=$(git diff --name-only origin/develop)
+APPS=$(echo "$CHANGED_FILES" | awk -F'/' '/^(apps|deployment_scripts)\// {print $2}' | sort -u | tr '\n' ',' | sed 's/,$//')
+
+echo "Found changes in the following app folders: $APPS"
+
 if [[ -z "$APPS" ]]; then
   echo "No app changes detected. Skipping Linode config search."
   echo "configs=[]" >>"$GITHUB_OUTPUT"

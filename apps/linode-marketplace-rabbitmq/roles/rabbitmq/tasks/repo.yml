@@ -3,25 +3,29 @@
   get_url:
     url: https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA
     dest: /tmp/com.rabbitmq.team.asc
+    mode: '0644'
 
 - name: Dearmor RabbitMQ signing key
   command:
     cmd: gpg --dearmor -o /usr/share/keyrings/com.rabbitmq.team.gpg /tmp/com.rabbitmq.team.asc
     creates: /usr/share/keyrings/com.rabbitmq.team.gpg
 
-- name: set distro release codename
+- name: Set distro release codename
   set_fact:
     distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+    rabbitmq_apt_opts: "[arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg]"
+    mode: '0644'
 
 - name: Add RabbitMQ apt repository
   copy:
     dest: /etc/apt/sources.list.d/rabbitmq.list
     owner: root
+    mode: '0644'
     content: |
       ## Modern Erlang/OTP releases
-      deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb1.rabbitmq.com/rabbitmq-erlang/ubuntu/noble {{ distribution_release }} main
-      deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb2.rabbitmq.com/rabbitmq-erlang/ubuntu/noble {{ distribution_release }} main
+      deb {{ rabbitmq_apt_opts }} https://deb1.rabbitmq.com/rabbitmq-erlang/ubuntu/noble {{ distribution_release }} main
+      deb {{ rabbitmq_apt_opts }} https://deb2.rabbitmq.com/rabbitmq-erlang/ubuntu/noble {{ distribution_release }} main
 
       ## Latest RabbitMQ releases
-      deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb1.rabbitmq.com/rabbitmq-server/ubuntu/noble {{ distribution_release }} main
-      deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb2.rabbitmq.com/rabbitmq-server/ubuntu/noble {{ distribution_release }} main
+      deb {{ rabbitmq_apt_opts }} https://deb1.rabbitmq.com/rabbitmq-server/ubuntu/noble {{ distribution_release }} main
+      deb {{ rabbitmq_apt_opts }} https://deb2.rabbitmq.com/rabbitmq-server/ubuntu/noble {{ distribution_release }} main

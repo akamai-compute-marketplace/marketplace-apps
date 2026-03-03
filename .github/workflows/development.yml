@@ -1,7 +1,7 @@
----
 name: Development Workflow
 on:
   workflow_dispatch:
+  pull_request_target:
 jobs:
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run ShellCheck
         run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
@@ -21,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run yamllint
         run: bash .github/scripts/static-code-yamllint.sh
   static-code-analysis-ansbible-lint:
@@ -31,10 +35,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run ansible-lint
         run: bash .github/scripts/static-code-ansible-lint.sh
-  get-list-of-apps:
-    name: Getting list of apps
+  get-updated-apps:
+    name: Getting list of updated apps
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -49,21 +55,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Find app folders with changes
-        id: app-matrix
-        run: bash .github/scripts/get-changes-from-pr.sh
-      - name: Find app configs
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Find updated apps in pull request
         id: configs-matrix
-        run: bash .github/scripts/get-app-configs.sh
-        env:
-          APPS: ${{ steps.app-matrix.outputs.apps }}
+        run: bash .github/scripts/get-updated-apps.sh
   setup-job:
     name: Setup data for deployment and testing
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: get-list-of-apps
-    if: needs.get-list-of-apps.outputs.configs != '[]'
+    needs: get-updated-apps
+    if: needs.get-updated-apps.outputs.configs != '[]'
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
@@ -73,6 +75,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Check and clean up domain records
         run: bash .github/scripts/setup-domain-records-cleanup.sh
   deployment-job:
@@ -80,12 +83,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    needs: [get-list-of-apps, setup-job]
-    if: always() && needs.get-list-of-apps.outputs.configs != '[]'
+    needs: [get-updated-apps, setup-job]
     strategy:
       fail-fast: false
       matrix:
-        app: ${{ fromJson(needs.get-list-of-apps.outputs.configs) }}
+        app: ${{ fromJson(needs.get-updated-apps.outputs.configs) }}
       max-parallel: 10
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
@@ -95,6 +97,8 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Get Linode configuration for ${{ matrix.app }}
         run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
       - name: Provisioning Linode for ${{ matrix.app }}
@@ -105,8 +109,8 @@ jobs:
       - name: Deploying ${{ matrix.app }}
         env:
           APP_NAME: ${{ matrix.app }}
-          BRANCH: ${{ github.head_ref }}
-          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url || github.repositoryUrl }}
           GH_USER: ${{ github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
