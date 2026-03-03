@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo creds into file
   copy:
@@ -20,9 +23,8 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
+
 - name: Restart Apache2
   systemd:
     name: apache2.service
     state: restarted
-

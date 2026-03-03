@@ -3,6 +3,9 @@
   template:
     src: motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing creds to file
   copy:
@@ -16,7 +19,6 @@
       # Minio
       Minio Username: {{ minio_root_username }}
       Minio Password: {{ minio_root_password }}
-      # Milvus     
+      # Milvus
       Milvus Username: root
       Milvus Password: {{ milvus_password }}
-

@@ -1,9 +1,9 @@
 ---
-- name: set up dirs
+- name: Set up dirs
   import_tasks: redis_setup.yml
 
-- name: generate SSL certs
+- name: Generate SSL certs
   import_tasks: redis_ssl.yml
 
-- name: install redis
+- name: Install redis
   import_tasks: redis_install.yml

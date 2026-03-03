@@ -1,3 +1,4 @@
+---
 - name: Ensure cert directory exists
   file:
     path: "{{ milvus_directory }}/certs"
@@ -17,11 +18,8 @@
     path: "{{ milvus_directory }}/certs/ca.csr"
     privatekey_path: "{{ milvus_directory }}/certs/ca.key"
     common_name: milvus-etcd-ca
-    basic_constraints:
-      - CA:TRUE
-    key_usage:
-      - keyCertSign
-      - cRLSign
+    basic_constraints: [CA:TRUE]
+    key_usage: [keyCertSign, cRLSign]
 
 - name: Generate self-signed CA certificate
   community.crypto.x509_certificate:
@@ -44,12 +42,8 @@
     path: "{{ milvus_directory }}/certs/server.csr"
     privatekey_path: "{{ milvus_directory }}/certs/server.key"
     common_name: milvus-etcd
-    subject_alt_name:
-      - DNS:milvus-etcd
-      - DNS:localhost
-      - IP:127.0.0.1
-    extended_key_usage:
-      - serverAuth
+    subject_alt_name: [DNS:milvus-etcd, DNS:localhost, IP:127.0.0.1]
+    extended_key_usage: [serverAuth]
 
 - name: Sign etcd server certificate
   community.crypto.x509_certificate:
@@ -73,8 +67,7 @@
     path: "{{ milvus_directory }}/certs/client.csr"
     privatekey_path: "{{ milvus_directory }}/certs/client.key"
     common_name: milvus-client
-    extended_key_usage:
-      - clientAuth
+    extended_key_usage: [clientAuth]
 
 - name: Sign etcd client certificate
   community.crypto.x509_certificate:

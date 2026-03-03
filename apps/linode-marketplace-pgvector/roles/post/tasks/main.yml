@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo creds into file
   copy:
@@ -23,4 +26,3 @@
       Postgres Password: {{ postgresql_password }}
       Postgres Admin User: {{ postgresql_admin_user }}
       Postgres Admin Password: {{ postgresql_admin_password }}
-      

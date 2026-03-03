@@ -1,7 +1,7 @@
 ---
 - name: Add Neo4j latest repo
   import_tasks: repo.yml
- 
+
 - name: Install neo4j
   import_tasks: install.yml
 

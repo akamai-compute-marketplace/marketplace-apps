@@ -1,28 +1,32 @@
 ---
 # set_hostname
-- name: setting up hostname
+- name: Setting up hostname
   import_role:
     name: hostname
 
-- name: set ssh pubkey
+- name: Set ssh pubkey
   import_role:
-      name: sshkey
+    name: sshkey
 
-- name: write _domain to vars
-  lineinfile: 
+- name: Write _domain to vars
+  lineinfile:
     insertafter: EOF
     path: group_vars/linode/vars
-    line: | 
+    line: |
       _domain: {{ _domain }}
-  when: _domain is defined 
+  when: _domain is defined
 
-- name: secure ssh
+- name: Secure ssh
   import_role:
-      name: securessh
+    name: securessh
 
 # Provides dynamic detection of root device for GRUB installation since root device is not always /dev/sda on Kali
 - name: Determine root device for GRUB installation
-  shell: findmnt -n -o SOURCE / | sed 's/[0-9]*$//'
+  shell: |
+    set -o pipefail
+    findmnt -n -o SOURCE / | sed 's/[0-9]*$//'
+  args:
+    executable: /bin/bash
   register: root_device
   changed_when: false
 
@@ -38,17 +42,17 @@
     - { question: 'grub-pc/install_devices_empty', value: 'false', vtype: 'boolean' }
     - { question: 'grub-pc/install_devices_failed', value: 'true', vtype: 'boolean' }
 
-- name: update system packages
+- name: Update system packages
   import_role:
     name: update_pkgs
 
-- name: enabling ufw
+- name: Enabling ufw
   import_role:
     name: ufw
 
-- name: apply ufw rules
+- name: Apply ufw rules
   import_tasks: ufw_rules.yml
 
-- name: enabling fail2ban
+- name: Enabling fail2ban
   import_role:
     name: fail2ban_install

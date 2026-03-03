@@ -1,6 +1,6 @@
 ---
 # openlitespeed
-- name: download install scripts
+- name: Download install scripts
   ansible.builtin.get_url:
     url: "{{ item.url }}"
     dest: "{{ item.dest }}"
@@ -9,14 +9,14 @@
     - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Setup/wpimgsetup.sh', dest: '/tmp/wpimgsetup.sh' }
     - { url: 'https://raw.githubusercontent.com/litespeedtech/ls-cloud-image/master/Cloud-init/per-instance.sh', dest: '/tmp/per-instance.sh' }
 
-- name: execute install scripts
+- name: Execute install scripts
   ansible.builtin.command:
     cmd: "bash {{ item }}"
   loop:
     - '/tmp/wpimgsetup.sh'
     - '/tmp/per-instance.sh'
 
-- name: get litespeed password
+- name: Get litespeed password
   ansible.builtin.slurp:
     src: '/root/.litespeed_password'
   register: litespeed_password_encode
@@ -26,38 +26,39 @@
     src: /root/.litespeed_password
   register: litespeed_encoded_password
 
-- name: get db password
+- name: Get db password
   ansible.builtin.slurp:
     src: '/root/.db_password'
   register: db_password_encode
 
-- name: set db & litespeed passwords
+- name: Set db & litespeed passwords
   set_fact:
     litespeed_password: "{{ (litespeed_password_encode.content | b64decode).split('=')[1].strip() }}"
     db_password: "{{ db_password_encode.content | b64decode }}"
 
-- name: comment out ssh motd in pam_motd
+- name: Comment out ssh motd in pam_motd
   ansible.builtin.lineinfile:
     path: /etc/pam.d/sshd
     regexp: '^\s*session\s+optional\s+pam_motd\.so\s+motd=/run/motd\.dynamic$'
     line: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
-    backrefs: yes
-  
-- name: set mysql root and wordpress user passwords
+    backrefs: true
+
+- name: Set mysql root and wordpress user passwords
   set_fact:
     passwords:
       mysql_root_password: "{{ (db_password.split('\n')[0] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
       wordpress_mysql_pass: "{{ (db_password.split('\n')[1] | regex_replace('.*=\"(.*)\"', '\\1')).strip() }}"
 
-- name: write mysql root and wordpress user passwords to vars
+- name: Write mysql root and wordpress user passwords to vars
   ansible.builtin.lineinfile:
     path: "./group_vars/linode/vars"
-    create: yes
+    create: true
     line: "{{ item.key }}: {{ item.value }}"
+    mode: '0644'
   loop: "{{ lookup('dict', passwords) }}"
 
 # verify wordpress is installed before configuring admin info
-- name: verify WordPress checksums
+- name: Verify WordPress checksums
   command: bash -lc "wp core verify-checksums --path='/var/www/html' --allow-root"
   register: checksum_verification
   retries: 10
@@ -66,7 +67,7 @@
   changed_when: checksum_verification.rc != 0
   ignore_errors: true
 
-- name: configure admin info
+- name: Configure admin info
   shell:
     chdir: "/var/www/html"
     cmd: |
@@ -78,7 +79,7 @@
           --admin_password="{{ wp_admin_pass }}" \
           --path="/var/www/html"
 
-- name: create .my.cnf file with mysql creds
+- name: Create .my.cnf file with mysql creds
   ansible.builtin.copy:
     dest: "/root/.my.cnf"
     owner: root
@@ -89,11 +90,11 @@
       user=root
       password={{ mysql_root_password }}
 
-- name: run mysql secure installation
+- name: Run mysql secure installation
   import_role:
     name: securemysql
 
-- name: run domain setup script with full automation
+- name: Run domain setup script with full automation
   ansible.builtin.expect:
     command: "/opt/domainsetup.sh"
     responses:
@@ -101,12 +102,11 @@
       "(?i)Please verify it is correct": "y"
       "(?i)Do you wish to issue a Let's encrypt certificate for this domain": "y"
       "(?i)Please enter your E-mail": "{{ soa_email_address }}"
-      "(?i)Please verify it is correct": "y"
       "(?i)Do you wish to force HTTPS rewrite rule for this domain": "y"
       "(?i)Do you wish to update the system now": "y"
     timeout: 120
 
-- name: update ssl path for lsws admin_config.conf
+- name: Update ssl path for lsws admin_config.conf
   ansible.builtin.lineinfile:
     path: /usr/local/lsws/admin/conf/admin_config.conf
     regexp: '^\s*{{ item.key }}\s+.*$'
@@ -114,4 +114,4 @@
   loop:
     - { key: 'keyFile', file: 'privkey.pem' }
     - { key: 'certFile', file: 'fullchain.pem' }
-  notify: reload lsws
+  notify: Reload lsws

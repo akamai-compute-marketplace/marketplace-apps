@@ -1,62 +1,64 @@
---- 
-- name: install nginx & certbot
+---
+- name: Install nginx & certbot
   dnf:
     name: "{{ item }}"
     state: present
-  loop:
-    - nginx
-    - certbot
-    - python3-certbot-nginx
-  
-- name: enabling nginx on boot
+  loop: [nginx, certbot, python3-certbot-nginx]
+
+- name: Enabling nginx on boot
   service:
     name: nginx
-    enabled: yes
+    enabled: true
     state: started
 
-- name: create nginx snippets dir
-  file: 
+- name: Create nginx snippets dir
+  file:
     path: /etc/nginx/snippets
     state: directory
     owner: root
     group: root
+    mode: '0644'
 
-- name: move the snippets
-  copy: 
+- name: Move the snippets
+  copy:
     src: "../files/snippets/{{ item.src }}"
     dest: "/etc/nginx/snippets/{{ item.dest }}"
     owner: root
     group: root
-  loop: 
+    mode: '0644'
+  loop:
     - { src: 'restrictions.conf', dest: 'restrictions.conf' }
     - { src: 'ssl-params.conf', dest: 'ssl-params.conf' }
     - { src: 'well-known', dest: 'well-known' }
 
 # there is probably a way to do this with one file and apply the template after certbot runs
-- name: move self-signed cert snippet
-  copy: 
+- name: Move self-signed cert snippet
+  copy:
     src: "../files/snippets/{{ item.src }}"
     dest: "/etc/nginx/snippets/{{ item.dest }}"
     owner: root
     group: root
-  loop: 
+    mode: '0644'
+  loop:
     - { src: 'ssl-self-signed.conf', dest: 'ssl.conf' }
 
-- name: create nginx site dirs
+- name: Create nginx site dirs
   file:
     path: /etc/nginx/sites-enabled/
     state: directory
     owner: root
     group: root
+    mode: '0644'
 
-- name: create nginx site dirs
+- name: Create nginx site dirs
   file:
     path: /etc/nginx/sites-available/
     state: directory
     owner: root
     group: root
+    mode: '0644'
 
-- name: create nginx log directory file
+- name: Create nginx log directory file
   file:
     path: /var/log/nginx/{{ _domain }}
     state: directory
@@ -64,7 +66,7 @@
     group: root
     mode: '0644'
 
-- name: create nginx access log file
+- name: Create nginx access log file
   file:
     path: /var/log/nginx/{{ _domain }}/access.log
     state: touch
@@ -72,7 +74,7 @@
     group: root
     mode: '0644'
 
-- name: create nginx error log file
+- name: Create nginx error log file
   file:
     path: /var/log/nginx/{{ _domain }}/error.log
     state: touch
@@ -80,39 +82,40 @@
     group: root
     mode: '0644'
 
-- name: moving vhost_default template
+- name: Moving vhost_default template
   template:
     src: templates/reverse-proxy-ssl.conf.j2
     dest: "/etc/nginx/sites-available/reverse-proxy-ssl.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
-- name: symlinking our vhost
+- name: Symlinking our vhost
   file:
     src: "/etc/nginx/sites-available/reverse-proxy-ssl.conf"
     dest: "/etc/nginx/sites-enabled/reverse-proxy-ssl.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     state: link
 
-- name: include sites-enabled
+- name: Include sites-enabled
   lineinfile:
     path: /etc/nginx/nginx.conf
     insertbefore: 'include \/etc\/nginx\/conf\.d\/\*\.conf;'
     line: include /etc/nginx/sites-enabled/*.conf;
 
-- name: set SELinux perms
-  shell: 
+- name: Set SELinux perms
+  shell:
     cmd: "setsebool -P httpd_can_network_connect 1"
 
-- name: make ssl dir
-  file: 
+- name: Make ssl dir
+  file:
     path: /etc/ssl/private
     state: directory
     owner: root
     group: root
+    mode: '0644'
 
 - name: Create private key (RSA, 4096 bits)
   community.crypto.openssl_privatekey:
@@ -124,14 +127,14 @@
     privatekey_path: /etc/ssl/private/certificate.key
     provider: selfsigned
 
-- name: restart nginx the hard way
-  service: 
+- name: Restart nginx the hard way
+  service:
     name: nginx
-    enabled: yes
+    enabled: true
     state: restarted
 
 # allow propagation
-- name: run certbot dry-run
+- name: Run certbot dry-run
   shell:
     cmd: "certbot certonly -n --webroot --dry-run --agree-tos -d {{ _domain }} -m {{ soa_email_address }} -w /var/lib/letsencrypt"
   run_once: true
@@ -141,7 +144,7 @@
   delay: 3
   ignore_errors: true
 
-- name: validate certbot dry-run
+- name: Validate certbot dry-run
   assert:
     that: dry_run is not failed
     fail_msg: "[Error] Certbot dry-run failed. Cannot continue..Check the domain provided"
@@ -149,18 +152,17 @@
   run_once: true
 
 # issue cert
-- name: run certbot
+- name: Run certbot
   shell:
     cmd: "certbot -n --nginx --agree-tos -d {{ _domain }} -m {{ soa_email_address }}"
 
-- name: move certbot cert snippet
-  template: 
+- name: Move certbot cert snippet
+  template:
     src: "../templates/ssl-lets-encrypt.conf.j2"
     dest: "/etc/nginx/snippets/{{ item.dest }}"
     owner: root
     group: root
-  loop: 
+    mode: '0644'
+  loop:
     - { src: 'ssl-lets-encrypt.conf', dest: 'ssl.conf' }
-  notify: restart nginx
-    
- 
+  notify: Restart nginx

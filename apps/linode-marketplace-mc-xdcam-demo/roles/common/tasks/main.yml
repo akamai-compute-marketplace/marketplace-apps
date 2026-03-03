@@ -1,113 +1,106 @@
 ---
-  # set_hostname
-  - name: set dns fact for subdomain
-    set_fact:
-      _domain: '{{ subdomain }}.{{ domain }}'
-      cacheable: yes
-    when:
-      - domain is defined
-      - subdomain != "www"
-    
-  - name: set dns fact for domain
-    set_fact:
-      _domain: '{{ domain }}'
-      cacheable: yes
-    when: 
-      - domain is defined
-      - subdomain == "www"
-  
-  - name: setting up hostname
-    hostname:
-      name: mc-xdcam-demo
-    when: 
-      - domain is not defined
-      - subdomain is not defined
+# set_hostname
+- name: Set dns fact for subdomain
+  set_fact:
+    _domain: '{{ subdomain }}.{{ domain }}'
+    cacheable: true
+  when: [domain is defined, subdomain != "www"]
 
-  - name: set hostname for dns
-    hostname: 
-      name: '{{ _domain }}'
-    when: 
-      - _domain is defined
-  
-  - name: create dns A record
-    import_role:
-      name: create_dns_record
-    when: 
-      - token_password is defined
-      - domain is defined 
-  
-  # sets account ssh pubkey to limited user
-  - name: set ssh pubkey
-    import_role:
-      name: sshkey
-  
-  - name: disable root login
-    import_role: 
-      name: securessh
-    when: disable_root is defined
+- name: Set dns fact for domain
+  set_fact:
+    _domain: '{{ domain }}'
+    cacheable: true
+  when: [domain is defined, subdomain == "www"]
 
-  # apt_setup_update
-  - name: update system packages
-    import_role:
-      name: update_pkgs
+- name: Setting up hostname
+  hostname:
+    name: mc-xdcam-demo
+  when: [domain is not defined, subdomain is not defined]
 
-  # ufw_install
-  - name: enabling ufw
-    import_role:
-      name: ufw
+- name: Set hostname for dns
+  hostname:
+    name: '{{ _domain }}'
+  when: [_domain is defined]
 
-  # ufw rules 
-  - name: apply ufw rules
-    import_tasks: ufw_rules.yml
+- name: Create dns A record
+  import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - domain is defined
 
-  # fail2ban
-  - name: enabling fail2ban
-    import_role:
-      name: fail2ban_install
+# sets account ssh pubkey to limited user
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
 
-  # MainConcept
-  - name: Install Docker dependencies
-    apt:
-      name:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - software-properties-common
-        - gnupg2 
-        - pwgen 
-        - ufw
-        - python3 
-        - python3-pip
-        - python-is-python3
-      state: present
+- name: Disable root login
+  import_role:
+    name: securessh
+  when: disable_root is defined
 
-  - name: Add Docker GPG key
-    apt_key:
-      url: https://download.docker.com/linux/ubuntu/gpg
-      state: present
+# apt_setup_update
+- name: Update system packages
+  import_role:
+    name: update_pkgs
 
-  - name: Add Docker repository
-    apt_repository:
-      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-      state: present
+# ufw_install
+- name: Enabling ufw
+  import_role:
+    name: ufw
 
-  - name: Update apt cache
-    apt:
-      update_cache: yes
+# ufw rules
+- name: Apply ufw rules
+  import_tasks: ufw_rules.yml
 
-  - name: Install Docker engine
-    apt:
-      name: docker-ce
-      state: present
+# fail2ban
+- name: Enabling fail2ban
+  import_role:
+    name: fail2ban_install
 
-  - name: Start and enable Docker service
-    service:
-      name: docker
-      state: started
-      enabled: yes
+# MainConcept
+- name: Install Docker dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - gnupg2
+      - pwgen
+      - ufw
+      - python3
+      - python3-pip
+      - python-is-python3
+    state: present
 
-  - name: Install Docker Python package
-    pip:
-      name: docker
-      executable: pip3
-      state: present
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt cache
+  apt:
+    update_cache: true
+
+- name: Install Docker engine
+  apt:
+    name: docker-ce
+    state: present
+
+- name: Start and enable Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Install Docker Python package
+  pip:
+    name: docker
+    executable: pip3
+    state: present

@@ -1,8 +1,8 @@
 ---
 # handlers
 
-- name: restart nginx
-  systemd: 
+- name: Restart nginx
+  systemd:
     name: nginx
     state: restarted
     enabled: true

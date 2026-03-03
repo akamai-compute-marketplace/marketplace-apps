@@ -1,53 +1,52 @@
----  
-    - name: generating linuxgsm user password
-      set_fact:
-        linuxgsm_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
-      no_log: true
+---
+- name: Generating linuxgsm user password
+  set_fact:
+    linuxgsm_password: "{{ lookup('password', '/dev/null length=25 chars=ascii_letters,digits') }}"
+  no_log: true
 
-    - name: writing linuxgsm user password to vars
-      lineinfile:
-        insertafter: EOF
-        path: group_vars/linode/vars
-        line: | 
-          linuxgsm_password: {{ password }}
-    
-    - name: create linuxgsm user 
-      ansible.builtin.user: 
-        name: linuxgsm
-        shell: /bin/bash
-        groups: sudo
-        password: "{{ linuxgsm_password | password_hash('sha512') }}"
-        update_password: on_create
-        expires: -1
-        append: yes
-        generate_ssh_key: no
-        state: present
- 
-    - name: download linuxgsm script
-      ansible.builtin.get_url:
-        url: https://linuxgsm.sh
-        dest: /home/linuxgsm/linuxgsm.sh
-        mode: 0755
+- name: Writing linuxgsm user password to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      linuxgsm_password: {{ password }}
 
-    - name: chown homedir
-      ansible.builtin.file:
-        path: /home/linuxgsm
-        owner: linuxgsm
-        group: linuxgsm
-        recurse: yes
+- name: Create linuxgsm user
+  ansible.builtin.user:
+    name: linuxgsm
+    shell: /bin/bash
+    groups: sudo
+    password: "{{ linuxgsm_password | password_hash('sha512') }}"
+    update_password: on_create
+    expires: -1
+    append: true
+    generate_ssh_key: false
+    state: present
 
-    - name: run linuxgsm scripts
-      become: true
-      become_user: linuxgsm
-      ansible.builtin.shell:
-        chdir: /home/linuxgsm
-        cmd: ./linuxgsm.sh
-        
-    - name: pass server udf to linuxgsm
-      become: true 
-      become_user: linuxgsm
-      ansible.builtin.shell:
-        chdir: /home/linuxgsm
-        cmd: ./linuxgsm.sh {{ gameservername }}  
-      when: 
-        - gameservername is defined
+- name: Download linuxgsm script
+  ansible.builtin.get_url:
+    url: https://linuxgsm.sh
+    dest: /home/linuxgsm/linuxgsm.sh
+    mode: '0755'
+
+- name: Chown homedir
+  ansible.builtin.file:
+    path: /home/linuxgsm
+    owner: linuxgsm
+    group: linuxgsm
+    recurse: true
+
+- name: Run linuxgsm scripts
+  become: true
+  become_user: linuxgsm
+  ansible.builtin.shell:
+    chdir: /home/linuxgsm
+    cmd: ./linuxgsm.sh
+
+- name: Pass server udf to linuxgsm
+  become: true
+  become_user: linuxgsm
+  ansible.builtin.shell:
+    chdir: /home/linuxgsm
+    cmd: ./linuxgsm.sh {{ gameservername }}
+  when: [gameservername is defined]

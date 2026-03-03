@@ -24,12 +24,10 @@
     state: directory
     owner: neo4j
     group: neo4j
-    mode: 0755
+    mode: '0755'
   loop_control:
     loop_var: directory
-  loop:
-    - https
-    - bolt
+  loop: [https, bolt]
 
 - name: Create trusted and revoked cert directories
   file:
@@ -37,7 +35,7 @@
     state: directory
     owner: neo4j
     group: neo4j
-    mode: 0755
+    mode: '0755'
   loop_control:
     loop_var: directory
   loop:
@@ -56,11 +54,11 @@
   loop_control:
     loop_var: cert
   loop:
-  # https
+    # https
     - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/public.crt', mode: '0644' }
     - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/https/private.key', mode: '0400' }
     - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/https/trusted/public.crt', mode: '0644' }
-  # bolt
+    # bolt
     - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/public.crt', mode: '0644' }
     - { source: '{{ letsencrypt_cert_path }}/privkey.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/private.key', mode: '0400' }
     - { source: '{{ letsencrypt_cert_path }}/fullchain.pem', destination: '{{ neo4j_ssl_basedir }}/bolt/trusted/public.crt', mode: '0644' }

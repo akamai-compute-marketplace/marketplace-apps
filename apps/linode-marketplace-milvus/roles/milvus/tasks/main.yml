@@ -3,7 +3,7 @@
 - name: Generate SSL Certs
   import_tasks: tls.yml
 
-- name: Install NVIDIA (If Required) 
+- name: Install NVIDIA (If Required)
   import_tasks: drivers.yml
 
 - name: Install Milvus

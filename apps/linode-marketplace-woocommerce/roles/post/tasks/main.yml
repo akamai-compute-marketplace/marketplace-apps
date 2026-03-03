@@ -15,13 +15,13 @@
   import_role:
     name: certbot_ssl
 
-- name: Moving vhost_ssl template 
-  template: 
+- name: Moving vhost_ssl template
+  template:
     src: ../../lemp/templates/vhost_ssl.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644 
+    mode: '0644'
   when: webserver_stack == 'lemp'
 
 - name: Restart Nginx
@@ -35,6 +35,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
 
 - name: Writing sudo creds into file
   copy:

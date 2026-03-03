@@ -24,4 +24,4 @@
     name: node
     enabled: true
     state: started
-  notify: restart node
+  notify: Restart node

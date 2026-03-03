@@ -35,4 +35,4 @@
 
 - name: Configure SSL with certbot
   import_role:
-    name: certbot_ssl 
+    name: certbot_ssl

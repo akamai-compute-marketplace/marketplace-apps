@@ -1,67 +1,67 @@
 ---
- # nginx
-- name: installing nginx
+# nginx
+- name: Installing nginx
   apt:
     pkg:
-    - nginx
-    - nginx-common
+      - nginx
+      - nginx-common
     state: present
 
-- name: enabling nginx on boot
+- name: Enabling nginx on boot
   service:
     name: nginx
-    enabled: yes
+    enabled: true
 
 # php
-- name: install PHP
+- name: Install PHP
   apt:
     pkg:
-    - php-common
-    - php-fpm
-    - php-mysql
+      - php-common
+      - php-fpm
+      - php-mysql
     state: present
 
-- name: getting php version
+- name: Getting php version
   shell:
     cmd: "php -r \"echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;\""
   register: php_version
 
-- name: starting php-fpm
+- name: Starting php-fpm
   service:
     name: "php{{ php_version.stdout }}-fpm"
     state: started
-    enabled: yes
+    enabled: true
 
-- name: disable nginx default site
+- name: Disable nginx default site
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
 
-- name: nginx configs
+- name: Nginx configs
   import_tasks: nginx_configs.yml
 
 # mysql
-- name: installing mariadb
+- name: Installing mariadb
   apt:
     pkg:
-    - mariadb-server
-    - python3-mysqldb
+      - mariadb-server
+      - python3-mysqldb
     state: present
   register: mariadb
 
-- name: running mysql secure installation
+- name: Running mysql secure installation
   import_role:
     name: securemysql
 
-- name: configuring domain with certbot
+- name: Configuring domain with certbot
   import_role:
     name: certbot_ssl
 
-#based on wordpress we may need a pause here.
-- name: moving vhost_ssl template 
-  template: 
+# based on wordpress we may need a pause here.
+- name: Moving vhost_ssl template
+  template:
     src: ../templates/vhost_ssl.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}.conf"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'

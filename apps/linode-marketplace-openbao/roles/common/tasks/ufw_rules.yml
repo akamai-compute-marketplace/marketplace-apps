@@ -1,5 +1,5 @@
 ---
-# set app specific ufw rules 
+# set app specific ufw rules
 - name: Allow all access to tcp port 22
   community.general.ufw:
     rule: allow
@@ -14,7 +14,3 @@
     from_ip: "{{ item }}"
   loop: "{{ client_ips }}"
   when: client_ips is defined
-
-
-
-

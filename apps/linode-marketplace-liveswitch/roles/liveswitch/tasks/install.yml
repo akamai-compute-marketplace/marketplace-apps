@@ -6,10 +6,7 @@
     state: present
     update_cache: true
   vars:
-    packages:
-      - gnupg
-      - lsb-release
-      - python3-pip
+    packages: [gnupg, lsb-release, python3-pip]
 
 - name: Install Docker
   import_role:

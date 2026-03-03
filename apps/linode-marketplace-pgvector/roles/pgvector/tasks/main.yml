@@ -1,6 +1,6 @@
 ---
 - name: Install Postgres
   import_tasks: postgresql.yml
-  
+
 - name: Install and Enable PGvector
   import_tasks: pgvector.yml

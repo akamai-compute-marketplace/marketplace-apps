@@ -1,11 +1,17 @@
 ---
 
 - name: Configuring GPG keys
+  become: true
+  become_method: ansible.builtin.sudo
+  become_user: www-data
   block:
     - name: Create new GPG
-      shell: gpg --no-tty --quick-gen-key --pinentry-mode=loopback --passphrase '' '{{ passbolt_user_firstname }} {{ passbolt_user_lastname }} <{{ passbolt_user_email }}>' default default never
+      shell: >-
+        gpg --no-tty --quick-gen-key --pinentry-mode=loopback --passphrase ''
+        '{{ passbolt_user_firstname }} {{ passbolt_user_lastname }} <{{ passbolt_user_email }}>'
+        default default never
 
-    - name:  Export GPG secret key
+    - name: Export GPG secret key
       shell: gpg --no-tty --armor --export-secret-keys {{ passbolt_user_email }} > /var/www/passbolt_api/config/gpg/serverkey_private.asc
 
     - name: Export public GPG key
@@ -24,12 +30,6 @@
         path: "/var/www/passbolt_api/config/gpg/{{ item }}"
         owner: www-data
         group: www-data
-        mode: 0440
+        mode: '0440'
         state: file
-      loop:
-        - serverkey.asc
-        - serverkey_private.asc
-    
-  become: true
-  become_method: sudo
-  become_user: www-data
+      loop: [serverkey.asc, serverkey_private.asc]

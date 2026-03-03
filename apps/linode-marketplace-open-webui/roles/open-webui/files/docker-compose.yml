@@ -1,19 +1,17 @@
+---
 services:
 
-  #--------------------------------------------
+  # -------------------------------------------
   # vLLM
-  #--------------------------------------------
+  # -------------------------------------------
   vllm:
     image: vllm/vllm-openai:v0.14.0
     container_name: vllm
     restart: unless-stopped
     shm_size: 8g
-    ports:
-      - "127.0.0.1:8000:8000"
-    volumes:
-      - vllm_data:/root/.cache/huggingface
-    environment:
-      - HF_HOME=/root/.cache/huggingface
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: [vllm_data:/root/.cache/huggingface]
+    environment: [HF_HOME=/root/.cache/huggingface]
     command:
       - --model=mistralai/Mistral-7B-Instruct-v0.3
       - --max-model-len=16384
@@ -32,17 +30,15 @@ services:
               count: all
               capabilities: [gpu]
 
-  #--------------------------------------------
+  # -------------------------------------------
   # Open-WebUI
-  #--------------------------------------------
+  # -------------------------------------------
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:3000:8080"
-    volumes:
-      - open_webui_data:/app/backend/data
+    ports: ["127.0.0.1:3000:8080"]
+    volumes: [open_webui_data:/app/backend/data]
     environment:
       - OPENAI_API_BASE_URL=http://vllm:8000/v1
       - OPENAI_API_KEY=none

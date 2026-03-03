@@ -25,4 +25,4 @@
     autoclean: true
     autoremove: true
   environment:
-    DEBIAN_FRONTEND: noninteractive 
+    DEBIAN_FRONTEND: noninteractive

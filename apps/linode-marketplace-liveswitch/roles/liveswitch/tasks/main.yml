@@ -2,7 +2,7 @@
 # Main LiveSwitch installation tasks
 - name: Import Install tasks
   import_tasks: install.yml
-  
+
 - name: Import Docker tasks
   import_tasks: docker.yml
 

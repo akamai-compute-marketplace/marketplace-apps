@@ -1,7 +1,7 @@
 ---
 # install erlang and rabbitmq server
 
-- name: install required packages
+- name: Install required packages
   apt:
     pkg:
       - erlang-base

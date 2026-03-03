@@ -1,5 +1,5 @@
 ---
-# set app specific ufw rules 
+# set app specific ufw rules
 
 - name: Allow all access to tcp port 5223
   community.general.ufw:

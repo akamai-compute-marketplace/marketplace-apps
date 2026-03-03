@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
 
 - name: Writing openbao creds into file
   copy:
@@ -22,10 +25,10 @@
       Sudo password: {{ password }}
       # SSL
       CA Password: {{ ca_password }}
-      
+
       # The OpenBao Unseal Tokens and Initial Root Token:
       {% for line in bao_output.stdout_lines %}
       {{ line }}
       {% endfor %}
-      
+
       **PLEASE REMOVE THIS FILE ONCE YOU'VE LOGGED THESE CREDENTIALS IN A SECURE PASSWORD MANAGER**

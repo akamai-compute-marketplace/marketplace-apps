@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: '0600'
 
 - name: Writing Passbolt creds into file
   copy:
@@ -26,7 +29,7 @@
       Passbolt DB username: {{ passbolt_db_user }}
       Passbolt DB name: {{ passbolt_db_name }}
       Passbolt DB password: {{ passbolt_db_password }}
-      
+
       # Passbolt registration
       Passbolt user first name: {{ passbolt_user_firstname }}
       Passbolt user last name: {{ passbolt_user_lastname }}

@@ -1,51 +1,46 @@
 ---
-  # set_hostname
-  - name: setting up hostname
-    hostname:
-      name: mc-ffmpeg-demo
+# set_hostname
+- name: Setting up hostname
+  hostname:
+    name: mc-ffmpeg-demo
 
 # sets account ssh pubkey to limited user
-  - name: set ssh pubkey
-    import_role:
-      name: sshkey
-  
-  - name: disable root login
-    import_role: 
-      name: securessh
-    when: disable_root is defined
-  
-  # apt_setup_update
-  - name: update system packages
-    import_role:
-      name: update_pkgs
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
 
-  # ufw_install
-  - name: enabling ufw
-    import_role:
-      name: ufw
+- name: Disable root login
+  import_role:
+    name: securessh
+  when: disable_root is defined
 
-  # ufw rules 
-  - name: apply ufw rules
-    import_tasks: ufw_rules.yml
+# apt_setup_update
+- name: Update system packages
+  import_role:
+    name: update_pkgs
 
-  # fail2ban
-  - name: enabling fail2ban
-    import_role:
-      name: fail2ban_install
+# ufw_install
+- name: Enabling ufw
+  import_role:
+    name: ufw
 
-  # MainConcept
-  - name: Update and upgrade packages
-    apt:
-      update_cache: yes
-      upgrade: dist
+# ufw rules
+- name: Apply ufw rules
+  import_tasks: ufw_rules.yml
 
-  - name: Install dependencies
-    apt:
-      name: "{{ item }}"
-      state: present
-    with_items:
-      - tar
-      - bzip2
-      - wget
-      - unzip
- 
+# fail2ban
+- name: Enabling fail2ban
+  import_role:
+    name: fail2ban_install
+
+# MainConcept
+- name: Update and upgrade packages
+  apt:
+    update_cache: true
+    upgrade: dist
+
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items: [tar, bzip2, wget, unzip]

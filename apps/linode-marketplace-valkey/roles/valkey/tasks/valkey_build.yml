@@ -1,36 +1,40 @@
 ---
 # build valkey
-- name: download valkey archive
-  get_url: 
+- name: Download valkey archive
+  get_url:
     url: 'https://github.com/valkey-io/valkey/archive/refs/tags/{{ valkey_version }}.tar.gz'
     dest: '/tmp/valkey-{{ valkey_version }}.tar.gz'
+    mode: '0644'
 
-- name: unarchive valkey tar.gz
+- name: Unarchive valkey tar.gz
   unarchive:
     src: '/tmp/valkey-{{ valkey_version }}.tar.gz'
     dest: '{{ valkey_install_directory }}'
     extra_opts: [--strip-components=1]
 
-- name: move the service file
+- name: Move the service file
   copy:
     src: 'files/valkey.service'
     dest: '/etc/systemd/system/valkey.service'
+    mode: '0644'
 
-- name: copy config file
+- name: Copy config file
   template:
     src: 'templates/valkey.conf.j2'
     dest: '{{ valkey_conf_directory }}/valkey.conf'
     owner: valkey
     group: valkey
+    mode: '0644'
 
-- name: add basic ACL
-  template: 
+- name: Add basic ACL
+  template:
     src: 'templates/users.acl.j2'
     dest: '{{ valkey_conf_directory }}/users.acl'
     owner: valkey
     group: valkey
+    mode: '0644'
 
-- name: make valkey
+- name: Make valkey
   community.general.make:
     chdir: '{{ valkey_install_directory }}'
     target: install
@@ -38,8 +42,8 @@
       BUILD_TLS: "yes"
       USE_SYSTEMD: "yes"
 
-- name: start valkey
-  systemd: 
+- name: Start valkey
+  systemd:
     name: valkey.service
     state: started
     enabled: true

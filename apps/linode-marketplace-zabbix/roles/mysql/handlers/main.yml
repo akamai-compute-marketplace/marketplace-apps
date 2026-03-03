@@ -1,5 +1,5 @@
 ---
-- name: restart mysql
-  systemd: 
+- name: Restart mysql
+  systemd:
     name: mysql.service
     state: restarted

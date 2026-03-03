@@ -5,8 +5,7 @@
   connection: local
   any_errors_fatal: true
   user: root
-  vars_files:
-    - group_vars/linode/vars
+  vars_files: [group_vars/linode/vars]
   tasks:
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
@@ -15,6 +14,6 @@
       lineinfile:
         insertafter: EOF
         path: group_vars/linode/vars
-        line: | 
+        line: |
           vnc_password: {{ lookup('password', '/dev/null length=8 chars=ascii_letters,digits') }}
       when: vnc_enabled

@@ -1,5 +1,6 @@
+---
 # apache2 handlers
-- name: reload apache2
+- name: Reload apache2
   service:
     name: apache2
     state: reloaded

@@ -1,10 +1,10 @@
 ---
 # valkey
-- name: install depends and create system reqs
+- name: Install depends and create system reqs
   import_tasks: valkey_setup.yml
 
-- name: generate SSL certs
+- name: Generate SSL certs
   import_tasks: valkey_ssl.yml
 
-- name: build valkey
+- name: Build valkey
   import_tasks: valkey_build.yml

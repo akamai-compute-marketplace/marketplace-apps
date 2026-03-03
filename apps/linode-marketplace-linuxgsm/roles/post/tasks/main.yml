@@ -10,6 +10,9 @@
   template:
     src: templates/motd.j2
     dest: /etc/motd
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    mode: '0600'
 
 - name: Writing sudo creds into file
   copy:

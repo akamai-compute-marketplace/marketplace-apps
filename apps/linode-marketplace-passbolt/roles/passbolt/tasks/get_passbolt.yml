@@ -16,7 +16,7 @@
     path: /var/www
     state: directory
     owner: www-data
-    group: www-data 
+    group: www-data
     recurse: true
 
 - name: Install Passbolt PHP deps
@@ -25,5 +25,5 @@
     no_dev: true
     working_dir: /var/www/passbolt_api
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   become_user: www-data

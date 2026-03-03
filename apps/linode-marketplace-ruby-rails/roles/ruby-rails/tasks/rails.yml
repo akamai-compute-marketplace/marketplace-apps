@@ -1,9 +1,10 @@
 ---
 - name: Create application path
-  file: 
+  file:
     path: "{{ app_root_path }}"
     state: directory
     owner: "{{ username }}"
+    mode: '0755'
     group: www-data
 
 - name: Create new rails app
@@ -36,26 +37,28 @@
     dest: "{{ app_root_path }}/app/views/home/index.html.erb"
     owner: "{{ username }}"
     group: www-data
-    mode: 0664
+    mode: '0664'
 
 - name: Backing up routes.rb
   copy:
     src: "{{ app_root_path }}/config/routes.rb"
     dest: "{{ app_root_path }}/config/routes.rb.bak"
+    mode: '0644'
 
 - name: Updating routes.rb
   copy:
     dest: "{{ app_root_path }}/config/routes.rb"
-    content: | 
+    mode: '0644'
+    content: |
       Rails.application.routes.draw do
           root "home#index"
-      end          
+      end
 
 - name: Generate static assets
   shell:
     cmd: |
       eval "$(~/.local/bin/mise activate)"
-      export RAILS_ENV=production 
+      export RAILS_ENV=production
       bundle exec rake assets:precompile
   become: true
   become_user: "{{ username }}"
@@ -68,7 +71,7 @@
   file:
     path: "{{ app_root_path }}"
     state: directory
-    recurse: yes
+    recurse: true
     owner: "{{ username }}"
     group: www-data
-  notify: restart nginx
+  notify: Restart nginx

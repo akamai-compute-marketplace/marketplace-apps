@@ -24,16 +24,16 @@
     state: directory
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: 0755
+    mode: '0755'
   register: systemd
 
 - name: Adding puma service rails
   template:
-    src: templates/puma.service.j2  
+    src: templates/puma.service.j2
     dest: "{{ systemd.path }}/{{ app_name }}.service"
     owner: "{{ username }}"
     group: "{{ username }}"
-    mode: 0644
+    mode: '0644'
 
 - name: Backup puma.rb file
   copy:
@@ -41,20 +41,20 @@
     dest: "{{ app_root_path }}/config/puma.rb.bak"
     owner: "{{ username }}"
     group: "www-data"
-    mode: 0644
+    mode: '0644'
 
 - name: Backup puma and add startup wrapper
   template:
-    src: "{{ item.src }}" 
-    dest: "{{ item.dest }}" 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   loop:
-    - { src: 'templates/start.sh.j2', dest: '/home/{{ username }}/.local/bin/start.sh', 
-      owner: '{{ username }}', group: '{{ username }}', mode: '0755' }
-    - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb', 
-      owner: '{{ username }}', group: 'www-data', mode: '0664' }
+    - { src: 'templates/start.sh.j2', dest: '/home/{{ username }}/.local/bin/start.sh',
+        owner: '{{ username }}', group: '{{ username }}', mode: '0755' }
+    - { src: 'templates/puma.rb.j2', dest: '{{ app_root_path }}/config/puma.rb',
+        owner: '{{ username }}', group: 'www-data', mode: '0664' }
 
 - name: Create sockets directory
   file:
@@ -62,10 +62,10 @@
     state: directory
     owner: "{{ username }}"
     group: www-data
-    mode: 0775
+    mode: '0775'
 
 - name: Start puma service
-  systemd_service: 
+  systemd_service:
     name: "{{ app_name }}"
     state: started
     enabled: true
