@@ -1,8 +1,7 @@
----
 name: Development Workflow
 on:
   workflow_dispatch:
-  pull_request:
+  pull_request_target:
 jobs:
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
@@ -12,6 +11,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run ShellCheck
         run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
@@ -22,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run yamllint
         run: bash .github/scripts/static-code-yamllint.sh
   static-code-analysis-ansbible-lint:
@@ -32,6 +35,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Run ansible-lint
         run: bash .github/scripts/static-code-ansible-lint.sh
   get-updated-apps:
@@ -50,6 +55,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Find updated apps in pull request
         id: configs-matrix
         run: bash .github/scripts/get-updated-apps.sh
@@ -69,6 +75,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Check and clean up domain records
         run: bash .github/scripts/setup-domain-records-cleanup.sh
   deployment-job:
@@ -90,6 +97,8 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - name: Get Linode configuration for ${{ matrix.app }}
         run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
       - name: Provisioning Linode for ${{ matrix.app }}
