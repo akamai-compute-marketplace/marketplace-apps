@@ -5,8 +5,7 @@
 
 - name: Installing docker-compose
   apt:
-    pkg:
-    - docker-compose
+    pkg: [docker-compose]
     state: present
 
 - name: Set tensor parallel size
