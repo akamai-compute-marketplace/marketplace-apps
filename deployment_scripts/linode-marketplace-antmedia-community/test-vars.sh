@@ -56,7 +56,7 @@ fi
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
-        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+        UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster1@${DEFAULT_DNS}" # default
 fi
 
 
