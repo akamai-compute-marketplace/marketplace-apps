@@ -10,9 +10,8 @@ This directory contains the GitHub Actions workflows and supporting scripts that
 
 **Trigger:** 
 - Pull request creation or update
-- Manual run
 
-**Scope:** Compares changed files in `apps/` and `deployment_scripts/` against `develop` branch. Only apps with a `deployment_scripts/<app>/linode-config.sh` are deployed.
+**Scope:** Compares changed files in `apps/` and `deployment_scripts/` against **target** branch. Only apps with a `deployment_scripts/<app>/linode-config.sh` are deployed.
 
 **Purpose:** Validates and deploys any new or updated apps.
 

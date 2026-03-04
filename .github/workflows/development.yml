@@ -1,6 +1,6 @@
+---
 name: Development Workflow
 on:
-  workflow_dispatch:
   pull_request_target:
 jobs:
   static-code-analysis-shellcheck:
@@ -58,6 +58,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Find updated apps in pull request
         id: configs-matrix
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          TARGET: ${{ github.event.pull_request.base.ref }}
         run: bash .github/scripts/get-updated-apps.sh
   setup-job:
     name: Setup data for deployment and testing
@@ -109,9 +112,9 @@ jobs:
       - name: Deploying ${{ matrix.app }}
         env:
           APP_NAME: ${{ matrix.app }}
-          BRANCH: ${{ github.head_ref || github.ref_name }}
-          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url || github.repositoryUrl }}
-          GH_USER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url }}
+          GH_USER: ${{ github.event.pull_request.head.repo.owner.login }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: bash .github/scripts/app-installation.sh
