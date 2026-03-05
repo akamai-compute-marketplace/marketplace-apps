@@ -113,7 +113,6 @@ jobs:
         env:
           APP_NAME: ${{ matrix.app }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
-          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url || github.repositoryUrl }}
           GH_USER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
