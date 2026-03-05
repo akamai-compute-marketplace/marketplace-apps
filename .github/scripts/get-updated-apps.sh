@@ -2,7 +2,10 @@
 
 set -e
 
-CHANGED_FILES=$(git diff --name-only origin/develop)
+echo "Current branch: $BRANCH"
+echo "Target branch: $TARGET"
+
+CHANGED_FILES=$(git diff --name-only origin/$TARGET)
 APPS=$(echo "$CHANGED_FILES" | awk -F'/' '/^(apps|deployment_scripts)\// {print $2}' | sort -u | tr '\n' ',' | sed 's/,$//')
 
 echo "Found changes in the following app folders: $APPS"
