@@ -1,3 +1,4 @@
+---
 name: Development Workflow
 on:
   workflow_dispatch:
@@ -56,8 +57,11 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Find updated apps in pull request
+      - name: Find updated apps
         id: configs-matrix
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          TARGET: ${{ github.event.pull_request.base.ref || 'main'}}
         run: bash .github/scripts/get-updated-apps.sh
   setup-job:
     name: Setup data for deployment and testing
@@ -68,8 +72,8 @@ jobs:
     if: needs.get-updated-apps.outputs.configs != '[]'
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -92,8 +96,8 @@ jobs:
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -110,7 +114,6 @@ jobs:
         env:
           APP_NAME: ${{ matrix.app }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
-          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url || github.repositoryUrl }}
           GH_USER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
