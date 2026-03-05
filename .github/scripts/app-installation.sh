@@ -37,14 +37,13 @@ debian_deploy() {
    export LINODE_DOMAIN=$LINODE_DOMAIN
    export GH_USER=$GH_USER
    export BRANCH=$BRANCH
-   export GIT_REPO=$GIT_REPO
    export APP_NAME=$APP_NAME
    export DEPLOYMENT_SCRIPT=$DEPLOYMENT_SCRIPT
    export HF_TOKEN=$HF_TOKEN
 
    sudo apt update
    sudo apt install -y git
-   git clone --depth 1 --branch $BRANCH $GIT_REPO /root/repo
+   git clone --depth 1 --branch $BRANCH https://github.com/$GH_USER/marketplace-apps.git /root/repo
    cd /root/repo/deployment_scripts/$APP_NAME
    chmod +x test-vars.sh $DEPLOYMENT_SCRIPT
    . ./test-vars.sh
@@ -77,12 +76,11 @@ rhel_deploy() {
    export LINODE_DOMAIN=$LINODE_DOMAIN
    export GH_USER=$GH_USER
    export BRANCH=$BRANCH
-   export GIT_REPO=$GIT_REPO
    export APP_NAME=$APP_NAME
    export DEPLOYMENT_SCRIPT=$DEPLOYMENT_SCRIPT
 
    dnf -y install git
-   git clone --depth 1 --branch $BRANCH $GIT_REPO /root/repo
+   git clone --depth 1 --branch $BRANCH https://github.com/$GH_USER/marketplace-apps.git /root/repo
    cd /root/repo/deployment_scripts/$APP_NAME
    chmod +x test-vars.sh $DEPLOYMENT_SCRIPT
    . ./test-vars.sh

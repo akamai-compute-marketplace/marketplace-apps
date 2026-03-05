@@ -63,8 +63,8 @@ jobs:
     if: needs.get-all-apps.outputs.configs != '[]'
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -86,8 +86,8 @@ jobs:
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
