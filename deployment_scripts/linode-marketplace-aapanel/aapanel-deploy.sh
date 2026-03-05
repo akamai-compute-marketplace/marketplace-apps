@@ -44,6 +44,8 @@ else
 fi
 # END CI-GH
 
+echo "TEST GIT REPO = ${GIT_REPO}"
+
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-aapanel"
 
