@@ -30,6 +30,9 @@ function udf {
   else
     echo "agent_name: $(hostname -s)" >> "${group_vars}"
   fi
+
+  # mode: staging in CI, production otherwise
+  echo "mode: ${MODE:-production}" >> "${group_vars}"
 }
 
 function run {

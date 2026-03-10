@@ -28,6 +28,13 @@ else
         UDF_VARS["AGENT_NAME"]="$(hostname -s)"
 fi
 
+# Deployment mode (staging in CI, production otherwise)
+if [[ -n "${MODE}" ]]; then
+        UDF_VARS["MODE"]="${MODE}"
+else
+        UDF_VARS["MODE"]="staging"
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
