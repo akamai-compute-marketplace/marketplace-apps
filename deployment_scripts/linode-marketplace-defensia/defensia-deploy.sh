@@ -22,17 +22,13 @@ function cleanup {
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
-  # TOKEN may be empty in CI/staging — Ansible handles validation
-  echo "token: ${TOKEN:-}" >> "${group_vars}"
-
-  if [[ -n "${AGENT_NAME}" ]]; then
-    echo "agent_name: ${AGENT_NAME}" >> "${group_vars}"
-  else
-    echo "agent_name: $(hostname -s)" >> "${group_vars}"
-  fi
-
-  # mode: staging in CI, production otherwise
-  echo "mode: ${MODE:-production}" >> "${group_vars}"
+  # Overwrite vars file to avoid duplicate keys
+  cat > "${group_vars}" <<EOF
+token: "${TOKEN:-}"
+agent_name: "${AGENT_NAME:-$(hostname -s)}"
+mode: "${MODE:-production}"
+default_dns: true
+EOF
 }
 
 function run {

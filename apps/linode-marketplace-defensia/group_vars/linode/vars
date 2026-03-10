@@ -1,5 +1,6 @@
 # Defensia agent configuration
-# token and agent_name are supplied as UDF fields during Linode deployment
+# Values below are overwritten at deploy time by the udf() function in defensia-deploy.sh
 token: ""
 agent_name: ""
 mode: "production"
+default_dns: true
