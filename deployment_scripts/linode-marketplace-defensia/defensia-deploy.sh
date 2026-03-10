@@ -22,12 +22,8 @@ function cleanup {
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 
-  if [[ -n "${TOKEN}" ]]; then
-    echo "token: ${TOKEN}" >> "${group_vars}"
-  else
-    echo "ERROR: Defensia install token (TOKEN) is required."
-    exit 1
-  fi
+  # TOKEN may be empty in CI/staging — Ansible handles validation
+  echo "token: ${TOKEN:-}" >> "${group_vars}"
 
   if [[ -n "${AGENT_NAME}" ]]; then
     echo "agent_name: ${AGENT_NAME}" >> "${group_vars}"
