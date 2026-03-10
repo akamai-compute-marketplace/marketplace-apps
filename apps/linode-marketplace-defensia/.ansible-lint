@@ -1,0 +1,6 @@
+exclude_paths:
+  - .cache/
+  - .github/
+skip_list:
+  - yaml[line-length]
+  - no-changed-when

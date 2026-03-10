@@ -1,0 +1,29 @@
+---
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - jq
+      - iptables
+      - ca-certificates
+    state: present
+    update_cache: true
+
+- name: Resolve agent name
+  set_fact:
+    resolved_agent_name: "{{ agent_name if agent_name | length > 0 else ansible_hostname }}"
+
+- name: Install Defensia agent
+  shell: >
+    DEFENSIA_AGENT_NAME="{{ resolved_agent_name }}"
+    DEFENSIA_SERVER_URL="https://defensia.cloud"
+    bash -c "$(curl -fsSL https://defensia.cloud/install.sh)" -- --token "{{ token }}"
+  args:
+    creates: /etc/defensia/.installed
+  no_log: true
+
+- name: Verify agent service is running
+  systemd:
+    name: defensia-agent
+    state: started
+    enabled: true

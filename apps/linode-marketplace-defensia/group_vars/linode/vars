@@ -1,0 +1,4 @@
+# Defensia agent configuration
+# token and agent_name are supplied as UDF fields during Linode deployment
+token: ""
+agent_name: ""
