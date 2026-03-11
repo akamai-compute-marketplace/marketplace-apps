@@ -4,11 +4,56 @@ on:
   workflow_dispatch:
   pull_request_target:
 jobs:
+  check-workflow-permissions-job:
+    name: Check workflow permissions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      environment: ${{ steps.check-permissions.outputs.environment }}
+    env:
+      AUTHOR_NAME: ${{ github.event.pull_request.user.login || github.actor }}
+      AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association || 'COLLABORATOR' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || 'branch' }}
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      TARGET: ${{ github.event.pull_request.base.ref || 'main'}}
+    steps:
+      - name: Check author permissions
+        id: check-permissions
+        run: |
+          if [[ "$AUTHOR_ASSOCIATION" =~ ^(COLLABORATOR|MEMBER|OWNER)$ ]]; then
+            echo "environment=development_internal" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development_external" >> $GITHUB_OUTPUT
+          fi
+      - name: Print permissions summary
+        run: |
+          echo "## Permissions Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author name** | ${{ env.AUTHOR_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author Association** | ${{ env.AUTHOR_ASSOCIATION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **PR** | ${{ env.PR_NUMBER }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | ${{ env.BRANCH }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target** | ${{ env.TARGET }} |" >> $GITHUB_STEP_SUMMARY
+  approve-workflow-job:
+    name: Approve workflow
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: ${{ needs.check-workflow-permissions-job.outputs.environment }}
+    needs: check-workflow-permissions-job
+    steps:
+      - name: Print deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployment has been approved and started to \`${{ needs.check-workflow-permissions-job.outputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -21,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
