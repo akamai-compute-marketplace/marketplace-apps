@@ -1,0 +1,20 @@
+---
+- name: Configure SSH UFW rule
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+# only allow dashboard access when client IPs are provided and they want dash public
+#- name: Configure HTTPs UFW rule
+#  community.general.ufw:
+#    rule: allow
+#    port: "{{ item }}"
+#    proto: tcp
+#  loop: ["80", "443"]
+#  when: [allow_listing is defined, allow_listing | length > 0, gateway_is_public | bool]
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: deny

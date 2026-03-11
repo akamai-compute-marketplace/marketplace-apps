@@ -1,0 +1,35 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Add Nginx vhost
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ _domain }}
+    mode: '0644'
+
+- name: Enable {{ _domain }} vhost
+  file:
+    src: /etc/nginx/sites-available/{{ _domain }}
+    dest: /etc/nginx/sites-enabled/{{ _domain }}
+    state: link
+
+- name: Unlink Nginx default vhost
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Enable and start nginx service
+  systemd_service:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: Install Let's Encrypt certs
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
