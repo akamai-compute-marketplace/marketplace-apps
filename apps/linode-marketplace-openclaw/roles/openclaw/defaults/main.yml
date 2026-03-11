@@ -1,9 +1,15 @@
 ---
+# openclaw
 openclaw_user: openclaw
 openclaw_home: /home/openclaw
 openclaw_install_mode: release
 nodejs_version: 22.x
 openclaw_config_dir: "{{ openclaw_home }}/.openclaw"
+
+# nginx htpasswd
+openclaw_htpasswd_file: /etc/nginx/openclaw_dashboard.htpasswd
+openclaw_htpasswd_user: "{{ openclaw_user }}"
+openclaw_htpasswd: "{{ htaccess_password | password_hash('blowfish') }}"
 
 # pnpm vars
 pnpm_home: "{{ openclaw_home }}/.local/share/pnpm"

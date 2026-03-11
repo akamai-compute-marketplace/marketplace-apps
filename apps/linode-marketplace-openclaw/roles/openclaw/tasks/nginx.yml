@@ -22,7 +22,12 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
-- name: Enable and start nginx service
+- name: Add OpenClaw htpasswd to protect dashboard
+  copy:
+    content: "{{ openclaw_htpasswd_user }}:{{ openclaw_htpasswd }}\n"
+    dest: "{{ openclaw_htpasswd_file }}"
+
+- name: Enable and restart nginx service
   systemd_service:
     name: nginx
     state: restarted
@@ -33,3 +38,18 @@
     name: certbot_ssl
   vars:
     webserver_stack: lemp
+
+# openclaw reverse proxy setup
+
+- name: Allow {{ _domain }} Origin to dashboard
+  shell:
+    cmd: openclaw config set gateway.controlUi.allowedOrigins '["https://{{ _domain }}"]'
+    executable: /bin/bash
+  become: true
+  become_user: "{{ openclaw_user }}"
+  environment:
+    PNPM_HOME: "{{ pnpm_home }}"
+    PATH: "{{ pnpm_path }}"
+    HOME: "{{ openclaw_home }}"
+  changed_when: false
+  

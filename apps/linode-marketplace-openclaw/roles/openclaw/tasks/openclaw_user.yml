@@ -140,7 +140,6 @@
     owner: "{{ openclaw_user }}"
     group: "{{ openclaw_user }}"
     mode: '0644'
-  when: ansible_os_family == 'Debian' and not ci_test
 
 - name: Set DBUS_SESSION_BUS_ADDRESS in .bashrc for openclaw user
   blockinfile:

@@ -1,7 +1,19 @@
 *********************************************************
 Akamai Connected Cloud OpenClaw Quick Deploy App
-App URL: https://{{ _domain }}
+Dashboard URL: https://{{ _domain }}
 Credentials File: /home/{{ username }}/.credentials
 Documentation: https://www.linode.com/docs/marketplace-docs/guides/openclaw/
 *********************************************************
+
+OpenClaw is installed but NOT configured yet.
+
+Next steps (run as openclaw user):
+1. Switch user: sudo su - {{ openclaw_user }}
+2. Run onboarding: openclaw onboard --install-daemon
+
+This will:
+- Create configuration files (~/.openclaw/openclaw.json)
+- Guide you through provider setup
+- Install and start the daemon service automatically
+
 To delete this message of the day: rm /etc/motd

@@ -8,8 +8,5 @@
 - name: Setup OpenClaw directories
   import_tasks: openclaw_setup.yml
 
-- name: Configure OpenClaw
-  import_tasks: openclaw_configure.yml
-
-#- name: Configure Nginx
-#  import_tasks: nginx.yml
+- name: Configure Nginx
+  import_tasks: nginx.yml

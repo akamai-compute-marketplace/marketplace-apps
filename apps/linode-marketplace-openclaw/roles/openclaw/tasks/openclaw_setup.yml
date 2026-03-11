@@ -80,8 +80,7 @@
   debug:
     msg: "Installation mode: {{ openclaw_install_mode }}"
 
-# Include appropriate installation method based on mode
-- name: Include release installation (pnpm install -g)
+- name: Include release installation
   include_tasks: openclaw_install.yml
 
 - name: Configure .bashrc for openclaw user (base config)
