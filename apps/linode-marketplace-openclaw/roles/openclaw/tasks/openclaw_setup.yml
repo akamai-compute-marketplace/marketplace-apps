@@ -97,16 +97,7 @@
     insertafter: EOF
     mode: '0644'
 
-- name: Display configuration note
-  debug:
-    msg: |
-      OpenClaw is installed but NOT configured yet.
-
-      Next steps (run as openclaw user):
-      1. Switch user: sudo su - {{ openclaw_user }}
-      2. Run onboarding: openclaw onboard --install-daemon
-
-      This will:
-      - Create configuration files (~/.openclaw/openclaw.json)
-      - Guide you through provider setup
-      - Install and start the daemon service automatically
+- name: Add openclaw onboarding script on login
+  template:
+    src: openclaw_onboarding.sh.j2
+    dest: "{{ openclaw_onboarding_script }}"
