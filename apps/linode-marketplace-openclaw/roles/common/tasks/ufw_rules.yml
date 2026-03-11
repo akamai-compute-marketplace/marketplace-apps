@@ -12,7 +12,6 @@
     port: "{{ item }}"
     proto: tcp
   loop: ["80", "443"]
-  #when: [allow_listing is defined, allow_listing | length > 0, gateway_is_public | bool]
 
 - name: Enable UFW
   community.general.ufw:
