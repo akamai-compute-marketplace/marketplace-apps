@@ -20,7 +20,7 @@ declare -A UDF_VARS
 if [[ -n "${USER_NAME}" ]]; then
         UDF_VARS["USER_NAME"]="${USER_NAME}"
 else
-        UDF_VARS["USER_NAME"]="admin" # default
+        UDF_VARS["USER_NAME"]="admins" # default
 fi
 
 if [[ -n "${DISABLE_ROOT}" ]]; then
