@@ -24,5 +24,6 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
       Owner Username: {{ owner_username }}
+      Owner Email: {{ owner_email }}
       Owner Password: {{ owner_password }}
       PSQL Password: {{ psql_password }}
