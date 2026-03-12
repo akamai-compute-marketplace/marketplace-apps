@@ -108,8 +108,20 @@
   register: encryption_keys
   changed_when: false
 
+- name: Parse encryption keys
+  ansible.builtin.set_fact:
+    active_record_encryption_primary_key: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=(.*)', '\1') }}
+    active_record_encryption_deterministic_key: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=(.*)', '\1') }}
+    active_record_encryption_key_derivation_salt: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=(.*)', '\1') }}
+
 - name: Updating production env
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /home/mastodon/live/.env.production
     regexp: "{{ item.search }}"
     line: "{{ item.replace }}"
@@ -123,11 +135,11 @@
     - search: '^\#?#OTP_SECRET='
       replace: "OTP_SECRET={{ otp_secret.stdout }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY='
-      replace: "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=(.*)', '\\1') }}"
+      replace: "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ active_record_encryption_primary_key }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY='
-      replace: "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=(.*)', '\\1') }}"
+      replace: "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ active_record_encryption_deterministic_key }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT='
-      replace: "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=(.*)', '\\1') }}"
+      replace: "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ active_record_encryption_key_derivation_salt }}"
 
 - name: Recreate Mastodon database
   community.docker.docker_compose_v2_run:
