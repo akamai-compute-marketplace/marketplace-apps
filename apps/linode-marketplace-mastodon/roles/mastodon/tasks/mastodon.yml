@@ -173,4 +173,3 @@
     command: >
       bin/tootctl accounts approve {{ owner_username }}
   when: owner_create is succeeded
-  
