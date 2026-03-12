@@ -1,8 +1,8 @@
 #!/bin/bash
+
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# BEGIN CI-MODE
 # modes
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
@@ -12,18 +12,27 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
-# END CI-MODE
+
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
+fi
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
 ## Mastodon Settings
-#<UDF name="domain" label="Domain name for your Mastodon instance." example="domain.tld">
-#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="www">
-#<UDF name="token_password" label="Your Linode API token">
+#<UDF name="domain" label="Domain name for your Mastodon instance." default="">
+#<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
+#<UDF name="token_password" label="Your Linode API token" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
-#<UDF name="owner_username" label="Username for Mastodon Owner" example="" />
+#<UDF name="owner_username" label="Username for Mastodon Owner" example="admin" />
 #<UDF name="owner_email" label="Email address for Mastodon Owner" example="user@domain.tld" />
 #<UDF name="single_user_mode" label="Do you want to start Mastodon in single-user mode?" oneOf="Yes,No" />
 
@@ -32,7 +41,6 @@ fi
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
 # END CI-ADDONS
 
-# BEGIN CI-GH
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -45,12 +53,10 @@ else
         export BRANCH="main"
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
-# END CI-GH
 
-export WORK_DIR="/tmp/marketplace-apps" 
+export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-mastodon"
 
-# BEGIN CI-PROVISION-FUNC
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
 
@@ -72,7 +78,6 @@ function provision_failed {
 
   exit $?
 }
-# END CI-PROVISION-FUNC
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -81,21 +86,15 @@ function cleanup {
 }
 
 function udf {
-  
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  
-   # write udf vars
   cat <<END > ${group_vars}
 # sudo username
 username: ${USER_NAME}
 webserver_stack: lemp
-domain: ${DOMAIN}
-subdomain: ${SUBDOMAIN}
 soa_email_address: ${SOA_EMAIL_ADDRESS}
 owner_username: ${OWNER_USERNAME}
 owner_email: ${OWNER_EMAIL}
 single_user_mode: ${SINGLE_USER_MODE}
-token_password: ${TOKEN_PASSWORD}
 # BEGIN CI-UDF-ADDONS
 # addons
 add_ons: [${ADD_ONS}]
@@ -107,8 +106,21 @@ END
   else echo "Leaving root login enabled";
   fi
 
-  # staging or production mode (ci)
-  # BEGIN CI-UDF-CI-MODE
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
+  else echo "No API token entered"
+  fi
+
+  if [[ -n ${DOMAIN} ]]; then
+    echo "domain: ${DOMAIN}" >> ${group_vars};
+  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
+  fi
+
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
+  else echo "subdomain: www" >> ${group_vars}
+  fi
+
   # staging or production mode (ci)
   if [[ "${MODE}" == "staging" ]]; then
     echo "[info] running in staging mode..."
@@ -117,23 +129,20 @@ END
     echo "[info] running in production mode..."
     echo "mode: production" >> ${group_vars}
   fi
-# END CI-UDF-CI-MODE  
 }
 
 function run {
-  # install dependancies
+  # install dependencies
   apt-get update
   apt-get install -y git python3 python3-pip
 
   # clone repo and set up ansible environment
-  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}  
-  # for a single testing branch
-  # git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
 
-  # venv
+  # set up python virtual environment
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt
@@ -143,12 +152,12 @@ function run {
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-  
 }
 
 function installation_complete {
   echo "Installation Complete"
 }
+
 # main
 run
 installation_complete

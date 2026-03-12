@@ -1,91 +1,99 @@
-version: '3'
 services:
   db:
-    restart: always
     image: postgres:14-alpine
+    restart: always
+    shm_size: 256mb
     environment:
-      POSTGRES_PASSWORD: '{{ psql_password }}'
       POSTGRES_DB: mastodon_production
       POSTGRES_USER: mastodon
-
-    shm_size: 256mb
-    networks:
-      - internal_network
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'mastodon']
+      POSTGRES_PASSWORD: '{{ psql_password }}'
     volumes:
       - ./postgres14:/var/lib/postgresql/data
-    # - ./postgres14:/var/lib/postgresql/14/main/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mastodon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    restart: always
     image: redis:7-alpine
-    networks:
-      - internal_network
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+    restart: always
     volumes:
       - ./redis:/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   web:
-#   build: .
-    image: tootsuite/mastodon:{{ mastodonlatest }}
+    image: ghcr.io/mastodon/mastodon:v4.5.7
     restart: always
     env_file: .env.production
-    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    command: bundle exec puma -C config/puma.rb
+    working_dir: /opt/mastodon
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./public/system:/opt/mastodon/public/system
     networks:
       - external_network
       - internal_network
     healthcheck:
-      # prettier-ignore
-      test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:3000/health || exit 1']
-    ports:
-      - '127.0.0.1:3000:3000'
-    depends_on:
-      - db
-      - redis
-      # - es
-    volumes:
-      - ./public/system:/mastodon/public/system
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
 
   streaming:
-#   build: .
-    image: tootsuite/mastodon:{{ mastodonlatest }}
+    image: ghcr.io/mastodon/mastodon-streaming:v4.5.7
     restart: always
     env_file: .env.production
-    command: node ./streaming
+    command: node ./index.js
+    working_dir: /opt/mastodon/streaming
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "127.0.0.1:4000:4000"
     networks:
       - external_network
       - internal_network
     healthcheck:
-      # prettier-ignore
-      test: ['CMD-SHELL', 'wget -q --spider --proxy=off localhost:4000/api/v1/streaming/health || exit 1']
-    ports:
-      - '127.0.0.1:4000:4000'
-    depends_on:
-      - db
-      - redis
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:4000/api/v1/streaming/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
 
   sidekiq:
-#   build: .
-    image: tootsuite/mastodon:{{ mastodonlatest }}
+    image: ghcr.io/mastodon/mastodon:v4.5.7
     restart: always
     env_file: .env.production
     command: bundle exec sidekiq
+    working_dir: /opt/mastodon
     depends_on:
       - db
       - redis
+    volumes:
+      - ./public/system:/opt/mastodon/public/system
     networks:
       - external_network
       - internal_network
-    volumes:
-      - ./public/system:/mastodon/public/system
-    healthcheck:
-      test: ['CMD-SHELL', "ps aux | grep '[s]idekiq\ 6' || false"]
 
   watchtower:
     image: containrrr/watchtower
     restart: always
+    command: --cleanup --interval 300
+    environment:
+      - DOCKER_API_VERSION=1.41
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
