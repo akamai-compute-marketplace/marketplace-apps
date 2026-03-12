@@ -1,6 +1,6 @@
 ---
 - name: Install OpenClaw globally as openclaw user (using pnpm)
-  ansible.builtin.shell:
+  shell:
     cmd: pnpm install -g openclaw@latest
     executable: /bin/bash
   become: true
@@ -13,7 +13,7 @@
   changed_when: "'Already up to date' not in openclaw_install.stdout"
 
 - name: Verify openclaw installation
-  ansible.builtin.shell:
+  shell:
     cmd: openclaw --version
     executable: /bin/bash
   become: true
@@ -25,6 +25,6 @@
   register: openclaw_version
   changed_when: false
 
-- name: Display installed OpenClaw version (release)
-  ansible.builtin.debug:
+- name: Display installed openclaw version
+  debug:
     msg: "OpenClaw installed from npm: {{ openclaw_version.stdout }}"

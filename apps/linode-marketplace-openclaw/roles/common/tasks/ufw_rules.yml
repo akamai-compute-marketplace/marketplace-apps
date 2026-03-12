@@ -5,7 +5,6 @@
     port: "22"
     proto: tcp
 
-# only allow dashboard access when client IPs are provided and they want dash public
 - name: Configure HTTPs UFW rule
   community.general.ufw:
     rule: allow

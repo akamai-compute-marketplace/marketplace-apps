@@ -26,4 +26,4 @@
       # openclaw
       Htpasswd file: {{ openclaw_htpasswd_file }}
       Htpasswd username: {{ openclaw_htpasswd_user }}
-      Htpassword: {{ openclaw_htpasswd }}
+      Htpassword: {{ htaccess_password }}

@@ -1,19 +1,4 @@
 ---
-#- name: Validate openclaw_install_mode
-#  assert:
-#    that:
-#      - openclaw_install_mode in ["release", "development"]
-#    fail_msg: "Invalid openclaw_install_mode: '{{ openclaw_install_mode }}'. Must be 'release' or 'development'."
-#    success_msg: "Valid install mode: {{ openclaw_install_mode }}"
-
-#- name: Ensure openclaw home directory exists with correct ownership
-#  file:
-#    path: "{{ openclaw_home }}"
-#    state: directory
-#    owner: "{{ openclaw_user }}"
-#    group: "{{ openclaw_user }}"
-#    mode: '0755'
-
 - name: Create OpenClaw directories (structure only, no config files)
   file:
     path: "{{ item.path }}"
@@ -44,16 +29,6 @@
     - "{{ openclaw_home }}/.local/share/pnpm/store"
     - "{{ openclaw_home }}/.local/bin"
 
-#- name: Ensure pnpm directories have correct ownership
-#  file:
-#    path: "{{ openclaw_home }}/.local/share/pnpm"
-#    state: directory
-#    owner: "{{ openclaw_user }}"
-#    group: "{{ openclaw_user }}"
-#    recurse: true
-#    mode: '0755'
-
-# this might not neccessary. dbg
 - name: Configure pnpm for openclaw user
   shell:
     cmd: |
@@ -76,11 +51,7 @@
   changed_when: pnpm_config_result.rc == 1
   failed_when: pnpm_config_result.rc > 1
 
-- name: Display installation mode
-  debug:
-    msg: "Installation mode: {{ openclaw_install_mode }}"
-
-- name: Include release installation
+- name: Install openclaw via pnpm
   include_tasks: openclaw_install.yml
 
 - name: Configure .bashrc for openclaw user (base config)

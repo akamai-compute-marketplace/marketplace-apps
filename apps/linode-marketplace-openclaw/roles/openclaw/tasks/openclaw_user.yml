@@ -9,14 +9,6 @@
     home: "{{ openclaw_home }}"
     state: present
 
-#- name: Ensure openclaw home directory has correct ownership
-#  file:
-#    path: "{{ openclaw_home }}"
-#    owner: "{{ openclaw_user }}"
-#    group: "{{ openclaw_user }}"
-#    state: directory
-#    mode: '0755'
-
 - name: Configure .bashrc for openclaw user
   blockinfile:
     path: "{{ openclaw_home }}/.bashrc"
@@ -86,24 +78,6 @@
       {{ openclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u openclaw *
     validate: /usr/sbin/visudo -cf %s
 
-#- name: Set openclaw user as primary user for installation
-#  set_fact:
-#    openclaw_user: "{{ openclaw_user }}"
-#    openclaw_home: "{{ openclaw_home }}"
-
-#- name: Create .bash_profile to source .bashrc for login shells
-#  copy:
-#    dest: "{{ openclaw_home }}/.bash_profile"
-#    owner: "{{ openclaw_user }}"
-#    group: "{{ openclaw_user }}"
-#    mode: '0644'
-#    content: |
-#      # .bash_profile - Executed for login shells
-#      # Source .bashrc to ensure environment is loaded for login shells
-#      if [ -f ~/.bashrc ]; then
-#          . ~/.bashrc
-#      fi
-
 # Fix DBus issues for systemd user services
 - name: Get openclaw user ID
   command: "id -u {{ openclaw_user }}"
@@ -125,10 +99,6 @@
     owner: "{{ openclaw_user }}"
     group: "{{ openclaw_user }}"
     mode: '0700'
-
-- name: Store openclaw UID as fact for later use
-  set_fact:
-    openclaw_uid_value: "{{ openclaw_uid.stdout }}"
 
 - name: Set XDG_RUNTIME_DIR in .bashrc for openclaw user
   lineinfile:

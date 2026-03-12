@@ -1,6 +1,6 @@
 ---
 - name: Install required packages for Node.js
-  ansible.builtin.apt:
+  apt:
     name:
       - ca-certificates
       - curl
@@ -8,7 +8,7 @@
     state: present
 
 - name: Create directory for NodeSource GPG key
-  ansible.builtin.file:
+  file:
     path: /etc/apt/keyrings
     state: directory
     mode: '0755'
@@ -40,7 +40,6 @@
     state: present
     update_cache: true
 
-# need community general in collections.yml
 - name: Install pnpm globally
   community.general.npm:
     name: pnpm
