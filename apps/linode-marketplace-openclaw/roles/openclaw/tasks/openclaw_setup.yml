@@ -72,3 +72,4 @@
   template:
     src: openclaw_onboarding.sh.j2
     dest: "{{ openclaw_onboarding_script }}"
+    mode: '0644'

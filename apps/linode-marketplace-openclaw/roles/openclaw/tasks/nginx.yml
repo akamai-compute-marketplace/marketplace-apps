@@ -11,7 +11,7 @@
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
 
-- name: Enable {{ _domain }} vhost
+- name: Enable Nginx vhost
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/{{ _domain }}
@@ -24,6 +24,7 @@
 
 - name: Add OpenClaw htpasswd to protect dashboard
   copy:
+    mode: '0644'
     content: "{{ openclaw_htpasswd_user }}:{{ openclaw_htpasswd }}\n"
     dest: "{{ openclaw_htpasswd_file }}"
 
@@ -41,7 +42,7 @@
 
 # openclaw reverse proxy setup
 
-- name: Allow {{ _domain }} Origin to dashboard
+- name: Allow domain Origin to dashboard
   shell:
     cmd: openclaw config set gateway.controlUi.allowedOrigins '["https://{{ _domain }}"]'
     executable: /bin/bash
@@ -52,4 +53,3 @@
     PATH: "{{ pnpm_path }}"
     HOME: "{{ openclaw_home }}"
   changed_when: false
-  
