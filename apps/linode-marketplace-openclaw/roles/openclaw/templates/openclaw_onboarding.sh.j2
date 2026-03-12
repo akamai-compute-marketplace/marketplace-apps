@@ -4,6 +4,10 @@ if [ "$EUID" -ne 0 ]; then
     return
 fi
 
+# enable systemd service
+OPENCLAW_UID=$(id -u {{ openclaw_user }})
+export XDG_RUNTIME_DIR="/run/user/$OPENCLAW_UID"
+
 while true; do
 	echo ""
 	echo "[OpenClaw Onboarding]"
@@ -11,7 +15,7 @@ while true; do
 
 	if [[ "$answer" =~ ^[Yy]$ ]]; then
 		echo "[***] Running onboarding as openclaw user."
-		sudo -u {{ openclaw_user }} -i openclaw onboard --install-daemon
+        sudo -u {{ openclaw_user }} XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" -i openclaw onboard --install-daemon
 
 		if [ $? -eq 0 ]; then
 			echo "[***] Initial onboarding complete. Removing {{ openclaw_onboarding_script }}."
