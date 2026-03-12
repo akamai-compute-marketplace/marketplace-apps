@@ -1,13 +1,59 @@
+---
 name: Development Workflow
 on:
   workflow_dispatch:
   pull_request_target:
 jobs:
+  check-workflow-permissions-job:
+    name: Check workflow permissions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      environment: ${{ steps.check-permissions.outputs.environment }}
+    env:
+      AUTHOR_NAME: ${{ github.event.pull_request.user.login || github.actor }}
+      AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association || 'COLLABORATOR' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || 'branch' }}
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      TARGET: ${{ github.event.pull_request.base.ref || 'main'}}
+    steps:
+      - name: Check author permissions
+        id: check-permissions
+        run: |
+          if [[ "$AUTHOR_ASSOCIATION" =~ ^(COLLABORATOR|MEMBER|OWNER)$ ]]; then
+            echo "environment=development_internal" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development_external" >> $GITHUB_OUTPUT
+          fi
+      - name: Print permissions summary
+        run: |
+          echo "## Permissions Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|---|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author name** | ${{ env.AUTHOR_NAME }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Author Association** | ${{ env.AUTHOR_ASSOCIATION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **PR** | ${{ env.PR_NUMBER }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Branch** | ${{ env.BRANCH }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Target** | ${{ env.TARGET }} |" >> $GITHUB_STEP_SUMMARY
+  approve-workflow-job:
+    name: Approve workflow
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    environment: ${{ needs.check-workflow-permissions-job.outputs.environment }}
+    needs: check-workflow-permissions-job
+    steps:
+      - name: Print deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployment has been approved and started to \`${{ needs.check-workflow-permissions-job.outputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
   static-code-analysis-shellcheck:
     name: Static code analysis - shellcheck
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -20,6 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -32,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    needs: approve-workflow-job
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -56,8 +104,11 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Find updated apps in pull request
+      - name: Find updated apps
         id: configs-matrix
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          TARGET: ${{ github.event.pull_request.base.ref || 'main'}}
         run: bash .github/scripts/get-updated-apps.sh
   setup-job:
     name: Setup data for deployment and testing
@@ -68,8 +119,8 @@ jobs:
     if: needs.get-updated-apps.outputs.configs != '[]'
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -92,8 +143,8 @@ jobs:
     env:
       LINODE_API_SECRET: ${{ secrets.LINODE_API_SECRET }}
       LINODE_ROOT_PASS: ${{ secrets.LINODE_ROOT_PASS }}
-      LINODE_DOMAIN: ${{ vars.LINODE_DOMAIN }}
-      LINODE_SUBDOMAIN: ${{ vars.LINODE_SUBDOMAIN }}
+      LINODE_DOMAIN: ${{ secrets.LINODE_DOMAIN }}
+      LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -110,8 +161,7 @@ jobs:
         env:
           APP_NAME: ${{ matrix.app }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
-          GIT_REPO: ${{ github.event.pull_request.head.repo.clone_url || github.repositoryUrl }}
-          GH_USER: ${{ github.repository_owner }}
+          GH_USER: ${{ github.event.pull_request.head.repo.owner.login || github.repository_owner }}
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: bash .github/scripts/app-installation.sh
