@@ -115,19 +115,19 @@
     line: "{{ item.replace }}"
   loop:
     - search: '^\#?#VAPID_PUBLIC_KEY='
-      replace: "VAPID_PUBLIC_KEY={{ vapid_keys.stdout_lines[0] | split(': ') | last }}" 
+      replace: "VAPID_PUBLIC_KEY={{ vapid_keys.stdout_lines[0] | split(': ') | last }}"
     - search: '^\#?#VAPID_PRIVATE_KEY='
-      replace: "VAPID_PRIVATE_KEY={{ vapid_keys.stdout_lines[1] | split(': ') | last }}" 
+      replace: "VAPID_PRIVATE_KEY={{ vapid_keys.stdout_lines[1] | split(': ') | last }}"
     - search: '^\#?#SECRET_KEY_BASE=' 
-      replace: "SECRET_KEY_BASE={{ secret_key_base.stdout }}" 
+      replace: "SECRET_KEY_BASE={{ secret_key_base.stdout }}"
     - search: '^\#?#OTP_SECRET=' 
-      replace: "OTP_SECRET={{ otp_secret.stdout }}" 
+      replace: "OTP_SECRET={{ otp_secret.stdout }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY='
-      replace: "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=(.*)', '\\1') }}" 
+      replace: "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=(.*)', '\\1') }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY='
-      replace: "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=(.*)', '\\1') }}" 
+      replace: "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=(.*)', '\\1') }}"
     - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=' 
-      replace: "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=(.*)', '\\1') }}" 
+      replace: "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ encryption_keys.stdout | regex_search('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=(.*)', '\\1') }}"
 
 - name: Recreate Mastodon database
   community.docker.docker_compose_v2_run:
