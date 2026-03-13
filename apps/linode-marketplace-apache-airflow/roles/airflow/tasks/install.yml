@@ -26,8 +26,16 @@
 
 - name: Pick latest valid Airflow version
   set_fact:
-    airflow_version: "{{ airflow_tags | map(attribute='name') | select('match','^[0-9]') | list | first }}"
-
+    airflow_version: >-
+      {{
+        airflow_tags
+        | map(attribute='name')
+        | map('regex_search','([0-9]+\\.[0-9]+\\.[0-9]+)')
+        | select('string')
+        | list
+        | first
+      }}
+      
 - name: Create Airflow directories
   file:
     path: "{{ airflow_home }}"
