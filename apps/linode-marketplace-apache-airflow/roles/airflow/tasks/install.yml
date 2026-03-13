@@ -19,10 +19,14 @@
     state: present
     update_cache: true
 
-- name: Get latest Apache Airflow & set URL
+- name: Get Airflow tags
   set_fact:
-    airflow_version: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
+    airflow_tags: "{{ lookup('url','https://api.github.com/repos/apache/airflow/tags') | from_json }}"
     python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
+
+- name: Pick latest valid Airflow version
+  set_fact:
+    airflow_version: "{{ airflow_tags | map(attribute='name') | select('match','^[0-9]') | list | first }}"
 
 - name: Create Airflow directories
   file:
