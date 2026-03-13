@@ -19,22 +19,18 @@
     state: present
     update_cache: true
 
-- name: Get Airflow tags
+- name: Get latest Apache Airflow version from PyPI
   set_fact:
-    airflow_tags: "{{ lookup('url','https://api.github.com/repos/apache/airflow/tags') | from_json }}"
+    airflow_version: "{{ (lookup('url','https://pypi.org/pypi/apache-airflow/json') | from_json).info.version }}"
     python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
 
-- name: Pick latest valid Airflow version
-  set_fact:
-    airflow_version: >-
-      {{
-        airflow_tags
-        | map(attribute='name')
-        | map('regex_search','([0-9]+\\.[0-9]+\\.[0-9]+)')
-        | select('string')
-        | list
-        | first
-      }}
+- name: Install Airflow with constraints
+  pip:
+    virtualenv: "{{ airflow_venv }}"
+    virtualenv_command: python3 -m venv
+    name: "apache-airflow=={{ airflow_version }}"
+    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version }}.txt"
+    state: present
       
 - name: Create Airflow directories
   file:
