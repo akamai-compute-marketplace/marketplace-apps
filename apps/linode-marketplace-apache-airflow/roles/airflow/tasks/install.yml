@@ -21,9 +21,9 @@
 
 - name: Get latest Apache Airflow version from PyPI
   set_fact:
-    airflow_version: "{{ (lookup('url','https://pypi.org/pypi/apache-airflow/json') | from_json).info.version }}"
+    airflow_version: "{{ (lookup('url', 'https://pypi.org/pypi/apache-airflow/json') | from_json).info.version }}"
     python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
-      
+
 - name: Create Airflow directories
   file:
     path: "{{ airflow_home }}"
