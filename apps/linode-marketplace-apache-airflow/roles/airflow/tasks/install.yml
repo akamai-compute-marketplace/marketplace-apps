@@ -23,14 +23,6 @@
   set_fact:
     airflow_version: "{{ (lookup('url','https://pypi.org/pypi/apache-airflow/json') | from_json).info.version }}"
     python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
-
-- name: Install Airflow with constraints
-  pip:
-    virtualenv: "{{ airflow_venv }}"
-    virtualenv_command: python3 -m venv
-    name: "apache-airflow=={{ airflow_version }}"
-    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version }}.txt"
-    state: present
       
 - name: Create Airflow directories
   file:
