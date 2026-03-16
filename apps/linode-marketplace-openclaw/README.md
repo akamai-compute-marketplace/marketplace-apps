@@ -65,7 +65,6 @@ To authenticate to the dashboard you will need to provide two methods of authent
 At this point you have everything you need to access the dashboard. For example:
 `https://172-233-177-79.ip.linodeusercontent.com/#token=a0764fb`
 
-
 When you access the web page you will be prompted for the HTPASSWD details. Once you enter the credentials you will be able to proceed to the dashboard.
 
 ## Resources
