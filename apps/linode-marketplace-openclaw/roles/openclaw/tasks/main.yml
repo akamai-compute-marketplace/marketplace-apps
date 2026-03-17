@@ -1,0 +1,12 @@
+---
+- name: Create openclaw user
+  import_tasks: openclaw_user.yml
+
+- name: Install NodeJS
+  import_tasks: nodejs.yml
+
+- name: Setup OpenClaw directories
+  import_tasks: openclaw_setup.yml
+
+- name: Configure Nginx
+  import_tasks: nginx.yml
