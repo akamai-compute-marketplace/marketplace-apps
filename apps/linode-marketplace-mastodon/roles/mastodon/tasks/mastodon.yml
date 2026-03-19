@@ -193,3 +193,9 @@
     command: >
       bin/tootctl accounts approve {{ owner_username }}
   when: owner_create is succeeded
+
+- name: Set site contact username
+  community.docker.docker_container_exec:
+    container: mastodon-web-1
+    command: >
+      bundle exec tootctl settings set site_contact_username {{ owner_username | quote }}
