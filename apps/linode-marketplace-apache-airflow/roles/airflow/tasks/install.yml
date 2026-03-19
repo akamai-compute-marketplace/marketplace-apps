@@ -35,7 +35,7 @@
 - name: Upgrade pip in venv
   command: "{{ airflow_venv }}/bin/pip install --upgrade pip setuptools wheel"
 
-- name: Install Airflow 
+- name: Install Airflow
   pip:
     virtualenv: "{{ airflow_venv }}"
     virtualenv_command: python3 -m venv
