@@ -82,7 +82,9 @@
   slurp:
     src: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file
+  no_log: true
 
 - name: Parse JSON and set password as var
   set_fact:
     airflow_admin_password: "{{ (airflow_password_file['content'] | b64decode | from_json).admin }}"
+  no_log: true
