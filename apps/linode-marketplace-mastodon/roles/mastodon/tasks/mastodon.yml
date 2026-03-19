@@ -194,8 +194,10 @@
       bin/tootctl accounts approve {{ owner_username }}
   when: owner_create is succeeded
 
-- name: Set site contact username
+- name: Set site contact username via rails
   community.docker.docker_container_exec:
     container: live-web-1
     command: >
-      bundle exec tootctl settings set site_contact_username {{ owner_username | quote }}
+      bundle exec rails runner
+      "user = Account.find_local('{{ owner_username }}');
+       Setting.site_contact_username = user.username if user"
