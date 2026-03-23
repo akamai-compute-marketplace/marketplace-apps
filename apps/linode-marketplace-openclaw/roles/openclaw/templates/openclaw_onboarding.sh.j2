@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+if [ "$EUID" -ne 0 ]; then
+    return
+fi
+
+# enable systemd service
+OPENCLAW_UID=$(id -u {{ openclaw_user }})
+export XDG_RUNTIME_DIR="/run/user/$OPENCLAW_UID"
+
+while true; do
+	echo ""
+	echo "[OpenClaw Onboarding]"
+	read -rp "Do you want to run the openclaw onboard wizard? [y/n]: " answer
+
+	if [[ "$answer" =~ ^[Yy]$ ]]; then
+		echo "[***] Running onboarding as openclaw user."
+        sudo -u {{ openclaw_user }} XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" -i openclaw onboard --install-daemon
+
+		if [ $? -eq 0 ]; then
+			echo "[***] Initial onboarding complete. Removing {{ openclaw_onboarding_script }}."
+
+			if [ -f '{{ openclaw_onboarding_script }}' ]; then
+				rm {{ openclaw_onboarding_script }}
+			fi
+		else
+			echo "[***] Onboarding exited with status $?. Try Onboarding again by logging in."
+		fi
+		break
+	elif [[ "$answer" =~ ^[Nn]$ ]]; then
+		echo "[***] Skipping OpenClaw onboarding."
+		while true; do
+			read -rp "[***] Do you want to remove the onboard script? [y/n]: " remove_script
+			if [[ "$remove_script" =~ ^[Yy]$ ]]; then
+				echo "[***] Removing {{ openclaw_onboarding_script }}"
+				if [ -f '{{ openclaw_onboarding_script }}' ]; then
+					rm {{ openclaw_onboarding_script }}
+				fi
+				break
+			elif [[ "$remove_script" =~ ^[Nn]$ ]]; then
+				echo "[***] Not removing onboarding script. This script will run again on next login."
+				break
+			else
+				echo -e "\n[***] Please answer y or n."
+			fi
+		done
+		break
+	else
+		echo -e "\n[***] Please answer y or n."
+	fi
+done

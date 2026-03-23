@@ -4,7 +4,7 @@
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # modes
-#DEBUG="NO"
+# DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -13,33 +13,24 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
 else
   set -e
 fi
 
-## Linode/SSH Security Settings
+## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
 #<UDF name="disable_root" label="Disable root access over SSH?" oneOf="Yes,No" default="No">
 
-## Mastodon Settings
-#<UDF name="domain" label="Domain name for your Mastodon instance." default="">
+## Domain Settings
+#<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
-#<UDF name="token_password" label="Your Linode API token" default="">
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld" />
-#<UDF name="owner_username" label="Username for Mastodon Owner" example="admin" />
-#<UDF name="owner_email" label="Email address for Mastodon Owner" example="user@domain.tld" />
-#<UDF name="single_user_mode" label="Do you want to start Mastodon in single-user mode?" oneOf="Yes,No" />
+#<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
-# BEGIN CI-ADDONS
 ## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
-# END CI-ADDONS
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy,none"  default="none">
 
 #GH_USER=""
 #BRANCH=""
@@ -54,8 +45,8 @@ else
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
 
-export WORK_DIR="/tmp/marketplace-apps"
-export MARKETPLACE_APP="apps/linode-marketplace-mastodon"
+export WORK_DIR="/tmp/marketplace-apps" 
+export MARKETPLACE_APP="apps/linode-marketplace-openclaw"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -75,7 +66,7 @@ function provision_failed {
      -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
         \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
         \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
+  
   exit $?
 }
 
@@ -87,38 +78,38 @@ function cleanup {
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
-  cat <<END > ${group_vars}
-# sudo username
-username: ${USER_NAME}
-webserver_stack: lemp
-soa_email_address: ${SOA_EMAIL_ADDRESS}
-owner_username: ${OWNER_USERNAME}
-owner_email: ${OWNER_EMAIL}
-single_user_mode: ${SINGLE_USER_MODE}
-# BEGIN CI-UDF-ADDONS
-# addons
-add_ons: [${ADD_ONS}]
-# END CI-UDF-ADDONS  
-END
+  sed 's/  //g' <<EOF > ${group_vars}
+  # sudo username
+  username: ${USER_NAME}
+  # openclaw 
+  openclaw_username: openclaw
+  # addons
+  add_ons: [${ADD_ONS}] 
+EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: yes" >> ${group_vars};
   else echo "Leaving root login enabled";
   fi
 
-  if [[ -n ${TOKEN_PASSWORD} ]]; then
-    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars}
-  else echo "No API token entered"
+  if [[ -n ${SUBDOMAIN} ]]; then
+    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars};
   fi
 
   if [[ -n ${DOMAIN} ]]; then
     echo "domain: ${DOMAIN}" >> ${group_vars};
-  else echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars}
+  else
+    echo "default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})" >> ${group_vars};
   fi
 
-  if [[ -n ${SUBDOMAIN} ]]; then
-    echo "subdomain: ${SUBDOMAIN}" >> ${group_vars}
-  else echo "subdomain: www" >> ${group_vars}
+  if [[ -n ${TOKEN_PASSWORD} ]]; then
+    echo "token_password: ${TOKEN_PASSWORD}" >> ${group_vars};
+  else echo "No API token entered";
+  fi
+
+  if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
+    echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No SOA email entered";
   fi
 
   # staging or production mode (ci)

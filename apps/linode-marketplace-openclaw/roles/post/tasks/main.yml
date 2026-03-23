@@ -5,16 +5,15 @@
     name: addons
   when: add_ons != ['none']
 
-# motd and creds gen
-- name: Copy MOTD template to /etc/motd
+- name: Set up motd
   template:
-    src: templates/motd.j2
+    src: motd.j2
     dest: /etc/motd
     mode: '0600'
     owner: '{{ username }}'
     group: '{{ username }}'
 
-- name: Writing sudo creds into file
+- name: Write credentials file
   copy:
     dest: '/home/{{ username }}/.credentials'
     mode: '0600'
@@ -23,7 +22,8 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Owner Username: {{ owner_username }}
-      Owner Email: {{ owner_email }}
-      Owner Password: {{ owner_password }}
-      PSQL Password: {{ psql_password }}
+
+      # openclaw
+      Htpasswd file: {{ openclaw_htpasswd_file }}
+      Htpasswd username: {{ openclaw_htpasswd_user }}
+      Htpassword: {{ htaccess_password }}
