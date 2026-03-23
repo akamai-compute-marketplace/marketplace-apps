@@ -19,11 +19,6 @@
     state: present
     update_cache: true
 
-- name: Get latest Apache Airflow & set URL
-  set_fact:
-    airflow_version: "{{ (lookup('url', 'https://api.github.com/repos/apache/airflow/releases/latest') | from_json).tag_name }}"
-    python_version: "{{ ansible_facts.python_version.split('.')[0:2] | join('.') }}"
-
 - name: Create Airflow directories
   file:
     path: "{{ airflow_home }}"
@@ -40,12 +35,11 @@
 - name: Upgrade pip in venv
   command: "{{ airflow_venv }}/bin/pip install --upgrade pip setuptools wheel"
 
-- name: Install Airflow with constraints
+- name: Install Airflow
   pip:
     virtualenv: "{{ airflow_venv }}"
     virtualenv_command: python3 -m venv
-    name: "apache-airflow=={{ airflow_version }}"
-    extra_args: "--constraint https://raw.githubusercontent.com/apache/airflow/constraints-{{ airflow_version }}/constraints-{{ python_version }}.txt"
+    name: apache-airflow
     state: present
 
 - name: Initialize Airflow metadata database
@@ -88,7 +82,9 @@
   slurp:
     src: "{{ airflow_home }}/airflow/simple_auth_manager_passwords.json.generated"
   register: airflow_password_file
+  no_log: true
 
 - name: Parse JSON and set password as var
   set_fact:
     airflow_admin_password: "{{ (airflow_password_file['content'] | b64decode | from_json).admin }}"
+  no_log: true
