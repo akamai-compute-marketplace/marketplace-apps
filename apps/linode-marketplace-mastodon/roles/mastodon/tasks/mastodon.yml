@@ -1,0 +1,203 @@
+---
+- name: Create mastodon user
+  user:
+    name: "mastodon"
+    createhome: true
+    shell: /bin/bash
+    home: /home/mastodon/
+
+- name: Clone mastodon
+  ansible.builtin.git:
+    repo: https://github.com/mastodon/mastodon.git
+    dest: /home/mastodon/live
+    clone: true
+
+- name: Grab mastodon latest json
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/mastodon/mastodon/releases/latest
+    return_content: true
+  register: json_response
+
+- name: Get mastodon latest version
+  set_fact:
+    mastodonlatest: "{{ json_response.content | from_json | json_query('tag_name') }}"
+
+- name: Git checkout
+  ansible.builtin.git:
+    repo: 'https://github.com/mastodon/mastodon.git'
+    dest: /home/mastodon/live
+    version: "{{ mastodonlatest }}"
+
+- name: Insert docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/mastodon/live/docker-compose.yml
+    mode: '0644'
+
+- name: Change owner of live
+  file:
+    path: "/home/mastodon/live"
+    state: directory
+    owner: "mastodon"
+    group: "mastodon"
+    mode: '0755'
+    recurse: true
+
+- name: Setting env secrets
+  template:
+    src: env.production.j2
+    dest: /home/mastodon/live/.env.production
+    mode: '0644'
+
+- name: Start PostgreSQL and Redis containers
+  community.docker.docker_compose_v2:
+    project_src: /home/mastodon/live
+    files:
+      - docker-compose.yml
+    services:
+      - db
+      - redis
+    state: present
+  environment:
+    DOCKER_BUILD: "false"
+
+- name: Start Mastodon application containers and pull images
+  community.docker.docker_compose_v2:
+    project_src: /home/mastodon/live
+    files:
+      - docker-compose.yml
+    services:
+      - web
+      - streaming
+      - sidekiq
+    pull: always
+    state: present
+  environment:
+    DOCKER_BUILD: "false"
+
+- name: Generate secret_key_base
+  community.docker.docker_compose_v2_run:
+    project_src: /home/mastodon/live
+    service: web
+    command: bundle exec rails secret
+    cleanup: true
+  register: secret_key_base
+
+- name: Generate otp_secret
+  community.docker.docker_compose_v2_run:
+    project_src: /home/mastodon/live
+    service: web
+    command: bundle exec rails secret
+    cleanup: true
+  register: otp_secret
+
+- name: Generate VAPID keys
+  community.docker.docker_compose_v2_run:
+    project_src: /home/mastodon/live
+    service: web
+    command: bundle exec rails mastodon:webpush:generate_vapid_key
+    cleanup: true
+  register: vapid_keys
+
+- name: Generate Rails encryption keys
+  community.docker.docker_compose_v2_run:
+    project_src: /home/mastodon/live
+    service: web
+    command: bundle exec rails db:encryption:init
+    cleanup: true
+  register: encryption_keys
+  changed_when: false
+
+- name: Parse encryption keys
+  ansible.builtin.set_fact:
+    active_record_encryption_primary_key: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=(.*)', '\1') }}
+    active_record_encryption_deterministic_key: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=(.*)', '\1') }}
+    active_record_encryption_key_derivation_salt: >-
+      {{ encryption_keys.stdout |
+      regex_search('ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=(.*)', '\1') }}
+
+- name: Updating production env
+  ansible.builtin.lineinfile:
+    path: /home/mastodon/live/.env.production
+    regexp: "{{ item.search }}"
+    line: "{{ item.replace }}"
+  loop:
+    - search: '^\#?#VAPID_PUBLIC_KEY='
+      replace: "VAPID_PUBLIC_KEY={{ vapid_keys.stdout_lines[0] | split(': ') | last }}"
+    - search: '^\#?#VAPID_PRIVATE_KEY='
+      replace: "VAPID_PRIVATE_KEY={{ vapid_keys.stdout_lines[1] | split(': ') | last }}"
+    - search: '^\#?#SECRET_KEY_BASE='
+      replace: "SECRET_KEY_BASE={{ secret_key_base.stdout }}"
+    - search: '^\#?#OTP_SECRET='
+      replace: "OTP_SECRET={{ otp_secret.stdout }}"
+    - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY='
+      replace: "ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY={{ active_record_encryption_primary_key }}"
+    - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY='
+      replace: "ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY={{ active_record_encryption_deterministic_key }}"
+    - search: '^\#?#ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT='
+      replace: "ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT={{ active_record_encryption_key_derivation_salt }}"
+
+- name: Recreate Mastodon database
+  community.docker.docker_compose_v2_run:
+    project_src: /home/mastodon/live
+    service: web
+    command: bundle exec rails db:reset
+    cleanup: true
+
+- name: Change owner of public
+  file:
+    path: "/home/mastodon/live/public"
+    state: directory
+    owner: "991"
+    group: "991"
+    recurse: true
+
+- name: Start Mastodon containers
+  community.docker.docker_compose_v2:
+    project_src: /home/mastodon/live
+    files:
+      - docker-compose.yml
+    state: present
+  environment:
+    DOCKER_BUILD: "false"
+
+- name: Create Mastodon owner account
+  community.docker.docker_container_exec:
+    container: live-web-1
+    command: >
+      bash -lc "bin/tootctl accounts create {{ owner_username }}
+      --email {{ owner_email }}
+      --confirmed
+      --role Owner"
+  register: owner_create
+
+- name: Extract owner password
+  set_fact:
+    owner_password: "{{ owner_create.stdout | regex_search('New password:\\s*(.*)', '\\1') | first }}"
+
+- name: Save owner password to group vars
+  lineinfile:
+    path: group_vars/linode/vars
+    regexp: '^owner_password:'
+    line: "owner_password: {{ owner_password }}"
+    create: true
+    mode: "0600"
+
+- name: Approve owner account
+  community.docker.docker_container_exec:
+    container: live-web-1
+    command: >
+      bin/tootctl accounts approve {{ owner_username }}
+  when: owner_create is succeeded
+
+- name: Set site contact username via rails
+  community.docker.docker_container_exec:
+    container: live-web-1
+    command: >
+      bundle exec rails runner
+      "user = Account.find_local('{{ owner_username }}');
+       Setting.site_contact_username = user.username if user"
