@@ -1,0 +1,75 @@
+---
+- name: Create OpenClaw directories (structure only, no config files)
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { path: "{{ openclaw_config_dir }}", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/sessions", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/credentials", mode: '0700' }
+    - { path: "{{ openclaw_config_dir }}/data", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/logs", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/agents", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/agents/main", mode: '0755' }
+    - { path: "{{ openclaw_config_dir }}/agents/main/agent", mode: '0700' }
+    - { path: "{{ openclaw_config_dir }}/workspace", mode: '0755' }
+
+- name: Create pnpm directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    mode: '0755'
+  loop:
+    - "{{ openclaw_home }}/.local/share/pnpm"
+    - "{{ openclaw_home }}/.local/share/pnpm/store"
+    - "{{ openclaw_home }}/.local/bin"
+
+- name: Configure pnpm for openclaw user
+  shell:
+    cmd: |
+      CURRENT_GLOBAL_DIR=$(pnpm config get global-dir 2>/dev/null || echo "")
+      CURRENT_BIN_DIR=$(pnpm config get global-bin-dir 2>/dev/null || echo "")
+      CHANGED=0
+      if [ "$CURRENT_GLOBAL_DIR" != "{{ openclaw_home }}/.local/share/pnpm" ]; then
+        pnpm config set global-dir {{ openclaw_home }}/.local/share/pnpm
+        CHANGED=1
+      fi
+      if [ "$CURRENT_BIN_DIR" != "{{ openclaw_home }}/.local/bin" ]; then
+        pnpm config set global-bin-dir {{ openclaw_home }}/.local/bin
+        CHANGED=1
+      fi
+      exit $CHANGED
+    executable: /bin/bash
+  become: true
+  become_user: "{{ openclaw_user }}"
+  register: pnpm_config_result
+  changed_when: pnpm_config_result.rc == 1
+  failed_when: pnpm_config_result.rc > 1
+
+- name: Install openclaw via pnpm
+  include_tasks: openclaw_install.yml
+
+- name: Configure .bashrc for openclaw user (base config)
+  blockinfile:
+    path: "{{ openclaw_home }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - OpenClaw pnpm"
+    block: |
+      # pnpm configuration
+      export PNPM_HOME="{{ pnpm_home }}"
+      export PATH="{{ openclaw_home }}/.local/bin:$PNPM_HOME:$PATH"
+    create: true
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_user }}"
+    insertafter: EOF
+    mode: '0644'
+
+- name: Add openclaw onboarding script on login
+  template:
+    src: openclaw_onboarding.sh.j2
+    dest: "{{ openclaw_onboarding_script }}"
+    mode: '0644'

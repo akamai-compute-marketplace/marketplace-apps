@@ -1,5 +1,5 @@
 ---
-- name: Mastodon deploy
+- name: Install OpenClaw
   hosts: localhost
   connection: local
   any_errors_fatal: true
@@ -12,7 +12,7 @@
         - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop: [common, mastodon, post]
+          loop: [common, openclaw, post]
         - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
@@ -22,9 +22,8 @@
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
             deploy_status: 'failed'
-
     - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop: [common, mastodon, post]
+      loop: [common, openclaw, post]
       when: "mode == 'production'"
