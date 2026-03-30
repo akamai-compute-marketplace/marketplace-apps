@@ -43,12 +43,12 @@
       args:
         chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
-    - name: Create backstage app for {{ app_name }}
+    - name: Create backstage app for {{ backstage_appname }}
       shell:
         cmd: |
           set -o pipefail
           source .nvmvars
-          echo {{ app_name }} | npx @backstage/create-app@latest
+          echo {{ backstage_appname }} | npx @backstage/create-app@latest
       args:
         chdir: '{{ backstage_username_directory }}'
         executable: /bin/bash
