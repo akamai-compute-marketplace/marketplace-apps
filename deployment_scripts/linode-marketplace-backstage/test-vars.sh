@@ -70,10 +70,10 @@ else
         UDF_VARS["ALLOWED_IPS"]="" # default
 fi
 
-if [[ -n "${APP_NAME}" ]]; then
-        UDF_VARS["APP_NAME"]="${APP_NAME}"
+if [[ -n "${BACKSTAGE_APPNAME}" ]]; then
+        UDF_VARS["BACKSTAGE_APPNAME"]="${BACKSTAGE_APPNAME}"
 else
-        UDF_VARS["APP_NAME"]="marketplace" # default
+        UDF_VARS["BACKSTAGE_APPNAME"]="marketplace" # default
 fi
 
 if [[ -n "${GITHUB_OAUTH_CLIENT_ID}" ]]; then
