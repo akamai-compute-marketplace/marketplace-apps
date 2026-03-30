@@ -19,7 +19,7 @@
     mode: '0600'
     owner: '{{ username }}'
     group: '{{ username }}'
-    
+
 - name: Run Ant Media Server installation script
   script: "/tmp/install_ant-media-server.sh -i {{ antmedia_zip_local_path }}"
 
