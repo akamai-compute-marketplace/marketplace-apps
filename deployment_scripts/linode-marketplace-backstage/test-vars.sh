@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
+RANDOM_SUBDOMAIN="a$(tr -dc 'a-z0-9' </dev/urandom | head -c7)"
 
 # custom env variables from cli
 if [[ -n ${INSTANCE_ENV} ]]; then
@@ -40,7 +41,7 @@ fi
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]="www" # default
+        UDF_VARS["SUBDOMAIN"]="${RANDOM_SUBDOMAIN}"
 fi
 
 if [[ -n "${DOMAIN}" ]]; then
@@ -69,10 +70,10 @@ else
         UDF_VARS["ALLOWED_IPS"]="" # default
 fi
 
-if [[ -n "${APP_NAME}" ]]; then
-        UDF_VARS["APP_NAME"]="${APP_NAME}"
+if [[ -n "${BACKSTAGE_APPNAME}" ]]; then
+        UDF_VARS["BACKSTAGE_APPNAME"]="${BACKSTAGE_APPNAME}"
 else
-        UDF_VARS["APP_NAME"]="marketplace" # default
+        UDF_VARS["BACKSTAGE_APPNAME"]="marketplace" # default
 fi
 
 if [[ -n "${GITHUB_OAUTH_CLIENT_ID}" ]]; then
