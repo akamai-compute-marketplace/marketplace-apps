@@ -19,6 +19,7 @@
     mode: '0600'
     owner: '{{ username }}'
     group: '{{ username }}'
+
 - name: Run Ant Media Server installation script
   script: "/tmp/install_ant-media-server.sh -i {{ antmedia_zip_local_path }}"
 
@@ -42,7 +43,7 @@
     headers:
       Content-Type: 'application/json'
   register: antmedia_result
-  until: antmedia_result.status != 403
+  until: antmedia_result.status == 200
   retries: 5
   delay: 10
 

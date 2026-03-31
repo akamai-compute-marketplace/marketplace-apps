@@ -1,0 +1,55 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Add Nginx vhost
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ _domain }}
+    mode: '0644'
+
+- name: Enable Nginx vhost
+  file:
+    src: /etc/nginx/sites-available/{{ _domain }}
+    dest: /etc/nginx/sites-enabled/{{ _domain }}
+    state: link
+
+- name: Unlink Nginx default vhost
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Add OpenClaw htpasswd to protect dashboard
+  copy:
+    mode: '0644'
+    content: "{{ openclaw_htpasswd_user }}:{{ openclaw_htpasswd }}\n"
+    dest: "{{ openclaw_htpasswd_file }}"
+
+- name: Enable and restart nginx service
+  systemd_service:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: Install Let's Encrypt certs
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
+
+# openclaw reverse proxy setup
+
+- name: Allow domain Origin to dashboard
+  shell:
+    cmd: openclaw config set gateway.controlUi.allowedOrigins '["https://{{ _domain }}"]'
+    executable: /bin/bash
+  become: true
+  become_user: "{{ openclaw_user }}"
+  environment:
+    PNPM_HOME: "{{ pnpm_home }}"
+    PATH: "{{ pnpm_path }}"
+    HOME: "{{ openclaw_home }}"
+  changed_when: false

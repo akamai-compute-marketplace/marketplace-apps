@@ -1,0 +1,29 @@
+---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Set up motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Write credentials file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      # openclaw
+      Htpasswd file: {{ openclaw_htpasswd_file }}
+      Htpasswd username: {{ openclaw_htpasswd_user }}
+      Htpassword: {{ htaccess_password }}

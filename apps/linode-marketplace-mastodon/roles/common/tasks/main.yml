@@ -36,6 +36,9 @@
     target: '{{ _domain }}'
     priority: 10
     state: present
+  when:
+    - token_password is defined
+    - default_dns is not defined
 
 - name: Create SPF records for domain
   linode.cloud.domain_record:
@@ -45,6 +48,9 @@
     type: 'TXT'
     target: 'v=spf1 a ~all'
     state: present
+  when:
+    - token_password is defined
+    - default_dns is not defined
 
 # disable root login w/wo pubkey
 - name: Secure ssh

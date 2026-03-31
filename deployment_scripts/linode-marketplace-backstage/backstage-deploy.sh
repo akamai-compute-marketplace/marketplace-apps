@@ -3,7 +3,6 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# modes
 # BEGIN CI-MODE
 # modes
 #DEBUG="NO"
@@ -13,6 +12,16 @@ if [[ -n ${DEBUG} ]]; then
   fi
 else
   trap "cleanup $? $LINENO" EXIT
+fi
+
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
+
+if [ "${MODE}" == "staging" ]; then
+  trap "provision_failed $? $LINENO" ERR
+else
+  set -e
 fi
 # END CI-MODE
 
@@ -34,7 +43,7 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@example.com">
 #<UDF name="allowed_ips" label="IP addresses allowed to access the frontend" example="192.0.2.21, 198.51.100.17" default="">
 
-#<UDF name="app_name" label="Backstage application name">
+#<UDF name="backstage_appname" label="Backstage application name">
 #<UDF name="github_oauth_client_id" label="Github Oauth Client ID">
 #<UDF name="github_oauth_client_secret" label="Github Oauth Client Secret">
 #<UDF name="github_username" label="Github Username">
@@ -132,8 +141,8 @@ EOF
     echo "allowed_ips: [${ALLOWED_IPS}]" >> ${group_vars}
   fi
 
-  if [[ -n ${APP_NAME} ]]; then
-    echo "app_name: ${APP_NAME}" >> ${group_vars}
+  if [[ -n ${BACKSTAGE_APPNAME} ]]; then
+    echo "backstage_appname: ${BACKSTAGE_APPNAME}" >> ${group_vars}
   fi
 
   if [[ -n ${GITHUB_OAUTH_CLIENT_ID} ]]; then
