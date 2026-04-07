@@ -42,7 +42,6 @@
 
 # openclaw reverse proxy setup
 
-# fails:
 - name: Allow domain Origin to dashboard
   shell:
     cmd: openclaw config set gateway.controlUi.allowedOrigins '["https://{{ _domain }}"]'

@@ -14,8 +14,9 @@
 
 - name: Install OpenClaw deps
   shell:
-    cmd: pnpm add @buape/carbon @larksuiteoapi/node-sdk
+    cmd: pnpm add @buape/carbon @larksuiteoapi/node-sdk @slack/web-api grammy
     executable: /bin/bash
+    chdir: "{{ openclaw_home }}"
   become: true
   become_user: "{{ openclaw_user }}"
   environment:
