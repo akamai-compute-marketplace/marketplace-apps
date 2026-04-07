@@ -2,4 +2,4 @@
 # default variables
 
 backstage_username_directory: '/home/{{ username }}'
-backstage_app_directory: '{{ backstage_username_directory }}/{{ app_name }}'
+backstage_app_directory: '{{ backstage_username_directory }}/{{ backstage_appname }}'

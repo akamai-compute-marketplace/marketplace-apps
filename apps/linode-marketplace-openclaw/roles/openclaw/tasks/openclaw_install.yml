@@ -12,6 +12,18 @@
   register: openclaw_install
   changed_when: "'Already up to date' not in openclaw_install.stdout"
 
+- name: Install OpenClaw deps
+  shell:
+    cmd: pnpm add @buape/carbon @larksuiteoapi/node-sdk @slack/web-api grammy
+    executable: /bin/bash
+    chdir: "{{ openclaw_home }}"
+  become: true
+  become_user: "{{ openclaw_user }}"
+  environment:
+    PNPM_HOME: "{{ pnpm_home }}"
+    PATH: "{{ pnpm_path }}"
+    HOME: "{{ openclaw_home }}"
+
 - name: Verify openclaw installation
   shell:
     cmd: openclaw --version
