@@ -31,8 +31,6 @@ fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
-elif [[ -n "${LINODE_DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${LINODE_DOMAIN}"
 else
         UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
 fi

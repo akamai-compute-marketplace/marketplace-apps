@@ -30,7 +30,7 @@
       loop: "{{ ansible_all_ipv4_addresses }}"
       loop_control:
         index_var: count
-      when: ansible_all_ipv4_addresses[count] | regex_search('^(192.168).*')
+      when: ansible_all_ipv4_addresses[count] | regex_search('^(192.168).*') is not none
 
     - name: Writing public ip
       lineinfile:
@@ -41,4 +41,4 @@
       loop: "{{ ansible_all_ipv4_addresses }}"
       loop_control:
         index_var: count
-      when: ansible_all_ipv4_addresses[count] | regex_search('^(?!192.168).*')
+      when: ansible_all_ipv4_addresses[count] | regex_search('^(?!192.168).*') is not none
