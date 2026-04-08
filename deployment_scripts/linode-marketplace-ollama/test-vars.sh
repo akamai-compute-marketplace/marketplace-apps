@@ -63,10 +63,10 @@ else
         UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${DEEPSEEK_MODEL_SIZE}" ]]; then
-        UDF_VARS["DEEPSEEK_MODEL_SIZE"]="${DEEPSEEK_MODEL_SIZE}"
+if [[ -n "${OPENWEBUI_ENABLED}" ]]; then
+        UDF_VARS["OPENWEBUI_ENABLED"]="${OPENWEBUI_ENABLED}"
 else
-        UDF_VARS["DEEPSEEK_MODEL_SIZE"]="7B" # default
+        UDF_VARS["OPENWEBUI_ENABLED"]="Yes" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
