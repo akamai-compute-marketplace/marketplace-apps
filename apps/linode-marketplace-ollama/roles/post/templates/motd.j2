@@ -1,0 +1,11 @@
+*********************************************************
+Akamai Connected Cloud - Ollama
+{% if openwebui_enabled == "yes" %}
+App URL: https://{{ _domain }}
+{% else %}
+Ollama API Endpoint: http://localhost:11434
+{% endif %}
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/marketplace/apps/linode/ollama/
+*********************************************************
+To delete this message of the day: rm /etc/motd

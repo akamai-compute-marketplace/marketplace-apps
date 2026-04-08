@@ -1,0 +1,45 @@
+---
+- name: Install Docker latest
+  import_role:
+    name: docker
+
+- name: Installing docker-compose
+  apt:
+    pkg: [docker-compose]
+    state: present
+
+- name: Set tensor parallel size
+  set_fact:
+    tensor_parallel_size: "{{ gpu_count | default(1) }}"
+
+- name: Create docker directory
+  file:
+    path: "{{ docker_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Template docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ docker_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Pull Docker images from compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    pull: always
+
+- name: Start containers from docker-compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: present
+
+- name: Wait for Ollama service to start
+  uri:
+    url: "http://localhost:11434/api/tags"
+    method: GET
+    status_code: [200]
+  register: ollama_health
+  until: ollama_health.status == 200
+  retries: 60
+  delay: 10
