@@ -1,0 +1,15 @@
+---
+- name: Install Docker, Nginx and Certbot
+  ansible.builtin.import_tasks: install.yml
+
+- name: Write config files
+  ansible.builtin.import_tasks: configure.yml
+
+- name: Configure Nginx
+  ansible.builtin.import_tasks: nginx.yml
+
+- name: Set up SSL trigger
+  ansible.builtin.import_tasks: ssl_trigger.yml
+
+- name: Start services
+  ansible.builtin.import_tasks: start.yml

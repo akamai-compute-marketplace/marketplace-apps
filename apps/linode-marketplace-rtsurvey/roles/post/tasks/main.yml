@@ -1,0 +1,9 @@
+---
+- name: Write credentials file
+  ansible.builtin.import_tasks: credentials.yml
+
+- name: Configure MOTD
+  ansible.builtin.import_tasks: motd.yml
+
+- name: Clean up build artifacts
+  ansible.builtin.import_tasks: cleanup.yml

@@ -1,0 +1,12 @@
+---
+- name: Generate deployment credentials
+  import_playbook: provision.yml
+
+- name: Deploy rtSurvey
+  hosts: localhost
+  gather_facts: true
+
+  roles:
+    - common
+    - rtsurvey
+    - post

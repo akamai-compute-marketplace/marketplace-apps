@@ -1,0 +1,30 @@
+---
+- name: Create sudo group
+  ansible.builtin.group:
+    name: sudo
+    state: present
+
+- name: Create limited sudo user
+  ansible.builtin.user:
+    name: "{{ sudo_username }}"
+    password: "{{ sudo_password | password_hash('sha512') }}"
+    groups: sudo
+    append: true
+    shell: /bin/bash
+    state: present
+    create_home: true
+
+- name: Allow sudo group passwordless sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL:ALL) ALL'
+    validate: 'visudo -cf %s'
+
+- name: Add SSH authorized key (if provided)
+  ansible.posix.authorized_key:
+    user: "{{ sudo_username }}"
+    key: "{{ ssh_public_key }}"
+    state: present
+  when: ssh_public_key is defined and ssh_public_key | length > 0

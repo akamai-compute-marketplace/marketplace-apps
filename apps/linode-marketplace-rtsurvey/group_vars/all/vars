@@ -1,0 +1,17 @@
+---
+# Application
+rtsurvey_image:      "rtawebteam/rtcloud:survey-public"
+rtsurvey_deploy_dir: "/opt/rtsurvey"
+rtsurvey_project_id: "rtsurvey"
+embed_keycloak:      true
+require_license:     false
+stata_enabled:       false
+stata_license_b64:   ""
+
+# Ports (all bound to 127.0.0.1 — Nginx terminates externally)
+app_port:      8080
+keycloak_port: 8090
+shiny_port:    3838
+
+# Restart policy for Docker services
+restart_policy: "unless-stopped"

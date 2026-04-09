@@ -1,0 +1,223 @@
+#!/bin/bash
+set -euo pipefail
+exec >> /var/log/rtsurvey-ssl.log 2>&1
+echo "[$(date -u +%FT%TZ)] ssl-issue.sh triggered"
+{% raw %}
+REQUEST=/opt/rtsurvey/ssl-trigger/request.json
+STATUS=/opt/rtsurvey/ssl-trigger/status.json
+ENV_FILE=/opt/rtsurvey/.env
+COMPOSE_FILE=/opt/rtsurvey/docker-compose.production.yml
+
+write_status() {
+  local s="$1" extra="${2:-}"
+  echo "{\"status\":\"${s}\",\"domain\":\"${DOMAIN}\",\"updated_at\":\"$(date -u +%FT%TZ)\"${extra}}" > "$STATUS"
+}
+
+[[ ! -f "$REQUEST" ]] && { echo "No request.json found"; exit 1; }
+
+DOMAIN=$(jq -r .domain "$REQUEST")
+TYPE=$(jq -r .type   "$REQUEST")
+echo "  domain=${DOMAIN} type=${TYPE}"
+
+write_status "pending"
+
+_env_val() { grep "^${1}=" "$ENV_FILE" | cut -d= -f2- | tr -d '\r'; }
+EMBED_KEYCLOAK=$(_env_val EMBED_KEYCLOAK)
+PROJECT_ID=$(_env_val PROJECT_ID)
+MYSQL_ROOT_PASSWORD=$(_env_val MYSQL_ROOT_PASSWORD)
+KEYCLOAK_ADMIN_PASSWORD=$(_env_val KEYCLOAK_ADMIN_PASSWORD)
+LETSENCRYPT_EMAIL=$(jq -r '.email // empty' "$REQUEST")
+[[ -z "$LETSENCRYPT_EMAIL" ]] && LETSENCRYPT_EMAIL=$(_env_val LETSENCRYPT_EMAIL)
+KEYCLOAK_PORT=$(_env_val KEYCLOAK_PORT)
+KEYCLOAK_PORT="${KEYCLOAK_PORT:-8090}"
+
+update_env() {
+  local key="$1" val="$2"
+  if grep -q "^${key}=" "$ENV_FILE"; then
+    sed -i "s|^${key}=.*|${key}=${val}|" "$ENV_FILE"
+  else
+    echo "${key}=${val}" >> "$ENV_FILE"
+  fi
+}
+
+CERT="" KEY="" PROTOCOL="https" PORT=443
+
+if [[ "$TYPE" == "certbot" ]]; then
+  if [[ -z "$LETSENCRYPT_EMAIL" ]]; then
+    write_status "error" ",\"error\":\"LETSENCRYPT_EMAIL not set in .env\""
+    exit 1
+  fi
+
+  echo "  Waiting for DNS to resolve ${DOMAIN}..."
+  for i in $(seq 1 30); do
+    if host "$DOMAIN" > /dev/null 2>&1; then
+      echo "  DNS resolved (attempt ${i})"; break
+    fi
+    if [[ $i -eq 30 ]]; then
+      write_status "error" ",\"error\":\"DNS did not resolve for ${DOMAIN} after 5 minutes\""
+      exit 1
+    fi
+    sleep 10
+  done
+
+  if ! certbot certonly --webroot -w /var/www/html -n --agree-tos \
+      -m "$LETSENCRYPT_EMAIL" -d "$DOMAIN"; then
+    write_status "error" ",\"error\":\"certbot failed -- check DNS points to this server\""
+    exit 1
+  fi
+
+  CERT="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+  KEY="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
+
+elif [[ "$TYPE" == "rtsurvey" ]]; then
+  PROTOCOL="https"
+  PORT=443
+fi
+
+KC_BLOCK=""
+if [[ "${EMBED_KEYCLOAK}" == "true" ]]; then
+  KC_BLOCK='    location /auth/ {
+        proxy_pass              http://127.0.0.1:8090/auth/;
+        proxy_set_header        Host              $host;
+        proxy_set_header        X-Real-IP         $remote_addr;
+        proxy_set_header        X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto $scheme;
+        proxy_buffer_size       128k;
+        proxy_buffers           4 256k;
+        proxy_busy_buffers_size 256k;
+        proxy_read_timeout      120s;
+    }'
+fi
+
+if [[ "$TYPE" == "certbot" ]]; then
+  cat > /etc/nginx/sites-available/rtsurvey << NGINX_EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name ${DOMAIN};
+
+    ssl_certificate     ${CERT};
+    ssl_certificate_key ${KEY};
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+
+${KC_BLOCK}
+    location / {
+        proxy_pass         http://127.0.0.1:8080;
+        proxy_set_header   Host              \$host;
+        proxy_set_header   X-Real-IP         \$remote_addr;
+        proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120s;
+        client_max_body_size 100M;
+    }
+}
+NGINX_EOF
+
+elif [[ "$TYPE" == "rtsurvey" ]]; then
+  cat > /etc/nginx/sites-available/rtsurvey << NGINX_EOF
+server {
+    listen 80;
+    server_name ${DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+${KC_BLOCK}
+    location / {
+        proxy_pass         http://127.0.0.1:8080;
+        proxy_set_header   Host              \$host;
+        proxy_set_header   X-Real-IP         \$remote_addr;
+        proxy_set_header   X-Forwarded-For   \$proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 120s;
+        client_max_body_size 100M;
+    }
+}
+NGINX_EOF
+fi
+
+nginx -t && nginx -s reload
+echo "  Nginx reloaded with new config for ${DOMAIN}"
+
+update_env PROJECT_URL    "$DOMAIN"
+update_env HTTP_PROTOCOL  "$PROTOCOL"
+update_env PROJECT_PORT   "$PORT"
+update_env OIDC_REDIRECT_URI "${PROTOCOL}://${DOMAIN}/cpms/cpmsSite/auth"
+
+if [[ "${EMBED_KEYCLOAK}" == "true" ]]; then
+  update_env OIDC_ISSUER_URL "${PROTOCOL}://${DOMAIN}/auth/realms/rtsurvey"
+  update_env KC_HOSTNAME     "${PROTOCOL}://${DOMAIN}/auth"
+fi
+
+docker compose -f "$COMPOSE_FILE" up -d rtsurvey
+echo "  App container restarted with updated environment"
+
+if [[ "${EMBED_KEYCLOAK}" == "true" ]]; then
+  echo "  Restarting Keycloak with new KC_HOSTNAME..."
+  docker compose -f "$COMPOSE_FILE" --profile embed-keycloak up -d keycloak
+
+  echo "  Waiting for Keycloak..."
+  for i in $(seq 1 30); do
+    if curl -sf "http://localhost:${KEYCLOAK_PORT}/auth/realms/master" > /dev/null 2>&1; then
+      echo "  Keycloak ready (attempt ${i})"; break
+    fi
+    sleep 5
+  done
+
+  TOKEN=$(curl -s -X POST \
+    "http://localhost:${KEYCLOAK_PORT}/auth/realms/master/protocol/openid-connect/token" \
+    -d "client_id=admin-cli&grant_type=password&username=admin&password=${KEYCLOAK_ADMIN_PASSWORD}" \
+    | jq -r .access_token)
+
+  if [[ -n "$TOKEN" && "$TOKEN" != "null" ]]; then
+    CLIENT_UUID=$(curl -s \
+      "http://localhost:${KEYCLOAK_PORT}/auth/admin/realms/rtsurvey/clients?clientId=${PROJECT_ID}" \
+      -H "Authorization: Bearer $TOKEN" | jq -r '.[0].id')
+
+    if [[ -n "$CLIENT_UUID" && "$CLIENT_UUID" != "null" ]]; then
+      curl -s -X PUT \
+        "http://localhost:${KEYCLOAK_PORT}/auth/admin/realms/rtsurvey/clients/${CLIENT_UUID}" \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "{
+          \"redirectUris\": [\"${PROTOCOL}://${DOMAIN}/*\", \"vn.rta.rtsurvey.auth:/*\", \"vn.rta.rtsurvey.logout:/*\"],
+          \"webOrigins\":   [\"${PROTOCOL}://${DOMAIN}\"]
+        }"
+      echo "  Keycloak client redirect URIs updated"
+    fi
+
+    curl -s -X PUT \
+      "http://localhost:${KEYCLOAK_PORT}/auth/admin/realms/rtsurvey" \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{"sslRequired":"external"}'
+    echo "  Keycloak sslRequired set to external"
+  else
+    echo "  WARNING: Could not get Keycloak admin token -- update client URIs manually" >&2
+  fi
+
+  docker exec rtsurvey-mysql mysql -u root -p"${MYSQL_ROOT_PASSWORD}" "${PROJECT_ID}" \
+    -e "UPDATE ss_user SET email='admin@${DOMAIN}' WHERE username='admin';" || true
+  echo "  Admin email updated to admin@${DOMAIN}"
+fi
+
+CERT_EXPIRES=""
+if [[ -n "$CERT" ]] && command -v openssl > /dev/null 2>&1; then
+  CERT_EXPIRES=$(openssl x509 -enddate -noout -in "$CERT" 2>/dev/null \
+    | cut -d= -f2 | xargs -I{} date -d{} +%Y-%m-%d 2>/dev/null || true)
+fi
+
+CERT_FIELD=""
+[[ -n "$CERT_EXPIRES" ]] && CERT_FIELD=",\"cert_expires\":\"${CERT_EXPIRES}\""
+write_status "active" "$CERT_FIELD"
+
+echo "[$(date -u +%FT%TZ)] SSL setup complete: ${DOMAIN}"
+{% endraw %}

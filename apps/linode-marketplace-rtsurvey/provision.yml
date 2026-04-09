@@ -1,0 +1,29 @@
+---
+- name: Generate rtSurvey deployment credentials
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Generate MySQL app password
+      ansible.builtin.set_fact:
+        mysql_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+
+    - name: Generate MySQL root password
+      ansible.builtin.set_fact:
+        mysql_root_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+
+    - name: Generate admin password
+      ansible.builtin.set_fact:
+        admin_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
+
+    - name: Generate Keycloak admin password
+      ansible.builtin.set_fact:
+        keycloak_admin_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
+
+    - name: Generate Keycloak DB password
+      ansible.builtin.set_fact:
+        keycloak_db_password: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
+
+    - name: Generate OIDC client secret
+      ansible.builtin.set_fact:
+        oidc_client_secret: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"

@@ -1,0 +1,9 @@
+---
+- name: Create sudo user
+  ansible.builtin.import_tasks: sudo_user.yml
+
+- name: Harden SSH
+  ansible.builtin.import_tasks: ssh.yml
+
+- name: Configure firewall
+  ansible.builtin.import_tasks: firewall.yml

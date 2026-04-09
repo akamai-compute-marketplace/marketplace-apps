@@ -1,0 +1,50 @@
+---
+- name: Write ssl-issue.sh
+  ansible.builtin.template:
+    src: ssl-issue.sh.j2
+    dest: "{{ rtsurvey_deploy_dir }}/ssl-issue.sh"
+    mode: '0755'
+
+- name: Write rtsurvey-ssl.path systemd unit
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=Watch for rtSurvey SSL domain setup request
+
+      [Path]
+      PathModified={{ rtsurvey_deploy_dir }}/ssl-trigger/request.json
+
+      [Install]
+      WantedBy=multi-user.target
+    dest: /etc/systemd/system/rtsurvey-ssl.path
+    mode: '0644'
+
+- name: Write rtsurvey-ssl.service systemd unit
+  ansible.builtin.copy:
+    content: |
+      [Unit]
+      Description=rtSurvey SSL issue script
+      After=network-online.target docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStart={{ rtsurvey_deploy_dir }}/ssl-issue.sh
+      StandardOutput=append:/var/log/rtsurvey-ssl.log
+      StandardError=append:/var/log/rtsurvey-ssl.log
+    dest: /etc/systemd/system/rtsurvey-ssl.service
+    mode: '0644'
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start rtsurvey-ssl.path
+  ansible.builtin.systemd:
+    name: rtsurvey-ssl.path
+    state: started
+    enabled: true
+
+- name: Trigger SSL immediately if request.json already exists (reboot scenario)
+  ansible.builtin.command: touch {{ rtsurvey_deploy_dir }}/ssl-trigger/request.json
+  when: (rtsurvey_deploy_dir + '/ssl-trigger/request.json') is file
+  changed_when: true

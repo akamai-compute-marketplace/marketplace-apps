@@ -1,0 +1,90 @@
+---
+- name: Set DEBIAN_FRONTEND to noninteractive
+  ansible.builtin.lineinfile:
+    path: /etc/environment
+    line: 'DEBIAN_FRONTEND=noninteractive'
+    state: present
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - ufw
+      - nginx
+      - openssl
+      - jq
+      - snapd
+    state: present
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ tz | default('Asia/Ho_Chi_Minh') }}"
+
+- name: Create Docker apt keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG key (armored)
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /tmp/docker-gpg-armored
+    mode: '0644'
+
+- name: Dearmor Docker GPG key
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /etc/apt/keyrings/docker.gpg /tmp/docker-gpg-armored
+    creates: /etc/apt/keyrings/docker.gpg
+
+- name: Set Docker GPG key permissions
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/docker.gpg
+    mode: 'a+r'
+
+- name: Add Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }}
+      signed-by=/etc/apt/keyrings/docker.gpg]
+      https://download.docker.com/linux/ubuntu
+      {{ ansible_lsb.codename }} stable
+    filename: docker
+    state: present
+
+- name: Install Docker packages
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Enable and start Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Install Certbot via snap
+  community.general.snap:
+    name: certbot
+    classic: true
+    state: present
+
+- name: Symlink certbot to /usr/bin/certbot
+  ansible.builtin.file:
+    src: /snap/bin/certbot
+    dest: /usr/bin/certbot
+    state: link

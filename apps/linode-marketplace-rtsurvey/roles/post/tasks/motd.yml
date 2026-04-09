@@ -1,0 +1,15 @@
+---
+- name: Clear default MOTD scripts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/update-motd.d/10-help-text
+    - /etc/update-motd.d/50-motd-news
+    - /etc/update-motd.d/91-release-upgrade
+
+- name: Write rtSurvey MOTD
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0644'

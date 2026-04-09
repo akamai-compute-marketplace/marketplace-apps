@@ -1,0 +1,29 @@
+---
+- name: Allow SSH through UFW
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Allow HTTP (80) through UFW
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: Allow HTTPS (443) through UFW
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+
+- name: Allow Shiny port 3838 through UFW
+  community.general.ufw:
+    rule: allow
+    port: "3838"
+    proto: tcp
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    direction: incoming

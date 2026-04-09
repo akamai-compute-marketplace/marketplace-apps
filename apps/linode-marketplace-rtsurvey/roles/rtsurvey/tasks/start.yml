@@ -1,0 +1,39 @@
+---
+- name: Pull Docker images
+  ansible.builtin.command: >
+    docker compose -f {{ rtsurvey_deploy_dir }}/docker-compose.production.yml
+    {{ '--profile embed-keycloak' if embed_keycloak else '' }}
+    pull
+  register: pull_result
+  changed_when: "'Pulled' in pull_result.stdout"
+
+- name: Start services
+  ansible.builtin.command: >
+    docker compose -f {{ rtsurvey_deploy_dir }}/docker-compose.production.yml
+    {{ '--profile embed-keycloak' if embed_keycloak else '' }}
+    up -d
+  register: up_result
+  changed_when: "'Started' in up_result.stdout or 'Created' in up_result.stdout"
+
+- name: Wait for rtsurvey-app to be healthy (up to 5 min)
+  ansible.builtin.command: >
+    docker inspect --format={{ '{{' }}.State.Health.Status{{ '}}' }} {{ rtsurvey_project_id }}-app
+  register: health_check
+  retries: 30
+  delay: 10
+  until: health_check.stdout == "healthy"
+  changed_when: false
+
+- name: Patch admin email to match Keycloak realm user
+  ansible.builtin.command: >
+    docker exec {{ rtsurvey_project_id }}-mysql
+    mysql -u root -p{{ mysql_root_password }}
+    {{ rtsurvey_project_id }}
+    -e "UPDATE ss_user SET email='admin@{{ rtsurvey_project_id }}.local' WHERE username='admin';"
+  register: patch_result
+  retries: 5
+  delay: 5
+  until: patch_result.rc == 0
+  ignore_errors: true
+  when: embed_keycloak
+  changed_when: patch_result.rc == 0

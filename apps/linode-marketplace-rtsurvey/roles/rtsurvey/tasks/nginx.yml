@@ -1,0 +1,47 @@
+---
+- name: Create /var/www/html directory
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+
+- name: Remove default Nginx welcome page
+  ansible.builtin.file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+
+- name: Copy waiting page
+  ansible.builtin.copy:
+    src: waiting.html
+    dest: /var/www/html/waiting.html
+    mode: '0644'
+
+- name: Write initial Nginx config (HTTP proxy with waiting page fallback)
+  ansible.builtin.template:
+    src: nginx-init.conf.j2
+    dest: /etc/nginx/sites-available/rtsurvey
+    mode: '0644'
+  notify: Reload nginx
+
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+- name: Enable rtsurvey site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/rtsurvey
+    dest: /etc/nginx/sites-enabled/rtsurvey
+    state: link
+  notify: Reload nginx
+
+- name: Validate Nginx config
+  ansible.builtin.command: nginx -t
+  changed_when: false
+
+- name: Start and enable Nginx
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true

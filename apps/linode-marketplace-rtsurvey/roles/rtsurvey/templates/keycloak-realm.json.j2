@@ -1,0 +1,44 @@
+{
+  "realm": "rtsurvey",
+  "enabled": true,
+  "ssoSessionIdleTimeout": 2592000,
+  "ssoSessionMaxLifespan": 31536000,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "clients": [
+    {
+      "clientId": "{{ rtsurvey_project_id }}",
+      "name": "{{ rtsurvey_project_id }}",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "redirectUris": [
+        "http://{{ server_ip }}/*",
+        "vn.rta.rtsurvey.auth:/*",
+        "vn.rta.rtsurvey.logout:/*"
+      ],
+      "webOrigins": [
+        "http://{{ server_ip }}"
+      ],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "email": "admin@{{ rtsurvey_project_id }}.local",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "{{ keycloak_admin_password }}",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["offline_access", "uma_authorization"]
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: {{ rtsurvey_project_id }}-mysql
+    restart: {{ restart_policy }}
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci --sql-mode=NO_ENGINE_SUBSTITUTION
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - rtsurvey-net
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  rtsurvey:
+    image: ${RTSURVEY_IMAGE}
+    container_name: {{ rtsurvey_project_id }}-app
+    restart: {{ restart_policy }}
+    entrypoint: ["/bin/entrypoint-production.sh"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:{{ app_port }}:80"
+      - "{{ shiny_port }}:3838"
+    env_file:
+      - .env
+    volumes:
+      - app_uploads:/var/www/html/smartsurvey/uploads
+      - app_audios:/var/www/html/smartsurvey/audios
+      - app_downloads:/var/www/html/smartsurvey/downloads
+      - app_gallery:/var/www/html/smartsurvey/gallery
+      - app_voicemail:/var/www/html/smartsurvey/voicemail
+      - app_runtime:/var/www/html/smartsurvey/protected/runtime
+      - app_v2_runtime:/var/www/html/smartsurvey/protected/modules/v2/runtime
+      - app_cache:/var/www/html/smartsurvey/cache
+      - app_tmp:/var/www/html/smartsurvey/tmp
+      - app_analytics:/var/www/html/smartsurvey/analytics
+      - app_aggregate:/var/www/html/smartsurvey/aggregate
+      - app_converter:/var/www/html/smartsurvey/converter
+      - shiny_data:/srv/shiny-server/smartsurvey
+      - shiny_logs:/var/log/shiny-server
+      - app_assets:/var/www/html/smartsurvey/assets
+      - {{ rtsurvey_deploy_dir }}/ssl-trigger:{{ rtsurvey_deploy_dir }}/ssl-trigger
+    networks:
+      - rtsurvey-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+{% if embed_keycloak %}
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: {{ rtsurvey_project_id }}-keycloak
+    restart: {{ restart_policy }}
+    profiles:
+      - embed-keycloak
+    command: start --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_HOSTNAME_STRICT: "false"
+      KC_DB: mysql
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DB}
+      KC_DB_URL_HOST: mysql
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - ./keycloak-import:/opt/keycloak/data/import
+    ports:
+      - "127.0.0.1:{{ keycloak_port }}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - rtsurvey-net
+    healthcheck:
+      test: ["CMD-SHELL", "(exec 3<>/dev/tcp/localhost/8080) 2>/dev/null && exit 0 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+{% endif %}
+
+volumes:
+  mysql_data:
+    name: {{ rtsurvey_project_id }}_mysql_data
+  app_uploads:
+    name: {{ rtsurvey_project_id }}_uploads
+  app_audios:
+    name: {{ rtsurvey_project_id }}_audios
+  app_downloads:
+    name: {{ rtsurvey_project_id }}_downloads
+  app_gallery:
+    name: {{ rtsurvey_project_id }}_gallery
+  app_voicemail:
+    name: {{ rtsurvey_project_id }}_voicemail
+  app_runtime:
+    name: {{ rtsurvey_project_id }}_runtime
+  app_v2_runtime:
+    name: {{ rtsurvey_project_id }}_v2_runtime
+  app_cache:
+    name: {{ rtsurvey_project_id }}_cache
+  app_tmp:
+    name: {{ rtsurvey_project_id }}_tmp
+  app_analytics:
+    name: {{ rtsurvey_project_id }}_analytics
+  app_aggregate:
+    name: {{ rtsurvey_project_id }}_aggregate
+  app_converter:
+    name: {{ rtsurvey_project_id }}_converter
+  shiny_data:
+    name: {{ rtsurvey_project_id }}_shiny_data
+  shiny_logs:
+    name: {{ rtsurvey_project_id }}_shiny_logs
+  app_assets:
+    name: {{ rtsurvey_project_id }}_assets
+
+networks:
+  rtsurvey-net:
+    name: {{ rtsurvey_project_id }}_network
+    driver: bridge
