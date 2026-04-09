@@ -99,8 +99,7 @@ function udf {
   # open webui admin credentials
   openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
   openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
-  llm:
-$(echo -e "${LLM}")
+  llm: $(echo -e "${LLM}")
 
   # BEGIN CI-UDF-ADDONS
   # addons

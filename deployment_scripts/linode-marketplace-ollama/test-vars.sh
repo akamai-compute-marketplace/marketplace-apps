@@ -72,7 +72,7 @@ fi
 if [[ -n "${LLM}" ]]; then
         UDF_VARS["LLM"]="${LLM}"
 else
-        UDF_VARS["LLM"]="qwen" # default
+        UDF_VARS["LLM"]="llama3.2:3b" # default
 fi
 
 set_vars() {
