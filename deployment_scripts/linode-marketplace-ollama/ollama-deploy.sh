@@ -43,7 +43,8 @@ fi
 ## Ollama Configuration
 #<UDF name="openwebui_login_name" label="The initial admin login name for Open WebUI">
 #<UDF name="openwebui_login_email" label="Email address for Open WebUI admin account">
-#<UDF name="openwebui_enabled" label="Would you like to enable openwebio" oneOf="Yes,No" default="Yes">
+
+#<UDF name="llm" label="Ollama Model (e.g. llama3.2:3b, qwen2.5:7b, mistral:7b)" example="llama3.2:3b">
 
 #GH_USER=""
 #BRANCH=""
@@ -98,12 +99,14 @@ function udf {
   # open webui admin credentials
   openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
   openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
-  openwebui_enabled: ${OPENWEBUI_ENABLED}
+  llm:
+$(echo -e "${LLM}")
 
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
   # END CI-UDF-ADDONS
+
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then

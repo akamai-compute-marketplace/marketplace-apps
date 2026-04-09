@@ -63,16 +63,16 @@ else
         UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
-if [[ -n "${OPENWEBUI_ENABLED}" ]]; then
-        UDF_VARS["OPENWEBUI_ENABLED"]="${OPENWEBUI_ENABLED}"
-else
-        UDF_VARS["OPENWEBUI_ENABLED"]="Yes" # default
-fi
-
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
         UDF_VARS["ADD_ONS"]="none" # default
+fi
+
+if [[ -n "${LLM}" ]]; then
+        UDF_VARS["LLM"]="${LLM}"
+else
+        UDF_VARS["LLM"]="qwen" # default
 fi
 
 set_vars() {

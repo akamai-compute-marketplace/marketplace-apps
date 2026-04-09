@@ -26,7 +26,6 @@ services:
       timeout: 5s
       retries: 5
 
-{% if openwebui_enabled == "yes" %}
   #--------------------------------------------
   # Open-WebUI - The User Interface
   #--------------------------------------------
@@ -46,10 +45,7 @@ services:
     depends_on:
       ollama:
         condition: service_started
-{% endif %}
 
 volumes:
   ollama_data:
-{% if openwebui_enabled == "yes" %}
   open_webui_data:
-{% endif %}
