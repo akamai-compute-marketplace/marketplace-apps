@@ -43,3 +43,29 @@
   until: ollama_health.status == 200
   retries: 60
   delay: 10
+
+- name: Validate and install Ollama model
+  block:
+    - name: Validate model against Ollama registry
+      community.docker.docker_container_exec:
+        container: ollama
+        command: "ollama show {{ llm }}"
+      register: ollama_validate
+      failed_when: ollama_validate.rc != 0
+
+    - name: Pull Ollama model
+      community.docker.docker_container_exec:
+        container: ollama
+        command: "ollama pull {{ llm }}"
+      timeout: 600
+
+  rescue:
+    - name: Report invalid or unavailable model
+      fail:
+        msg: |
+          Deployment halted: The specified language model '{{ llm }}' could not be
+          validated against the Ollama model registry.
+
+          Please verify the model name is correct and available at https://ollama.com/library
+          before retrying the deployment.
+  when: llm is defined

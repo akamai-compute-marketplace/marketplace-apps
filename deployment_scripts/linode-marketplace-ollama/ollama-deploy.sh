@@ -99,7 +99,6 @@ function udf {
   # open webui admin credentials
   openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
   openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
-  llm: $(echo -e "${LLM}")
 
   # BEGIN CI-UDF-ADDONS
   # addons
@@ -107,6 +106,11 @@ function udf {
   # END CI-UDF-ADDONS
 
 EOF
+
+  if [[ -n ${LLM} ]]; then
+    echo "llm: ${LLM}" >> ${group_vars};
+  else echo "No LLM entered";
+  fi
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
     echo "disable_root: true" >> ${group_vars};
