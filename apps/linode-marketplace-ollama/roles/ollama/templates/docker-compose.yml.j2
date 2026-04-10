@@ -39,8 +39,6 @@ services:
       - open_webui_data:/app/backend/data
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
-      - WEBUI_AUTH=true
-      - ENABLE_SIGNUP=false
       - ANONYMIZED_TELEMETRY=false
     depends_on:
       ollama:
