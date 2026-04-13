@@ -45,6 +45,7 @@
   delay: 10
 
 - name: Validate and install Ollama model
+  when: llm is defined
   block:
     - name: Pull Ollama model
       community.docker.docker_container_exec:
@@ -63,4 +64,4 @@
 
           Please verify the model name is correct and available at https://ollama.com/library
           before retrying the deployment.
-  when: llm is defined
+  
