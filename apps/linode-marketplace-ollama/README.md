@@ -1,8 +1,8 @@
-# Akamai Cloud Compute - DeepSeek R1 and Open WebUI Deployment One-Click App
+# Akamai Cloud Compute - Ollama and Open WebUI Deployment One-Click App
 
 Open WebUI is an open-source, self-hosted web interface for interacting with and managing large language models. It supports multiple AI backends, multi-user access, and extensible integrations, enabling secure and customizable deployment for local or remote model inference.
 
-Our Quick Deploy application deploys DeepSeek R1 distilled models (Qwen2.5-based) with vLLM as the inference backend and Open WebUI as the chat interface. These models are distilled from the full 671B DeepSeek-R1, providing enhanced chain-of-thought reasoning capabilities in smaller, deployable sizes.
+Our Quick Deploy application sets up Ollama as the inference backend paired with Open WebUI as the chat interface. Ollama makes it simple to pull and run a wide range of open-source large language models locally, with full GPU acceleration and no external API dependencies required.
 
 During deployment, you can choose between three model sizes to match your GPU capabilities and performance requirements. See **Resource Requirements** below.
 
@@ -10,11 +10,11 @@ During deployment, you can choose between three model sizes to match your GPU ca
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | `29.2.1`    | Container Management Runtime |
+| Docker    | `29.4.0`    | Container Management Runtime |
 | Docker Compose    | `v5.0.2`    | Tool for multi-container applications |
 | Nginx    | `1.24.0`    | HTTP server used to serve web applications |
-| vLLM | `v0.14.0` | Library to run LLM inference models  |
-| Open WebUI | `magin` tag | Self-hosted AI interface platform |
+| Ollama | `latest` | Local LLM inference engine with GPU support |
+| Open WebUI | `main` tag | Self-hosted AI interface platform |
 
 **Supported Distributions:**
 
@@ -36,90 +36,120 @@ During deployment, you can choose between three model sizes to match your GPU ca
 
 # Architecture
 
-## Overview
+### Overview
 
-The DeepSeek R1 deployment consists of two containerized services that work together to provide a complete AI inference stack:
+The deployment consists of two containerized services that work together to provide a complete AI inference stack:
 
-1. **API Service** (`vLLM`): High-performance inference engine with tensor parallelism
-2. **UI Service** (`Open WebUI`): Feature-rich chat interface
+1. **Ollama**: Local LLM inference engine with GPU acceleration
+2. **Open WebUI**: Feature-rich browser-based chat interface
 
-Both services are managed via Docker Compose and configured to restart automatically.
+Both services are managed via Docker Compose and configured to restart automatically (`unless-stopped`).
+
+---
 
 ## Containerized Services
 
-### API Service (vLLM)
+### Ollama (LLM Engine)
 
-- **Port**: `localhost:8000`
-- **Container**: `vllm/vllm-openai:v0.14.0`
-- **Model**: `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B`, `14B`, or `32B` (user selectable)
-- **Purpose**: High-performance inference engine with OpenAI-compatible REST API
+- **Port**: `localhost:11434`
+- **Container**: `ollama/ollama:latest`
+- **Purpose**: Local inference engine with a REST API compatible with OpenAI-style clients
 - **Features**:
-  - OpenAI-compatible REST API
-  - GPU-accelerated inference with automatic tensor parallelism (required for 14B and 32B models)
-  - MIT licensed models (no authentication required)
-  - Chain-of-thought reasoning with `<think>` traces
-  - 16,384 token context length
+  - GPU-accelerated inference using all available NVIDIA GPUs
+  - Supports a wide range of open models (Llama, Mistral, Gemma, Qwen, DeepSeek, etc.)
+  - Model persistence via Docker volume
+  - Health check via `ollama list`
 
-### UI Service (Open WebUI)
+### Open WebUI (Chat Interface)
 
 - **Port**: `localhost:3000`
 - **Container**: `ghcr.io/open-webui/open-webui:main`
-- **Purpose**: Browser-based chat interface
+- **Purpose**: Browser-based chat interface connected to Ollama
 - **Features**:
   - Browser-based chat UI
   - Persistent chat history
-  - Connected to the API service automatically
-  - User-friendly interface for interacting with models
+  - Automatically connects to Ollama at `http://ollama:11434`
+  - Multi-user support
+  - Telemetry disabled by default (`ANONYMIZED_TELEMETRY=false`)
 
-## Web Service
-
-### HTTPS (Nginx)
-
-- **port**: 443
-- **Features**:
-  - HTTPS Secured domain via Let's Encrypt
+---
 
 ## Directory Structure
 
-The following directories are used on the deployed instance:
+The following Docker volumes are used:
 
-- `/opt/deepseek` - Application directory containing docker-compose.yml
-- `vllm_data` volume - Model cache directory (stores downloaded models)
-- `open_webui_data` volume - Chat UI persistent data (chat history, settings)
+- `ollama_data` — Stores downloaded models and Ollama configuration (`/root/.ollama`)
+- `open_webui_data` — Stores chat history, user settings, and UI data (`/app/backend/data`)
+
+---
 
 ## Service Communication
 
-The UI service automatically connects to the API service running on `localhost:8000`. Both services run on the same instance and communicate over the Docker network.
+Open WebUI connects to Ollama over the internal Docker network using the service name as the hostname (`http://ollama:11434`). Both services run on the same host and communicate without exposing Ollama publicly.
 
-## Tensor Parallelism
+---
 
-The deployment automatically detects the number of available GPUs and configures vLLM to use tensor parallelism across all of them. This is required for the 14B and 32B models (which do not fit on a single GPU).
+## Adding New Models
 
-## RAG Operations in Open WebUI
+To pull and run a new model, use `docker exec` to interact with the running Ollama container.
 
-Open WebUI provides built-in support for RAG operations allowing users to chat with their documents. This implementation uses Nginx as a frontend web service proxy to the Open WebUI container. Users that are looking to upload documents larger than 100MBs are required to update Nginx's `client_max_body_size` to a larger value.
+### Pull a model
 
-You can find the Nginx virtual host configuration in `/etc/nginx/sites-enabled/${DOMAIN}`. Where `${DOMAIN}` should reflect the rDNS of your compute instance.
+```bash
+docker exec ollama ollama pull 
+```
+
+**Examples:**
+
+```bash
+# Pull Llama 3.2 (3B)
+docker exec ollama ollama pull llama3.2
+
+# Pull Mistral 7B
+docker exec ollama ollama pull mistral
+
+# Pull DeepSeek R1 (7B)
+docker exec ollama ollama pull deepseek-r1:7b
+
+# Pull Gemma 3 (4B)
+docker exec ollama ollama pull gemma3:4b
+
+# Pull Qwen 2.5 (7B)
+docker exec ollama ollama pull qwen2.5:7b
+```
+
+Browse the full model library at [ollama.com/library](https://ollama.com/library).
+
+### List downloaded models
+
+```bash
+docker exec ollama ollama list
+```
+
+### Remove a model
+
+```bash
+docker exec ollama ollama rm 
+```
+
+### Run a model directly in the terminal (optional)
+
+```bash
+docker exec -it ollama ollama run 
+```
+
+Once pulled, models will automatically appear in the Open WebUI model selector — no restart required.
+
+---
 
 ## Resource Requirements
 
-### For DeepSeek R1 Distill Qwen 7B
-- **GPU**: Any 1-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
-- **RAM**: 16GB or higher
-- **Storage**: Sufficient space for model files (~14GB download)
-- **Compatible Plans**: All Ada 1-GPU plans, Quadro RTX 6000 1-GPU
-- **Reference**: [DeepSeek-R1-Distill-Qwen-7B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-7B)
+GPU resources are reserved automatically for all available NVIDIA devices. Requirements will vary depending on the model you choose to run.
 
-### For DeepSeek R1 Distill Qwen 14B
-- **GPU**: Any 2-GPU instance or higher (RTX 4000 Ada or Quadro RTX 6000)
-- **RAM**: 32GB or higher
-- **Storage**: Sufficient space for model files (~28GB download)
-- **Compatible Plans**: All Ada 2-GPU and 4-GPU plans, Quadro RTX 6000 2-GPU, 3-GPU, and 4-GPU
-- **Reference**: [DeepSeek-R1-Distill-Qwen-14B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-14B)
+| Model Size | VRAM Required | Example Models |
+| :--- | :--- | :--- |
+| 3B–7B | 6–8GB VRAM | Llama 3.2 3B, Mistral 7B, DeepSeek R1 7B |
+| 8B–14B | 10–16GB VRAM | Llama 3.1 8B, DeepSeek R1 14B, Gemma 3 12B |
+| 32B+ | 24GB+ VRAM | DeepSeek R1 32B, Qwen 2.5 32B |
 
-### For DeepSeek R1 Distill Qwen 32B
-- **GPU**: Any 4-GPU instance (RTX 4000 Ada or Quadro RTX 6000)
-- **RAM**: 128GB or higher
-- **Storage**: Sufficient space for model files (~64GB download)
-- **Compatible Plans**: Ada 4-GPU plans, Quadro RTX 6000 4-GPU
-- **Reference**: [DeepSeek-R1-Distill-Qwen-32B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B)
+For multi-GPU setups, Ollama will automatically use all available GPUs as configured in the Compose file (`count: all`).Sonnet 4.6Claude is AI and can make mistakes. Please double-
