@@ -1,2 +1,2 @@
 # Protects everything inside .github/ including workflows & scripts
-/.github/ @akamai-compute-marketplace/maintainers-team
+/.github/ @akamai-compute-marketplace/cloud-architects

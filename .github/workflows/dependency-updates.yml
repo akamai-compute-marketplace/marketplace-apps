@@ -1,0 +1,66 @@
+---
+name: Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 9 15 * *'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update apps dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Generate GitHub App Token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.DEPS_APP_ID }}
+          private-key: ${{ secrets.DEPS_APP_SECRET }}
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+          ref: develop
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check and update dependencies
+        id: update
+        run: |
+          BRANCH="chore/deps-update-$(date +%Y-%m-%d)"
+          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
+          python3 .github/scripts/python-deps-check.py
+          python3 .github/scripts/ansible-deps-check.py
+          python3 .github/scripts/generate-pr-body.py
+
+      - name: Commit and push branch
+        if: steps.update.outputs.any_updates == 'true'
+        run: |
+          git config user.name "Galactic Snake Bot"
+          git config user.email "3400069+quick-deploy-dependency-update-bot[bot]@users.noreply.github.com"
+          git checkout -b "${{ steps.update.outputs.branch }}"
+          git add -u apps/
+          git commit -m "chore: update dependencies ($(date +%Y-%m-%d))"
+          git push origin "${{ steps.update.outputs.branch }}"
+
+      - name: Create Pull Request
+        if: steps.update.outputs.any_updates == 'true'
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: |
+          PR_URL=$(gh pr create \
+            --title "chore: Dependency Updates $(date +%Y-%m-%d)" \
+            --body-file /tmp/pr_body.md \
+            --base develop \
+            --head "${{ steps.update.outputs.branch }}" \
+            --label "dependencies")
+          echo "Successfully created PR: $PR_URL"

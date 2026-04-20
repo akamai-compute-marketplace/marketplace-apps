@@ -31,6 +31,18 @@ This directory contains the GitHub Actions workflows and supporting scripts that
 
 ---
 
+### 3. Dependency Updates (`dependency-updates.yml`)
+
+**Trigger:**
+- Scheduled cron — e.g., 15th of every month at 09:00 UTC
+- Manual run
+
+**Scope:** Scans `requirements.txt` and `collections.yml` files across all apps in the repository.
+
+**Purpose:** Automates dependency lifecycle management. It queries PyPI and Ansible Galaxy for the latest stable versions, safely bumps pinned versions, and opens a consolidated Pull Request containing detailed Markdown tables of all updates.
+
+---
+
 ## Deployment Job Flow
 
 Each app in the matrix goes through the following steps:
@@ -54,6 +66,8 @@ teardown-domain-records-cleanup.sh → Remove DNS records created during deploym
 | `HF_TOKEN` | Secret | Hugging Face API token (used by AI/ML apps) |
 | `LINODE_DOMAIN` | Variable | Base domain used for app DNS records |
 | `LINODE_SUBDOMAIN` | Variable | Subdomain prefix used for app DNS records |
+| `DEPS_APP_ID` | Secret | GitHub App ID used for authenticating dependency updates |
+| `DEPS_APP_SECRET` | Secret | GitHub App private key used for authenticating dependency updates |
 
 ---
 
@@ -73,6 +87,9 @@ All supporting scripts live in `.github/scripts/`:
 | `static-code-shellcheck.sh` | Runs ShellCheck across the repository |
 | `static-code-yamllint.sh` | Runs yamllint across the repository |
 | `static-code-ansible-lint.sh` | Runs ansible-lint across the repository |
+| `python-deps-check.py` | Queries PyPI and records available Python package updates |
+| `ansible-deps-check.py` | Queries Ansible Galaxy v3 API and records Ansible collection updates |
+| `generate-pr-body.py` | Parses dependency update reports to generate a unified Markdown PR body |
 
 ---
 
