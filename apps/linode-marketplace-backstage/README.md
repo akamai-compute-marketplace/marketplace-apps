@@ -38,7 +38,7 @@ Make sure that the following values are updated at the top of the code block bef
 - SUBDOMAIN
 - DOMAIN
 - ALLOW_IPS
-- APP_NAME
+- BACKSTAGE_APPNAME
 - GITHUB_OAUTH_CLIENT_ID
 - GITHUB_OAUTH_CLIENT_SECRET
 - GITHUB_USERNAME
@@ -54,7 +54,7 @@ export SOA_EMAIL_ADDRESS="email@domain.com"
 export SUBDOMAIN=backstage-app""
 export DOMAIN="example.com"
 export ALLOW_IPS=""
-export APP_NAME="backstage-app"
+export BACKSTAGE_APPNAME="backstage-app"
 export GITHUB_OAUTH_CLIENT_ID=""
 export GITHUB_OAUTH_CLIENT_SECRET=""
 export GITHUB_USERNAME=""
@@ -75,7 +75,7 @@ curl -H "Content-Type: application/json" \
         "domain": "${DOMAIN}",
         "soa_email_address": "${SOA_EMAIL_ADDRESS}",
         "allowed_ips": "${ALLOW_IPS}",
-        "app_name": "${APP_NAME}",
+        "backstage_appname": "${BACKSTAGE_APPNAME}",
         "github_oauth_client_id": "${GITHUB_OAUTH_CLIENT_ID}",
         "github_oauth_client_secret": "$GITHUB_OAUTH_CLIENT_SECRET",
         "github_username": "$GITHUB_USERNAME",
@@ -102,7 +102,7 @@ export SOA_EMAIL_ADDRESS="email@example.com"
 export SUBDOMAIN=backstage-app""
 export DOMAIN="example.com"
 export ALLOW_IPS=""
-export APP_NAME="backstage-app"
+export BACKSTAGE_APPNAME="backstage-app"
 export GITHUB_OAUTH_CLIENT_ID=""
 export GITHUB_OAUTH_CLIENT_SECRET=""
 export GITHUB_USERNAME=""
@@ -113,7 +113,7 @@ linode-cli linodes create \
   --image 'linode/ubuntu24.04' \
   --private_ip true \
   --region us-mia \
-  --stackscript_data '{"user_name": "{USERNAME}","disable_root":"No","token_password":"${TOKEN}","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","allowed_ips":"${ALLOW_IPS}","app_name":"${APP_NAME}","github_oauth_client_id":"${GITHUB_OAUTH_CLIENT_ID}","github_oauth_client_secret":"${GITHUB_OAUTH_CLIENT_SECRET}","github_username":"${GITHUB_USERNAME}","backstage_orgname":"${BACKSTAGE_ORGNAME}","github_pat":"${GITHUB_PAT}"}' \
+  --stackscript_data '{"user_name": "{USERNAME}","disable_root":"No","token_password":"${TOKEN}","subdomain":"${SUBDOMAIN}","domain":"${DOMAIN}","soa_email_address":"${SOA_EMAIL_ADDRESS}","allowed_ips":"${ALLOW_IPS}","backstage_appname":"${BACKSTAGE_APPNAME}","github_oauth_client_id":"${GITHUB_OAUTH_CLIENT_ID}","github_oauth_client_secret":"${GITHUB_OAUTH_CLIENT_SECRET}","github_username":"${GITHUB_USERNAME}","backstage_orgname":"${BACKSTAGE_ORGNAME}","github_pat":"${GITHUB_PAT}"}' \
   --stackscript_id 000000 \
   --type g6-dedicated-4 \
   --label backstage-server \
