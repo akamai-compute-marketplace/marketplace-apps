@@ -1,0 +1,66 @@
+---
+- name: Install Docker latest
+  import_role:
+    name: docker
+
+- name: Installing docker-compose
+  apt:
+    pkg: [docker-compose]
+    state: present
+
+- name: Set tensor parallel size
+  set_fact:
+    tensor_parallel_size: "{{ gpu_count | default(1) }}"
+
+- name: Create docker directory
+  file:
+    path: "{{ docker_directory }}"
+    state: directory
+    mode: '0755'
+
+- name: Template docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ docker_directory }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Pull Docker images from compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    pull: always
+
+- name: Start containers from docker-compose file
+  community.docker.docker_compose_v2:
+    project_src: "{{ docker_directory }}"
+    state: present
+
+- name: Wait for Ollama service to start
+  uri:
+    url: "http://localhost:11434/api/tags"
+    method: GET
+    status_code: [200]
+  register: ollama_health
+  until: ollama_health.status == 200
+  retries: 60
+  delay: 10
+
+- name: Validate and install Ollama model
+  when: llm is defined
+  block:
+    - name: Pull Ollama model
+      community.docker.docker_container_exec:
+        container: ollama
+        command: "ollama pull {{ llm }}"
+      timeout: 600
+      register: ollama_pull
+      failed_when: ollama_pull.rc != 0
+
+  rescue:
+    - name: Report invalid or unavailable model
+      fail:
+        msg: |
+          Deployment halted: The specified language model '{{ llm }}' could not be
+          pulled from the Ollama model registry.
+
+          Please verify the model name is correct and available at https://ollama.com/library
+          before retrying the deployment.
