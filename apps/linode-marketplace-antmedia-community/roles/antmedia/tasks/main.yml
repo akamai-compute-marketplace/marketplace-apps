@@ -42,7 +42,7 @@
     headers:
       Content-Type: 'application/json'
   register: antmedia_result
-  until: antmedia_result.status != 403
+  # until: antmedia_result.status != 403
   retries: 5
   delay: 10
 

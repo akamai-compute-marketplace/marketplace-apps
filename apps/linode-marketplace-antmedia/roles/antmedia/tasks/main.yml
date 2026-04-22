@@ -37,13 +37,13 @@
     body_format: json
     body:
       email: "{{ soa_email_address }}"
-      password: "{{ antmedia_password }}"
+      password: "{{ antmedia_password | hash('md5') }}"
       scope: 'system'
       userType: 'ADMIN'
     headers:
       Content-Type: 'application/json'
   register: antmedia_result
-  until: antmedia_result.status == 200
+  # until: antmedia_result.status == 200
   retries: 5
   delay: 10
 
