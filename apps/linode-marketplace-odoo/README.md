@@ -13,7 +13,7 @@ Odoo is a free and comprehensive business app suite of tools that seamlessly int
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

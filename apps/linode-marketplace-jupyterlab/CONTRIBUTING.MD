@@ -15,7 +15,7 @@ https://docs.jupyter.org/en/latest/
 https://jupyter.org/community
 
 Operating System
-Ubuntu 22.04 LTS
+Ubuntu 24.04 LTS
 
 Documentation
 DOCUMENTATION.md
