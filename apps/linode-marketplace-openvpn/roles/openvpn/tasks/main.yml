@@ -13,7 +13,7 @@
 - name: Add OpenVPN repo
   ansible.builtin.apt_repository:
     filename: OpenVPN
-    repo: 'deb [signed-by=/etc/apt/trusted.gpg.d/as-repo-public.gpg.asc] http://as-repository.openvpn.net/as/debian jammy main'
+    repo: 'deb [signed-by=/etc/apt/trusted.gpg.d/as-repo-public.gpg.asc] http://as-repository.openvpn.net/as/debian noble main'
 
 - name: Update repos
   apt:

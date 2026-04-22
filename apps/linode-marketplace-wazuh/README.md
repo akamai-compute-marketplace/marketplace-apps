@@ -13,7 +13,7 @@ Capture your thoughts and securely access them from any device with a highly cus
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -45,7 +45,7 @@ curl -H "Content-Type: application/json" \
     -X POST -d '{
       "backups_enabled": true,
       "swap_size": 512,
-      "image": "linode/ubuntu22.04",
+      "image": "linode/ubuntu24.04",
       "root_pass": "${ROOT_PASS}",
       "stackscript_id": 00000000000,
       "stackscript_data": {
@@ -76,7 +76,7 @@ linode-cli linodes create \
   --label linode123 \
   --root_pass ${ROOT_PASS} \
   --booted true \
-  --image 'linode/ubuntu22.04' \
+  --image 'linode/ubuntu24.04' \
   --stackscript_id 00000000000 \
   --stackscript_data '{"disable_root": "${DISABLE_ROOT}","soa_email_address": "${SOA_EMAIL_ADDRESS}"}, {"user_name": "${USER_NAME}"}' \
   --region us-east \

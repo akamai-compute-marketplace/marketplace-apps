@@ -1,7 +1,10 @@
 ---
+# docker
+- name: Install docker
+  import_role:
+    name: docker
 
 # Simplex service/docker setup
-
 - name: Simplex setup
   block:
     - name: Setup systemd service
