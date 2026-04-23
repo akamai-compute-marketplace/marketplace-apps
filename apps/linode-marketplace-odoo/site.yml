@@ -13,7 +13,7 @@
         - name: Run roles
           include_role:
             name: "{{ item }}"
-          loop: [common, docker, odoo, post]
+          loop: [common, odoo, post]
         - name: Deployment passed
           import_tasks: ../linode_helpers/roles/cilog/tasks/main.yml
           vars:
@@ -27,5 +27,5 @@
     - name: Running app normally
       include_role:
         name: "{{ item }}"
-      loop: [common, docker, odoo, post]
+      loop: [common, odoo, post]
       when: "mode == 'production'"

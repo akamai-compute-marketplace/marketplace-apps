@@ -13,7 +13,7 @@ Capture your thoughts and securely access them from any device with a highly cus
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

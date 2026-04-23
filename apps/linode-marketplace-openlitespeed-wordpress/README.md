@@ -13,7 +13,7 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server that h
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
