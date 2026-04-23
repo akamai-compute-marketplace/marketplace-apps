@@ -1,0 +1,49 @@
+---
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Create Nomad htpasswd file
+  community.general.htpasswd:
+    path: "{{ nomad_htpasswd_file }}"
+    name: "{{ nomad_htpasswd_user }}"
+    password: "{{ nomad_htpasswd_password }}"
+    crypt_scheme: bcrypt
+    owner: root
+    group: www-data
+    mode: '0640'
+  no_log: true
+
+- name: Create nginx site configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Enable nomad nginx site
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+  notify: Restart nginx
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Enable and start nginx
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp

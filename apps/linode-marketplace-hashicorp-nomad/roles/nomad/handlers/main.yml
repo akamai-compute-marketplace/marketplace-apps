@@ -1,0 +1,10 @@
+---
+- name: Restart nomad
+  systemd_service:
+    name: nomad
+    state: restarted
+
+- name: Restart nginx
+  systemd_service:
+    name: nginx
+    state: restarted

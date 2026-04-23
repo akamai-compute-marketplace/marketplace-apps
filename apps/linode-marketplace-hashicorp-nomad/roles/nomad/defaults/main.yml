@@ -1,0 +1,9 @@
+---
+# Nomad install layout
+nomad_config_dir: /etc/nomad.d
+nomad_data_dir: /opt/nomad/data
+nomad_bind_addr: "127.0.0.1"
+nomad_http_port: 4646
+
+# HTTP Basic Auth file — nginx gates the UI before Nomad ACL takes over
+nomad_htpasswd_file: /etc/nginx/.nomad_htpasswd
