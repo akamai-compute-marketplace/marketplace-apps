@@ -25,7 +25,7 @@ authors: ["Linode"]
 
 ## Configuration Options
 
-- **Supported distributions:** Ubuntu 22.04 LTS
+- **Supported distributions:** Ubuntu 24.04 LTS
 - **Suggested plan:** All plan types and sizes can be used.
 
 ### InfluxDB Options
