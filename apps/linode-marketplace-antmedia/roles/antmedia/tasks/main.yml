@@ -37,7 +37,7 @@
     body_format: json
     body:
       email: "{{ soa_email_address }}"
-      password: "{{ antmedia_password }}"
+      password: "{{ antmedia_password | hash('md5') }}"
       scope: 'system'
       userType: 'ADMIN'
     headers:
