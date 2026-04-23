@@ -15,7 +15,7 @@ Plesk is the leading secure WordPress and website management platform. This Ansi
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

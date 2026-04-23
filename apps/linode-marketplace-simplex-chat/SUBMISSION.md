@@ -18,7 +18,7 @@ https://github.com/simplex-chat/simplex-chat/issues
 
 ### Operating System
 
-Ubuntu 22.04 LTS 
+Ubuntu 24.04 LTS 
 
 ### Documentation
 
