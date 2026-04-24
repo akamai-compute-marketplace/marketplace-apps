@@ -6,12 +6,6 @@ server {
     listen 80;
     server_name {{ _domain }};
 
-    # Keep certbot renewals reachable without basic auth
-    location /.well-known/ {
-        auth_basic off;
-        root /var/www/html;
-    }
-
     location / {
         auth_basic "Nomad";
         auth_basic_user_file {{ nomad_htpasswd_file }};
@@ -27,8 +21,5 @@ server {
         proxy_read_timeout 340s;
         # Log/event streaming needs buffering off
         proxy_buffering off;
-
-        # Nomad rejects the proxy's default Origin; rewrite to host
-        proxy_set_header Origin "${scheme}://${proxy_host}";
     }
 }
