@@ -1,4 +1,9 @@
 ---
+# docker
+- name: Install docker
+  import_role:
+    name: docker
+
 - name: Create docker Volume
   docker_volume:
     name: "odoo-db"

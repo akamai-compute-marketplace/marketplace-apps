@@ -1,6 +1,10 @@
 ---
-# joplin
+# docker
+- name: Install docker
+  import_role:
+    name: docker
 
+# joplin
 - name: Config file setup
   template:
     src: templates/joplin.service

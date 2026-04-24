@@ -1,6 +1,6 @@
 ---
 collections:
   - name: linode.cloud
-    version: 0.16.1
+    version: 0.45.0
   - name: community.general
-    version: 8.5.0
+    version: 12.6.0

@@ -11,7 +11,7 @@ Ant Media Server is an open source video streaming platform known for its scalab
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

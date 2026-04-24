@@ -56,7 +56,7 @@ fi
 if [[ -n "${JENKINS_VERSION}" ]]; then
         UDF_VARS["JENKINS_VERSION"]="${JENKINS_VERSION}"
 else
-        UDF_VARS["JENKINS_VERSION"]="2.479" # default
+        UDF_VARS["JENKINS_VERSION"]="2.555.1" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

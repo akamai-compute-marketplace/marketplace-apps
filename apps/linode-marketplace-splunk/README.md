@@ -11,7 +11,7 @@ Splunk is a powerful log analyzer that can be used to obtain insight into your i
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -50,7 +50,7 @@ curl -H "Content-Type: application/json" \
     ],
     "backups_enabled": false,
     "booted": true,
-    "image": "linode/ubuntu22.04",
+    "image": "linode/ubuntu24.04",
     "label": "splunk-siem-oca-us-ord-001",
     "private_ip": false,
     "region": "us-ord",
@@ -88,7 +88,7 @@ linode-cli linodes create \
   --authorized_users user2 \
   --backups_enabled false \
   --booted true \
-  --image 'linode/ubuntu22.04' \
+  --image 'linode/ubuntu24.04' \
   --label splunk-siem-oca-us-ord-001 \
   --private_ip false \
   --region us-ord \

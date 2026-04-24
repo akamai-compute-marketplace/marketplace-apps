@@ -13,7 +13,7 @@ Nextcloud AIO stands for Nextcloud All In One, and provides easy deployment and 
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

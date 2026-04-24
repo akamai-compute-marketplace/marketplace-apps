@@ -14,7 +14,7 @@ SimpleX Chat - The first messaging platform that has no user identifiers of any 
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -70,7 +70,7 @@ https://api.linode.com/v4/linode/instances
 CLI:
 ```sh
 linode-cli linodes create \
-  --image 'linode/ubuntu22.04' \
+  --image 'linode/ubuntu24.04' \
   --region us-southeast \
   --type g6-standard-1 \
   --label simplex-server \

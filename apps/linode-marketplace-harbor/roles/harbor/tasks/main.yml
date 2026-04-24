@@ -1,6 +1,10 @@
 ---
-# harbor
+# docker
+- name: Install docker
+  import_role:
+    name: docker
 
+# harbor
 - name: Create harbor data directory
   file:
     path: /data/harbor

@@ -11,7 +11,7 @@ CyberPanel is a next-generation hosting control panel, which provides a friendly
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
