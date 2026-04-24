@@ -1,0 +1,9 @@
+---
+- name: Import Nomad install tasks
+  import_tasks: nomad.yml
+
+- name: Import Nomad ACL bootstrap tasks
+  import_tasks: bootstrap.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml
