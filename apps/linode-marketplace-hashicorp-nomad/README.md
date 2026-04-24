@@ -1,13 +1,13 @@
 # Linode HashiCorp Nomad One-Click App
 
-Deploy a production-ready single-node HashiCorp Nomad Community Edition installation. This One-Click App installs Nomad CE from HashiCorp's official apt repository, running as a combined server and client on one VM with ACLs enabled and the API bound to loopback. An NGINX reverse proxy with a Let's Encrypt SSL certificate and HTTP basic authentication sits in front of the Nomad UI, so access requires two credentials: an NGINX basic-auth password (set during deployment) and a Nomad ACL management token (generated on first boot and written to the sudo user's credentials file).
+Deploy a single-node HashiCorp Nomad Community Edition installation with secure defaults. This One-Click App installs Nomad CE from HashiCorp's official apt repository, running as a combined server and client on one VM with ACLs enabled. An NGINX reverse proxy with a Let's Encrypt SSL certificate and HTTP basic authentication sits in front of the Nomad UI, so access requires two credentials: an NGINX basic-auth password (set during deployment) and a Nomad ACL management token (generated on first boot and written to the sudo user's credentials file).
 
 ## Software Included
 
 | Software | Version | Description |
 | :--- | :--- | :--- |
-| HashiCorp Nomad | Latest (Community Edition) | Workload orchestrator running as combined server and client on a single node, with ACLs enabled. |
-| NGINX | 1.24.0 | Reverse proxy handling SSL termination and HTTP basic authentication for the Nomad UI. |
+| HashiCorp Nomad | Latest (Community Edition) | Workload orchestrator. |
+| NGINX | 1.24.0 | Web server and reverse proxy. |
 
 **Supported Distributions:**
 - Ubuntu 24.04 LTS
@@ -29,17 +29,17 @@ Deploy a production-ready single-node HashiCorp Nomad Community Edition installa
 
 After deployment, open `https://<your-domain-or-rDNS>/` in a browser. Access is gated by two layers:
 
-1. **NGINX HTTP Basic Authentication.** Your browser will prompt for a username and password on the first request. The credentials are written to `/home/<sudo-user>/.credentials` on the Linode; the username defaults to `nomad` and the password is randomly generated at deploy time.
-2. **Nomad ACL sign-in.** Once past basic auth, navigate to `/ui/signin` and paste the management token (the `Secret ID`) from `.credentials` into the sign-in form. The Nomad UI treats the "Anonymous Token" as an active session, so on first sign-in you may need to click **Sign Out** on the profile page before the sign-in form accepts a new token.
+1. **NGINX HTTP Basic Authentication.** Your browser will prompt for a username and password on the first request. The username is set at deploy time via the *NGINX Basic Auth Username* UDF (defaults to `nomad`), and the password is randomly generated. Both are written to `/home/<user>/.credentials` on the Linode.
+2. **Nomad ACL sign-in.** Once logged in, navigate to `/ui/signin` and paste the management token (the `Secret ID`) from the `/home/<user>/.credentials` file, into the `Secret ID` field. Note: The Nomad UI treats the "Anonymous Token" as an active session, so on first sign-in you may need to click **Sign Out** on the profile page before you can paste the `Secret ID` token.
 
-The Nomad CLI can connect to the server over the same endpoint:
+## Deployment Topology
 
-```bash
-export NOMAD_ADDR=https://<your-domain-or-rDNS>
-export NOMAD_TOKEN=<Secret ID from .credentials>
-export NOMAD_HTTP_AUTH=<htpasswd-user>:<htpasswd-password>
-nomad node status
-```
+Nomad ships with two agent roles that can run independently or together:
+
+- **Server** — decides what runs where. Accepts job submissions, picks a worker to run them on, tracks their status.
+- **Client** — runs the workloads. Takes assignments from the server and starts/supervises the actual program.
+
+This One-Click App enables both on the same node (combined mode), so you can submit and run jobs immediately with nothing else to provision. This is sufficient for small workloads, dev/staging, and learning.
 
 ## Use our API
 
@@ -104,4 +104,3 @@ linode-cli linodes create \
 - [HashiCorp Nomad Documentation](https://developer.hashicorp.com/nomad/docs)
 - [Marketplace App Documentation](https://www.linode.com/docs/marketplace-docs/guides/hashicorp-nomad/)
 - [Nomad ACL System Overview](https://developer.hashicorp.com/nomad/docs/secure/acl)
-- [Configure a web UI reverse proxy](https://developer.hashicorp.com/nomad/docs/deploy/clusters/reverse-proxy-ui)
