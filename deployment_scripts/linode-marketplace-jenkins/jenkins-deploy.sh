@@ -37,7 +37,7 @@ fi
 #<UDF name="soa_email_address" label="Admin Email for Let's Encrypt SSL certificate">
 
 ## Jenkins
-#<UDF name="jenkins_version" label="Jenkins Version" oneOf="2.479" default="2.479" >
+#<UDF name="jenkins_version" label="Jenkins Version" oneOf="2.555.1" default="2.555.1" >
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -162,8 +162,8 @@ function run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  pip3 install virtualenv
-  python3 -m virtualenv env
+  apt install python3-venv -y
+  python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade
   pip install -r requirements.txt

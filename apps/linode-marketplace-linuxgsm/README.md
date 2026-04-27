@@ -11,7 +11,7 @@ LinuxGSM is a command line utility that simplifies self-hosting multiplayer game
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

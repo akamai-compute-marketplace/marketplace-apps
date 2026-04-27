@@ -15,7 +15,7 @@
     group: '{{ username }}'
 
 - name: Retrieve Jupyter token
-  command: docker exec jupyter_jupyterlab_1 /bin/bash -c "jupyter server list | grep -oP '(?<=token=)[^ ]*'"
+  command: docker exec jupyter-jupyterlab-1 /bin/bash -c "jupyter server list | grep -oP '(?<=token=)[^ ]*'"
   register: jupyter_token_output
 
 - name: Writing sudo creds into file

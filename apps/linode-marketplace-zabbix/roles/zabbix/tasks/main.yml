@@ -1,7 +1,7 @@
 ---
 - name: Add zabbix deb
   apt:
-    deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-4+ubuntu22.04_all.deb
+    deb: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-6+ubuntu24.04_all.deb
 
 - name: Install zabbix pkgs
   apt:
@@ -123,6 +123,6 @@
   with_items:
     - nginx.service
     - mysql.service
-    - php8.1-fpm
+    - php8.3-fpm
     - zabbix-server.service
     - zabbix-agent.service

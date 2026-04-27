@@ -26,7 +26,7 @@ Latest version - https://github.com/nats-io/nats-server
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

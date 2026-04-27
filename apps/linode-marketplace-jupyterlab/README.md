@@ -14,7 +14,7 @@ JupyterLab is a web-based interactive development environment for notebooks, cod
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

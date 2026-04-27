@@ -1,6 +1,10 @@
 ---
-# jupyter
+# docker
+- name: Install docker
+  import_role:
+    name: docker
 
+# jupyter
 - name: Config file setup
   template:
     src: templates/jupyter.service

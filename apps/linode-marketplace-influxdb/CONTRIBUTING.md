@@ -14,7 +14,7 @@ Support URL
 https://docs.influxdata.com/influxdb/v2/
 
 Operating System
-Ubuntu 22.04 LTS
+Ubuntu 24.04 LTS
 
 Documentation
 DOCUMENTATION.md

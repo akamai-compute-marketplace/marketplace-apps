@@ -10,7 +10,7 @@ Jenkins is an open source automation tool which can build, test, and deploy your
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -46,7 +46,7 @@ curl -H "Content-Type: application/json" \
     ],
     "backups_enabled": false,
     "booted": true,
-    "image": "linode/ubuntu22.04",
+    "image": "linode/ubuntu24.04",
     "label": "jenkins-server",
     "private_ip": true,
     "region": "${REGION}",
@@ -75,7 +75,7 @@ linode-cli linodes create \
   --authorized_users myUser \
   --backups_enabled false \
   --booted true \
-  --image 'linode/ubuntu22.04' \
+  --image 'linode/ubuntu24.04' \
   --label jenkins-server \
   --private_ip true \
   --region us-southeast \
