@@ -12,7 +12,6 @@
 - [ ] Tests
 - [ ] Documentation
 - [ ] CI/CD
-- [ ] Other (describe below)
 
 ---
 
