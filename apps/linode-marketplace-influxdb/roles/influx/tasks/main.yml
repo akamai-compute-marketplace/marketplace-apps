@@ -1,6 +1,10 @@
 ---
-# influxdb
+# docker
+- name: Install docker
+  import_role:
+    name: docker
 
+# influxdb
 - name: Config file setup
   template:
     src: templates/influxdb.service

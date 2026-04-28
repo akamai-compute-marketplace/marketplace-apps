@@ -17,7 +17,7 @@ WooCommerce is a popular open source eCommerce plugin for WordPress that can pow
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -38,7 +38,7 @@ SHELL:
 curl -H "Content-Type: application/json" \
 -H "Authorization: Bearer $TOKEN" \
 -X POST -d '{
-    "image": "linode/ubuntu22.04",
+    "image": "linode/ubuntu24.04",
     "region": "us-southeast",
     "type": "g6-standard-1",
     "label": "woocommerce-oca-us-southeast",
@@ -72,7 +72,7 @@ curl -H "Content-Type: application/json" \
 CLI:
 ```
 linode-cli linodes create \
-  --image 'linode/ubuntu22.04' \
+  --image 'linode/ubuntu24.04' \
   --region us-southeast \
   --type g6-standard-1 \
   --label woocommerce-oca-us-southeast \

@@ -13,7 +13,7 @@ Harbor is an open source registry that secures artifacts with policies and role-
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

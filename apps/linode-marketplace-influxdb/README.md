@@ -14,7 +14,7 @@ InfluxDB is a high-performance time series database designed to handle massive v
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

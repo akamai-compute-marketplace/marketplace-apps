@@ -12,7 +12,7 @@ Valkey natively supports a broad collection of datatypes, and supports extensibi
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 

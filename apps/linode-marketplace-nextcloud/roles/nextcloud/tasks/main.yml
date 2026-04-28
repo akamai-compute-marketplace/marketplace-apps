@@ -1,4 +1,9 @@
 ---
+# docker
+- name: Install docker
+  import_role:
+    name: docker
+
 # nextcloud
 - name: Create nextcloud data directory
   file:

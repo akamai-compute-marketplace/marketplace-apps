@@ -26,7 +26,7 @@ aliases: ['/platform/marketplace/how-to-deploy-jenkins-with-marketplace-apps/', 
 
 ## Configuration Options
 
-- **Supported distributions:** Ubuntu 22.04 LTS
+- **Supported distributions:** Ubuntu 24.04 LTS
 - **Suggested minimum plan:** All plan types and sizes can be used.
 
 ## Jenkins Options

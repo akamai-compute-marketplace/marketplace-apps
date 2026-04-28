@@ -9,7 +9,7 @@
 
 - name: Add jenkins repo
   apt_repository:
-    repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/'
+    repo: 'deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/'
     filename: jenkins
     update_cache: true
     state: present

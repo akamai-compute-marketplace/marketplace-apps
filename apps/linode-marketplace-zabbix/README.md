@@ -13,7 +13,7 @@ Zabbix is an enterprise-class, open-source, distributed monitoring solution. Des
 
 **Supported Distributions:**
 
-- Ubuntu 22.04 LTS
+- Ubuntu 24.04 LTS
 
 ## Linode Helpers Included
 
@@ -43,7 +43,7 @@ curl -H "Content-Type: application/json" \
     "authorized_users": [],
     "backups_enabled": false,
     "booted": true,
-    "image": "linode/ubuntu22.04",
+    "image": "linode/ubuntu24.04",
     "label": "zabbix-oca-us-mia",
     "private_ip": false,
     "region": "us-mia",
