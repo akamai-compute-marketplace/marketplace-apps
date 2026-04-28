@@ -22,7 +22,7 @@ jobs:
           private-key: ${{ secrets.DEPS_APP_SECRET }}
 
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: ${{ steps.generate_token.outputs.token }}
           ref: develop
@@ -64,3 +64,11 @@ jobs:
             --head "${{ steps.update.outputs.branch }}" \
             --label "dependencies")
           echo "Successfully created PR: $PR_URL"
+
+      - name: Send report to Slack
+        if: steps.update.outputs.any_updates == 'true'
+        env:
+          REPO_NAME: ${{ github.repository }}
+          PR_URL: ${{ steps.create_pr.outputs.pr_url }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/report-dependency-pr.sh
