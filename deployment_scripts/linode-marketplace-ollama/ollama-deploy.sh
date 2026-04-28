@@ -5,7 +5,7 @@ exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # BEGIN CI-MODE
 # modes
-#DEBUG="NO"
+# DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
