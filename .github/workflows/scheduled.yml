@@ -12,7 +12,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run ShellCheck
         run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
@@ -22,7 +22,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run yamllint
         run: bash .github/scripts/static-code-yamllint.sh
   static-code-analysis-ansbible-lint:
@@ -32,7 +32,7 @@ jobs:
       contents: read
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run ansible-lint
         run: bash .github/scripts/static-code-ansible-lint.sh
   get-all-apps:
@@ -48,7 +48,7 @@ jobs:
       configs: ${{ steps.configs-matrix.outputs.configs }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Find app configs
@@ -67,7 +67,7 @@ jobs:
       LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Check and clean up domain records
@@ -90,7 +90,7 @@ jobs:
       LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Get Linode configuration for ${{ matrix.app }}
         run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
       - name: Provisioning Linode for ${{ matrix.app }}
@@ -117,3 +117,31 @@ jobs:
         env:
           LINODE_IPV4: ${{ steps.linode-provisioning.outputs.LINODE_IPV4 }}
         run: bash .github/scripts/teardown-domain-records-cleanup.sh
+  slack-notification:
+    name: Slack Report
+    runs-on: ubuntu-latest
+    needs:
+      - static-code-analysis-shellcheck
+      - static-code-analysis-yamllint
+      - static-code-analysis-ansbible-lint
+      - get-all-apps
+      - setup-job
+      - deployment-job
+    if: always()
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Find failed apps
+        id: get-failures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/report-get-failed-apps.sh
+      - name: Generate and send report to Slack
+        env:
+          REPO_NAME: ${{ github.repository }}
+          WORKFLOW_STATUS: ${{ steps.get-failures.outputs.workflow_status }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          FAILED_JOBS: ${{ steps.get-failures.outputs.failed_jobs }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/report-generate-payload.sh
