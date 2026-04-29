@@ -3,6 +3,7 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+# BEGIN CI-MODE
 # modes
 # DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
@@ -13,11 +14,16 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
+
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
 else
   set -e
 fi
+# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
