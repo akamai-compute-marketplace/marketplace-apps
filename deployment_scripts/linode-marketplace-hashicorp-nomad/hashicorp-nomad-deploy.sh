@@ -5,7 +5,7 @@ exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 # BEGIN CI-MODE
 # modes
-# DEBUG="NO"
+#DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -35,15 +35,13 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
+## Nomad Settings
+#<UDF name="nomad_htpasswd_user" label="NGINX Basic Auth username that gates the Nomad UI" example="nomad" default="nomad">
+
 # BEGIN CI-ADDONS
 ## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,alloy,none" default="none">
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
 # END CI-ADDONS
-
-## Qwen Configuration
-#<UDF name="openwebui_login_name" label="The initial admin login name for Open WebUI">
-#<UDF name="openwebui_login_email" label="Email address for Open WebUI admin account">
-#<UDF name="qwen_model" label="Qwen LLM version" default="Qwen3.5-4B">
 
 #GH_USER=""
 #BRANCH=""
@@ -59,7 +57,7 @@ else
 fi
 
 export WORK_DIR="/tmp/marketplace-apps"
-export MARKETPLACE_APP="apps/linode-marketplace-qwen"
+export MARKETPLACE_APP="apps/linode-marketplace-hashicorp-nomad"
 
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
@@ -94,15 +92,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
-
-  # open webui admin credentials
-  openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
-  openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
-
-  # qwen
-  qwen_model: ${QWEN_MODEL}
-
-  # BEGIN CI-UDF-ADDONS
+  nomad_htpasswd_user: ${NOMAD_HTPASSWD_USER}
   # addons
   add_ons: [${ADD_ONS}]
   # END CI-UDF-ADDONS
@@ -131,6 +121,7 @@ EOF
 
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
+  else echo "No SOA email entered";
   fi
 
   # staging or production mode (ci)

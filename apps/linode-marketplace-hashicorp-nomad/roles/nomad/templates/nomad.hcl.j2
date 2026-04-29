@@ -1,0 +1,26 @@
+data_dir  = "{{ nomad_data_dir }}"
+bind_addr = "{{ nomad_bind_addr }}"
+
+advertise {
+  http = "{{ nomad_bind_addr }}"
+  rpc  = "{{ nomad_bind_addr }}"
+  serf = "{{ nomad_bind_addr }}"
+}
+
+server {
+  enabled          = true
+  bootstrap_expect = 1
+}
+
+client {
+  enabled = true
+  servers = ["{{ nomad_bind_addr }}"]
+}
+
+acl {
+  enabled = true
+}
+
+ui {
+  enabled = true
+}

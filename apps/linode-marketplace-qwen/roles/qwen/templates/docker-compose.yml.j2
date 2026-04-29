@@ -4,7 +4,7 @@ services:
   # vLLM
   #--------------------------------------------
   vllm:
-    image: vllm/vllm-openai:v0.14.0
+    image: vllm/vllm-openai:v0.17.0
     container_name: vllm
     restart: unless-stopped
     shm_size: 8g
@@ -15,10 +15,10 @@ services:
     environment:
       - HF_HOME=/root/.cache/huggingface
     command:
-      - --model=Qwen/Qwen2.5-7B-Instruct
+      - --model=Qwen/{{ qwen_model }}
       - --trust-remote-code
-      - --max-model-len=32768
-      - --gpu-memory-utilization=0.95
+      - --max-model-len=8192
+      - --gpu-memory-utilization=0.90
       - --dtype=auto
     healthcheck:
       test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
