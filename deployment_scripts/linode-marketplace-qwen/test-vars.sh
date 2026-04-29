@@ -63,6 +63,12 @@ else
         UDF_VARS["OPENWEBUI_LOGIN_EMAIL"]="webmaster@${DEFAULT_DNS}" # default
 fi
 
+if [[ -n "${QWEN_MODEL}" ]]; then
+        UDF_VARS["QWEN_MODEL"]="${QWEN_MODEL}"
+else
+        UDF_VARS["QWEN_MODEL"]="Qwen3.5-4B" # default
+fi
+
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else

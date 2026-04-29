@@ -43,6 +43,7 @@ fi
 ## Qwen Configuration
 #<UDF name="openwebui_login_name" label="The initial admin login name for Open WebUI">
 #<UDF name="openwebui_login_email" label="Email address for Open WebUI admin account">
+#<UDF name="qwen_model" label="Qwen LLM version" default="Qwen3.5-4B">
 
 #GH_USER=""
 #BRANCH=""
@@ -97,6 +98,9 @@ function udf {
   # open webui admin credentials
   openwebui_login_name: ${OPENWEBUI_LOGIN_NAME}
   openwebui_login_email: ${OPENWEBUI_LOGIN_EMAIL}
+
+  # qwen
+  qwen_model: ${QWEN_MODEL}
 
   # BEGIN CI-UDF-ADDONS
   # addons
