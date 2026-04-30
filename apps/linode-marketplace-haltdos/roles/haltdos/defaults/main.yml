@@ -1,0 +1,30 @@
+---
+# HaltDOS package versions — pinned to the combo we tested end-to-end.
+# Apt-mark hold (set in tasks/haltdos.yml) prevents apt upgrade from
+# bumping these silently and breaking the assumptions our systemd
+# drop-in makes (ExecStart line we replace, paths we templated).
+#
+# Bump procedure:
+#   1. curl https://repo.haltdos.com/apt/Packages | grep -A1 'Package: hd-community-' | head
+#      to confirm the new versions are in the upstream repo.
+#   2. Spin up a test instance with the new versions, complete the
+#      wizard end-to-end (registration → OTP → dashboard).
+#   3. Diff the new /lib/systemd/system/controller.service shipped by
+#      the .deb against the assumptions in
+#      roles/haltdos/templates/controller.service.override.conf.j2.
+#      Verify upstream still uses a single ExecStart= we can replace.
+#   4. Bump both vars below in the same PR with a changelog note.
+haltdos_waf_version: "1.0.4"
+haltdos_controller_version: "1.0.5"
+
+# HaltDOS Controller bind layout
+# - The controller's Spring Boot listener binds the loopback at
+#   {{ haltdos_internal_port }}; nothing reaches it from outside the host.
+# - nginx terminates SSL on {{ haltdos_ext_port }} and reverse-proxies to it.
+haltdos_bind_addr: "127.0.0.1"
+haltdos_internal_port: 9001
+haltdos_ext_port: 9000
+
+# nginx htpasswd file (Path A — only protects wizard endpoints)
+haltdos_htpasswd_file: /etc/nginx/.haltdos_setup_htpasswd
+haltdos_htpasswd_user: haltdos

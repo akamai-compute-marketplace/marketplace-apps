@@ -1,0 +1,12 @@
+*********************************************************
+Akamai Connected Cloud HaltDOS Community WAF Marketplace App
+Management UI: https://{{ _domain }}:{{ haltdos_ext_port }}/setup
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/marketplace/apps/linode/haltdos-community-waf/
+*********************************************************
+First-run steps (also in the credentials file):
+  1. Open the Management UI above and complete the wizard.
+  2. After your first listener is configured, start the WAF
+     data plane:    sudo systemctl start offloader
+*********************************************************
+To delete this message of the day: rm /etc/motd

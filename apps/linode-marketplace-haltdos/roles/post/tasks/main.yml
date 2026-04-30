@@ -1,0 +1,50 @@
+---
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Ensure controller and nginx are started and enabled
+  systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [nginx, controller]
+
+# Note: offloader is intentionally NOT started here. It is the WAF data plane
+# and refuses to start until the user has created at least one listener via
+# the management GUI (the listener config files it needs are written by the
+# controller at that point). It is enabled in roles/haltdos/tasks/controller-override.yml
+# so that auto-start kicks in on next reboot once the user has configured a
+# listener and started it manually.
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      HaltDOS Management UI: https://{{ _domain }}:{{ haltdos_ext_port }}/setup
+      NGINX Setup-Wizard Auth Username: {{ haltdos_htpasswd_user }}
+      NGINX Setup-Wizard Auth Password: {{ haltdos_htpasswd_password }}
+
+      Open the management URL above and complete the HaltDOS wizard
+      (User Registration → Account Details → OTP Verification). The OTP
+      arrives at the email you enter during registration. If it does
+      not arrive within 10 minutes, contact support@haltdos.com.
+
+      The HaltDOS WAF data plane (offloader) is enabled but not yet
+      started. Start it after creating your first listener in the
+      management GUI:    sudo systemctl start offloader

@@ -1,0 +1,41 @@
+---
+# We override the controller's ExecStart= via a systemd drop-in so we never
+# touch the unit file shipped by the .deb. apt would silently overwrite an
+# edited unit on package upgrade; a drop-in survives upgrades cleanly. The
+# drop-in adds three Spring Boot CLI flags:
+#   --server.address=127.0.0.1     bind to loopback only (nginx fronts it)
+#   --server.port=9001             non-conflicting internal port
+#   --server.forward-headers-strategy=NATIVE
+#       trust nginx's X-Forwarded-Host/Port/Proto when constructing
+#       redirect URLs. Without this, /login redirects 302 to
+#       https://127.0.0.1/ and the browser hangs.
+
+- name: Ensure systemd drop-in directory exists
+  file:
+    path: /etc/systemd/system/controller.service.d
+    state: directory
+    mode: '0755'
+
+- name: Install controller systemd drop-in
+  template:
+    src: controller.service.override.conf.j2
+    dest: /etc/systemd/system/controller.service.d/override.conf
+    mode: '0644'
+  notify: Restart controller
+
+- name: Ensure controller is enabled (drop-in applies on next start)
+  systemd_service:
+    name: controller
+    enabled: true
+    daemon_reload: true
+
+# Offloader: the WAF data plane. enabled: yes so it auto-starts on reboot
+# once the user has configured at least one listener via the GUI (the
+# listener configs the offloader needs are written by the controller at
+# that point). We deliberately do NOT start it here — fresh installs have
+# no listener configs and the offloader fails Lua initialization with:
+#   _by_lua_file error: Unable to read haltdos configuration
+- name: Ensure offloader is enabled (do not start)
+  systemd_service:
+    name: offloader
+    enabled: true

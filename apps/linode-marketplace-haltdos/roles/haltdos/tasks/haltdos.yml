@@ -1,0 +1,41 @@
+---
+- name: Install Java + apt prereqs
+  apt:
+    name:
+      - default-jre
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+# HaltDOS does not publish a signing key for their apt repo, so we trust by
+# transport (HTTPS). Document this for the security review pass.
+- name: Add HaltDOS apt repo (unsigned — vendor publishes no signing key)
+  copy:
+    dest: /etc/apt/sources.list.d/haltdos.list
+    content: "deb [trusted=yes] https://repo.haltdos.com/apt/ /\n"
+    mode: '0644'
+
+- name: Refresh apt cache after adding repo
+  apt:
+    update_cache: true
+
+# Pinned versions — see roles/haltdos/defaults/main.yml for the bump procedure.
+- name: Install HaltDOS packages (pinned versions)
+  apt:
+    name:
+      - "hd-community-waf={{ haltdos_waf_version }}"
+      - "hd-community-controller={{ haltdos_controller_version }}"
+    state: present
+
+# apt-mark hold prevents apt upgrade from silently bumping these and
+# breaking the assumptions our drop-in/template files make.
+- name: Hold HaltDOS packages so apt upgrade does not bump them silently
+  dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - hd-community-waf
+    - hd-community-controller
