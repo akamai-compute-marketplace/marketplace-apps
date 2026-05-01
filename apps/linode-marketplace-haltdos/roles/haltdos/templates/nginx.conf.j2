@@ -18,7 +18,17 @@ server {
     listen [::]:{{ haltdos_ext_port }} ssl http2;
     server_name {{ _domain }};
 
-    # certbot --nginx will inject ssl_certificate / ssl_certificate_key
+    # Cert paths point at the LE files certbot certonly --standalone
+    # writes to /etc/letsencrypt/live/<domain>/. The cert must already
+    # be issued before this template lands on disk — see the task
+    # ordering in roles/haltdos/tasks/nginx.yml (nginx is stopped, cert
+    # is issued via standalone, then this template is rendered, then
+    # nginx is started).
+    ssl_certificate     /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
 
     # The controller listens HTTPS on 127.0.0.1:9001 with a self-signed
     # cert baked into the WAR. Skip cert verification for the loopback
