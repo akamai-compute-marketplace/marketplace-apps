@@ -1,14 +1,8 @@
 ---
-- name: Install Java + apt prereqs
-  apt:
-    name:
-      - default-jre
-      - apt-transport-https
-      - ca-certificates
-      - curl
-      - gnupg
-    state: present
-    update_cache: true
+- name: Promote haltdos vars to host facts (visible across roles)
+  set_fact:
+    haltdos_ext_port: "{{ haltdos_ext_port }}"
+    haltdos_htpasswd_user: "{{ haltdos_htpasswd_user }}"
 
 # HaltDOS does not publish a signing key for their apt repo, so we trust by
 # transport (HTTPS). Document this for the security review pass.
