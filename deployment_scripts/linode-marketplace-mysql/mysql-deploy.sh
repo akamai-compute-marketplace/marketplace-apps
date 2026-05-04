@@ -1,4 +1,5 @@
 #!/bin/bash
+# STACKSCRIPT_ID: 607026
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
