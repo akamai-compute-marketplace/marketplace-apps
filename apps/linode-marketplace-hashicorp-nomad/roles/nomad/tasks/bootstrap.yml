@@ -1,0 +1,19 @@
+---
+- name: Bootstrap Nomad ACLs
+  command: nomad acl bootstrap -json
+  register: nomad_bootstrap_result
+  environment:
+    NOMAD_ADDR: "http://{{ nomad_bind_addr }}:{{ nomad_http_port }}"
+  no_log: true
+
+- name: Capture bootstrap Secret ID
+  set_fact:
+    nomad_bootstrap_token: "{{ (nomad_bootstrap_result.stdout | from_json).SecretID }}"
+  no_log: true
+
+- name: Persist bootstrap token to group_vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: "nomad_bootstrap_token: {{ nomad_bootstrap_token }}"
+  no_log: true

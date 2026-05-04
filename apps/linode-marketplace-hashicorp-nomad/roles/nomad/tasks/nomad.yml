@@ -1,0 +1,42 @@
+---
+- name: Add HashiCorp apt signing key
+  get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /usr/share/keyrings/hashicorp-archive-keyring.asc
+    mode: '0644'
+    force: true
+
+- name: Add HashiCorp apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.asc] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+    filename: hashicorp
+    state: present
+    update_cache: true
+
+- name: Install Nomad
+  apt:
+    name: nomad
+    state: present
+
+- name: Write Nomad configuration
+  template:
+    src: nomad.hcl.j2
+    dest: "{{ nomad_config_dir }}/nomad.hcl"
+    mode: '0640'
+  notify: Restart nomad
+
+- name: Enable and start Nomad
+  systemd_service:
+    name: nomad
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Wait for Nomad HTTP API to respond
+  uri:
+    url: "http://{{ nomad_bind_addr }}:{{ nomad_http_port }}/v1/status/leader"
+    status_code: [200, 403]
+  register: nomad_http_probe
+  retries: 30
+  delay: 2
+  until: nomad_http_probe.status in [200, 403]

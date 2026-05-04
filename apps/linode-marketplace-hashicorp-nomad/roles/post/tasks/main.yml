@@ -1,0 +1,37 @@
+---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Ensure services are started and enabled
+  systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [nginx, nomad]
+
+# motd and creds gen
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      NGINX Basic Auth Username: {{ nomad_htpasswd_user }}
+      NGINX Basic Auth Password: {{ nomad_htpasswd_password }}
+
+      Nomad Management Token (Secret ID): {{ nomad_bootstrap_token }}
