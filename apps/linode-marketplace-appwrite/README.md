@@ -8,11 +8,11 @@ This Marketplace application deploys **Appwrite** as a fully containerized stack
 
 | Software | Version | Description |
 | :--- | :---- | :--- |
-| Docker | `29.2.0` | Container Management Runtime |
-| Docker Compose | `5.0.2` | Tool for multi-container applications |
-| **Traefik** | `3.6` | Edge router, reverse proxy, and SSL orchestrator |
+| Docker | `29.4.2` | Container Management Runtime |
+| Docker Compose | `5.1.3` | Tool for multi-container applications |
+| Traefik | `3.6` | Edge router, reverse proxy, and SSL orchestrator |
 | Appwrite | `latest` tag | Open-source Backend-as-a-Service platform |
-| **MongoDB** | `8.2.5` | NoSQL document database used by Appwrite |
+| MongoDB | `8.2.5` | NoSQL document database used by Appwrite |
 | Redis | `7.4.7` | In-memory cache and queue for Appwrite |
 | OpenRuntimes Executor | `0.7.22` | Serverless function execution runtime |
 
@@ -25,7 +25,6 @@ This Marketplace application deploys **Appwrite** as a fully containerized stack
 | Name | Description | Actions |
 | :--- | :--- | :--- |
 | UFW | Firewall Management | Configures `ufw_rules.yml` to allow ports **80**, **443**, and **22**. |
-| Traefik SSL | Automatic SSL Management | Traefik handles ACME challenges (HTTP/TLS) automatically, replacing the need for standalone Certbot scripts. |
 | Fail2Ban | Security Hardening | Installs and enables Fail2Ban to monitor logs and block malicious IP addresses. |
 | Hostname | FQDN Assignment | Assigns a hostname to the Linode based on UDF domains or default rDNS for SSL validity. |
 | Secure SSH | SSH Hardening | Disables password authentication and enforces public key authentication. |
@@ -75,6 +74,6 @@ The Appwrite stack consists of multiple containerized services optimized for per
 
 ## Resource Requirements
 
-- **Recommended**: 16GB Dedicated CPU or Shared Compute instance.
+- **Recommended**: 8GB Dedicated CPU or Shared Compute instance.
 - **Storage**: At least 30GB to accommodate MongoDB journals, file uploads, and Docker image layers.
-- **Network**: A valid domain name (FQDN) is required for Traefik to successfully provision SSL certificates.
+- **Network**: A valid domain name (FQDN) is required for Traefik to successfully provision SSL certificates (This deployment can use the default RDNS address as a valid domain if no domain is specified).
