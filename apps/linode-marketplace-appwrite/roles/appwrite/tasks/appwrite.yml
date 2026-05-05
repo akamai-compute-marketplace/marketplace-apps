@@ -1,0 +1,60 @@
+---
+- name: Install Appwrite
+  uri:
+    url: "http://localhost:20080/install"
+    method: POST
+    headers:
+      Accept: "text/event-stream"
+      Accept-Language: "en-US,en;q=0.9"
+      Connection: "keep-alive"
+      Content-Type: "application/json"
+      X-Appwrite-Installer-CSRF: "{{ appwrite_csrf }}"
+      Cookie: "appwrite-installer-csrf={{ appwrite_csrf }}"
+    body_format: json
+    body:
+      installId: "{{ appwrite_installid }}"
+      opensslKey: "{{ appwrite_opensslkey }}"
+      httpPort: "80"
+      httpsPort: "443"
+      database: "mongodb"
+      appDomain: "{{ _domain }}"
+      emailCertificates: "{{ soa_email_address }}"
+      assistantOpenAIKey: ""
+      accountEmail: "{{ soa_email_address }}"
+      accountPassword: "{{ appwrite_admin_password }}"
+      migrate: false
+    validate_certs: false
+    timeout: 120
+  register: appwrite_install_result
+
+- name: Wait for all Appwrite containers to be running
+  community.docker.docker_host_info:
+    containers: true
+    containers_filters:
+      label:
+        - "com.docker.compose.project=appwrite"
+  register: appwrite_host_info
+  until: >
+    appwrite_host_info.containers | length > 0 and
+    appwrite_host_info.containers | selectattr('Status', 'search', '^Up') | list | length
+    == appwrite_host_info.containers | length
+  retries: 36
+  delay: 5
+
+- name: Wait for healthy containers to report healthy
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  register: healthy_info
+  retries: 20
+  delay: 15
+  until: healthy_info.container.State.Health.Status == "healthy"
+  loop:
+    - appwrite-redis
+    - openruntimes-executor
+    - appwrite-mongodb
+
+- name: Stop and remove Appwrite installer container
+  community.docker.docker_container:
+    name: appwrite-installer
+    state: absent
+    force_kill: true

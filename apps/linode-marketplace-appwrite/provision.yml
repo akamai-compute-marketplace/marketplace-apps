@@ -1,0 +1,24 @@
+---
+# linode ansible playbook
+
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  tasks:
+
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Generating Appwrite secrets
+      blockinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        block: |
+          appwrite_secret_key: {{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits') }}
+          appwrite_opensslkey: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+          appwrite_installid: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
+          appwrite_csrf: {{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits') }}
+          appwrite_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
