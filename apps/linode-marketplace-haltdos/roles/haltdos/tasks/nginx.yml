@@ -13,7 +13,7 @@
       #!/bin/sh
       systemctl {{ item.action }} offloader 2>/dev/null || true
   loop:
-    - { path: /etc/letsencrypt/renewal-hooks/pre/stop-offloader.sh,  action: stop }
+    - { path: /etc/letsencrypt/renewal-hooks/pre/stop-offloader.sh, action: stop }
     - { path: /etc/letsencrypt/renewal-hooks/post/start-offloader.sh, action: start }
 
 - name: Install nginx + apache2-utils
