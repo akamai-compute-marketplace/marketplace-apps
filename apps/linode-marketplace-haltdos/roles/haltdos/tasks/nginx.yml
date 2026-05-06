@@ -5,6 +5,17 @@
   vars:
     webserver_stack: standalone
 
+- name: Install certbot renewal hooks (stop/start offloader so standalone can bind :80)
+  copy:
+    dest: "{{ item.path }}"
+    mode: '0755'
+    content: |
+      #!/bin/sh
+      systemctl {{ item.action }} offloader 2>/dev/null || true
+  loop:
+    - { path: /etc/letsencrypt/renewal-hooks/pre/stop-offloader.sh,  action: stop }
+    - { path: /etc/letsencrypt/renewal-hooks/post/start-offloader.sh, action: start }
+
 - name: Install nginx + apache2-utils
   apt:
     name: [nginx, apache2-utils]
