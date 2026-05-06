@@ -1,23 +1,5 @@
 ---
-# Cert issuance MUST happen before nginx is installed:
-#
-# 1. We use --standalone HTTP-01 (not --nginx) because our nginx template uses
-#    `listen 9000 ssl http2` — the certbot --nginx plugin only knows how to
-#    add SSL on port 443, and it runs `nginx -t` before mutating, which
-#    refuses any `listen … ssl` block that lacks a working cert reference.
-#
-# 2. Standalone certbot binds port 80 for the HTTP-01 challenge. If nginx
-#    is already apt-installed, it auto-starts on port 80 and conflicts.
-#    By running certbot first, port 80 is uncontended.
-#
-# 3. The nginx template (nginx.conf.j2) ships with explicit ssl_certificate
-#    paths pointing at /etc/letsencrypt/live/{{ _domain }}/. Those files
-#    must exist on disk before `nginx -t` can validate the config.
-#
-# Pattern matches apps/linode-marketplace-milvus/roles/milvus/tasks/nginx.yml
-# and apps/linode-marketplace-passbolt/roles/passbolt/tasks/nginx.yml.
-
-- name: Setting up SSL certificate (standalone HTTP-01)
+- name: Setting up SSL certificate
   import_role:
     name: certbot_ssl
   vars:

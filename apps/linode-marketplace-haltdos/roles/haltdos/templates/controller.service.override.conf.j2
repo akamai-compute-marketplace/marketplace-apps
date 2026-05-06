@@ -1,9 +1,6 @@
-# Drop-in override managed by Ansible (do not edit by hand).
-# See roles/haltdos/tasks/controller-override.yml for context.
-#
-# We replace ExecStart= so the controller binds to loopback on a non-
-# conflicting port (nginx owns 0.0.0.0:9000) and respects nginx's
-# X-Forwarded-* headers when constructing redirect URLs.
+# Managed by Ansible — do not edit by hand.
+# Tells the controller to bind the loopback (so nginx can front it on 9000)
+# and to trust nginx's forwarded headers when building redirect URLs.
 [Service]
 ExecStart=
 ExecStart=/usr/bin/java -jar /opt/haltdos/controller/controller.war --server.address={{ haltdos_bind_addr }} --server.port={{ haltdos_internal_port }} --server.forward-headers-strategy=NATIVE

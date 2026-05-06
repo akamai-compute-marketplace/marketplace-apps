@@ -1,40 +1,15 @@
-# HaltDOS Community WAF — management UI fronted by nginx
-#
-# Layout:
-#   - port 80:  reserved for the offloader (WAF data plane) once the user
-#               configures their first listener via the management GUI.
-#               nginx does not bind 80; we leave it unconfigured here so
-#               that certbot's HTTP-01 renewal challenges can use it before
-#               the offloader takes it over.
-#   - port 443: same as 80 — reserved for the offloader.
-#   - port 9000 (haltdos_ext_port): SSL terminating reverse proxy →
-#               https://127.0.0.1:9001 (the controller's loopback bind).
-#
-# nginx auth scope (Path A): basic auth gates only the setup wizard
-# endpoints. Login + native UI rely on the controller's own auth.
-
 server {
     listen {{ haltdos_ext_port }} ssl http2;
     listen [::]:{{ haltdos_ext_port }} ssl http2;
     server_name {{ _domain }};
 
-    # Cert paths point at the LE files certbot certonly --standalone
-    # writes to /etc/letsencrypt/live/<domain>/. The cert must already
-    # be issued before this template lands on disk — see the task
-    # ordering in roles/haltdos/tasks/nginx.yml (nginx is stopped, cert
-    # is issued via standalone, then this template is rendered, then
-    # nginx is started).
     ssl_certificate     /etc/letsencrypt/live/{{ _domain }}/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/{{ _domain }}/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
 
-    # The controller listens HTTPS on 127.0.0.1:9001 with a self-signed
-    # cert baked into the WAR. Skip cert verification for the loopback
-    # hop only — the user-facing TLS is the LE cert nginx terminates.
-
-    # Wizard endpoints — gated by nginx basic auth (Path A scope).
+    # Setup wizard endpoints — gated by nginx basic auth
     location ~ ^/(setup|api/register|api/setup)(/|$) {
         auth_basic           "HaltDOS Setup";
         auth_basic_user_file {{ haltdos_htpasswd_file }};
@@ -52,7 +27,7 @@ server {
         proxy_send_timeout    120s;
     }
 
-    # All other paths — controller's native auth is sole gate.
+    # All other paths
     location / {
         proxy_pass            https://{{ haltdos_bind_addr }}:{{ haltdos_internal_port }};
         proxy_ssl_verify      off;

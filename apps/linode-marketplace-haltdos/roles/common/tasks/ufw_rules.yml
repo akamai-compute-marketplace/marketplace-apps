@@ -1,13 +1,4 @@
 ---
-# Ports opened in UFW:
-#   22  — SSH
-#   80  — Let's Encrypt HTTP-01 challenges + offloader (WAF data plane) once user
-#         configures their first listener via the management GUI
-#   443 — offloader (WAF data plane) — same as 80
-#   9000 — HaltDOS management UI (nginx → controller on 127.0.0.1:9001)
-#
-# 80/443 are intentionally allowed even though we (nginx + controller) do not
-# bind them; the offloader will take them after the user creates a listener.
 - name: Configure UFW rules
   community.general.ufw:
     rule: allow

@@ -1,11 +1,10 @@
 ---
-- name: Promote haltdos vars to host facts (visible across roles)
+- name: Add haltdos vars to host facts (visible to post role)
   set_fact:
     haltdos_ext_port: "{{ haltdos_ext_port }}"
     haltdos_htpasswd_user: "{{ haltdos_htpasswd_user }}"
 
-# HaltDOS does not publish a signing key for their apt repo, so we trust by
-# transport (HTTPS). Document this for the security review pass.
+# HaltDOS does not publish a signing key for their apt repo
 - name: Add HaltDOS apt repo (unsigned — vendor publishes no signing key)
   copy:
     dest: /etc/apt/sources.list.d/haltdos.list
@@ -16,7 +15,6 @@
   apt:
     update_cache: true
 
-# Pinned versions — see roles/haltdos/defaults/main.yml for the bump procedure.
 - name: Install HaltDOS packages (pinned versions)
   apt:
     name:
@@ -24,8 +22,6 @@
       - "hd-community-controller={{ haltdos_controller_version }}"
     state: present
 
-# apt-mark hold prevents apt upgrade from silently bumping these and
-# breaking the assumptions our drop-in/template files make.
 - name: Hold HaltDOS packages so apt upgrade does not bump them silently
   dpkg_selections:
     name: "{{ item }}"
