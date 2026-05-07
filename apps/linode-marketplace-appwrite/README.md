@@ -11,7 +11,7 @@ This Marketplace application deploys **Appwrite** as a fully containerized stack
 | Docker | `29.4.2` | Container Management Runtime |
 | Docker Compose | `5.1.3` | Tool for multi-container applications |
 | Traefik | `3.6` | Edge router, reverse proxy, and SSL orchestrator |
-| Appwrite | `latest` tag | Open-source Backend-as-a-Service platform |
+| Appwrite | `1.9.0` tag | Open-source Backend-as-a-Service platform |
 | MongoDB | `8.2.5` | NoSQL document database used by Appwrite |
 | Redis | `7.4.7` | In-memory cache and queue for Appwrite |
 | OpenRuntimes Executor | `0.7.22` | Serverless function execution runtime |
@@ -48,7 +48,7 @@ The Appwrite stack consists of multiple containerized services optimized for per
 ## Containerized Services
 
 ### Core Service (Appwrite)
-- **Image**: `appwrite/appwrite:latest`
+- **Image**: `appwrite/appwrite:1.9.0`
 - **Internal Routing**: Traefik handles routing via Docker labels.
 - **Features**: REST/GraphQL APIs, Auth, Storage, and Functions.
 

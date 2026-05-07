@@ -33,6 +33,9 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 
+## Appwrite Vars
+#<UDF name="appwrite_version" label="Appwrite version" default="1.9.0">
+
 # BEGIN CI-ADDONS
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,alloy,none" default="none">
@@ -87,6 +90,8 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
+  # Appwrite
+  appwrite_version: ${APPWRITE_VERSION}
 
   # BEGIN CI-UDF-ADDONS
   # addons

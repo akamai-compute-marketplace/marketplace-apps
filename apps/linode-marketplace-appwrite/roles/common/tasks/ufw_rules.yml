@@ -18,8 +18,3 @@
     port: '443'
     proto: tcp
 
-- name: Block all access to MongoDB
-  community.general.ufw:
-    rule: allow
-    port: '27017'
-    proto: tcp

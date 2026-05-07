@@ -13,7 +13,7 @@
 - name: Run Appwrite installer container
   community.docker.docker_container:
     name: appwrite-installer
-    image: appwrite/appwrite:1.9.0
+    image: appwrite/appwrite:{{ appwrite_version }}
     state: started
     auto_remove: true
     interactive: true

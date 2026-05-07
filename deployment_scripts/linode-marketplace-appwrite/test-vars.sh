@@ -57,6 +57,12 @@ else
         UDF_VARS["ADD_ONS"]="none" # default
 fi
 
+if [[ -n "${APPWRITE_VERSION}" ]]; then
+        UDF_VARS["ADD_ONS"]="${APPWRITE_VERSION}"
+else
+        UDF_VARS["ADD_ONS"]="1.9.0" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"

@@ -27,20 +27,6 @@
     timeout: 120
   register: appwrite_install_result
 
-- name: Wait for all Appwrite containers to be running
-  community.docker.docker_host_info:
-    containers: true
-    containers_filters:
-      label:
-        - "com.docker.compose.project=appwrite"
-  register: appwrite_host_info
-  until: >
-    appwrite_host_info.containers | length > 0 and
-    appwrite_host_info.containers | selectattr('Status', 'search', '^Up') | list | length
-    == appwrite_host_info.containers | length
-  retries: 36
-  delay: 5
-
 - name: Wait for healthy containers to report healthy
   community.docker.docker_container_info:
     name: "{{ item }}"
