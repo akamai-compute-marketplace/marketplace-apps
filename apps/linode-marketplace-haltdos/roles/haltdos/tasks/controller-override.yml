@@ -18,7 +18,12 @@
     enabled: true
     daemon_reload: true
 
-- name: Ensure offloader is enabled (do not start)
+# Override the upstream postinst's `systemctl enable offloader`. Starting the
+# offloader without configured listeners exposes the data plane's working
+# directory (/root) via autoindex on :80. Users explicitly enable + start it
+# only after configuring their first listener in the management UI.
+- name: Ensure offloader is disabled (user enables it post-wizard once listeners are configured)
   systemd_service:
     name: offloader
-    enabled: true
+    enabled: false
+    state: stopped

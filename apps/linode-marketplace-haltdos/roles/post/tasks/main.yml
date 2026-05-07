@@ -28,5 +28,12 @@
 
       First-run steps:
         1. Open the Management UI above and complete the wizard.
-        2. After your first listener is configured, start the WAF data plane:
-           sudo systemctl start offloader
+        2. In the UI, configure your first listener (Server + Operational mode).
+        3. ONLY AFTER step 2, enable and start the WAF data plane:
+              sudo systemctl enable --now offloader
+
+      WARNING: Do NOT run `systemctl start offloader` before completing step 2.
+      Without a configured listener, the WAF data plane will bind port 80 and
+      expose its working directory (/root) over plain HTTP. The offloader is
+      shipped disabled to prevent this; only enable it once you have at least
+      one listener configured in the wizard.
