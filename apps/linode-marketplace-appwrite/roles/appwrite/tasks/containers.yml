@@ -10,10 +10,6 @@
     state: directory
     mode: '0755'
 
-- name: Debug appwrite_version
-  debug:
-    var: appwrite_version
-
 - name: Run Appwrite installer container
   community.docker.docker_container:
     name: appwrite-installer

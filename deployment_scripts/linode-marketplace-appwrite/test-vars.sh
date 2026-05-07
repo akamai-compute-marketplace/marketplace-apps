@@ -58,9 +58,9 @@ else
 fi
 
 if [[ -n "${APPWRITE_VERSION}" ]]; then
-        UDF_VARS["ADD_ONS"]="${APPWRITE_VERSION}"
+        UDF_VARS["APPWRITE_VERSION"]="${APPWRITE_VERSION}"
 else
-        UDF_VARS["ADD_ONS"]="1.9.0" # default
+        UDF_VARS["APPWRITE_VERSION"]="1.9.0" # default
 fi
 
 set_vars() {
