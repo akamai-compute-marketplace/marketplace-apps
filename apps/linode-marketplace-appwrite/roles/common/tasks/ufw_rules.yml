@@ -17,4 +17,3 @@
     rule: allow
     port: '443'
     proto: tcp
-
