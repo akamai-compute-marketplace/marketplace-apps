@@ -4,13 +4,6 @@
     name: addons
   when: add_ons != ['none']
 
-- name: Ensure controller and nginx are started and enabled
-  systemd_service:
-    name: "{{ item }}"
-    state: started
-    enabled: true
-  loop: [nginx, controller]
-
 - name: Copy MOTD template to /etc/motd
   template:
     src: templates/motd.j2

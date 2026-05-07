@@ -4,7 +4,5 @@ haltdos_controller_version: "1.0.5"
 
 haltdos_bind_addr: "127.0.0.1"
 haltdos_internal_port: 9001
-haltdos_ext_port: 9000
 
 haltdos_htpasswd_file: /etc/nginx/.haltdos_setup_htpasswd
-haltdos_htpasswd_user: haltdos

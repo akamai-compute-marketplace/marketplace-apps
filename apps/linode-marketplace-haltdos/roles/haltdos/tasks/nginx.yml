@@ -53,10 +53,6 @@
     state: absent
   notify: Restart nginx
 
-- name: Validate nginx configuration before final restart
-  command: nginx -t
-  changed_when: false
-
 - name: Enable + start nginx
   systemd_service:
     name: nginx

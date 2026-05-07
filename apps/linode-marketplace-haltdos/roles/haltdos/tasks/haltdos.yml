@@ -1,9 +1,4 @@
 ---
-- name: Add haltdos vars to host facts (visible to post role)
-  set_fact:
-    haltdos_ext_port: "{{ haltdos_ext_port }}"
-    haltdos_htpasswd_user: "{{ haltdos_htpasswd_user }}"
-
 # HaltDOS does not publish a signing key for their apt repo
 - name: Add HaltDOS apt repo (unsigned — vendor publishes no signing key)
   copy:
@@ -11,21 +6,10 @@
     content: "deb [trusted=yes] https://repo.haltdos.com/apt/ /\n"
     mode: '0644'
 
-- name: Refresh apt cache after adding repo
-  apt:
-    update_cache: true
-
 - name: Install HaltDOS packages (pinned versions)
   apt:
     name:
       - "hd-community-waf={{ haltdos_waf_version }}"
       - "hd-community-controller={{ haltdos_controller_version }}"
     state: present
-
-- name: Hold HaltDOS packages so apt upgrade does not bump them silently
-  dpkg_selections:
-    name: "{{ item }}"
-    selection: hold
-  loop:
-    - hd-community-waf
-    - hd-community-controller
+    update_cache: true

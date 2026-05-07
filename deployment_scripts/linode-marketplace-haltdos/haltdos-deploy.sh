@@ -92,6 +92,9 @@ function udf {
   # addons
   add_ons: [${ADD_ONS}]
   # END CI-UDF-ADDONS
+  # haltdos port + basic auth username
+  haltdos_ext_port: 9000
+  haltdos_htpasswd_user: haltdos
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
