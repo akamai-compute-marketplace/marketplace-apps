@@ -33,7 +33,10 @@
   register: healthy_info
   retries: 20
   delay: 15
-  until: healthy_info.container.State.Health.Status == "healthy"
+  until: >-
+    healthy_info.container is not none and
+    healthy_info.container.State.Health is defined and
+    healthy_info.container.State.Health.Status == "healthy"
   loop:
     - appwrite-redis
     - openruntimes-executor
