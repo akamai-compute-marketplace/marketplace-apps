@@ -1,0 +1,39 @@
+job "webapp" {
+  datacenters = ["dc1"]
+  type        = "service"
+
+  group "web" {
+    count = 1
+
+    network {
+      port "http" { static = 8080 }
+    }
+
+    task "pyhttp" {
+      driver = "exec"
+
+      config {
+        command = "/usr/bin/python3"
+        args    = ["-m", "http.server", "${NOMAD_PORT_http}"]
+      }
+
+      resources {
+        cpu    = 100
+        memory = 64
+      }
+
+      service {
+        name     = "webapp"
+        port     = "http"
+        provider = "nomad"
+
+        check {
+          type     = "http"
+          path     = "/"
+          interval = "10s"
+          timeout  = "2s"
+        }
+      }
+    }
+  }
+}
