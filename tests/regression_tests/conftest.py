@@ -1,6 +1,7 @@
 import pytest
 import os
 import base64
+from typing import Any
 from pytest_html import extras as pytest_html_extras
 from playwright.sync_api import sync_playwright
 from regression_tests.utils.ssh import get_credentials_via_ssh
@@ -70,18 +71,35 @@ def browser():
 
 
 @pytest.fixture
-def context(browser):
+def http_credentials():
+    """
+    Returns HTTP Basic Auth credentials for the browser context.
+    Override this fixture in app-specific conftest.py when Basic Auth is required.
+
+    Returns:
+        None: No credentials by default.
+    """
+    return None
+
+
+@pytest.fixture
+def context(browser, http_credentials):
     """
     Creates a new browser context and page for each test, then closes them on teardown.
+    Passes http_credentials to the context if provided by an app-specific fixture.
 
     Args:
         browser: The shared Chromium browser instance.
+        http_credentials: Optional dict with 'username' and 'password' keys.
 
     Yields:
         playwright.sync_api.Page: A fresh page object scoped to the individual test.
     """
     print("Creating new browser context...")
-    context = browser.new_context()
+    kwargs: dict[str, Any] = {"ignore_https_errors": True}
+    if http_credentials:
+        kwargs["http_credentials"] = http_credentials
+    context = browser.new_context(**kwargs)
     page = context.new_page()
     yield page
     context.close()
