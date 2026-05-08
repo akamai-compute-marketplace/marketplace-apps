@@ -14,7 +14,6 @@ This Marketplace application deploys **Appwrite** as a fully containerized stack
 | Appwrite | `1.9.0` tag | Open-source Backend-as-a-Service platform |
 | MongoDB | `8.2.5` | NoSQL document database used by Appwrite |
 | Redis | `7.4.7` | In-memory cache and queue for Appwrite |
-| OpenRuntimes Executor | `0.7.22` | Serverless function execution runtime |
 
 **Supported Distributions:**
 
