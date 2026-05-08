@@ -40,13 +40,17 @@ Once the wizard is complete, `/setup` redirects to the login page. Sign in with 
 
 ## Starting the WAF Data Plane
 
-The offloader does not start on the first deploy. Once you have created at least one listener in the management GUI, run the following command:
+The offloader ships **disabled** on first deploy. Do not enable or start it until you have configured at least one listener in the management GUI.
+
+> **Security note.** If the offloader is started without a configured listener, its default-server fallback exposes the data-plane working directory (`/root`) over plain HTTP on port 80. The marketplace app explicitly disables the unit at install time so this cannot happen accidentally on a fresh deploy or after a reboot. Only enable the unit once you have a listener configured.
+
+After you have created at least one listener in the management GUI:
 
 ```bash
-sudo systemctl start offloader
+sudo systemctl enable --now offloader
 ```
 
-After this, the offloader binds 80 and 443 and inspects traffic for the listeners you have configured. UFW already permits both ports.
+This both enables auto-start on subsequent reboots and starts the unit now. The offloader then binds 80 and 443 and inspects traffic for the listeners you have configured. UFW already permits both ports.
 
 ## Architecture
 
@@ -70,7 +74,7 @@ After this, the offloader binds 80 and 443 and inspects traffic for the listener
 
 - **Controller** (Spring Boot WAR, management UI) binds to `127.0.0.1:9001` and is **not** reachable directly from outside the host.
 - **NGINX** terminates SSL on port 9000 with a Let's Encrypt certificate and reverse-proxies to the controller. The setup wizard endpoints (`/setup`, `/api/register`, `/api/setup`) are gated by HTTP basic authentication; everything else relies on the controller's native authentication.
-- **Offloader** (the WAF data plane) is *enabled but not started* on first deploy. It binds 80/443 to inspect and forward traffic destined for the upstream apps you protect via the management GUI. Until you create at least one listener, it has nothing to do — and won't start. After your first listener, run `sudo systemctl start offloader`; subsequent reboots will start it automatically.
+- **Offloader** (the WAF data plane) ships **disabled** on first deploy. It binds 80/443 once started, to inspect and forward traffic destined for the upstream apps you protect via the management GUI. The unit is intentionally disabled at install time because starting it without a configured listener exposes the data-plane working directory (`/root`) via plain HTTP on port 80. After you create your first listener, run `sudo systemctl enable --now offloader` to enable it (so it auto-starts on subsequent reboots) and start it immediately.
 
 ## Deployment Topology
 
