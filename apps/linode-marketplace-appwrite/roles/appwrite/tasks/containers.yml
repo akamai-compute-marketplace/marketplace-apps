@@ -25,10 +25,11 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/appwrite:/usr/src/code/appwrite:rw"
 
-- name: Wait for Appwrite installer to be ready
-  wait_for:
-    host: localhost
-    port: 20080
-    delay: 5
-    timeout: 120
-    state: started
+- name: Wait for Appwrite installer to return 200
+  uri:
+    url: http://localhost:20080
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 24
+  delay: 5
