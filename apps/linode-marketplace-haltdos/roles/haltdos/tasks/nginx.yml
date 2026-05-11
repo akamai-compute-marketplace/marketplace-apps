@@ -1,0 +1,60 @@
+---
+- name: Setting up SSL certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: standalone
+
+- name: Install certbot renewal hooks (stop/start offloader so standalone can bind :80)
+  copy:
+    dest: "{{ item.path }}"
+    mode: '0755'
+    content: |
+      #!/bin/sh
+      systemctl {{ item.action }} offloader 2>/dev/null || true
+  loop:
+    - { path: /etc/letsencrypt/renewal-hooks/pre/stop-offloader.sh, action: stop }
+    - { path: /etc/letsencrypt/renewal-hooks/post/start-offloader.sh, action: start }
+
+- name: Install nginx + apache2-utils
+  apt:
+    name: [nginx, apache2-utils]
+    state: present
+    update_cache: true
+
+- name: Create htpasswd for wizard endpoints
+  community.general.htpasswd:
+    path: "{{ haltdos_htpasswd_file }}"
+    name: "{{ haltdos_htpasswd_user }}"
+    password: "{{ haltdos_htpasswd_password }}"
+    crypt_scheme: bcrypt
+    owner: root
+    group: www-data
+    mode: '0640'
+  no_log: true
+
+- name: Create nginx site configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Enable HaltDOS nginx site
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+  notify: Restart nginx
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Enable + start nginx
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true

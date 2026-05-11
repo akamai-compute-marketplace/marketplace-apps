@@ -1,0 +1,9 @@
+---
+- name: Install HaltDOS packages
+  import_tasks: haltdos.yml
+
+- name: Apply controller systemd override
+  import_tasks: controller-override.yml
+
+- name: Configure nginx + SSL
+  import_tasks: nginx.yml
