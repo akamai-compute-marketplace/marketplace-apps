@@ -1,0 +1,29 @@
+---
+- name: Ensure systemd drop-in directory exists
+  file:
+    path: /etc/systemd/system/controller.service.d
+    state: directory
+    mode: '0755'
+
+- name: Install controller systemd drop-in
+  template:
+    src: controller.service.override.conf.j2
+    dest: /etc/systemd/system/controller.service.d/override.conf
+    mode: '0644'
+  notify: Restart controller
+
+- name: Ensure controller is enabled (drop-in applies on next start)
+  systemd_service:
+    name: controller
+    enabled: true
+    daemon_reload: true
+
+# Override the upstream postinst's `systemctl enable offloader`. Starting the
+# offloader without configured listeners exposes the data plane's working
+# directory (/root) via autoindex on :80. Users explicitly enable + start it
+# only after configuring their first listener in the management UI.
+- name: Ensure offloader is disabled (user enables it post-wizard once listeners are configured)
+  systemd_service:
+    name: offloader
+    enabled: false
+    state: stopped
