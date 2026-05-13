@@ -1,0 +1,9 @@
+---
+- name: Adding Akamai MCP Gateway
+  shell:
+    cmd: |
+      claude mcp add --transport http
+        --scope user
+        akamai "{{ akamai_mcp_gateway_url }}"
+
+# dbg post
