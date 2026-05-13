@@ -35,6 +35,24 @@ else
         UDF_VARS["LLM_CLIENT"]="Claude" # default
 fi
 
+if [[ -n "${AKAMAI_MCP_URL}" ]]; then
+        UDF_VARS["AKAMAI_MCP_URL"]="${AKAMAI_MCP_URL}"
+else
+        UDF_VARS["AKAMAI_MCP_URL"]="https://mcp.akamai.com/mcp" # default
+fi
+
+if [[ -n "${JWT_TOKEN}" ]]; then
+        UDF_VARS["JWT_TOKEN"]="${JWT_TOKEN}"
+else
+        UDF_VARS["JWT_TOKEN"]="testtokenvalue" # default
+fi
+
+if [[ -n "${AKAMAI_GATEWAY_URL}" ]]; then
+        UDF_VARS["AKAMAI_GATEWAY_URL"]="${AKAMAI_GATEWAY_URL}"
+else
+        UDF_VARS["AKAMAI_GATEWAY_URL"]="${AKAMAI_MCP_URL}?token=${JWT_TOKEN}" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
