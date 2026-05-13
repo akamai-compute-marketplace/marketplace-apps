@@ -1,0 +1,138 @@
+---
+- name: Add addons
+  ansible.builtin.import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Wait for Vault to be listening on loopback
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8200
+    timeout: 30
+
+- name: Check Vault init status
+  ansible.builtin.command: vault status -format=json
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+  register: vault_status_raw
+  # `vault status` returns 0 (initialized+unsealed), 1 (error), or 2 (sealed/uninitialized).
+  # All three exit codes still emit valid JSON we want to parse.
+  failed_when: vault_status_raw.rc not in [0, 1, 2]
+  changed_when: false
+
+- name: Parse Vault status
+  ansible.builtin.set_fact:
+    vault_status: "{{ vault_status_raw.stdout | from_json }}"
+
+- name: Initialize Vault (5 shares, threshold 3)
+  ansible.builtin.command: vault operator init -format=json
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+  register: vault_init_raw
+  no_log: true
+  when: not vault_status.initialized
+
+- name: Capture init keys + root token
+  ansible.builtin.set_fact:
+    vault_init: "{{ vault_init_raw.stdout | from_json }}"
+  no_log: true
+  when:
+    - not vault_status.initialized
+    - vault_init_raw.stdout is defined
+
+- name: Unseal Vault with 3 of 5 keys
+  ansible.builtin.command: "vault operator unseal {{ item }}"
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+  loop: "{{ vault_init.unseal_keys_b64[:3] }}"
+  no_log: true
+  when:
+    - not vault_status.initialized
+    - vault_init is defined
+
+- name: Ensure /var/log/vault exists
+  ansible.builtin.file:
+    path: /var/log/vault
+    state: directory
+    owner: vault
+    group: vault
+    mode: '0750'
+
+- name: List enabled audit devices
+  ansible.builtin.command: vault audit list -format=json
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+    VAULT_TOKEN: "{{ vault_init.root_token | default('') }}"
+  register: vault_audit_list
+  no_log: true
+  changed_when: false
+  failed_when: false
+  when: vault_init is defined
+
+- name: Enable file audit device
+  ansible.builtin.command: "vault audit enable file file_path=/var/log/vault/audit.log"
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+    VAULT_TOKEN: "{{ vault_init.root_token }}"
+  no_log: true
+  when:
+    - vault_init is defined
+    - vault_audit_list.rc == 0
+    - "'file/' not in (vault_audit_list.stdout | from_json | default({}))"
+
+- name: Write credentials file
+  ansible.builtin.copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Vault UI:  https://{{ _domain }}/
+      Vault API: https://{{ _domain }}/v1/
+
+      Initial Root Token: {{ vault_init.root_token }}
+
+      Unseal Keys (5 total, threshold of 3 required to unseal):
+      {% for key in vault_init.unseal_keys_b64 %}
+        {{ loop.index }}. {{ key }}
+      {% endfor %}
+
+      ----------------------------------------------------------------------
+      SECURITY — READ THIS BEFORE USING VAULT IN PRODUCTION
+      ----------------------------------------------------------------------
+      All 5 unseal keys and the root token are stored in this single file
+      for first-deploy convenience. HashiCorp's documented best practice is
+      to distribute the 5 keys to 5 different operators and rotate the
+      root token. Do BOTH of the following before treating this deploy as
+      production-ready:
+
+        1. Distribute the 5 unseal keys to 5 separate trusted operators.
+           Do not retain a copy here.
+        2. Generate a new root token, then revoke this initial one:
+              vault token create -policy=root -ttl=24h
+              vault token revoke {{ vault_init.root_token }}
+
+      After unseal-key distribution, securely delete this file:
+              shred -u ~/.credentials
+
+      If Vault becomes sealed (e.g., after a reboot), unseal it with:
+              VAULT_ADDR=https://{{ _domain }} vault operator unseal <key>
+      Repeat with 3 different keys.
+  no_log: true
+  when: vault_init is defined
+
+- name: Copy MOTD template to /etc/motd
+  ansible.builtin.template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0644'
+    owner: root
+    group: root

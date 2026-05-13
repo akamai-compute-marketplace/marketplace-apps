@@ -1,0 +1,27 @@
+
+====================================================================
+HashiCorp Vault — Akamai Marketplace
+====================================================================
+
+Vault UI:  https://{{ _domain }}/
+Vault API: https://{{ _domain }}/v1/
+
+Initial unseal keys and the root token are in:
+    /home/{{ username }}/.credentials   (mode 0600)
+
+FIRST RUN
+  1. Review the credentials file:    cat ~/.credentials
+  2. Open the UI and sign in with the Initial Root Token.
+  3. Distribute the 5 unseal keys to 5 separate operators.
+  4. Rotate the root token (instructions in the credentials file).
+  5. Shred the credentials file once keys are distributed.
+
+OPERATIONAL NOTES
+  - If Vault becomes sealed after a reboot, unseal it with 3 of 5 keys:
+        VAULT_ADDR=https://{{ _domain }} vault operator unseal <key>
+  - Audit log:        /var/log/vault/audit.log
+  - Logrotate config: /etc/logrotate.d/vault  (weekly, keep 12, copytruncate)
+  - Cert renewal:     handled by certbot's system timer (--nginx plugin)
+                      systemctl list-timers | grep certbot
+
+====================================================================
