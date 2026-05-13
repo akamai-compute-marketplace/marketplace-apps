@@ -29,6 +29,12 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
+if [[ -n "${LLM_CLIENT}" ]]; then
+        UDF_VARS["LLM_CLIENT"]="${LLM_CLIENT}"
+else
+        UDF_VARS["LLM_CLIENT"]="Claude" # default
+fi
+
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"
