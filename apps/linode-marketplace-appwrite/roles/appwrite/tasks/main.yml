@@ -1,0 +1,6 @@
+---
+- name: Install Docker and container components
+  import_tasks: containers.yml
+
+- name: Deploy Appwrite
+  import_tasks: appwrite.yml
