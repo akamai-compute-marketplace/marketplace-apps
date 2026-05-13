@@ -1,9 +1,37 @@
 ---
 - name: Adding Akamai MCP Gateway
-  shell:
+  command:
     cmd: |
-      claude mcp add --transport http
-        --scope user
-        akamai "{{ akamai_mcp_gateway_url }}"
+      claude mcp add --transport http --scope user akamai "{{ akamai_gateway_url }}"
+  register: claude_install
+  changed_when: claude_install.rc == 0
 
-# dbg post
+- name: Check MCP server status
+  ansible.builtin.command:
+    cmd: claude mcp get akamai
+  register: mcp_result
+
+- name: Set MCP connected status
+  set_fact:
+    mcp_status: connected
+  when:
+    - "'Connected' in mcp_result.stdout"
+
+- name: Set MCP fail status
+  set_fact:
+    mcp_status: "Failed to connect"
+  when:
+    - "'Failed to connect' in mcp_result.stdout"
+
+- name: Show MCP status
+  debug:
+    msg: "MCP STATUS: {{ mcp_status }}"
+
+# example output:
+# akamai:
+#   Scope: User config (available in all your projects)
+#   Status: ✓ Connected
+
+# akamai:
+#   Scope: User config (available in all your projects)
+#   Status: ✗ Failed to connect

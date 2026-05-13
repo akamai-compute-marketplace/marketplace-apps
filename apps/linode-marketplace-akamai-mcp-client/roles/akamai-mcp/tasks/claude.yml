@@ -1,5 +1,4 @@
 ---
-
 - name: Download Claude installer
   get_url:
     url: https://claude.ai/install.sh
@@ -8,8 +7,7 @@
   register: claude_installer
 
 - name: Run Claude installer
-  command:
-    cmd: /bin/bash {{ claude_installer }}
+  script: "{{ claude_installer.dest }}"
   register: claude_install
   changed_when: claude_install.rc == 0
 
