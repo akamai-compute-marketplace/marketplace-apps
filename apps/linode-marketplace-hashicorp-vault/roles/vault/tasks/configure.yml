@@ -14,7 +14,6 @@
     owner: root
     group: vault
     mode: '0640'
-  notify: Restart vault
 
 - name: Enable and start Vault
   ansible.builtin.systemd_service:
