@@ -1,0 +1,43 @@
+---
+- name: Wait for Vault to be listening on loopback
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8200
+    timeout: 30
+
+- name: Initialize Vault (5 shares, threshold 3)
+  ansible.builtin.command: vault operator init -format=json
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+  register: vault_init_raw
+  no_log: true
+
+- name: Capture init keys + root token
+  ansible.builtin.set_fact:
+    vault_init: "{{ vault_init_raw.stdout | from_json }}"
+  no_log: true
+
+- name: Unseal Vault with 3 of 5 keys
+  ansible.builtin.command: "vault operator unseal {{ item }}"
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+  loop: "{{ vault_init.unseal_keys_b64[:3] }}"
+  no_log: true
+
+- name: Ensure /var/log/vault exists
+  ansible.builtin.file:
+    path: /var/log/vault
+    state: directory
+    owner: vault
+    group: vault
+    mode: '0750'
+
+- name: Enable file audit device
+  ansible.builtin.command: vault audit enable file file_path=/var/log/vault/audit.log
+  environment:
+    VAULT_ADDR: "https://127.0.0.1:8200"
+    VAULT_SKIP_VERIFY: "true"
+    VAULT_TOKEN: "{{ vault_init.root_token }}"
+  no_log: true

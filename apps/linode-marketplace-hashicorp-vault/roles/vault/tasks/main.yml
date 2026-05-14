@@ -7,3 +7,6 @@
 
 - name: Configure nginx + SSL
   import_tasks: nginx.yml
+
+- name: Initialize, unseal, and enable audit device
+  import_tasks: init.yml
