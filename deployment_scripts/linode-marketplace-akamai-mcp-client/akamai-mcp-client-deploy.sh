@@ -87,8 +87,8 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   akamai_mcp_url: "${AKAMAI_MCP_URL}"
-  jwt_password: ${JWT_TOKEN}
-  akamai_gateway_url: "${AKAMAI_MCP_URL}?token=${JWT_TOKEN}"
+  jwt_password: ${JWT_PASSWORD}
+  akamai_gateway_url: "${AKAMAI_MCP_URL}?token=${JWT_PASSWORD}"
   default_dns: $(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})
 
 EOF

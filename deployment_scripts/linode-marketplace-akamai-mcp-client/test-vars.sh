@@ -41,10 +41,10 @@ else
         UDF_VARS["AKAMAI_MCP_URL"]="https://mcp.akamai.com/mcp" # default
 fi
 
-if [[ -n "${JWT_TOKEN}" ]]; then
-        UDF_VARS["JWT_TOKEN"]="${JWT_TOKEN}"
+if [[ -n "${JWT_PASSWORD}" ]]; then
+        UDF_VARS["JWT_PASSWORD"]="${JWT_PASSWORD}"
 else
-        UDF_VARS["JWT_TOKEN"]="testtokenvalue" # default
+        UDF_VARS["JWT_PASSWORD"]="testtokenvalue" # default
 fi
 
 if [[ -n "${AKAMAI_GATEWAY_URL}" ]]; then

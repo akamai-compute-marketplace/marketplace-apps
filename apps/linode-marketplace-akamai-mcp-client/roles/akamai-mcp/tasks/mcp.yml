@@ -8,28 +8,28 @@
   register: claude_install
   changed_when: claude_install.rc == 0
 
-- name: Check MCP server status
-  ansible.builtin.command:
-    cmd: claude mcp get akamai
-  environment:
-    PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"    
-  register: mcp_result
-
-- name: Set MCP connected status
-  set_fact:
-    mcp_status: connected
-  when:
-    - "'Connected' in mcp_result.stdout"
-
-- name: Set MCP fail status
-  set_fact:
-    mcp_status: "Failed to connect"
-  when:
-    - "'Failed to connect' in mcp_result.stdout"
-
-- name: Show MCP status
-  debug:
-    msg: "MCP STATUS: {{ mcp_status }}"
+#- name: Check MCP server status
+#  ansible.builtin.command:
+#    cmd: claude mcp get akamai
+#  environment:
+#    PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"    
+#  register: mcp_result
+#
+#- name: Set MCP connected status
+#  set_fact:
+#    mcp_status: connected
+#  when:
+#    - "'Connected' in mcp_result.stdout"
+#
+#- name: Set MCP fail status
+#  set_fact:
+#    mcp_status: "Failed to connect"
+#  when:
+#    - "'Failed to connect' in mcp_result.stdout"
+#
+#- name: Show MCP status
+#  debug:
+#    msg: "MCP STATUS: {{ mcp_status }}"
 
 # example output:
 # akamai:
