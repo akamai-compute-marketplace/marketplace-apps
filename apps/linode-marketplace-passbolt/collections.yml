@@ -1,10 +1,10 @@
 ---
 collections:
   - name: linode.cloud
-    version: 0.41.1
+    version: 0.46.0
 
   - name: community.mysql
-    version: 3.7.1
+    version: 5.0.1
 
   - name: community.general
-    version: 12.3.0
+    version: 12.6.0

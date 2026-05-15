@@ -6,11 +6,11 @@ yamllint==1.38.0
 pyyaml==6.0.3
 ansible-lint==26.4.0
 flake8==7.3.0
-linode_api4==5.43.0
+linode_api4==5.44.0
 polling==0.3.2
 ansible-specdoc==0.0.20
 dnspython==2.8.0
-certbot==5.5.0
+certbot==5.6.0
 #
 # OpenVPN Access Server Dependancies 
 # the following packages are required in the venv to touch OpenVPN python scripts // functions

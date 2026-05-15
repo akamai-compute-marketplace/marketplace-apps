@@ -30,7 +30,7 @@ def get_current_versions(requirement_file: Path) -> dict[str, str]:
 def main():
     print('Getting list of apps requirement files...')
     repo_root = Path(__file__).parent.parent.parent
-    requirement_files = sorted((repo_root / 'apps').rglob('requirements.txt'))
+    requirement_files = sorted(repo_root.rglob('requirements.txt'))
 
     print('Getting unique list of packages...')
     all_packages: set[str] = set()
