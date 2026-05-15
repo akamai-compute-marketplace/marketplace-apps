@@ -4,6 +4,11 @@ import urllib.request
 from pathlib import Path
 
 
+def get_ignored_apps() -> set[str]:
+    ignored_file = Path(__file__).parent / 'deps-ignored-apps.json'
+    return {entry['name'] for entry in json.loads(ignored_file.read_text())['ignored_apps']}
+
+
 def get_latest_version(namespace: str, name: str) -> str | None:
     url = f'https://galaxy.ansible.com/api/v3/collections/{namespace}/{name}/'
     try:
@@ -38,6 +43,11 @@ def main():
     print('Getting list of apps collections files...')
     repo_root = Path(__file__).resolve().parent.parent.parent
     collections_files = sorted((repo_root / 'apps').rglob('collections.yml'))
+
+    ignored_apps = get_ignored_apps()
+    if ignored_apps:
+        print(f'Ignoring apps: {", ".join(sorted(ignored_apps))}')
+        collections_files = [f for f in collections_files if f.parent.name not in ignored_apps]
 
     print('Getting unique list of collections...')
     all_collections: set[str] = set()
