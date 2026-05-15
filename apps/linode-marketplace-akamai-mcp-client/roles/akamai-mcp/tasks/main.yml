@@ -1,6 +1,6 @@
 ---
 - name: Install Claude Code
   import_tasks: claude.yml
-  
+
 - name: Add Akamai MCP Gateway
   import_tasks: mcp.yml
