@@ -1,6 +1,6 @@
 ---
 - name: Ensure /opt/vault/data exists and is owned by vault
-  ansible.builtin.file:
+  file:
     path: /opt/vault/data
     state: directory
     owner: vault
@@ -8,7 +8,7 @@
     mode: '0750'
 
 - name: Write marketplace vault.hcl
-  ansible.builtin.template:
+  template:
     src: vault.hcl.j2
     dest: /etc/vault.d/vault.hcl
     owner: root
@@ -16,7 +16,7 @@
     mode: '0640'
 
 - name: Enable and start Vault
-  ansible.builtin.systemd_service:
+  systemd_service:
     name: vault
     state: started
     enabled: true

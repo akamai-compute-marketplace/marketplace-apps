@@ -1,11 +1,11 @@
 ---
 - name: Add addons
-  ansible.builtin.import_role:
+  import_role:
     name: addons
   when: add_ons != ['none']
 
 - name: Copy MOTD template to /etc/motd
-  ansible.builtin.template:
+  template:
     src: motd.j2
     dest: /etc/motd
     mode: '0644'
@@ -13,7 +13,7 @@
     group: root
 
 - name: Write credentials file
-  ansible.builtin.copy:
+  copy:
     dest: "/home/{{ username }}/.credentials"
     owner: "{{ username }}"
     group: "{{ username }}"
@@ -23,7 +23,6 @@
       Sudo Password: {{ password }}
 
       Vault UI:  https://{{ _domain }}/
-      Vault API: https://{{ _domain }}/v1/
 
       Initial Root Token: {{ vault_init.root_token }}
 
@@ -48,9 +47,8 @@
               vault token revoke {{ vault_init.root_token }}
 
       After unseal-key distribution, securely delete this file:
-              shred -u ~/.credentials
+              /home/{{ username }}/.credentials
 
       If Vault becomes sealed (e.g., after a reboot), unseal it with:
               VAULT_ADDR=https://{{ _domain }} vault operator unseal <key>
       Repeat with 3 different keys.
-  no_log: true

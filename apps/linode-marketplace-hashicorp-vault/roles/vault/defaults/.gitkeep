@@ -1,3 +1,0 @@
----
-# All Vault role variables are populated by the stackscript into
-# group_vars/linode/vars. No app-specific defaults to declare here.
