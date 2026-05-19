@@ -1,7 +1,6 @@
 #!/bin/bash
 
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
-RANDOM_SUBDOMAIN="a$(tr -dc 'a-z0-9' </dev/urandom | head -c7)"
 
 # custom env variables from cli
 if [[ -n ${INSTANCE_ENV} ]]; then
@@ -30,48 +29,28 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
+if [[ -n "${TOKEN_PASSWORD}" ]]; then
+        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
+else
+        UDF_VARS["TOKEN_PASSWORD"]="" # default
+fi
+
+if [[ -n "${SUBDOMAIN}" ]]; then
+        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
+else
+        UDF_VARS["SUBDOMAIN"]="" # default
+fi
+
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
 else
         UDF_VARS["DOMAIN"]="" # default
 fi
 
-if [[ -n "${SUBDOMAIN}" ]]; then
-        UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
-else
-        UDF_VARS["SUBDOMAIN"]=""
-fi
-
-if [[ -n "${TOKEN_PASSWORD}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${TOKEN_PASSWORD}"
-elif [[ -n "${LINODE_API_SECRET}" ]]; then
-        UDF_VARS["TOKEN_PASSWORD"]="${LINODE_API_SECRET}"
-else
-        UDF_VARS["TOKEN_PASSWORD"]="HugsAreWorthMoreThanHandshakes" # default
-fi
-
 if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
-fi
-
-if [[ -n "${PASSBOLT_USER_FIRSTNAME}" ]]; then
-        UDF_VARS["PASSBOLT_USER_FIRSTNAME"]="${PASSBOLT_USER_FIRSTNAME}"
-else
-        UDF_VARS["PASSBOLT_USER_FIRSTNAME"]="passbolt_firstname" # default
-fi
-
-if [[ -n "${PASSBOLT_USER_LASTNAME}" ]]; then
-        UDF_VARS["PASSBOLT_USER_LASTNAME"]="${PASSBOLT_USER_LASTNAME}"
-else
-        UDF_VARS["PASSBOLT_USER_LASTNAME"]="passbolt_lastname" # default
-fi
-
-if [[ -n "${PASSBOLT_USER_EMAIL}" ]]; then
-        UDF_VARS["PASSBOLT_USER_EMAIL"]="${PASSBOLT_USER_EMAIL}"
-else
-        UDF_VARS["PASSBOLT_USER_EMAIL"]="passbolt@${DEFAULT_DNS}" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

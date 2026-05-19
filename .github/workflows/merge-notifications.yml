@@ -1,0 +1,31 @@
+name: Merge Notifications to Slack
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+      - develop
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  notify:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Send Slack notification
+        env:
+          REPO_NAME: ${{ github.repository }}
+          CURRENT_BRANCH: ${{ github.event.pull_request.head.ref }}
+          TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: bash .github/scripts/merge-notifications-payload.sh

@@ -1,0 +1,12 @@
+/var/log/vault/*.log {
+    weekly
+    rotate 12
+    compress
+    missingok
+    notifempty
+    copytruncate
+    su vault vault
+    postrotate
+        systemctl reload vault > /dev/null 2>&1 || true
+    endscript
+}

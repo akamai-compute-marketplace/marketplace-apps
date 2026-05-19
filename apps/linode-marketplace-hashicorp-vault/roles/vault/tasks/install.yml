@@ -1,0 +1,27 @@
+---
+- name: Add HashiCorp GPG key
+  get_url:
+    url: https://apt.releases.hashicorp.com/gpg
+    dest: /tmp/hashicorp-archive-keyring.asc
+    mode: '0644'
+
+- name: Dearmor HashiCorp GPG key into apt keyring
+  command:
+    cmd: gpg --batch --yes --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg /tmp/hashicorp-archive-keyring.asc
+    creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+- name: Resolve distribution codename
+  set_fact:
+    distribution_release: "{{ ansible_facts['lsb']['codename'] }}"
+
+- name: Add HashiCorp apt repo
+  copy:
+    dest: /etc/apt/sources.list.d/hashicorp.list
+    content: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ distribution_release }} main\n"
+    mode: '0644'
+
+- name: Install Vault package
+  apt:
+    name: vault
+    state: present
+    update_cache: true

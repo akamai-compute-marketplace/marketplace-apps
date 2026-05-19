@@ -17,6 +17,7 @@
     target: "{{ _domain }}"
     priority: 10
     state: present
+  when: [token_password is defined, default_dns is not defined]
 
 - name: Create SPF records for domain
   linode.cloud.domain_record:
@@ -26,6 +27,7 @@
     type: "TXT"
     target: "v=spf1 a ~all"
     state: present
+  when: [token_password is defined, default_dns is not defined]
 
 - name: Create RDNS records for domain
   linode.cloud.ip_rdns:
@@ -33,6 +35,7 @@
     state: present
     address: "{{ ansible_default_ipv4.address }}"
     rdns: "{{ _domain }}"
+  when: [token_password is defined, default_dns is not defined]
 
 - name: Set ssh pubkey
   import_role:

@@ -1,0 +1,15 @@
+---
+- name: Restart vault
+  systemd_service:
+    name: vault
+    state: restarted
+
+- name: Reload vault
+  systemd_service:
+    name: vault
+    state: reloaded
+
+- name: Restart nginx
+  systemd_service:
+    name: nginx
+    state: restarted
