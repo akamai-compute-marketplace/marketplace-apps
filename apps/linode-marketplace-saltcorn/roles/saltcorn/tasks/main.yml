@@ -1,6 +1,4 @@
 ---
-#- name: Install Docker and container components
-#  import_tasks: containers.yml
 
 - name: Deploy Saltcorn
   import_tasks: saltcorn.yml
