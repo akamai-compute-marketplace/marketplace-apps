@@ -1,0 +1,45 @@
+---
+- name: Download NodeSource GPG key
+  get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /etc/apt/keyrings/nodesource.asc
+    mode: '0644'
+
+- name: Add NodeSource apt repository
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_24.x nodistro main"
+    state: present
+    filename: nodesource
+    update_cache: true
+
+- name: Install Node.js
+  apt:
+    name: nodejs
+    state: present
+    update_cache: true
+
+- name: Install Saltcorn via npx
+  command: npx saltcorn-install -y
+  args:
+    creates: /home/saltcorn/.local/bin/saltcorn
+  become_user: root
+
+- name: Write saltcorn systemd service file
+  template:
+    src: saltcorn.service.j2
+    dest: /lib/systemd/system/saltcorn.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable and start saltcorn service
+  systemd:
+    name: saltcorn
+    enabled: true
+    state: restarted
+    daemon_reload: true
+
+- name: Create Saltcorn admin user
+  command: "/home/saltcorn/.local/bin/saltcorn create-user -a -e {{ soa_email_address }} -p '{{ saltcorn_admin_password }}'"
+  become: true
+  become_user: saltcorn
