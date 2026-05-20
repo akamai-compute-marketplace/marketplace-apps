@@ -101,6 +101,7 @@ function udf {
   site_name: "${SITE_NAME}"
   admin_email: ${ADMIN_EMAIL}
   joomla_admin_fullname: "${JOOMLA_ADMIN_FULLNAME}"
+  joomla_admin_username: admin
   joomla_db_user: ${JOOMLA_DB_USER}
   joomla_db_name: ${JOOMLA_DB_NAME}
   # addons
