@@ -24,20 +24,31 @@
     creates: /home/saltcorn/.local/bin/saltcorn
   become_user: root
 
-- name: Write saltcorn systemd service file
+- name: Create systemd user directory if it does not exist
+  file:
+    path: /home/saltcorn/.config/systemd/user
+    state: directory
+    owner: saltcorn
+    group: saltcorn
+    mode: '0755'
+
+- name: Write saltcorn systemd user service file
   template:
     src: saltcorn.service.j2
-    dest: /lib/systemd/system/saltcorn.service
-    owner: root
-    group: root
+    dest: /home/saltcorn/.config/systemd/user/saltcorn.service
+    owner: saltcorn
+    group: saltcorn
     mode: '0644'
 
-- name: Enable and start saltcorn service
+- name: Enable and restart saltcorn user service
   systemd:
     name: saltcorn
     enabled: true
     state: restarted
     daemon_reload: true
+    scope: user
+  become: true
+  become_user: saltcorn
 
 - name: Create Saltcorn admin user
   command: "/home/saltcorn/.local/bin/saltcorn create-user -a -e {{ soa_email_address }} -p '{{ saltcorn_admin_password }}'"
