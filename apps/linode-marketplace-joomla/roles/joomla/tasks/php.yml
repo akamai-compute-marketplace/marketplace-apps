@@ -1,0 +1,42 @@
+---
+- name: Install PHP and Joomla-required extensions
+  apt:
+    name:
+      - "php{{ joomla_php_version }}"
+      - "libapache2-mod-php{{ joomla_php_version }}"
+      - "php{{ joomla_php_version }}-cli"
+      - "php{{ joomla_php_version }}-common"
+      - "php{{ joomla_php_version }}-mysql"
+      - "php{{ joomla_php_version }}-xml"
+      - "php{{ joomla_php_version }}-curl"
+      - "php{{ joomla_php_version }}-gd"
+      - "php{{ joomla_php_version }}-intl"
+      - "php{{ joomla_php_version }}-mbstring"
+      - "php{{ joomla_php_version }}-zip"
+      - "php{{ joomla_php_version }}-gmp"
+      - "php{{ joomla_php_version }}-bcmath"
+      - "php{{ joomla_php_version }}-opcache"
+    state: present
+    update_cache: true
+
+- name: Tune Apache PHP ini values
+  lineinfile:
+    path: "/etc/php/{{ joomla_php_version }}/apache2/php.ini"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^\s*memory_limit\s*=', line: 'memory_limit = 512M' }
+    - { regexp: '^\s*upload_max_filesize\s*=', line: 'upload_max_filesize = 256M' }
+    - { regexp: '^\s*post_max_size\s*=', line: 'post_max_size = 256M' }
+    - { regexp: '^\s*max_execution_time\s*=', line: 'max_execution_time = 300' }
+    - { regexp: '^\s*output_buffering\s*=', line: 'output_buffering = Off' }
+    - { regexp: '^\s*display_errors\s*=', line: 'display_errors = Off' }
+  notify: Reload apache2
+
+- name: Ensure upload_tmp_dir points to Joomla tmp
+  lineinfile:
+    path: "/etc/php/{{ joomla_php_version }}/apache2/php.ini"
+    regexp: '^\s*upload_tmp_dir\s*='
+    line: 'upload_tmp_dir = "{{ joomla_install_dir }}/tmp"'
+    insertafter: EOF
+  notify: Reload apache2

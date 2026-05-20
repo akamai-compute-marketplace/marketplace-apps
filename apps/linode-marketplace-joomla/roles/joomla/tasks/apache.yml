@@ -1,0 +1,30 @@
+---
+- name: Enable required Apache modules
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - rewrite
+    - headers
+    - ssl
+  notify: Reload apache2
+
+- name: Disable default site
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: Reload apache2
+
+- name: Render Joomla vhost
+  template:
+    src: joomla.conf.j2
+    dest: /etc/apache2/sites-available/joomla.conf
+    mode: '0644'
+  notify: Reload apache2
+
+- name: Enable Joomla vhost
+  file:
+    src: /etc/apache2/sites-available/joomla.conf
+    dest: /etc/apache2/sites-enabled/joomla.conf
+    state: link
+  notify: Reload apache2

@@ -1,0 +1,34 @@
+---
+- name: Install requested add-ons
+  import_role:
+    name: addons
+  when:
+    - add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0600'
+
+- name: Write credentials file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      MariaDB Root Password: {{ mysql_root_password }}
+      Joomla DB Name: {{ joomla_db_name }}
+      Joomla DB User: {{ joomla_db_user }}
+      Joomla DB Password: {{ joomla_db_password }}
+
+      Joomla Admin Username: {{ joomla_admin_username }}
+      Joomla Admin Password: {{ joomla_admin_password }}
+      Joomla Admin Email: {{ admin_email }}
+
+      Joomla Site URL:  https://{{ _domain }}/
+      Joomla Admin URL: https://{{ _domain }}/administrator/

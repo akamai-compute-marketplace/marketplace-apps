@@ -1,0 +1,16 @@
+---
+- name: Activate Joomla .htaccess from shipped htaccess.txt
+  copy:
+    src: "{{ joomla_install_dir }}/htaccess.txt"
+    dest: "{{ joomla_install_dir }}/.htaccess"
+    remote_src: true
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Tighten configuration.php permissions
+  file:
+    path: "{{ joomla_install_dir }}/configuration.php"
+    owner: www-data
+    group: www-data
+    mode: '0640'

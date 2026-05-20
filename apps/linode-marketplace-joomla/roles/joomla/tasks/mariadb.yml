@@ -1,0 +1,36 @@
+---
+- name: Install MariaDB and Python MySQL connector
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql
+    state: present
+    update_cache: true
+
+- name: Ensure MariaDB is started and enabled
+  systemd_service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Harden MariaDB
+  import_role:
+    name: securemysql
+
+- name: Create Joomla database
+  ansible.mysql.mysql_db:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ joomla_db_name }}"
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    state: present
+
+- name: Create Joomla DB user
+  ansible.mysql.mysql_user:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    name: "{{ joomla_db_user }}"
+    password: "{{ joomla_db_password }}"
+    priv: "{{ joomla_db_name }}.*:ALL"
+    host: localhost
+    state: present
