@@ -2,7 +2,7 @@
 
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 
-# custom env variables from cli
+
 if [[ -n ${INSTANCE_ENV} ]]; then
   custom_vars=(${INSTANCE_ENV})
   var_count=${#custom_vars[@]}
