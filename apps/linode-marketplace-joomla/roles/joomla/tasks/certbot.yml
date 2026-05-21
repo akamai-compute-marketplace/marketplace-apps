@@ -1,9 +1,14 @@
 ---
-# certbot_ssl picks the apache branch because provision.yml writes
-# webserver_stack: lamp. It issues a cert for the operator's domain (if
-# provided) or the rDNS fallback (default_dns), rewrites the vhost in-place
-# to add the :443 listener + 301 redirect, and enables certbot.timer for
-# auto-renewal.
 - name: Issue Let's Encrypt cert and configure HTTPS
   import_role:
     name: certbot_ssl
+
+- name: Add host-mismatch redirect to HTTPS vhost
+  blockinfile:
+    path: /etc/apache2/sites-available/joomla-le-ssl.conf
+    insertbefore: '^SSLCertificateFile'
+    marker: "# {mark}"
+    block: |
+      RewriteCond %{HTTP_HOST} !={{ _domain }}
+      RewriteRule ^ https://{{ _domain }}%{REQUEST_URI} [R=permanent,L]
+  notify: Reload apache2
