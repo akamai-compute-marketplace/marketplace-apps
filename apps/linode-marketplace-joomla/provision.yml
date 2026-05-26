@@ -19,4 +19,3 @@
         line: |
           joomla_db_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
           joomla_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
-          webserver_stack: lamp

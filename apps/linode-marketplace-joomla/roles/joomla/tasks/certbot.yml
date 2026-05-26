@@ -2,6 +2,8 @@
 - name: Issue Let's Encrypt cert and configure HTTPS
   import_role:
     name: certbot_ssl
+  vars:
+    webserver_stack: lamp
 
 - name: Add redirect to vhost
   blockinfile:
