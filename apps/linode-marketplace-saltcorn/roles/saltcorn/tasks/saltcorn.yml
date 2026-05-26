@@ -22,7 +22,8 @@
   command: npx saltcorn-install -y
   args:
     creates: /home/saltcorn/.local/bin/saltcorn
-  become_user: root
+  become: true
+  become_user: saltcorn
 
 - name: Get UID of saltcorn user
   command: id -u saltcorn
