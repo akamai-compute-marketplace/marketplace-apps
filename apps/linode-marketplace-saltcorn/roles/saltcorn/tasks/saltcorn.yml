@@ -18,20 +18,11 @@
     state: present
     update_cache: true
 
-- name: Create Saltcorn user
-  user:
-    name: saltcorn
-    shell: /bin/bash
-    create_home: true
-    state: present
-  become: true
-
 - name: Install Saltcorn via npx
   command: npx saltcorn-install -y
   args:
     creates: /home/saltcorn/.local/bin/saltcorn
-  become: true
-  become_user: saltcorn
+  become_user: root
 
 - name: Get UID of saltcorn user
   command: id -u saltcorn
@@ -57,6 +48,18 @@
     owner: saltcorn
     group: saltcorn
     mode: '0644'
+
+- name: Stop and disable the system-wide saltcorn service
+  systemd:
+    name: saltcorn
+    state: stopped
+    enabled: false
+    scope: system
+
+- name: Remove the system-wide systemd unit file
+  file:
+    path: /usr/lib/systemd/system/saltcorn.service
+    state: absent
 
 - name: Enable and restart saltcorn user service
   systemd:
