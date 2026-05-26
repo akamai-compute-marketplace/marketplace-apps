@@ -3,7 +3,7 @@
   import_role:
     name: certbot_ssl
 
-- name: Add host-mismatch redirect to HTTPS vhost
+- name: Add redirect to vhost
   blockinfile:
     path: /etc/apache2/sites-available/joomla-le-ssl.conf
     insertbefore: '^SSLCertificateFile'

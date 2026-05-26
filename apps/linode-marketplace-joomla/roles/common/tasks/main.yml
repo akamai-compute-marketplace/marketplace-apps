@@ -42,9 +42,13 @@
   import_role:
     name: fail2ban_install
 
-- name: Install baseline tooling
+- name: Install required system packages
   apt:
-    name:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
       - curl
       - wget
       - unzip

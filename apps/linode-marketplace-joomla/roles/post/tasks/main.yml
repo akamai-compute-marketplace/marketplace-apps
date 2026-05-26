@@ -29,6 +29,3 @@
       Joomla Admin Username: {{ joomla_admin_username }}
       Joomla Admin Password: {{ joomla_admin_password }}
       Joomla Admin Email: {{ admin_email }}
-
-      Joomla Site URL:  https://{{ _domain }}/
-      Joomla Admin URL: https://{{ _domain }}/administrator/

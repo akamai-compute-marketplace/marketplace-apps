@@ -32,11 +32,3 @@
     - { regexp: '^\s*output_buffering\s*=', line: 'output_buffering = Off' }
     - { regexp: '^\s*display_errors\s*=', line: 'display_errors = Off' }
   notify: Reload apache2
-
-- name: Ensure upload_tmp_dir points to Joomla tmp
-  lineinfile:
-    path: "/etc/php/{{ joomla_php_version }}/apache2/php.ini"
-    regexp: '^\s*upload_tmp_dir\s*='
-    line: 'upload_tmp_dir = "{{ joomla_install_dir }}/tmp"'
-    insertafter: EOF
-  notify: Reload apache2

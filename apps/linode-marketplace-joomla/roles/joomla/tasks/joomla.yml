@@ -27,23 +27,15 @@
     path: /tmp/joomla.tar.gz
     state: absent
 
-- name: Ensure Joomla writable directories exist with correct ownership
+- name: Create Joomla logs directory
   file:
-    path: "{{ joomla_install_dir }}/{{ item }}"
+    path: "{{ joomla_install_dir }}/logs"
     state: directory
     owner: www-data
     group: www-data
     mode: '0755'
-  loop:
-    - tmp
-    - cache
-    - logs
-    - images
-    - media
-    - administrator/cache
-    - administrator/logs
 
-- name: Run Joomla CLI installer
+- name: Run Joomla CLI installer to bypass open install web UI
   command:
     chdir: "{{ joomla_install_dir }}"
     creates: "{{ joomla_install_dir }}/configuration.php"
