@@ -24,6 +24,15 @@
     creates: /home/saltcorn/.local/bin/saltcorn
   become_user: root
 
+- name: Get UID of saltcorn user
+  command: id -u saltcorn
+  register: saltcorn_uid_result
+  changed_when: false
+
+- name: Ensure lingering is enabled for the saltcorn user
+  command: loginctl enable-linger saltcorn
+  changed_when: false
+
 - name: Create systemd user directory if it does not exist
   file:
     path: /home/saltcorn/.config/systemd/user
@@ -49,6 +58,17 @@
     scope: user
   become: true
   become_user: saltcorn
+
+- name: Set XDG_RUNTIME_DIR in .bashrc for saltcorn user
+  lineinfile:
+    path: /home/saltcorn/.bashrc
+    line: 'export XDG_RUNTIME_DIR=/run/user/$(id -u)'
+    state: present
+    create: true
+    insertafter: EOF
+    owner: saltcorn
+    group: saltcorn
+    mode: '0644'
 
 - name: Create Saltcorn admin user
   command: "/home/saltcorn/.local/bin/saltcorn create-user -a -e {{ soa_email_address }} -p '{{ saltcorn_admin_password }}'"
