@@ -18,6 +18,14 @@
     state: present
     update_cache: true
 
+- name: Create Saltcorn user
+  user:
+    name: saltcorn
+    shell: /bin/bash
+    create_home: true
+    state: present
+  become: true
+
 - name: Install Saltcorn via npx
   command: npx saltcorn-install -y
   args:
