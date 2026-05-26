@@ -58,3 +58,4 @@
       - "--db-name={{ joomla_db_name }}"
       - --db-encryption=0
       - --no-interaction
+  no_log: true

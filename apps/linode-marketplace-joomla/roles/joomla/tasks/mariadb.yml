@@ -34,3 +34,4 @@
     priv: "{{ joomla_db_name }}.*:ALL"
     host: localhost
     state: present
+  no_log: true
