@@ -44,3 +44,74 @@
   command: "/home/saltcorn/.local/bin/saltcorn create-user -a -e {{ soa_email_address }} -p '{{ saltcorn_admin_password }}'"
   become: true
   become_user: saltcorn
+
+- name: Fetch login page to get an initial CSRF token
+  uri:
+    url: "https://{{ _domain }}/auth/login"
+    method: GET
+    validate_certs: false
+    return_content: true
+  register: initial_page
+
+- name: Extract initial CSRF Token
+  set_fact:
+    login_csrf: "{{ initial_page.content | regex_search('name=\"_csrf\"\\s+value=\"([^\"]+)\"', '\\1') | first }}"
+
+- name: Log in as Admin
+  uri:
+    url: "https://{{ _domain }}/auth/login"
+    method: POST
+    body_format: form-urlencoded
+    validate_certs: false
+    status_code: [200, 302]
+    headers:
+      Cookie: "{{ initial_page.set_cookie }}"
+      CSRF-Token: "{{ login_csrf }}"
+    body:
+      _csrf: "{{ login_csrf }}"
+      email: "{{ soa_email_address}}"
+      password: "{{ saltcorn_admin_password }}"
+  register: login_response
+
+- name: Fetch settings page with auth session
+  uri:
+    url: "https://{{ _domain }}/useradmin/settings"
+    method: GET
+    validate_certs: false
+    return_content: true
+    headers:
+      Cookie: "{{ login_response.set_cookie }}"
+  register: settings_page
+
+- name: Extract authenticated CSRF Token
+  set_fact:
+    auth_csrf: "{{ settings_page.content | regex_search('name=\"_csrf\"\\s+value=\"([^\"]+)\"', '\\1') | first }}"
+
+- name: Disable the allow_signup checkbox
+  uri:
+    url: "https://{{ _domain }}/useradmin/settings"
+    method: POST
+    body_format: form-urlencoded
+    validate_certs: false
+    status_code: [200, 302]
+    headers:
+      Cookie: "{{ login_response.set_cookie }}"
+      CSRF-Token: "{{ auth_csrf }}"
+    body:
+      _csrf: "{{ auth_csrf }}"
+      login_form: ""
+      signup_form: ""
+      new_user_form: ""
+      user_settings_form: ""
+      verification_view: ""
+      reset_password_email_view: ""
+      logout_url: "/auth/login"
+      signup_role: "80"
+      elevate_verified: ""
+      email_mask: ""
+      min_password_length: "8"
+      check_common_passwords: "on"
+      password_require_lowercase: "on"
+      password_complexity: ""
+      password_complexity_error: ""
+  register: post_response

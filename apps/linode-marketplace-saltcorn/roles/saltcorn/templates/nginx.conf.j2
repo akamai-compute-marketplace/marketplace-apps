@@ -18,8 +18,4 @@ server  {
     proxy_set_header   Upgrade $http_upgrade;
     proxy_set_header   Connection "upgrade";
   }
-  
-    location = /auth/signup {
-    return 302 /auth/login;
-}
 }
