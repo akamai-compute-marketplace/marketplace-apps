@@ -11,7 +11,7 @@ Group=saltcorn
 WorkingDirectory=/home/saltcorn
 ExecStart=/home/saltcorn/.local/bin/saltcorn serve -p 8080
 Restart=always
-Environment="NODE_ENV=production"
+Environment="NODE_ENV=production" "TRUST_PROXY=true"
 
 [Install]
 WantedBy=multi-user.target
