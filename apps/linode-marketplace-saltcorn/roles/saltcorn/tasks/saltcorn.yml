@@ -44,6 +44,7 @@
   command: "/home/saltcorn/.local/bin/saltcorn create-user -a -e {{ soa_email_address }} -p '{{ saltcorn_admin_password }}'"
   become: true
   become_user: saltcorn
+  no_log: true
 
 - name: Fetch login page to get an initial CSRF token
   uri:
@@ -72,6 +73,7 @@
       email: "{{ soa_email_address}}"
       password: "{{ saltcorn_admin_password }}"
   register: login_response
+  no_log: true
 
 - name: Fetch settings page with auth session
   uri:
@@ -82,6 +84,7 @@
     headers:
       Cookie: "{{ login_response.set_cookie }}"
   register: settings_page
+  no_log: true
 
 - name: Extract authenticated CSRF Token
   set_fact:
@@ -114,4 +117,3 @@
       password_require_lowercase: "on"
       password_complexity: ""
       password_complexity_error: ""
-  register: post_response
