@@ -8,7 +8,12 @@
     group: www-data
     mode: '0644'
 
-- name: Tighten configuration.php permissions
+- name: Remove shipped htaccess.txt
+  file:
+    path: "{{ joomla_install_dir }}/htaccess.txt"
+    state: absent
+
+- name: Update configuration.php permissions
   file:
     path: "{{ joomla_install_dir }}/configuration.php"
     owner: www-data

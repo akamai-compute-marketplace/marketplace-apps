@@ -2,4 +2,3 @@
 joomla_version: "5-4-5"
 
 joomla_install_dir: /var/www/html/joomla
-joomla_php_version: "8.3"

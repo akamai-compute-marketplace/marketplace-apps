@@ -2,26 +2,26 @@
 - name: Install PHP and Joomla-required extensions
   apt:
     name:
-      - "php{{ joomla_php_version }}"
-      - "libapache2-mod-php{{ joomla_php_version }}"
-      - "php{{ joomla_php_version }}-cli"
-      - "php{{ joomla_php_version }}-common"
-      - "php{{ joomla_php_version }}-mysql"
-      - "php{{ joomla_php_version }}-xml"
-      - "php{{ joomla_php_version }}-curl"
-      - "php{{ joomla_php_version }}-gd"
-      - "php{{ joomla_php_version }}-intl"
-      - "php{{ joomla_php_version }}-mbstring"
-      - "php{{ joomla_php_version }}-zip"
-      - "php{{ joomla_php_version }}-gmp"
-      - "php{{ joomla_php_version }}-bcmath"
-      - "php{{ joomla_php_version }}-opcache"
+      - php
+      - libapache2-mod-php
+      - php-cli
+      - php-common
+      - php-mysql
+      - php-xml
+      - php-curl
+      - php-gd
+      - php-intl
+      - php-mbstring
+      - php-zip
+      - php-gmp
+      - php-bcmath
+      - php-opcache
     state: present
     update_cache: true
 
 - name: Tune Apache PHP ini values
   lineinfile:
-    path: "/etc/php/{{ joomla_php_version }}/apache2/php.ini"
+    path: /etc/php/8.3/apache2/php.ini
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:

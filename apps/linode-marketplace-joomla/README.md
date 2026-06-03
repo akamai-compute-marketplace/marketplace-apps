@@ -1,4 +1,4 @@
-# Linode Joomla Deployment One-Click App
+# Linode Joomla Deployment Quick Deploy App
 
 Joomla is a free and open-source content management system (CMS) for publishing web content. This Marketplace App deploys Joomla 5.4.5 on Ubuntu 24.04 with Apache, PHP 8.3, and MariaDB.
 
