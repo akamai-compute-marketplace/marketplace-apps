@@ -1,0 +1,34 @@
+---
+- name: Install PHP and Joomla-required extensions
+  apt:
+    name:
+      - php
+      - libapache2-mod-php
+      - php-cli
+      - php-common
+      - php-mysql
+      - php-xml
+      - php-curl
+      - php-gd
+      - php-intl
+      - php-mbstring
+      - php-zip
+      - php-gmp
+      - php-bcmath
+      - php-opcache
+    state: present
+    update_cache: true
+
+- name: Tune Apache PHP ini values
+  lineinfile:
+    path: /etc/php/8.3/apache2/php.ini
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - { regexp: '^\s*memory_limit\s*=', line: 'memory_limit = 512M' }
+    - { regexp: '^\s*upload_max_filesize\s*=', line: 'upload_max_filesize = 256M' }
+    - { regexp: '^\s*post_max_size\s*=', line: 'post_max_size = 256M' }
+    - { regexp: '^\s*max_execution_time\s*=', line: 'max_execution_time = 300' }
+    - { regexp: '^\s*output_buffering\s*=', line: 'output_buffering = Off' }
+    - { regexp: '^\s*display_errors\s*=', line: 'display_errors = Off' }
+  notify: Reload apache2
