@@ -36,3 +36,5 @@
 - name: Configure SSL with certbot
   import_role:
     name: certbot_ssl
+  vars:
+    webserver_stack: lemp

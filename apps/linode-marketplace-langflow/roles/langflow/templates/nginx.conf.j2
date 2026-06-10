@@ -1,3 +1,10 @@
+# Needed to cover http://$IP -> https://FQDN redirect
+server {
+    listen 80 default_server;
+    server_name _;
+    return 301 https://{{ _domain }}$request_uri;
+}
+
 server {
     listen 80;
     server_name {{ _domain }};
