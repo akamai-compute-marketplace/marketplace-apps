@@ -4,7 +4,7 @@ Langflow is an open-source, Python-based, customizable framework for building AI
 supports important AI functionality like agents and the Model Context Protocol (MCP), and it doesn't
 require you to use specific large language models (LLMs) or vector stores. The visual editor
 simplifies prototyping of application workflows, enabling developers to quickly turn their ideas into
-powerful, real-world solutions. This Marketplace App deploys Langflow on Ubuntu 24.04 via Docker
+powerful, real-world solutions. This Quick Deploy App deploys Langflow on Ubuntu 24.04 via Docker
 Compose (Langflow + PostgreSQL), behind nginx with a Let's Encrypt certificate and native superuser
 login.
 
@@ -54,7 +54,7 @@ When the playbook finishes, the operator can:
 
 ## Use our API
 
-Customers can deploy Langflow through the Linode Marketplace or directly using the API. Before using the commands below, create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/), and substitute your own values for the defaults.
+Customers can deploy Langflow through Akamai Quick Deploy Apps or directly using the API. Before using the commands below, create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/), and substitute your own values for the defaults.
 
 SHELL:
 ```
