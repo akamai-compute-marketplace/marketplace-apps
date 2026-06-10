@@ -1,0 +1,22 @@
+---
+# Default variables for Langflow deployment
+
+# Container image versions
+langflow_version: "1.10.0"
+postgres_version: "16"
+
+# Install directory
+langflow_base_dir: "/opt/langflow"
+
+# Langflow listens on 7860, bound to loopback, fronted by nginx
+langflow_port: 7860
+
+# Langflow native superuser
+langflow_superuser: "admin"
+
+# Postgres settings
+postgres_db_name: "langflow"
+postgres_user_name: "langflow"
+
+# Docker network
+langflow_network_name: "langflow_net"
