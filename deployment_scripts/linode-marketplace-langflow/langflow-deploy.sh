@@ -90,6 +90,10 @@ function udf {
   # sudo username
   username: ${USER_NAME}
   webserver_stack: lemp
+  # langflow and postgres vars
+  langflow_superuser: admin
+  postgres_user_name: langflow
+  postgres_db_name: langflow
   # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
