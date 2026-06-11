@@ -1,0 +1,13 @@
+from playwright.sync_api import Page
+from regression_tests.pages.base_page import BasePage
+
+
+class JoomlaHomePage(BasePage):
+    def __init__(self, page: Page, menu_item_title: str):
+        super().__init__(page)
+        self.menu_item_title = menu_item_title
+
+        self.article_link = self.page.get_by_role("link", name=self.menu_item_title, exact=True)
+
+    def open_article_link(self):
+        self.article_link.click()
