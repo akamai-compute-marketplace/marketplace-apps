@@ -115,7 +115,12 @@ def get_credentials_via_ssh(host: str, username: str, password: str, remote_path
             line = line.strip()
             if not line or line.startswith("#"):
                 continue
-            key, _, value = line.partition(": ")
+            if ": " in line:
+                key, _, value = line.partition(": ")
+            elif "=" in line:
+                key, _, value = line.partition("=")
+            else:
+                continue
             creds[key.strip()] = value.strip()
 
         return creds

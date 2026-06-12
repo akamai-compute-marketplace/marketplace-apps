@@ -13,7 +13,7 @@ def credentials_file_path():
     Returns:
         str: Absolute path to the credentials file.
     """
-    return "../home/admin/.credentials"
+    return "/home/admin/.credentials"
 
 
 @pytest.fixture
