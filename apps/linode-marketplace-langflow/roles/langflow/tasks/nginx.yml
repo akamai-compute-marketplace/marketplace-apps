@@ -17,7 +17,7 @@
     dest: "/etc/nginx/sites-available/{{ _domain }}"
     mode: '0644'
 
-- name: Enable Nginx site configuration
+- name: Enable NGINX site configuration
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"

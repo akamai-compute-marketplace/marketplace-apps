@@ -1,18 +1,16 @@
 # Langflow Quick Deploy App
 
-Langflow is an open-source, Python-based, customizable framework for building AI applications. It
-supports important AI functionality like agents and the Model Context Protocol (MCP), and it doesn't
-require you to use specific large language models (LLMs) or vector stores. The visual editor
-simplifies prototyping of application workflows, enabling developers to quickly turn their ideas into
-powerful, real-world solutions. This Quick Deploy App deploys Langflow on Ubuntu 24.04 via Docker
-Compose (Langflow + PostgreSQL), behind nginx with a Let's Encrypt certificate and native superuser
-login.
+[Langflow](https://docs.langflow.org/) is an open-source, Python-based, customizable framework for building AI applications. It supports important AI functionality like agents and the Model Context Protocol (MCP), and it doesn't require you to use specific large language models (LLMs) or vector stores.
+
+The visual editor simplifies prototyping of application workflows, enabling developers to quickly turn their ideas into powerful, real-world solutions. 
+
+This Quick Deploy App deploys Langflow on Ubuntu 24.04 via Docker Compose (Langflow + PostgreSQL), behind nginx with a Let's Encrypt certificate and native superuser login.
 
 ## Software Included
 
 | Software | Version | Description |
 | :---     | :----   | :---        |
-| Langflow | latest  | Visual low-code framework for building AI agents and workflows |
+| Langflow | latest  | Open-source visual framework for building AI agents and workflows |
 | PostgreSQL | 16    | Relational database — Langflow's backing store |
 | nginx    | 1.24    | Web server / reverse proxy |
 | Docker CE + Compose v2 | latest | Container runtime + orchestration |
@@ -40,21 +38,17 @@ login.
 
 When the playbook finishes, the operator can:
 
-- Browse to the app at `https://<domain-or-rdns>/` and log in as `admin`. Because `AUTO_LOGIN` is
-  disabled and a superuser is seeded, an anonymous visitor lands on a login page, not an open canvas.
+- Browse to the app at `https://<domain-or-rdns>/` and log in as `admin`.
 - Read the generated credentials from `/home/<sudo_user>/.credentials`. The file contains:
   - Sudo username + password
+  - App URL
   - Langflow admin username + password
   - PostgreSQL user + password + database name
-  - App URL
-- On the canvas, drag and drop components from the left panel onto the board and connect them into a
-  flow. Running a flow that calls an LLM or embeddings provider requires you to add your own provider
-  API key (e.g. OpenAI) in the relevant component or under **Settings → Variables**. See the
-  [Langflow Quickstart](https://docs.langflow.org/get-started-quickstart) for more.
+- On the canvas, drag and drop components from the left panel onto the board and connect them into a flow. Running a flow that calls an LLM or embeddings provider requires you to add your own provider API key (e.g. OpenAI) in the relevant component or under **Settings → Global Variables**. See the [Langflow Quickstart](https://docs.langflow.org/get-started-quickstart) for more information on getting started.
 
 ## Use our API
 
-Customers can deploy Langflow through Akamai Quick Deploy Apps or directly using the API. Before using the commands below, create an [API token](https://www.linode.com/docs/products/tools/linode-api/get-started/#create-an-api-token) or configure [linode-cli](https://www.linode.com/products/cli/), and substitute your own values for the defaults.
+Customers can deploy Langflow through Akamai Compute [Quick Deploy Apps](https://cloud.linode.com/linodes/create/marketplace) or directly using the API. Before using the commands below, create an [API token](https://techdocs.akamai.com/linode-api/reference/get-started#create-a-personal-access-token) or configure [linode-cli](https://techdocs.akamai.com/linode-api/reference/cli), and substitute your own values for the defaults.
 
 SHELL:
 ```
@@ -64,7 +58,7 @@ curl -H "Content-Type: application/json" \
     "image": "linode/ubuntu24.04",
     "region": "us-southeast",
     "type": "g6-standard-2",
-    "label": "langflow-occ-us-southeast",
+    "label": "langflow-us-southeast",
     "tags": [],
     "root_pass": "A_Secure_Password",
     "authorized_users": [
@@ -93,7 +87,7 @@ linode-cli linodes create \
   --image 'linode/ubuntu24.04' \
   --region us-southeast \
   --type g6-standard-2 \
-  --label langflow-occ-us-southeast \
+  --label langflow-us-southeast \
   --root_pass A_Secure_Password \
   --authorized_users user1 \
   --authorized_users user2 \
