@@ -15,7 +15,7 @@
       - ripgrep
       - ffmpeg
     state: present
-    update_cache: yes
+    update_cache: true
 
 - name: Download the uv installation script
   get_url:
