@@ -42,7 +42,7 @@
     dest: "{{ hermes_install_dir }}"
     version: main
     depth: 1
-    force: yes
+    force: true
 
 - name: Create uv virtual environment with Python 3.11
   command: "{{ hermes_home }}/bin/uv venv venv --python 3.11"
@@ -64,7 +64,7 @@
   command: npx playwright install --with-deps chromium
   args:
     chdir: "{{ hermes_install_dir }}"
-  become: yes
+  become: true
 
 - name: Install TUI dependencies
   npm:
@@ -75,14 +75,14 @@
   copy:
     src: "{{ hermes_install_dir }}/.env.example"
     dest: "{{ hermes_home }}/.env"
-    remote_src: yes
+    remote_src: true
     mode: '0600'
 
 - name: Copy template cli-config configuration profile
   copy:
     src: "{{ hermes_install_dir }}/cli-config.yaml.example"
     dest: "{{ hermes_home }}/config.yaml"
-    remote_src: yes
+    remote_src: true
     mode: '0644'
 
 - name: Ensure destination skills directory exists
@@ -97,7 +97,7 @@
   copy:
     src: "{{ hermes_install_dir }}/skills/"
     dest: "{{ hermes_home }}/skills/"
-    remote_src: yes
+    remote_src: true
     owner: "{{ hermes_user }}"
     group: "{{ hermes_user }}"
     mode: preserve
@@ -108,7 +108,7 @@
     content: |
       # Hermes Agent Persona
     mode: '0644'
-    force: no
+    force: false
 
 - name: Ensure user local bin directory exists
   file:
@@ -122,7 +122,7 @@
     state: directory
     owner: "{{ hermes_user }}"
     group: "{{ hermes_user }}"
-    recurse: yes
+    recurse: true
   loop:
     - "{{ hermes_home }}"
     - "{{ hermes_install_dir }}"
@@ -131,7 +131,7 @@
   command: "{{ hermes_home }}/bin/uv tool install --editable . --python 3.11 --force"
   args:
     chdir: "{{ hermes_install_dir }}"
-  become: yes
+  become: true
   become_user: "{{ hermes_user }}"
 
 - name: Log the chosen installation metadata method
@@ -146,7 +146,7 @@
   lineinfile:
     path: "{{ hermes_home }}/.bashrc"
     line: 'export PATH="{{ hermes_home }}/.local/bin:$PATH"'
-    create: yes
+    create: true
     owner: "{{ hermes_user }}"
     group: "{{ hermes_user }}"
     mode: '0644'

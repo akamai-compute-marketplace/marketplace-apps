@@ -4,7 +4,7 @@
     name: "{{ hermes_user }}"
     home: "/home/{{ hermes_user }}"
     shell: /bin/bash
-    createhome: yes
+    createhome: true
     state: present
 
 - name: Create Hermes home directory structure
