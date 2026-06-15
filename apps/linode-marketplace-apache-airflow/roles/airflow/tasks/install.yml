@@ -39,7 +39,14 @@
   pip:
     virtualenv: "{{ airflow_venv }}"
     virtualenv_command: python3 -m venv
-    name: apache-airflow
+    name:
+      - apache-airflow
+      # TODO: Remove this pin once https://github.com/fastapi/fastapi/issues/15762 is resolved.
+      # fastapi 0.137.0 introduced a breaking change where routers with both an empty prefix
+      # and empty path raise a FastAPIError. Airflow 3.2.2's cadwyn-based execution API router
+      # triggers this, causing airflow-api.service to crash on startup before generating the
+      # password file.
+      - fastapi==0.136.3
     state: present
 
 - name: Initialize Airflow metadata database
