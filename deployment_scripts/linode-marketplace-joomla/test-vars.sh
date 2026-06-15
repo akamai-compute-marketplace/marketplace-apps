@@ -2,7 +2,7 @@
 
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 
-
+# custom env variables from cli
 if [[ -n ${INSTANCE_ENV} ]]; then
   custom_vars=(${INSTANCE_ENV})
   var_count=${#custom_vars[@]}
@@ -51,6 +51,36 @@ if [[ -n "${SOA_EMAIL_ADDRESS}" ]]; then
         UDF_VARS["SOA_EMAIL_ADDRESS"]="${SOA_EMAIL_ADDRESS}"
 else
         UDF_VARS["SOA_EMAIL_ADDRESS"]="webmaster@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${SITE_NAME}" ]]; then
+        UDF_VARS["SITE_NAME"]="${SITE_NAME}"
+else
+        UDF_VARS["SITE_NAME"]="Joomla on Linode" # default
+fi
+
+if [[ -n "${ADMIN_EMAIL}" ]]; then
+        UDF_VARS["ADMIN_EMAIL"]="${ADMIN_EMAIL}"
+else
+        UDF_VARS["ADMIN_EMAIL"]="admin@${DEFAULT_DNS}" # default
+fi
+
+if [[ -n "${JOOMLA_ADMIN_FULLNAME}" ]]; then
+        UDF_VARS["JOOMLA_ADMIN_FULLNAME"]="${JOOMLA_ADMIN_FULLNAME}"
+else
+        UDF_VARS["JOOMLA_ADMIN_FULLNAME"]="Site Administrator" # default
+fi
+
+if [[ -n "${JOOMLA_DB_USER}" ]]; then
+        UDF_VARS["JOOMLA_DB_USER"]="${JOOMLA_DB_USER}"
+else
+        UDF_VARS["JOOMLA_DB_USER"]="joomla" # default
+fi
+
+if [[ -n "${JOOMLA_DB_NAME}" ]]; then
+        UDF_VARS["JOOMLA_DB_NAME"]="${JOOMLA_DB_NAME}"
+else
+        UDF_VARS["JOOMLA_DB_NAME"]="joomla_db" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then
