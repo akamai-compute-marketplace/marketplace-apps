@@ -29,30 +29,6 @@ else
         UDF_VARS["DISABLE_ROOT"]="No" # default
 fi
 
-if [[ -n "${LLM_CLIENT}" ]]; then
-        UDF_VARS["LLM_CLIENT"]="${LLM_CLIENT}"
-else
-        UDF_VARS["LLM_CLIENT"]="Claude" # default
-fi
-
-if [[ -n "${AKAMAI_MCP_URL}" ]]; then
-        UDF_VARS["AKAMAI_MCP_URL"]="${AKAMAI_MCP_URL}"
-else
-        UDF_VARS["AKAMAI_MCP_URL"]="https://mcp.akamai.com/mcp" # default
-fi
-
-if [[ -n "${JWT_PASSWORD}" ]]; then
-        UDF_VARS["JWT_PASSWORD"]="${JWT_PASSWORD}"
-else
-        UDF_VARS["JWT_PASSWORD"]="testtokenvalue" # default
-fi
-
-if [[ -n "${AKAMAI_GATEWAY_URL}" ]]; then
-        UDF_VARS["AKAMAI_GATEWAY_URL"]="${AKAMAI_GATEWAY_URL}"
-else
-        UDF_VARS["AKAMAI_GATEWAY_URL"]="${AKAMAI_MCP_URL}?token=${JWT_TOKEN}" # default
-fi
-
 set_vars() {
   for key in "${!UDF_VARS[@]}"; do
     export "${key}"="${UDF_VARS[$key]}"

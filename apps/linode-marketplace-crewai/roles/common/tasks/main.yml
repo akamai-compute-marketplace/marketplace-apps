@@ -4,23 +4,6 @@
   import_role:
     name: hostname
 
-# write _domain to vars
-- name: Write _domain to vars
-  lineinfile:
-    insertafter: EOF
-    path: group_vars/linode/vars
-    line: |
-      _domain: {{ _domain }}
-  when: _domain is defined
-
-# dns creation
-- name: Create dns A record
-  import_role:
-    name: create_dns_record
-  when:
-    - token_password is defined
-    - default_dns is not defined
-
 # Set SSH public key
 - name: Set ssh public key
   import_role:
