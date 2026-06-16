@@ -7,9 +7,6 @@ services:
       POSTGRES_USER: "{{ postgres_user_name }}"
       POSTGRES_PASSWORD: "{{ postgres_user_password }}"
     volumes:
-      # postgres 18+ stores data in a major-version subdir (PGDATA=/var/lib/postgresql/18/docker)
-      # and refuses to start if a volume is mounted at the legacy /var/lib/postgresql/data path.
-      # Mount one level up so the image manages the versioned subdir. See docker-library/postgres#1259.
       - postgres_data:/var/lib/postgresql
     networks:
       - "{{ langflow_network_name }}"
