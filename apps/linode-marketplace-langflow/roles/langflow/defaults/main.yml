@@ -3,7 +3,7 @@
 
 # Container image versions
 langflow_version: "latest"
-postgres_version: "16"
+postgres_version: "18"
 
 # Install directory
 langflow_base_dir: "/opt/langflow"

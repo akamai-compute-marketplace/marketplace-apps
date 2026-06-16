@@ -11,8 +11,8 @@ This Quick Deploy App deploys Langflow on Ubuntu 24.04 via Docker Compose (Langf
 | Software | Version | Description |
 | :---     | :----   | :---        |
 | Langflow | latest  | Open-source visual framework for building AI agents and workflows |
-| PostgreSQL | 16    | Relational database — Langflow's backing store |
-| nginx    | 1.24    | Web server / reverse proxy |
+| PostgreSQL | 18    | Relational database — Langflow's backing store |
+| Nginx    | 1.24    | Web server / reverse proxy |
 | Docker CE + Compose v2 | latest | Container runtime + orchestration |
 
 **Supported Distributions:**
