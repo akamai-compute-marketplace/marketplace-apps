@@ -7,13 +7,6 @@
     virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
     state: present
 
-#- name: Update local PATH
-#  lineinfile:
-#    path: "{{ ansible_env.HOME }}/.bashrc"
-#    line: 'export PATH="$HOME/.env/bin:$PATH"'
-#    insertafter: EOF
-#    state: present
-
 # install for sudo user
 
 - name: Install CrewAI for sudo user
