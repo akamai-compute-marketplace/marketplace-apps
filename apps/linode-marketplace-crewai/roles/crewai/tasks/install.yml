@@ -19,7 +19,7 @@
 - name: Install CrewAI for sudo user
   pip:
     name: crewai
-    virtualenv: "{{ username }}/.env"
+    virtualenv: "/home/{{ username }}/.env"
     virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
     state: present
   become: true
@@ -33,4 +33,4 @@
     state: present
   loop:
     - "/root"
-    - "{{ username }}"
+    - "/home/{{ username }}"
