@@ -55,11 +55,3 @@
       # Journal access - hermes logs only
       {{ hermes_user }} ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u hermes *
     validate: /usr/sbin/visudo -cf %s
-
-#- name: Create install directory
-#  file:
-#    path: "{{ hermes_install_dir }}"
-#    state: directory
-#    owner: "{{ hermes_user }}"
-#    group: "{{ hermes_user }}"
-#    mode: '0755'
