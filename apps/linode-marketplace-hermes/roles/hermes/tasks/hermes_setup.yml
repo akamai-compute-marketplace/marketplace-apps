@@ -33,7 +33,7 @@
 
 - name: Clone hermes-agent repository
   git:
-    repo: {{ repo_url }}
+    repo: "{{ repo_url }}"
     dest: "{{ hermes_install_dir }}"
     version: main
     depth: 1
