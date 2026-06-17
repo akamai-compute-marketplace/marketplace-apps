@@ -3,5 +3,4 @@ hermes_user: hermes
 hermes_home: /home/hermes
 hermes_install_dir: /opt/hermes-agent
 repo_url: https://github.com/NousResearch/hermes-agent.git
-branch_name: main
 node_version: 22.x

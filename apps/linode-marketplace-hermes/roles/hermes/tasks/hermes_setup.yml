@@ -28,24 +28,19 @@
   environment:
     UV_UNMANAGED_INSTALL: "{{ hermes_home }}/bin"
 
-- name: Install Python 3.11 using uv
-  command: "{{ hermes_home }}/bin/uv python install 3.11"
-
-- name: Remove existing hermes install dir
-  file:
-    path: "{{ hermes_install_dir }}"
-    state: absent
+- name: Install Python using uv
+  command: "{{ hermes_home }}/bin/uv python install"
 
 - name: Clone hermes-agent repository
   git:
-    repo: https://github.com/NousResearch/hermes-agent.git
+    repo: {{ repo_url }}
     dest: "{{ hermes_install_dir }}"
     version: main
     depth: 1
     force: true
 
-- name: Create uv virtual environment with Python 3.11
-  command: "{{ hermes_home }}/bin/uv venv venv --python 3.11"
+- name: Create uv virtual environment with Python
+  command: "{{ hermes_home }}/bin/uv venv venv --python"
   args:
     chdir: "{{ hermes_install_dir }}"
     creates: "{{ hermes_install_dir }}/venv/bin/python"
