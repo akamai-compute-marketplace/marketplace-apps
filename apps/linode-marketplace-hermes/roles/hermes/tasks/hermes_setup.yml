@@ -40,7 +40,7 @@
     force: true
 
 - name: Create uv virtual environment with Python
-  command: "{{ hermes_home }}/bin/uv venv venv --python"
+  command: "{{ hermes_home }}/bin/uv venv venv"
   args:
     chdir: "{{ hermes_install_dir }}"
     creates: "{{ hermes_install_dir }}/venv/bin/python"
