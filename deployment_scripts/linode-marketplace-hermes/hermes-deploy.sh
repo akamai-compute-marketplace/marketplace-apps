@@ -34,7 +34,7 @@ fi
 #<UDF name="token_password" label="Your Linode API token. This is needed to create your server's DNS records" default="">
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
-#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
+#<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" default="">
 
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy,none"  default="none">
