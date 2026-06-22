@@ -126,8 +126,8 @@
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
     mode: '0600'
-    owner: '{{ username }}'
-    group: '{{ username }}'
+    owner: beef
+    group: beef
   loop:
     - { src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", dest: "/home/beef" }
     - { src: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", dest: "/home/beef" }
@@ -137,8 +137,8 @@
     src: 'beef_config.yaml.j2'
     dest: '/home/beef/config.yaml'
     mode: '0600'
-    owner: '{{ username }}'
-    group: '{{ username }}'
+    owner: beef
+    group: beef
 
 # update bundler gem
 - name: Manually update bundler
