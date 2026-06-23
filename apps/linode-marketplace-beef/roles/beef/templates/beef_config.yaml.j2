@@ -53,10 +53,10 @@ beef:
         # If you're using a public domain name, reverse proxy, or port forwarding you must
         # configure the public-facing connection details here.
 
-        #public:
-        #    host: "beef.local" # public hostname/IP address
-        #    port: "443" # public port (443 if the public server is using HTTPS)
-        #    https: false # true/false
+        public:
+            host: "{{ _domain }}" # public hostname/IP address
+            port: "443" # public port (443 if the public server is using HTTPS)
+            https: true # true/false
 
         # If using any reverse proxy you should also set allow_reverse_proxy to true below.
         # Note that this causes the BeEF server to trust the X-Forwarded-For HTTP header.
