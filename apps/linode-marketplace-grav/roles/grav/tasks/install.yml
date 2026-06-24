@@ -61,7 +61,7 @@
 
     - name: Install Grav dependencies with Composer
       expect:
-        command: /usr/local/bin/composer install --no-dev -o
+        command: /usr/local/bin/composer install --no-dev -o --ignore-platform-req=ext-redis
         chdir: /var/www/grav
         responses:
           (?i)Do you want to continue: "yes"
