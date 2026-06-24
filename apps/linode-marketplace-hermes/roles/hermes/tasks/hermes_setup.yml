@@ -73,45 +73,6 @@
     path: "{{ hermes_install_dir }}/ui-tui"
     state: present
 
-#- name: Copy template .env configuration profile
-##  copy:
-#    src: "{{ hermes_install_dir }}/.env.example"
-##    dest: "{{ hermes_home }}/.env"
-#    remote_src: true
-#    mode: '0600'
-
-#- name: Copy template cli-config configuration profile
-#  copy:
-#    src: "{{ hermes_install_dir }}/cli-config.yaml.example"
-#    dest: "{{ hermes_home }}/config.yaml"
-#    remote_src: true
-#    mode: '0644'
-
-#- name: Ensure destination skills directory exists
-#  file:
-#    path: "{{ hermes_home }}/skills/"
-#    state: directory
-#    owner: "{{ hermes_user }}"
-#    group: "{{ hermes_user }}"
-#    mode: '0755'
-
-#- name: Copy skills contents recursively without looping
-#  copy:
-#    src: "{{ hermes_install_dir }}/skills/"
-#    dest: "{{ hermes_home }}/skills/"
-#    remote_src: true
-#    owner: "{{ hermes_user }}"
-#    group: "{{ hermes_user }}"
-#    mode: preserve
-
-#- name: Generate the placeholder custom personality profile
-#  copy:
-#    dest: "{{ hermes_home }}/SOUL.md"
-#    content: |
-#      # Hermes Agent Persona
-#    mode: '0644'
-#    force: false
-
 - name: Ensure user local bin directory exists
   file:
     path: "{{ hermes_home }}/.local/bin"
