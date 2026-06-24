@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: "postgres:{{ postgres_version }}"
+    container_name: langflow_postgres
+    environment:
+      POSTGRES_DB: "{{ postgres_db_name }}"
+      POSTGRES_USER: "{{ postgres_user_name }}"
+      POSTGRES_PASSWORD: "{{ postgres_user_password }}"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - "{{ langflow_network_name }}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U {{ postgres_user_name }} -d {{ postgres_db_name }}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  langflow:
+    image: "langflowai/langflow:{{ langflow_version }}"
+    container_name: langflow_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      # loopback only — nginx fronts it
+      - "127.0.0.1:{{ langflow_port }}:7860"
+    environment:
+      LANGFLOW_DATABASE_URL: "postgresql://{{ postgres_user_name }}:{{ postgres_user_password }}@postgres:5432/{{ postgres_db_name }}"
+      LANGFLOW_AUTO_LOGIN: "false"
+      LANGFLOW_SUPERUSER: "{{ langflow_superuser }}"
+      LANGFLOW_SUPERUSER_PASSWORD: "{{ langflow_superuser_password }}"
+      LANGFLOW_SECRET_KEY: "{{ langflow_secret_key }}"
+      LANGFLOW_NEW_USER_IS_ACTIVE: "false"
+      LANGFLOW_CONFIG_DIR: /app/langflow
+    volumes:
+      - langflow_data:/app/langflow
+    networks:
+      - "{{ langflow_network_name }}"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  langflow_data:
+
+networks:
+  "{{ langflow_network_name }}":
+    driver: bridge

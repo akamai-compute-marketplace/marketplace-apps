@@ -1,0 +1,9 @@
+---
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import NGINX tasks
+  import_tasks: nginx.yml
+
+- name: Import Langflow tasks
+  import_tasks: langflow.yml

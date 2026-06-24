@@ -1,0 +1,21 @@
+---
+- name: Start Langflow services with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ langflow_base_dir }}"
+    state: present
+
+- name: Wait for Langflow to start listening
+  wait_for:
+    host: 127.0.0.1
+    port: "{{ langflow_port }}"
+    timeout: 180
+    msg: "Langflow did not start listening on {{ langflow_port }} within 180 seconds"
+
+- name: Wait for Langflow health check to report ready
+  uri:
+    url: "http://127.0.0.1:{{ langflow_port }}/health_check"
+    return_content: true
+  register: langflow_health
+  until: langflow_health.json is defined and langflow_health.json.status == 'ok'
+  retries: 30
+  delay: 5
