@@ -51,6 +51,9 @@
       {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl status hermes-gateway
       {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl enable hermes-gateway
       {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl disable hermes-gateway
+      
+      # 2. Allows hermes user to utilize the hermes gateway commands 
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway *, /usr/local/bin/hermes gateway *, /usr/bin/hermes gateway *
 
       # Journal access - hermes logs only
       {{ hermes_user }} ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u hermes *
