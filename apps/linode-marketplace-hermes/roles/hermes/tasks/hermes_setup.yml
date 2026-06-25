@@ -1,0 +1,132 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - build-essential
+      - python3-dev
+      - libffi-dev
+      - curl
+      - wget
+      - git
+      - ca-certificates
+      - pkg-config
+      - libssl-dev
+      - zlib1g-dev
+      - ripgrep
+      - ffmpeg
+    state: present
+    update_cache: true
+
+- name: Download the uv installation script
+  get_url:
+    url: https://astral.sh/uv/install.sh
+    dest: /tmp/uv_install.sh
+    mode: '0755'
+
+- name: Run uv installer with custom installation path
+  shell: /tmp/uv_install.sh
+  environment:
+    UV_UNMANAGED_INSTALL: "{{ hermes_home }}/bin"
+
+- name: Install Python using uv
+  command: "{{ hermes_home }}/bin/uv python install"
+
+- name: Clone hermes-agent repository
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ hermes_install_dir }}"
+    version: main
+    depth: 1
+    force: true
+
+- name: Create uv virtual environment with Python
+  command: "{{ hermes_home }}/bin/uv venv"
+  args:
+    chdir: "{{ hermes_install_dir }}"
+    creates: "{{ hermes_install_dir }}/.venv/bin/python"
+
+- name: Sync uv environment with all extras
+  command: "{{ hermes_home }}/bin/uv sync --extra all --locked"
+  args:
+    chdir: "{{ hermes_install_dir }}"
+
+- name: Install main repository Node.js dependencies
+  npm:
+    path: "{{ hermes_install_dir }}"
+    state: present
+
+- name: Install Playwright system dependencies (as root)
+  command: npx playwright install-deps chromium
+  args:
+    chdir: "{{ hermes_install_dir }}"
+  become: true
+
+- name: Download Playwright Chromium browser binaries (as hermes user)
+  command: npx playwright install chromium
+  args:
+    chdir: "{{ hermes_install_dir }}"
+  become: true
+  become_user: "{{ hermes_user }}"
+
+- name: Install TUI dependencies
+  npm:
+    path: "{{ hermes_install_dir }}/ui-tui"
+    state: present
+
+- name: Ensure user local bin directory exists
+  file:
+    path: "{{ hermes_home }}/.local/bin"
+    state: directory
+    mode: '0755'
+
+- name: Fix ownership of Hermes home and source installation directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    recurse: true
+  loop:
+    - "{{ hermes_home }}"
+    - "{{ hermes_install_dir }}"
+
+- name: Symlink hermes binary to user local bin
+  file:
+    src: "{{ hermes_install_dir }}/.venv/bin/hermes"
+    dest: "{{ hermes_home }}/.local/bin/hermes"
+    state: link
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    force: true
+
+- name: Log the chosen installation metadata method
+  copy:
+    dest: "{{ hermes_home }}/.install_method"
+    content: "git\n"
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    mode: '0644'
+
+- name: Permanently add .local/bin to Hermes user PATH
+  lineinfile:
+    path: "{{ hermes_home }}/.bashrc"
+    line: 'export PATH="{{ hermes_home }}/.local/bin:$PATH"'
+    create: true
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    mode: '0644'
+    state: present
+
+- name: Verify the system points to the newly created manual binary layout
+  command: which hermes
+  environment:
+    PATH: "{{ hermes_home }}/.local/bin:{{ ansible_env.PATH }}"
+  register: hermes_path_check
+
+- name: Create hermes onboarding script
+  template:
+    src: hermes_onboarding.sh.j2
+    dest: /etc/profile.d/hermes_onboarding.sh
+    owner: root
+    group: root
+    mode: '0755'

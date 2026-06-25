@@ -1,0 +1,9 @@
+# Hermes Agent Environment Setup
+export HERMES_HOME={{ hermes_home }}
+export HERMES_INSTALL_DIR={{ hermes_install_dir }}
+export UV_PYTHON={{ hermes_install_dir }}/venv/bin/python
+export UV_NO_CONFIG=1
+export PATH={{ hermes_home }}/bin:$PATH
+
+# Activate virtual environment aliases
+alias hermes-activate="source {{ hermes_install_dir }}/venv/bin/activate"

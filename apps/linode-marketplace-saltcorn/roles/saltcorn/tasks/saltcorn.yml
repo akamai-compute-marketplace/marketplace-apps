@@ -70,7 +70,7 @@
       CSRF-Token: "{{ login_csrf }}"
     body:
       _csrf: "{{ login_csrf }}"
-      email: "{{ soa_email_address}}"
+      email: "{{ soa_email_address }}"
       password: "{{ saltcorn_admin_password }}"
   register: login_response
   no_log: true
