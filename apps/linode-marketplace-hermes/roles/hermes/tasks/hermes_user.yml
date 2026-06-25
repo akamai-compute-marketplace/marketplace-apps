@@ -1,0 +1,68 @@
+---
+- name: Create Hermes user
+  user:
+    name: "{{ hermes_user }}"
+    home: "/home/{{ hermes_user }}"
+    shell: /bin/bash
+    createhome: true
+    state: present
+
+- name: Create Hermes home directory structure
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    mode: '0755'
+  loop:
+    - "{{ hermes_home }}"
+    - "{{ hermes_home }}/bin"
+    - "{{ hermes_home }}/cron"
+    - "{{ hermes_home }}/sessions"
+    - "{{ hermes_home }}/logs"
+    - "{{ hermes_home }}/pairing"
+    - "{{ hermes_home }}/hooks"
+    - "{{ hermes_home }}/image_cache"
+    - "{{ hermes_home }}/audio_cache"
+    - "{{ hermes_home }}/memories"
+    - "{{ hermes_home }}/skills"
+
+- name: Add Hermes user to sudoers (Scoped for systemctl + Playwright dependencies)
+  copy:
+    dest: "/etc/sudoers.d/{{ hermes_user }}"
+    mode: "0440"
+    owner: root
+    group: root
+    content: |
+      #  {{ hermes_user }} sudo permissions (scoped for security)
+      #
+      # SECURITY NOTE: These permissions are intentionally limited.
+      # If hermes is compromised, attackers can only:
+      # - Manage the hermes service
+      # - View hermes logs
+      #
+      # To grant full sudo (NOT RECOMMENDED):
+      #   {{ hermes_user }} ALL=(ALL) NOPASSWD: ALL
+
+      # 1. Allows hermes user to manage only the hermes-gateway service
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl start hermes-gateway
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl stop hermes-gateway
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl restart hermes-gateway
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl status hermes-gateway
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl enable hermes-gateway
+      {{ hermes_user }} ALL=(root) NOPASSWD: /usr/bin/systemctl disable hermes-gateway
+
+      # 2. Allows hermes user to utilize the hermes gateway commands
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway setup
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway run
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway start
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway restart
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway status
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway install
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway list
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway enroll
+      {{ hermes_user }} ALL=(root) NOPASSWD: /home/hermes/.local/bin/hermes gateway migrate-legacy
+
+      # Journal access - hermes logs only
+      {{ hermes_user }} ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u hermes *
+    validate: /usr/sbin/visudo -cf %s

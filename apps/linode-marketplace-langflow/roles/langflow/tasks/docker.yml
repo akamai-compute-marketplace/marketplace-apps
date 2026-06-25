@@ -1,0 +1,22 @@
+---
+- name: Create Langflow install directory
+  file:
+    path: "{{ langflow_base_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Install Docker latest
+  import_role:
+    name: docker
+
+- name: Install Docker Compose v2 plugin
+  apt:
+    name: docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Create Docker Compose configuration
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ langflow_base_dir }}/docker-compose.yml"
+    mode: '0600'

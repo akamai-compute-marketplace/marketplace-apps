@@ -1,0 +1,31 @@
+---
+- name: Install requested add-ons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Write credentials to file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Langflow URL: https://{{ _domain }}/
+      Langflow Admin Username: {{ langflow_superuser }}
+      Langflow Admin Password: {{ langflow_superuser_password }}
+
+      PostgreSQL User: {{ postgres_user_name }}
+      PostgreSQL Password: {{ postgres_user_password }}
+      Database Name: {{ postgres_db_name }}

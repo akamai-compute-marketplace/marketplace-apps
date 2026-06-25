@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+
+# Hermes Agent & Gateway Onboarding Script
+# Prompts root user if they want to run hermes setup tools on first login
+# Source: /etc/profile.d/hermes_onboarding.sh
+
+if [ "$EUID" -ne 0 ]; then
+    return
+fi
+
+# Fetch the UID safely using the evaluated Ansible variable
+HERMES_UID=$(id -u "{{ hermes_user }}")
+export XDG_RUNTIME_DIR="/run/user/$HERMES_UID"
+
+# Tracking flags
+SETUP_FAILED=0
+ANY_SETUP_RUN=0
+
+echo ""
+echo "[Hermes Onboarding Wizard]"
+
+# ==========================================
+# 1. HERMES AGENT SETUP
+# ==========================================
+while true; do
+    read -rp "Do you want to run the Hermes AGENT setup wizard? [y/n]: " answer_agent
+    if [[ "$answer_agent" =~ ^[Yy]$ ]]; then
+        echo "[***] Running Hermes Agent setup as {{ hermes_user }} user."
+        ANY_SETUP_RUN=1
+        
+        runuser -l "{{ hermes_user }}" -c "PATH=\$PATH:/usr/local/bin:/usr/bin XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" hermes setup"
+        
+        if [ $? -ne 0 ]; then
+            echo "[***] Hermes Agent setup exited with an error."
+            SETUP_FAILED=1
+        else
+            echo "[***] Hermes Agent setup complete."
+        fi
+        break
+    elif [[ "$answer_agent" =~ ^[Nn]$ ]]; then
+        echo "[***] Skipping Hermes Agent setup."
+        break
+    else
+        echo -e "\n[***] Please answer y or n."
+    fi
+done
+
+echo ""
+
+# ==========================================
+# 2. HERMES GATEWAY SETUP
+# ==========================================
+while true; do
+    read -rp "Do you want to run the Hermes GATEWAY setup wizard? [y/n]: " answer_gateway
+    if [[ "$answer_gateway" =~ ^[Yy]$ ]]; then
+        echo "[***] Running Hermes Gateway setup as {{ hermes_user }} user."
+        ANY_SETUP_RUN=1
+        
+        # NOTE: Modify 'hermes gateway setup' below if your gateway binary/command uses a different syntax
+        runuser -l "{{ hermes_user }}" -c "PATH=\$PATH:/usr/local/bin:/usr/bin XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" hermes gateway setup"
+        
+        if [ $? -ne 0 ]; then
+            echo "[***] Hermes Gateway setup exited with an error."
+            SETUP_FAILED=1
+        else
+            echo "[***] Hermes Gateway setup complete."
+        fi
+        break
+    elif [[ "$answer_gateway" =~ ^[Nn]$ ]]; then
+        echo "[***] Skipping Hermes Gateway setup."
+        break
+    else
+        echo -e "\n[***] Please answer y or n."
+    fi
+done
+
+echo ""
+
+# ==========================================
+# 3. CLEANUP & EXIT LOGIC
+# ==========================================
+if [ "$ANY_SETUP_RUN" -eq 1 ]; then
+    if [ "$SETUP_FAILED" -eq 0 ]; then
+        echo "[***] All selected Hermes setups completed successfully. Removing onboarding script."
+        if [ -f '/etc/profile.d/hermes_onboarding.sh' ]; then
+            rm '/etc/profile.d/hermes_onboarding.sh'
+        fi
+    else
+        echo "[***] One or more setups failed. The onboarding script will remain active. Try again by logging back in."
+    fi
+else
+    # If the user answered 'n' to both setups
+    while true; do
+        read -rp "[***] You skipped both setups. Do you want to remove this onboarding script entirely? [y/n]: " remove_script
+        if [[ "$remove_script" =~ ^[Yy]$ ]]; then
+            echo "[***] Removing /etc/profile.d/hermes_onboarding.sh"
+            if [ -f '/etc/profile.d/hermes_onboarding.sh' ]; then
+                rm '/etc/profile.d/hermes_onboarding.sh'
+            fi
+            break
+        elif [[ "$remove_script" =~ ^[Nn]$ ]]; then
+            echo "[***] Keeping onboarding script. It will prompt you again on your next login."
+            break
+        else
+            echo -e "\n[***] Please answer y or n."
+        fi
+    done
+fi

@@ -1,0 +1,15 @@
+---
+# Default vars
+
+# Container image versions
+langflow_version: "latest"
+postgres_version: "18"
+
+# Install directory
+langflow_base_dir: "/opt/langflow"
+
+# Langflow port
+langflow_port: 7860
+
+# Docker network
+langflow_network_name: "langflow_net"
