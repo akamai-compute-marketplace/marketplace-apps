@@ -19,6 +19,8 @@ services:
       - --model=google/gemma-3-{{ gemma3_model_size | lower }}-it
       - --max-model-len=16384
       - --gpu-memory-utilization=0.95
+      - --enable-auto-tool-choice
+      - --tool-call-parser=pythonic
     healthcheck:
       test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
       interval: 10s
