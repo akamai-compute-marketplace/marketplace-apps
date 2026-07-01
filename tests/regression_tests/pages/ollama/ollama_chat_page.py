@@ -20,6 +20,11 @@ class OllamaChatPage(BasePage):
         except Exception:
             pass
 
+    def select_model(self, model_name: str):
+        if model_name not in self.model_selector_input.inner_text():
+            self.model_selector_input.click()
+            self.page.get_by_role("option", name=model_name, exact=False).click()
+
     def send_prompt(self, prompt: str):
         self.chat_input.fill(prompt)
         self.send_prompt_button.click()

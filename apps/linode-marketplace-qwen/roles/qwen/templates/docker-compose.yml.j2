@@ -20,6 +20,8 @@ services:
       - --max-model-len=8192
       - --gpu-memory-utilization=0.90
       - --dtype=auto
+      - --enable-auto-tool-choice
+      - --tool-call-parser=hermes
     healthcheck:
       test: ["CMD", "curl", "-f", "-s", "http://localhost:8000/v1/models"]
       interval: 10s
