@@ -4,6 +4,11 @@ import urllib.request
 from pathlib import Path
 
 
+def get_ignored_apps() -> set[str]:
+    ignored_file = Path(__file__).parent / 'deps-ignored-apps.json'
+    return {entry['name'] for entry in json.loads(ignored_file.read_text())['ignored_apps']}
+
+
 def get_latest_version(package: str) -> str | None:
     try:
         url = f'https://pypi.org/pypi/{package}/json'
@@ -30,7 +35,12 @@ def get_current_versions(requirement_file: Path) -> dict[str, str]:
 def main():
     print('Getting list of apps requirement files...')
     repo_root = Path(__file__).parent.parent.parent
-    requirement_files = sorted((repo_root / 'apps').rglob('requirements.txt'))
+    requirement_files = sorted(repo_root.rglob('requirements.txt'))
+
+    ignored_apps = get_ignored_apps()
+    if ignored_apps:
+        print(f'Ignoring apps: {", ".join(sorted(ignored_apps))}')
+        requirement_files = [f for f in requirement_files if f.parent.name not in ignored_apps]
 
     print('Getting unique list of packages...')
     all_packages: set[str] = set()
@@ -74,4 +84,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
