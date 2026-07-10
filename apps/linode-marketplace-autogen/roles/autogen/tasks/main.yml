@@ -1,0 +1,4 @@
+---
+
+- name: Install Autogen
+  import_tasks: install.yml

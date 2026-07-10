@@ -1,0 +1,36 @@
+---
+# install for root
+- name: Install Autogen for root
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{ ansible_env.HOME }}/.env"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+    state: present
+  loop:
+    - autogen-agentchat
+    - autogen-ext[openai]
+
+
+# install for sudo user
+
+- name: Install Autogen for sudo user
+  pip:
+    name: "{{ item }}"
+    virtualenv: "/home/{{ username }}/.env"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+    state: present
+  become: true
+  become_user: "{{ username }}"
+  loop:
+    - autogen-agentchat
+    - autogen-ext[openai]
+
+- name: Update local PATH
+  lineinfile:
+    path: "{{ item }}/.bashrc"
+    line: 'export PATH="$HOME/.env/bin:$PATH"'
+    insertafter: EOF
+    state: present
+  loop:
+    - "/root"
+    - "/home/{{ username }}"
