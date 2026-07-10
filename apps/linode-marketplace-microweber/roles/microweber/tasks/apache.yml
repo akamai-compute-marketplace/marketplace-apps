@@ -1,0 +1,27 @@
+---
+- name: Enable required Apache modules
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - rewrite
+    - headers
+    - ssl
+  notify: Reload apache2
+
+- name: Disable Apache default vhost
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+
+- name: Add Microweber vhost
+  template:
+    src: microweber.conf.j2
+    dest: /etc/apache2/sites-available/microweber.conf
+    mode: '0644'
+
+- name: Enable Microweber vhost
+  file:
+    src: /etc/apache2/sites-available/microweber.conf
+    dest: /etc/apache2/sites-enabled/microweber.conf
+    state: link

@@ -1,0 +1,60 @@
+---
+- name: Create Microweber docroot
+  file:
+    path: "{{ microweber_install_dir }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Download Microweber release artifact (checksum-pinned)
+  get_url:
+    url: "{{ microweber_zip_url }}"
+    dest: /tmp/microweber.zip
+    checksum: "{{ microweber_zip_checksum }}"
+    mode: '0644'
+
+- name: Extract Microweber
+  unarchive:
+    src: /tmp/microweber.zip
+    dest: "{{ microweber_install_dir }}"
+    remote_src: true
+    owner: www-data
+    group: www-data
+    creates: "{{ microweber_install_dir }}/index.php"
+
+- name: Remove downloaded artifact
+  file:
+    path: /tmp/microweber.zip
+    state: absent
+
+- name: Run Microweber CLI installer to bypass open install web UI
+  command:
+    chdir: "{{ microweber_install_dir }}"
+    creates: "{{ microweber_install_dir }}/config/microweber.php"
+    argv:
+      - sudo
+      - -u
+      - www-data
+      - php
+      - artisan
+      - microweber:install
+      - --db-host=localhost
+      - "--db-name={{ mw_db_name }}"
+      - "--db-username={{ mw_db_user }}"
+      - "--db-password={{ mw_db_password }}"
+      - --db-driver=mysql
+      - "--email={{ admin_email }}"
+      - "--username={{ mw_admin_username }}"
+      - "--password={{ mw_admin_password }}"
+      - "--template={{ microweber_template }}"
+      - --default-content=1
+      - --language=en
+  no_log: true
+
+- name: Add Laravel scheduler cron
+  cron:
+    name: microweber laravel scheduler
+    user: www-data
+    job: "php {{ microweber_install_dir }}/artisan schedule:run >> /dev/null 2>&1"
+    cron_file: microweber

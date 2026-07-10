@@ -1,0 +1,17 @@
+---
+microweber_version: "2.0.20"
+
+# Official prebuilt artifact: built from the tagged source by upstream's public CI
+# (.github/workflows/build-and-upload.yml). The checksum was established by a full
+# byte-audit of the artifact against the v2.0.20 git tag — see the app README for
+# the re-verification procedure before changing either value.
+microweber_zip_url: "https://updater.microweberapi.com/builds/{{ microweber_version }}/microweber.zip"
+microweber_zip_checksum: "sha256:a4000ce51f8c726a34742c6403908f9ca53bc2bca00ffcf895cbe1706dc30168"
+
+microweber_install_dir: /var/www/html/microweber
+
+# The bundled "big" template is installed as the site template: the "default"
+# template at v2.0.20 never renders admin-attached product images (missing
+# rel="content" on its product-gallery module; reported upstream). Users can
+# switch templates in the admin UI after deployment.
+microweber_template: big

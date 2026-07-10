@@ -1,0 +1,15 @@
+---
+- name: Install MariaDB
+  import_tasks: mariadb.yml
+
+- name: Install PHP
+  import_tasks: php.yml
+
+- name: Configure Apache
+  import_tasks: apache.yml
+
+- name: Install Microweber
+  import_tasks: microweber.yml
+
+- name: Issue Let's Encrypt cert
+  import_tasks: certbot.yml

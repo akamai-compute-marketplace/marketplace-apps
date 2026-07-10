@@ -1,0 +1,17 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@{{ _domain }}
+    ServerName {{ _domain }}
+    UseCanonicalName On
+    DocumentRoot {{ microweber_install_dir }}
+
+    <Directory {{ microweber_install_dir }}>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog  /var/log/apache2/microweber_error.log
+    CustomLog /var/log/apache2/microweber_access.log combined
+
+    RewriteEngine On
+</VirtualHost>
