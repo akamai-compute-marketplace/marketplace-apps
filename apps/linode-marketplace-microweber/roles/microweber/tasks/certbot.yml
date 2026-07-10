@@ -1,5 +1,5 @@
 ---
-- name: Issue Let's Encrypt cert and configure HTTPS # noqa: var-naming[no-role-prefix] — webserver_stack is the certbot_ssl helper role's own selector var
+- name: Issue Let's Encrypt cert and configure HTTPS
   import_role:
     name: certbot_ssl
   vars:

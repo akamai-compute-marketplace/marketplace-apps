@@ -1,17 +1,21 @@
 ---
+# Microweber publishes an official install zip for every release, built by a
+# public GitHub Actions workflow in their repo (.github/workflows/build-and-upload.yml).
+# The zip is their source code at the release tag plus everything needed to run it
+# (PHP libraries, compiled JS/CSS). Each release gets its own download URL whose
+# contents do not change after release, so pinning the version pins the file.
+# The checksum below is the sha256 of that file, recorded after verifying the zip
+# matches the v2.0.20 source. If the download ever differs, the deploy fails
+# instead of installing an altered artifact.
 microweber_version: "2.0.20"
-
-# Official prebuilt artifact: built from the tagged source by upstream's public CI
-# (.github/workflows/build-and-upload.yml). The checksum was established by a full
-# byte-audit of the artifact against the v2.0.20 git tag — see the app README for
-# the re-verification procedure before changing either value.
 microweber_zip_url: "https://updater.microweberapi.com/builds/{{ microweber_version }}/microweber.zip"
 microweber_zip_checksum: "sha256:a4000ce51f8c726a34742c6403908f9ca53bc2bca00ffcf895cbe1706dc30168"
 
 microweber_install_dir: /var/www/html/microweber
 
-# The bundled "big" template is installed as the site template: the "default"
-# template at v2.0.20 never renders admin-attached product images (missing
-# rel="content" on its product-gallery module; reported upstream). Users can
-# switch templates in the admin UI after deployment.
+# The bundled "big" template is installed as the site template because the "default"
+# template at v2.0.20 fails to render image uploads. You can upload the image when
+# creating a product, however, the image never shows on the product page. This is
+# because rel="content" is missing. Defaulting to the "big" template fixes this in
+# the meantime. Users can switch templates in the admin UI after deployment.
 microweber_template: big
