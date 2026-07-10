@@ -1,0 +1,12 @@
+---
+- name: Install HashiCorp Vault
+  import_tasks: install.yml
+
+- name: Configure Vault
+  import_tasks: configure.yml
+
+- name: Configure nginx + SSL
+  import_tasks: nginx.yml
+
+- name: Initialize, unseal, and enable audit device
+  import_tasks: init.yml

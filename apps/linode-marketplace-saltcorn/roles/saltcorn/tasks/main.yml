@@ -1,0 +1,7 @@
+---
+
+- name: Install Nginx
+  import_tasks: nginx.yml
+
+- name: Deploy Saltcorn
+  import_tasks: saltcorn.yml

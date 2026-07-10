@@ -1,4 +1,5 @@
 #!/bin/bash
+# STACKSCRIPT_ID: 595742
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
@@ -40,14 +41,13 @@ fi
 # END CI-GH
 
 export WORK_DIR="/root/marketplace-apps" # moved to root dir because cpanel install will remove anything in tmp
-export MARKETPLACE_APP="apps/linode-marketplace-cpanel-almalinux"
 
 # BEGIN CI-PROVISION-FUNC
 function provision_failed {
   echo "[info] Provision failed. Sending status.."
 
   # dep
-  dnf install -y jq
+  apt install jq -y
 
   # set token
   local token=($(curl -ks -X POST ${KC_SERVER} \
@@ -72,6 +72,44 @@ function cleanup {
   fi
 
 }
+ 
+# Check if /etc/os-release file exists
+if [ -f /etc/os-release ]; then
+    # Source the os-release file to get the distribution ID
+    . /etc/os-release
+
+    # Check the distribution ID to determine the Linux distribution
+    if [ "$ID" == "almalinux" ]; then
+        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-almalinux"
+
+        function run {
+        # install dependancies
+        yum install dnf -y
+        dnf update -y
+        dnf upgrade -y
+        dnf install -y git python3 python3-pip
+
+        dnf makecache
+        dnf install epel-release -y
+        dnf makecache
+        }
+
+    elif [ "$ID" == "ubuntu" ]; then
+        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-ubuntu"
+        
+        function run {
+        # install dependancies
+        export DEBIAN_FRONTEND=non-interactive
+        apt-get update
+        apt-get install -y git python3 python3-pip python3-venv
+        }
+
+    else
+        echo "Unknown Linux distribution: $ID"
+    fi
+else
+    echo "Unable to determine the Linux distribution."
+fi
 
 function udf {
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
@@ -88,12 +126,7 @@ function udf {
 # END CI-UDF-CI-MODE
 }  
 
-function run {
-  # install dependencies
-  dnf update -y
-  dnf upgrade -y
-  dnf install -y git python3 python3-pip epel-release
-
+function final_run {
   # clone repo and set up ansible environment
   git -C /root clone -b ${BRANCH} ${GIT_REPO}
   # for a single testing branch
@@ -119,4 +152,5 @@ function installation_complete {
 }
 # main
 run
+final_run
 installation_complete

@@ -1,0 +1,16 @@
+---
+- name: Issue Let's Encrypt cert and configure HTTPS
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lamp
+
+- name: Add redirect to vhost
+  blockinfile:
+    path: /etc/apache2/sites-available/joomla-le-ssl.conf
+    insertbefore: '^SSLCertificateFile'
+    marker: "# {mark}"
+    block: |
+      RewriteCond %{HTTP_HOST} !={{ _domain }}
+      RewriteRule ^ https://{{ _domain }}%{REQUEST_URI} [R=permanent,L]
+  notify: Reload apache2

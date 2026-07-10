@@ -1,0 +1,11 @@
+---
+- name: Restart controller
+  systemd_service:
+    name: controller
+    state: restarted
+    daemon_reload: true
+
+- name: Restart nginx
+  systemd_service:
+    name: nginx
+    state: restarted

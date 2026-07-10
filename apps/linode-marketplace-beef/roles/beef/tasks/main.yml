@@ -25,9 +25,34 @@
       - bison
       - nodejs
       - libcurl4-openssl-dev
-      - ruby-dev
+      - software-properties-common
     state: latest
     update_cache: true
+
+- name: Add Instructure Ruby PPA
+  apt_repository:
+    repo: ppa:instructure/ruby
+    state: present
+    update_cache: true
+
+- name: Install Ruby 3.3
+  apt:
+    name:
+      - ruby3.3
+      - ruby3.3-dev
+    state: present
+
+- name: Set Ruby 3.3 as the default ruby/gem/bundle/bundler
+  community.general.alternatives:
+    name: "{{ item }}"
+    link: "/usr/bin/{{ item }}"
+    path: "/usr/bin/{{ item }}3.3"
+    priority: 330
+  loop:
+    - ruby
+    - gem
+    - bundle
+    - bundler
 
 # Nginx
 - name: Config file setup
@@ -101,8 +126,8 @@
     src: '{{ item.src }}'
     dest: '{{ item.dest }}'
     mode: '0600'
-    owner: '{{ username }}'
-    group: '{{ username }}'
+    owner: beef
+    group: beef
   loop:
     - { src: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem", dest: "/home/beef" }
     - { src: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem", dest: "/home/beef" }
@@ -112,8 +137,8 @@
     src: 'beef_config.yaml.j2'
     dest: '/home/beef/config.yaml'
     mode: '0600'
-    owner: '{{ username }}'
-    group: '{{ username }}'
+    owner: beef
+    group: beef
 
 # update bundler gem
 - name: Manually update bundler

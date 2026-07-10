@@ -41,15 +41,13 @@ fi
 if [[ -n "${SUBDOMAIN}" ]]; then
         UDF_VARS["SUBDOMAIN"]="${SUBDOMAIN}"
 else
-        UDF_VARS["SUBDOMAIN"]="${RANDOM_SUBDOMAIN}"
+        UDF_VARS["SUBDOMAIN"]=""
 fi
 
 if [[ -n "${DOMAIN}" ]]; then
         UDF_VARS["DOMAIN"]="${DOMAIN}"
-elif [[ -n "${LINODE_DOMAIN}" ]]; then
-        UDF_VARS["DOMAIN"]="${LINODE_DOMAIN}"
 else
-        UDF_VARS["DOMAIN"]="${DEFAULT_DNS}" # default
+        UDF_VARS["DOMAIN"]="" # default
 fi
 
 if [[ -n "${ADD_ONS}" ]]; then

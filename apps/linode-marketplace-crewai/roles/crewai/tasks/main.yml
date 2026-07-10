@@ -1,0 +1,4 @@
+---
+
+- name: Install CrewAI
+  import_tasks: install.yml

@@ -1,4 +1,5 @@
 #!/bin/bash
+# STACKSCRIPT_ID: 595742
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
@@ -91,23 +92,6 @@ if [ -f /etc/os-release ]; then
         dnf makecache
         dnf install epel-release -y
         dnf makecache
-        dnf install ansible -y
-        }
-
-    elif [ "$ID" == "rocky" ]; then
-        export MARKETPLACE_APP="apps/linode-marketplace-cpanel-rocky"
-
-        function run {
-        # install dependancies
-        yum install dnf -y
-        dnf update -y
-        dnf upgrade -y
-        dnf install -y git python3 python3-pip
-
-        dnf makecache
-        dnf install epel-release -y
-        dnf makecache
-        dnf install ansible -y
         }
 
     elif [ "$ID" == "ubuntu" ]; then
@@ -117,7 +101,7 @@ if [ -f /etc/os-release ]; then
         # install dependancies
         export DEBIAN_FRONTEND=non-interactive
         apt-get update
-        apt-get install -y git python3 python3-pip
+        apt-get install -y git python3 python3-pip python3-venv
         }
 
     else
@@ -150,7 +134,6 @@ function final_run {
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
-  apt install python3-venv -y
   python3 -m venv env
   source env/bin/activate
   pip install pip --upgrade

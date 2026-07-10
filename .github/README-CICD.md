@@ -31,7 +31,18 @@ This directory contains the GitHub Actions workflows and supporting scripts that
 
 ---
 
-### 3. Dependency Updates (`dependency-updates.yml`)
+### 3. Merge Notifications (`merge-notifications.yml`)
+
+**Trigger:**
+- Pull request merge
+
+**Scope:** Any merged PR targeting `main` or `develop`.
+
+**Purpose:** Sends a Slack notification when a pull request is successfully merged, including the repo name, source/target branches, PR title, and a link to the PR.
+
+---
+
+### 4. Dependency Updates (`dependency-updates.yml`)
 
 **Trigger:**
 - Scheduled cron — e.g., 15th of every month at 09:00 UTC
@@ -90,6 +101,7 @@ All supporting scripts live in `.github/scripts/`:
 | `python-deps-check.py`               | Queries PyPI and records available Python package updates                          |
 | `ansible-deps-check.py`              | Queries Ansible Galaxy v3 API and records Ansible collection updates               |
 | `generate-pr-body.py`                | Parses dependency update reports to generate a unified Markdown PR body            |
+| `merge-notifications-payload.sh`     | Builds a payload and sends a notification to Slack when a PR is merged             |
 | `report-dependency-pr.sh`            | Generate a payload and send a notification to Slack about the dependency update PR |
 | `report-get-failed-apps.sh`          | Gets information about failed jobs in the scheduled workflow                       |
 | `report-generate-payload.sh`         | Generates a payload for reporting scheduled workflow results to Slack              |

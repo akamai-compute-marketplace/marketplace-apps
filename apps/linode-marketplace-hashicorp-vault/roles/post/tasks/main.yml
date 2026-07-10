@@ -1,0 +1,54 @@
+---
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Write credentials file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Vault UI:  https://{{ _domain }}/
+
+      Initial Root Token: {{ vault_init.root_token }}
+
+      Unseal Keys (5 total, threshold of 3 required to unseal):
+      {% for key in vault_init.unseal_keys_b64 %}
+        {{ loop.index }}. {{ key }}
+      {% endfor %}
+
+      ----------------------------------------------------------------------
+      SECURITY — READ THIS BEFORE USING VAULT IN PRODUCTION
+      ----------------------------------------------------------------------
+      All 5 unseal keys and the root token are stored in this single file
+      for first-deploy convenience. HashiCorp's documented best practice is
+      to distribute the 5 keys to 5 different operators and rotate the
+      root token. Do BOTH of the following before treating this deploy as
+      production-ready:
+
+        1. Distribute the 5 unseal keys to 5 separate trusted operators.
+           Do not retain a copy here.
+        2. Generate a new root token, then revoke this initial one:
+              vault token create -policy=root -ttl=24h
+              vault token revoke {{ vault_init.root_token }}
+
+      After unseal-key distribution, securely delete this file:
+              /home/{{ username }}/.credentials
+
+      If Vault becomes sealed (e.g., after a reboot), unseal it with:
+              VAULT_ADDR=https://{{ _domain }} vault operator unseal <key>
+      Repeat with 3 different keys.

@@ -1,0 +1,35 @@
+---
+- name: Install Docker latest
+  import_role:
+    name: docker
+
+# Appwrite Installer
+- name: Ensure Appwrite directory exists
+  file:
+    path: /opt/appwrite
+    state: directory
+    mode: '0755'
+
+- name: Run Appwrite installer container
+  community.docker.docker_container:
+    name: appwrite-installer
+    image: appwrite/appwrite:{{ appwrite_version }}
+    state: started
+    auto_remove: true
+    interactive: true
+    tty: true
+    entrypoint: install
+    published_ports:
+      - "20080:20080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/opt/appwrite:/usr/src/code/appwrite:rw"
+
+- name: Wait for Appwrite installer to return 200
+  uri:
+    url: http://localhost:20080
+    status_code: 200
+  register: result
+  until: result.status == 200
+  retries: 24
+  delay: 5

@@ -1,4 +1,5 @@
 #!/bin/bash
+# STACKSCRIPT_ID: 970522
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
@@ -167,4 +168,4 @@ function installation_complete {
 }
 # main
 run 
-installation_complete 
+installation_complete
