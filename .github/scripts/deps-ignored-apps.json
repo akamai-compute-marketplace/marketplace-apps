@@ -1,0 +1,9 @@
+{
+  "summary": "List of apps to skip during automated dependency updates",
+  "ignored_apps": [
+    {
+      "name": "linode-marketplace-haltdos",
+      "reason": "Latest supported version is ubuntu22.04"
+    }
+  ]
+}
