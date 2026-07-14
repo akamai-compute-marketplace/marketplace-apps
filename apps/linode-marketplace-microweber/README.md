@@ -1,20 +1,17 @@
 # Microweber Quick Deploy App
 
-[Microweber](https://microweber.org) is an open-source drag-and-drop CMS and e-commerce website
-builder built on Laravel, aimed at users who want to compose pages, blogs, and online shops with
-live edit rather than code. This Marketplace App deploys Microweber v2.0.20 on Ubuntu 24.04 as a
-classic LAMP stack (Apache + mod_php + MariaDB), with the browser setup wizard eliminated via the
-upstream CLI installer, a version-pinned and sha256-verified install artifact, automatic HTTPS via
-Let's Encrypt, and native admin login as the auth layer.
+[Microweber](https://microweber.com/) is a Drag-and-Drop website builder and a robust next-generation Content Management System (CMS) based on the PHP Laravel Framework. It empowers you to create various types of websites, online stores, and blogs without requiring any technical expertise.
+
+At its core, Microweber is designed to support your journey toward online success. It offers an array of modules, customizations, and features tailored to e-commerce enthusiasts and bloggers. The CMS leverages the latest Drag & Drop technology and real-time text editing for an enhanced user experience, streamlined content management, visual appeal, and flexibility.
 
 ## Software Included
 
 | Software | Version | Description |
 | :---     | :----   | :---        |
-| Microweber | 2.0.20 | Drag-and-drop CMS and e-commerce website builder (Laravel-based); install zip is version-pinned and sha256-verified |
-| Apache   | 2.4.58 | Web server (mod_php), single vhost, HTTP→HTTPS and canonical-host redirects |
-| PHP      | 8.3.6  | Ubuntu 24.04 distro PHP with Microweber's required extensions (no third-party PPA) |
-| MariaDB  | 10.11.14 | Database server; root uses socket auth, app user is scoped to the app database |
+| Microweber | 2.0.20 | Drag-and-drop CMS and e-commerce website builder |
+| Apache   | 2.4.58 | Web server |
+| PHP      | 8.3.6  | Server-side scripting language |
+| MariaDB  | 10.11.14 | Open-source relational database management system |
 
 **Supported Distributions:**
 
@@ -40,22 +37,13 @@ Let's Encrypt, and native admin login as the auth layer.
 
 When the playbook finishes, the operator can:
 
-- Browse the site at `https://<domain-or-rdns>/` and log in to the admin panel at
-  `https://<domain-or-rdns>/admin` (username `admin`, password from the credentials file).
-  There is no setup wizard — the site is fully installed, and the installer endpoint
-  (`/install`) returns 404.
+- Browse the site at `https://<domain-or-rdns>/` and log in to the admin panel at `https://<domain-or-rdns>/admin` (username `admin`, password from the credentials file). There is no setup wizard — the site is fully installed, and the installer endpoint (`/install`) returns 404.
 - Read the generated credentials from `/home/<sudo_user>/.credentials`. The file contains:
   - Sudo username + password
   - MariaDB root password
   - Microweber database name, user, and password
   - Microweber admin username, password, and email
-- Start building: the deploy seeds default content and activates the bundled **Big** template —
-  use Live Edit from the admin panel to compose pages, or set up the shop under
-  admin → Shop. Templates can be switched in admin → Design. See the
-  [Microweber user documentation](https://microweber.org/docs) for first steps.
-
-<!-- REVIEW: confirm the docs URL renders a real user guide (microweber.org/docs) — swap for
-     https://microweber.com/help or the current upstream docs home if not. -->
+- Start building: the deploy seeds default content and activates the bundled **Big** template. Use Live Edit from the admin panel to compose pages, or set up the shop under Admin → Shop. Templates can be switched in Admin → Website → Design. See the [Microweber user guide](https://github.com/microweber/microweber-user-guide) and the [Microweber docs](https://github.com/microweber/microweber-docs) for more information on how to set up and use Microweber.
 
 ## Use our API
 
@@ -69,7 +57,7 @@ curl -H "Content-Type: application/json" \
     "image": "linode/ubuntu24.04",
     "region": "us-southeast",
     "type": "g6-standard-2",
-    "label": "microweber-occ-us-southeast",
+    "label": "microweber-server",
     "tags": [],
     "root_pass": "A_Secure_Password",
     "authorized_users": [
@@ -79,7 +67,7 @@ curl -H "Content-Type: application/json" \
     "booted": true,
     "backups_enabled": false,
     "private_ip": false,
-    "stackscript_id": 00000,
+    "stackscript_id": 1051714,
     "stackscript_data": {
         "soa_email_address": "email@domain.tld",
         "admin_email": "admin@domain.tld",
@@ -101,22 +89,19 @@ linode-cli linodes create \
   --image 'linode/ubuntu24.04' \
   --region us-southeast \
   --type g6-standard-2 \
-  --label microweber-occ-us-southeast \
+  --label microweber-server \
   --root_pass A_Secure_Password \
   --authorized_users user1 \
   --authorized_users user2 \
   --booted true \
   --backups_enabled false \
   --private_ip false \
-  --stackscript_id 000000 \
+  --stackscript_id 1051714 \
   --stackscript_data '{"soa_email_address":"email@domain.tld","admin_email":"admin@domain.tld","mw_db_user":"microweber","mw_db_name":"microweber","user_name":"sudo_user","disable_root":"No","token_password":"A_Valid_API_Token","subdomain":"examplesubdomain","domain":"domain.tld","add_ons":"none"}'
 ```
 
-<!-- REVIEW: replace stackscript_id 00000 with the real published StackScript ID once the app
-     is live in the Marketplace. -->
-
 ## Resources
 
-- [Microweber Website](https://microweber.org)
-- [Microweber Documentation](https://microweber.org/docs)
+- [Microweber user guide](https://github.com/microweber/microweber-user-guide)
+- [Microweber docs](https://github.com/microweber/microweber-docs)
 - [Microweber Repository](https://github.com/microweber/microweber)
