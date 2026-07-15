@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+if [ "$EUID" -ne 0 ]; then
+    return
+fi
+
+NEMOCLAW_UID=$(id -u {{ nemoclaw_user }})
+export XDG_RUNTIME_DIR="/run/user/$NEMOCLAW_UID"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+
+while true; do
+	echo ""
+	echo "[NemoClaw Onboarding]"
+	read -rp "Do you want to run the nemoclaw onboard wizard? [y/n]: " answer
+
+	if [[ "$answer" =~ ^[Yy]$ ]]; then
+		echo "[***] Running onboarding as {{ nemoclaw_user }} user."
+		if [ ! -S "${XDG_RUNTIME_DIR}/bus" ]; then
+			echo "[***] systemd user bus not ready at ${XDG_RUNTIME_DIR}/bus."
+			echo "[***] Try again in a few seconds, or run: systemctl start user@${NEMOCLAW_UID}.service"
+			break
+		fi
+		runuser -u {{ nemoclaw_user }} -- env XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" DBUS_SESSION_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS" nemoclaw onboard
+		onboard_rc=$?
+
+		if [ "$onboard_rc" -eq 0 ]; then
+			if [ ! -x /usr/local/bin/openshell ] && [ -x {{ nemoclaw_home }}/.local/bin/openshell ]; then
+				echo "[***] Installing openshell on PATH at /usr/local/bin/openshell"
+				cp {{ nemoclaw_home }}/.local/bin/openshell /usr/local/bin/openshell
+				chmod 0755 /usr/local/bin/openshell
+			fi
+			echo "[***] Initial onboarding complete. Removing {{ nemoclaw_onboarding_script }}."
+
+			if [ -f '{{ nemoclaw_onboarding_script }}' ]; then
+				rm {{ nemoclaw_onboarding_script }}
+			fi
+		else
+			echo "[***] Onboarding exited with status $onboard_rc. Try Onboarding again by logging in."
+		fi
+		break
+	elif [[ "$answer" =~ ^[Nn]$ ]]; then
+		echo "[***] Skipping NemoClaw onboarding."
+		while true; do
+			read -rp "[***] Do you want to remove the onboard script? [y/n]: " remove_script
+			if [[ "$remove_script" =~ ^[Yy]$ ]]; then
+				echo "[***] Removing {{ nemoclaw_onboarding_script }}"
+				if [ -f '{{ nemoclaw_onboarding_script }}' ]; then
+					rm {{ nemoclaw_onboarding_script }}
+				fi
+				break
+			elif [[ "$remove_script" =~ ^[Nn]$ ]]; then
+				echo "[***] Not removing onboarding script. This script will run again on next login."
+				break
+			else
+				echo -e "\n[***] Please answer y or n."
+			fi
+		done
+		break
+	else
+		echo -e "\n[***] Please answer y or n."
+	fi
+done

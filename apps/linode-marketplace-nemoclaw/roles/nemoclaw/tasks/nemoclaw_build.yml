@@ -1,0 +1,52 @@
+---
+- name: Install git
+  apt:
+    name: git
+    state: present
+
+- name: Clone NemoClaw at the latest commit on the default branch
+  git:
+    repo: "{{ nemoclaw_repo }}"
+    dest: "{{ nemoclaw_src_dir }}"
+    version: HEAD
+    force: false
+  become: true
+  become_user: "{{ nemoclaw_user }}"
+
+- name: Install NemoClaw npm dependencies (no lifecycle scripts)
+  community.general.npm:
+    path: "{{ nemoclaw_src_dir }}"
+    ci: false
+    production: false
+    ignore_scripts: true
+  environment:
+    HOME: "{{ nemoclaw_home }}"
+  become: true
+  become_user: "{{ nemoclaw_user }}"
+
+- name: Build the NemoClaw CLI
+  command: npm run build:cli
+  args:
+    chdir: "{{ nemoclaw_src_dir }}"
+    creates: "{{ nemoclaw_src_dir }}/dist/nemoclaw.js"
+  environment:
+    HOME: "{{ nemoclaw_home }}"
+  become: true
+  become_user: "{{ nemoclaw_user }}"
+
+- name: Make the NemoClaw CLI entrypoint executable
+  file:
+    path: "{{ nemoclaw_src_dir }}/bin/nemoclaw.js"
+    mode: '0755'
+
+- name: Symlink the nemoclaw CLI onto PATH
+  file:
+    src: "{{ nemoclaw_src_dir }}/bin/nemoclaw.js"
+    dest: /usr/local/bin/nemoclaw
+    state: link
+
+- name: Verify NemoClaw CLI version
+  command: /usr/local/bin/nemoclaw --version
+  changed_when: false
+  become: true
+  become_user: "{{ nemoclaw_user }}"

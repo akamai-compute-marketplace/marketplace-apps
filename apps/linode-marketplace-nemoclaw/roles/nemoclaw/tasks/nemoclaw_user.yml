@@ -1,0 +1,87 @@
+---
+- name: Create nemoclaw system user
+  user:
+    name: "{{ nemoclaw_user }}"
+    comment: "NemoClaw Service User"
+    system: true
+    shell: /bin/bash
+    create_home: true
+    home: "{{ nemoclaw_home }}"
+    groups: docker
+    append: true
+    state: present
+
+- name: Add nemoclaw user to sudoers with scoped NOPASSWD
+  copy:
+    dest: "/etc/sudoers.d/{{ nemoclaw_user }}"
+    mode: '0440'
+    owner: root
+    group: root
+    content: |
+      # NemoClaw sudo permissions (scoped for security)
+      #
+      # SECURITY NOTE: These permissions are intentionally limited.
+      # If nemoclaw is compromised, attackers can only manage the
+      # nemoclaw-related units and view their logs.
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl start nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl status nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl enable nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl disable nemoclaw
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/systemctl daemon-reload
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/journalctl -u nemoclaw *
+      # NemoClaw onboarding low-memory remediation (4 GB /swapfile).
+      # Source: .reference/NemoClaw/src/lib/onboard/preflight.ts
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/dd if=/dev/zero of=/swapfile bs=1M count=4096 status=none
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/chmod 600 /swapfile
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/sbin/mkswap /swapfile
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/sbin/swapon /swapfile
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/sbin/swapoff /swapfile
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/rm -f /swapfile
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/cat /etc/fstab
+      {{ nemoclaw_user }} ALL=(ALL) NOPASSWD: /usr/bin/tee -a /etc/fstab
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Get nemoclaw user ID
+  command: "id -u {{ nemoclaw_user }}"
+  register: nemoclaw_uid
+  changed_when: false
+
+- name: Enable lingering for nemoclaw user (allows systemd user services without login)
+  command: "loginctl enable-linger {{ nemoclaw_user }}"
+  changed_when: false
+
+- name: Create runtime directory for nemoclaw user
+  file:
+    path: "/run/user/{{ nemoclaw_uid.stdout }}"
+    state: directory
+    owner: "{{ nemoclaw_user }}"
+    group: "{{ nemoclaw_user }}"
+    mode: '0700'
+
+- name: Set XDG_RUNTIME_DIR in .bashrc for nemoclaw user
+  lineinfile:
+    path: "{{ nemoclaw_home }}/.bashrc"
+    line: 'export XDG_RUNTIME_DIR=/run/user/$(id -u)'
+    state: present
+    create: true
+    insertafter: EOF
+    owner: "{{ nemoclaw_user }}"
+    group: "{{ nemoclaw_user }}"
+    mode: '0644'
+
+- name: Set DBUS_SESSION_BUS_ADDRESS in .bashrc for nemoclaw user
+  blockinfile:
+    path: "{{ nemoclaw_home }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - DBus config"
+    block: |
+      # DBus session bus configuration
+      if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+        export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+      fi
+    create: true
+    insertafter: EOF
+    owner: "{{ nemoclaw_user }}"
+    group: "{{ nemoclaw_user }}"
+    mode: '0644'
