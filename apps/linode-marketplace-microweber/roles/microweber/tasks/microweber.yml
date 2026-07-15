@@ -7,11 +7,10 @@
     group: www-data
     mode: '0755'
 
-- name: Download Microweber release artifact (checksum-pinned)
+- name: Download Microweber build artifact
   get_url:
-    url: "{{ microweber_zip_url }}"
+    url: https://updater.microweberapi.com/builds/master/microweber.zip
     dest: /tmp/microweber.zip
-    checksum: "{{ microweber_zip_checksum }}"
     mode: '0644'
 
 - name: Extract Microweber
@@ -47,7 +46,6 @@
       - "--email={{ admin_email }}"
       - "--username={{ mw_admin_username }}"
       - "--password={{ mw_admin_password }}"
-      - "--template={{ microweber_template }}"
       - --default-content=1
       - --language=en
   no_log: true

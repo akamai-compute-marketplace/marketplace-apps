@@ -8,7 +8,7 @@ At its core, Microweber is designed to support your journey toward online succes
 
 | Software | Version | Description |
 | :---     | :----   | :---        |
-| Microweber | 2.0.20 | Drag-and-drop CMS and e-commerce website builder |
+| Microweber | Latest | Drag-and-drop CMS and e-commerce website builder |
 | Apache   | 2.4.58 | Web server |
 | PHP      | 8.3.6  | Server-side scripting language |
 | MariaDB  | 10.11.14 | Open-source relational database management system |
@@ -43,7 +43,7 @@ When the playbook finishes, the operator can:
   - MariaDB root password
   - Microweber database name, user, and password
   - Microweber admin username, password, and email
-- Start building: the deploy seeds default content and activates the bundled **Big** template. Use Live Edit from the admin panel to compose pages, or set up the shop under Admin → Shop. Templates can be switched in Admin → Website → Design. See the [Microweber user guide](https://github.com/microweber/microweber-user-guide) and the [Microweber docs](https://github.com/microweber/microweber-docs) for more information on how to set up and use Microweber.
+- Start building: the deploy seeds default content on Microweber's stock template. Use Live Edit from the admin panel to compose pages, or set up the shop under Admin → Shop. Templates can be switched in Admin → Website → Design. See the [Microweber user guide](https://github.com/microweber/microweber-user-guide) and the [Microweber docs](https://github.com/microweber/microweber-docs) for more information on how to set up and use Microweber.
 
 ## Use our API
 
