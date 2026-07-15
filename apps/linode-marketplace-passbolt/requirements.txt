@@ -12,10 +12,10 @@
 #docker==6.1.3
 #pexpect==4.8.0
 
-ansible==14.0.0
+ansible==14.2.0
 PyMySQL==1.2.0
 yamllint==1.38.0
-ansible-lint==26.4.0
+ansible-lint==26.6.0
 flake8==7.3.0
 linode_api4==5.45.0
 dnspython==2.8.0

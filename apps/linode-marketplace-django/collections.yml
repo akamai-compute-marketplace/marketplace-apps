@@ -5,4 +5,4 @@ collections:
   - name: community.postgresql
     version: 4.2.0
   - name: community.general
-    version: 13.0.1
+    version: 13.2.0
