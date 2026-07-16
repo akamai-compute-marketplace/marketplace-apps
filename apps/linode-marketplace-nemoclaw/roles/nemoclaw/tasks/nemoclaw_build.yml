@@ -39,7 +39,7 @@
     path: "{{ nemoclaw_src_dir }}/bin/nemoclaw.js"
     mode: '0755'
 
-- name: Symlink the nemoclaw CLI onto PATH
+- name: Symlink the NemoClaw CLI onto PATH
   file:
     src: "{{ nemoclaw_src_dir }}/bin/nemoclaw.js"
     dest: /usr/local/bin/nemoclaw
