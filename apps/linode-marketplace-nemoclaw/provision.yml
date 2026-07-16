@@ -9,8 +9,3 @@
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
 
-    # NemoClaw's dashboard device-auth token is generated per-sandbox by the
-    # interactive `nemoclaw onboard` wizard at first login (D6/D7 in
-    # architecture_decisions.md) - it depends on a user-supplied inference
-    # credential that cannot be known at image-build time, so there is no
-    # secret to generate here beyond the sudo user above.
