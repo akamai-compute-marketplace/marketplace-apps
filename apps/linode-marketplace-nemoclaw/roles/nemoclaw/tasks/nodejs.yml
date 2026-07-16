@@ -39,4 +39,3 @@
     name: nodejs
     state: present
     update_cache: true
-

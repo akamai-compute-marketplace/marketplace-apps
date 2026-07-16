@@ -8,4 +8,3 @@
   tasks:
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
-
