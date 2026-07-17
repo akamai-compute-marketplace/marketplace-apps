@@ -1,4 +1,4 @@
-# Linode Haystack Quick Deploy App
+# Akamai Haystack Quick Deploy App
 
 Haystack is an open-source framework for building applications that use large language models (LLMs). Instead of requiring developers to write custom orchestration logic for every use case, it provides a structured way to assemble AI functionality through reusable components connected in pipelines. This approach makes it well suited for creating retrieval-augmented generation (RAG) systems, AI agents, search experiences, chat applications, and other LLM-driven solutions.
 
