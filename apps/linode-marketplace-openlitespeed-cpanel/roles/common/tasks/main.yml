@@ -1,0 +1,27 @@
+---
+- name: Setting up hostname
+  import_role:
+    name: hostname
+
+- name: Write _domain to vars
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+  when: _domain is defined
+
+- name: Add line to /etc/hosts
+  ansible.builtin.lineinfile:
+    insertafter: '^127.0.0.1\s'
+    path: /etc/hosts
+    line: |
+      {{ ansible_default_ipv4.address }} {{ _domain }}
+  when: _domain is defined
+
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
+
+- name: Update system packages
+  import_tasks: update_pkgs.yml

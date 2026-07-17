@@ -3,6 +3,9 @@
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+## Linode/SSH security settings
+#<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
+
 # BEGIN CI-MODE
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
@@ -79,6 +82,8 @@ function run {
 
 function udf {
 	local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
+	echo "username: ${USER_NAME}" >>${group_vars}
+	echo "default_dns: $(hostname -I | awk '{print $1}' | tr '.' '-' | awk '{print $1 ".ip.linodeusercontent.com"}')" >>${group_vars}
 
 	# BEGIN CI-UDF-CI-MODE
 	# staging or production mode (ci)
@@ -107,8 +112,8 @@ function final_run {
 	# populate group_vars
 	udf
 
-	# run playbook
-	ansible-playbook -v site.yml
+	# run playbooks
+	ansible-playbook -v provision.yml && ansible-playbook -v site.yml
 }
 
 function installation_complete {

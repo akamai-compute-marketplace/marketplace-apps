@@ -1,0 +1,15 @@
+---
+- name: Write motd.sh
+  ansible.builtin.template:
+    src: templates/motd.j2
+    dest: /etc/motd.sh
+    mode: '0644'
+
+- name: Writing sudo user creds into file
+  ansible.builtin.template:
+    src: templates/credentials.j2
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+  no_log: true

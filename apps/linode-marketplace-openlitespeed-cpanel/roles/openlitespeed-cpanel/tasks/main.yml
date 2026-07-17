@@ -1,9 +1,4 @@
 ---
-# set_hostname
-- name: Setting system hostname
-  ansible.builtin.hostname:
-    name: "cpanel"
-
 - name: Fetch cPanel installer
   ansible.builtin.get_url:
     url: https://securedownloads.cpanel.net/latest
@@ -78,12 +73,6 @@
     dest: /root/.credentials
     mode: '0600'
   no_log: true
-
-- name: Write motd.sh
-  ansible.builtin.template:
-    src: templates/motd.j2
-    dest: /etc/motd.sh
-    mode: '0644'
 
 - name: Write .bash_profile
   ansible.builtin.template:

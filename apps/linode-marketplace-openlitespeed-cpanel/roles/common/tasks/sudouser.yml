@@ -1,0 +1,54 @@
+---
+# RHEL/AlmaLinux equivalent of linode_helpers/roles/sudouser: uses the
+# wheel group (the sudo-capable group on RHEL family distros) instead of
+# the Debian-only "sudo" group.
+
+- name: Get local system users
+  ansible.builtin.slurp:
+    src: /etc/passwd
+  register: getusers
+
+- name: Create system user list
+  ansible.builtin.set_fact:
+    system_users: "{{ getusers['content'] | b64decode | regex_replace(' ', '') | split() | map('regex_replace', '^([^:]+):.*', '\\1') | list }}"
+
+- name: Check if the requested sudo user already exists
+  ansible.builtin.fail:
+    msg: |
+      [FATAL] illegal username provided --> {{ username }}
+      The user already exists on the system. Please redeploy the Marketplace app using a non-system user for the sudo user value.
+      {{ system_users }}
+  when: username in system_users
+
+- name: Ensure wheel group has sudo privileges
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    regexp: '^#?\s*%wheel\s+ALL=\(ALL\)\s+ALL'
+    line: '%wheel  ALL=(ALL)       ALL'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Generating sudo user password
+  ansible.builtin.set_fact:
+    password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+  no_log: true
+
+- name: Writing sudo user password to vars
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      password: {{ password }}
+
+- name: Set sudo user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    shell: /bin/bash
+    groups: wheel
+    password: "{{ password | password_hash('sha512') }}"
+    update_password: on_create
+    expires: -1
+    append: true
+    generate_ssh_key: true
+    ssh_key_bits: 4096
+    ssh_key_file: .ssh/id_rsa
+    state: present

@@ -16,6 +16,12 @@ fi
 # UDF Variables
 declare -A UDF_VARS
 
+if [[ -n "${USER_NAME}" ]]; then
+        UDF_VARS["USER_NAME"]="${USER_NAME}"
+else
+        UDF_VARS["USER_NAME"]="admin" # default
+fi
+
 if [[ -n "${ADD_ONS}" ]]; then
         UDF_VARS["ADD_ONS"]="${ADD_ONS}"
 else
