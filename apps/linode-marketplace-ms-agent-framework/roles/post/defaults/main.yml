@@ -1,0 +1,6 @@
+---
+# openclaw
+openclaw_user: openclaw
+openclaw_htpasswd_file: /etc/nginx/openclaw_dashboard.htpasswd
+openclaw_htpasswd_user: "{{ openclaw_user }}"
+openclaw_htpasswd: "{{ htaccess_password | password_hash('blowfish') }}"
