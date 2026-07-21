@@ -56,9 +56,10 @@ jobs:
     needs: approve-workflow-job
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Run ShellCheck
         run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
@@ -69,9 +70,10 @@ jobs:
     needs: approve-workflow-job
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Run yamllint
         run: bash .github/scripts/static-code-yamllint.sh
   static-code-analysis-ansbible-lint:
@@ -82,9 +84,10 @@ jobs:
     needs: approve-workflow-job
     steps:
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Run ansible-lint
         run: bash .github/scripts/static-code-ansible-lint.sh
   get-updated-apps:
@@ -100,10 +103,11 @@ jobs:
       configs: ${{ steps.configs-matrix.outputs.configs }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Find updated apps
         id: configs-matrix
         env:
@@ -123,10 +127,11 @@ jobs:
       LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Check and clean up domain records
         run: bash .github/scripts/setup-domain-records-cleanup.sh
   deployment-job:
@@ -147,9 +152,10 @@ jobs:
       LINODE_SUBDOMAIN: ${{ secrets.LINODE_SUBDOMAIN }}
     steps:
       - name: Checkout branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          allow-unsafe-pr-checkout: true
       - name: Get Linode configuration for ${{ matrix.app }}
         run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
       - name: Provisioning Linode for ${{ matrix.app }}
