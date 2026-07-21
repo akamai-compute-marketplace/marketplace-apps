@@ -1,0 +1,28 @@
+---
+# install for root
+- name: Install Agent Framework for root
+  pip:
+    name: agent-framework
+    virtualenv: "{{ ansible_env.HOME }}/.env"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+    state: present
+
+# install for sudo user
+- name: Install Agent Framework for sudo user
+  pip:
+    name: agent-framework
+    virtualenv: "/home/{{ username }}/.env"
+    virtualenv_command: "{{ ansible_python_interpreter }} -m venv"
+    state: present
+  become: true
+  become_user: "{{ username }}"
+
+- name: Update local PATH
+  lineinfile:
+    path: "{{ item }}/.bashrc"
+    line: 'export PATH="$HOME/.env/bin:$PATH"'
+    insertafter: EOF
+    state: present
+  loop:
+    - "/root"
+    - "/home/{{ username }}"
