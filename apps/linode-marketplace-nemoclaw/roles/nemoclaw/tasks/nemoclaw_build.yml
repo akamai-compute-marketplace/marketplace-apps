@@ -1,9 +1,4 @@
 ---
-- name: Install git
-  apt:
-    name: git
-    state: present
-
 - name: Clone NemoClaw at the latest commit on the default branch
   git:
     repo: "{{ nemoclaw_repo }}"
