@@ -8,7 +8,6 @@
     state: present
 
 # install for sudo user
-
 - name: Install Agent Framework for sudo user
   pip:
     name: agent-framework
