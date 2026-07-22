@@ -1,0 +1,6 @@
+---
+- name: Update packages
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_cache: true

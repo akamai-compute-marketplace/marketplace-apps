@@ -1,0 +1,87 @@
+---
+- name: Fetch cPanel installer
+  ansible.builtin.get_url:
+    url: https://securedownloads.cpanel.net/latest
+    dest: /home/installer
+    mode: '0755'
+    force: true
+    validate_certs: false
+
+- name: Run the cPanel installer
+  ansible.builtin.script: /home/installer --skiplicensecheck
+  changed_when: true
+
+- name: Remove /etc/cpupdate.conf
+  ansible.builtin.file:
+    path: /etc/cpupdate.conf
+    state: absent
+
+- name: Generate LiteSpeed WebAdmin admin password
+  ansible.builtin.set_fact:
+    litespeed_admin_pass: "{{ lookup('password', '/dev/null length=16 chars=ascii_letters,digits') }}"
+  no_log: true
+
+- name: Write lsws.options for the non-interactive LiteSpeed installer
+  ansible.builtin.template:
+    src: templates/lsws_options.j2
+    dest: /home/lsws.options
+    mode: '0600'
+  no_log: true
+
+- name: Fetch the LiteSpeed WHM plugin installer
+  ansible.builtin.get_url:
+    url: https://get.litespeed.sh
+    dest: /home/get_litespeed.sh
+    mode: '0755'
+
+- name: Run the LiteSpeed installer
+  ansible.builtin.command: bash /home/get_litespeed.sh TRIAL
+  args:
+    chdir: /home
+  changed_when: true
+
+- name: Check whether LiteSpeed actually started
+  ansible.builtin.command: systemctl is-active lsws
+  register: lsws_active_check
+  changed_when: false
+  failed_when: false
+
+- name: Remediate a failed LiteSpeed startup
+  when: lsws_active_check.stdout != "active"
+  block:
+    - name: Remove stale LiteSpeed startup lock directory
+      ansible.builtin.file:
+        path: /tmp/lshttpd
+        state: absent
+
+    - name: Restart LiteSpeed
+      ansible.builtin.systemd_service:
+        name: lsws
+        state: restarted
+
+    - name: Wait for LiteSpeed to come up after the restart
+      ansible.builtin.command: systemctl is-active lsws
+      register: lsws_retry_check
+      until: lsws_retry_check.stdout == "active"
+      retries: 6
+      delay: 10
+      changed_when: false
+
+- name: Write LiteSpeed WebAdmin credentials
+  ansible.builtin.template:
+    src: templates/credentials.j2
+    dest: /root/.credentials
+    mode: '0600'
+  no_log: true
+
+- name: Write .bash_profile
+  ansible.builtin.template:
+    src: templates/bashprofile.j2
+    dest: /root/.bash_profile
+    mode: '0644'
+
+- name: Create cpinit.done file
+  ansible.builtin.file:
+    path: /var/cpanel/cpinit.done
+    state: touch
+    mode: '0644'
