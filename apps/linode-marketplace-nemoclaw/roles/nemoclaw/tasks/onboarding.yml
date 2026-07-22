@@ -1,0 +1,6 @@
+---
+- name: Add NemoClaw onboarding script on login
+  template:
+    src: nemoclaw_onboarding.sh.j2
+    dest: "{{ nemoclaw_onboarding_script }}"
+    mode: '0755'

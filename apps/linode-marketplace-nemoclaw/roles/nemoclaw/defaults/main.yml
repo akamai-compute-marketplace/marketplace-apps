@@ -1,0 +1,8 @@
+---
+# nemoclaw
+nemoclaw_user: nemoclaw
+nemoclaw_home: /home/nemoclaw
+nemoclaw_src_dir: "{{ nemoclaw_home }}/nemoclaw-src"
+nemoclaw_onboarding_script: /etc/profile.d/nemoclaw_onboarding.sh
+nemoclaw_repo: https://github.com/NVIDIA/NemoClaw.git
+nodejs_version: 22.x

@@ -1,0 +1,16 @@
+*********************************************************
+Akamai Connected Cloud NemoClaw Quick Deploy App
+Dashboard Access: SSH tunnel required (see details below)
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/docs/marketplace-docs/guides/nemoclaw/
+*********************************************************
+
+# After Nemoclaw onboarding is completed:
+Dashboard access steps (from your local machine):
+`ssh -L 18789:127.0.0.1:18789 root@{{ _domain }}`
+`sudo -i -u nemoclaw nemoclaw <sandbox-name> dashboard-url`
+     
+Note: `sudo -i -u nemoclaw nemoclaw <sandbox-name> dashboard-url` will show a Dashboard URL, but this
+deployment expects SSH tunneling for browser access.
+
+To delete this message of the day: rm /etc/motd

@@ -1,0 +1,7 @@
+---
+collections:
+  - name: linode.cloud
+    version: 0.47.0
+
+  - name: community.general
+    version: 13.1.0

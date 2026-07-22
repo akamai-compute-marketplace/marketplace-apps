@@ -1,0 +1,16 @@
+---
+- name: Install Docker
+  import_role:
+    name: docker
+
+- name: Create nemoclaw user
+  import_tasks: nemoclaw_user.yml
+
+- name: Install NodeJS
+  import_tasks: nodejs.yml
+
+- name: Build NemoClaw from source
+  import_tasks: nemoclaw_build.yml
+
+- name: Configure first-login onboarding
+  import_tasks: onboarding.yml

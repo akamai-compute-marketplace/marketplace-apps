@@ -1,0 +1,27 @@
+---
+- name: Configure SSH UFW rule
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Allow Docker bridge access to OpenShell gateway port
+  community.general.ufw:
+    rule: allow
+    from_ip: 172.18.0.0/16
+    to_ip: 172.18.0.1
+    to_port: "8080"
+    proto: tcp
+
+- name: Allow Docker bridge access to Open Model port
+  community.general.ufw:
+    rule: allow
+    from_ip: 172.18.0.0/16
+    to_ip: 172.18.0.1
+    to_port: "4000"
+    proto: tcp
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    policy: deny
