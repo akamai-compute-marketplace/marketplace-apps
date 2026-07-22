@@ -3,7 +3,7 @@
 DEFAULT_DNS="$(hostname -I | awk '{print $1}'| tr '.' '-' | awk {'print $1 ".ip.linodeusercontent.com"'})"
 RANDOM_SUBDOMAIN="a$(tr -dc 'a-z0-9' </dev/urandom | head -c7)"
 
-# custom env variables from cli
+# custom env variables from cli1
 if [[ -n ${INSTANCE_ENV} ]]; then
   custom_vars=(${INSTANCE_ENV})
   var_count=${#custom_vars[@]}
