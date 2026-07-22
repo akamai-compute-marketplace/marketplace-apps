@@ -1,10 +1,12 @@
 import pytest
 import os
 import base64
+import requests
+import urllib3
 from typing import Any
 from pytest_html import extras as pytest_html_extras
 from playwright.sync_api import sync_playwright
-from regression_tests.utils.ssh import get_credentials_via_ssh
+from regression_tests.utils.ssh import get_credentials_via_ssh, run_remote_command
 from pathlib import Path
 
 
@@ -48,6 +50,41 @@ def app_credentials(ssh_credentials, credentials_file_path) -> dict:
         password=password,
         remote_path=credentials_file_path
     )
+
+
+@pytest.fixture(scope="session")
+def remote_exec(ssh_credentials):
+    """
+    Returns a callable that runs a command on the deployed VM over SSH and returns
+    (stdout, stderr, exit_code).
+
+    Usage:
+        out, err, code = remote_exec("systemctl is-active nginx")
+
+    Returns:
+        Callable[[str, int], tuple[str, str, int]]
+    """
+    host, username, password = ssh_credentials
+
+    def _run(command: str, timeout: int = 30) -> tuple[str, str, int]:
+        return run_remote_command(host, username, password, command, timeout=timeout)
+
+    return _run
+
+
+@pytest.fixture(scope="session")
+def http_session():
+    """
+    Returns a requests.Session for backend apps that expose an HTTP API
+
+    Yields:
+        requests.Session
+    """
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    session = requests.Session()
+    session.verify = False
+    yield session
+    session.close()
 
 
 @pytest.fixture(scope="session")

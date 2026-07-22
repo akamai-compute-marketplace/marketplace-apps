@@ -83,6 +83,29 @@ def ssh_connection(host: str, username: str, password: str, timeout: int = 30):
         client.close()
 
 
+def run_remote_command(host: str, username: str, password: str, command: str,
+                       timeout: int = 30) -> tuple[str, str, int]:
+    """
+    Runs a single command on the remote Linode over SSH and returns its result.
+
+    Args:
+        host (str): The IPv4 address or hostname of the remote server.
+        username (str): The SSH username.
+        password (str): The SSH password.
+        command (str): The command to execute on the VM.
+        timeout (int, optional): Command/connection timeout in seconds. Defaults to 30.
+
+    Returns:
+        tuple[str, str, int]: (stdout, stderr, exit_code), with stdout/stderr stripped.
+    """
+    with ssh_connection(host, username, password, timeout=timeout) as client:
+        _, stdout, stderr = client.exec_command(command, timeout=timeout)
+        exit_code = stdout.channel.recv_exit_status()
+        out = stdout.read().decode().strip()
+        err = stderr.read().decode().strip()
+        return out, err, exit_code
+
+
 def get_credentials_via_ssh(host: str, username: str, password: str, remote_path: str) -> dict:
     """
     Retrieves and parses a credentials file from a Linode via SSH.

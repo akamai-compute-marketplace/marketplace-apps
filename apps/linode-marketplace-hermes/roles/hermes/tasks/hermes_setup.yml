@@ -55,6 +55,14 @@
     path: "{{ hermes_install_dir }}"
     state: present
 
+- name: Install Playwright npm package
+  npm:
+    name: playwright
+    path: "{{ hermes_install_dir }}"
+    state: present
+  environment:
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
 - name: Install Playwright system dependencies (as root)
   command: npx playwright install-deps chromium
   args:
