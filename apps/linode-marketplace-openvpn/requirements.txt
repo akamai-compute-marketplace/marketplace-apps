@@ -1,10 +1,10 @@
-ansible==14.0.0
+ansible==14.2.0
 #molecule==5.1.0
 #molecule-vagrant==2.0.0
 #python-vagrant==0.5.15
 yamllint==1.38.0
 pyyaml==6.0.3
-ansible-lint==26.4.0
+ansible-lint==26.6.0
 flake8==7.3.0
 linode_api4==5.45.0
 polling==0.3.2
@@ -21,7 +21,7 @@ certbot==5.6.0
 zope==6.1
 incremental==24.11.0
 constantly==23.10.4
-typing_extensions==4.15.0
+typing_extensions==4.16.0
 hyperlink==21.0.0
 defusedxml==0.7.1
 arrow==1.4.0

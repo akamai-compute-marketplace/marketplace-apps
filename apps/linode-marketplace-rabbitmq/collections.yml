@@ -3,4 +3,4 @@ collections:
   - name: linode.cloud
     version: 0.47.0
   - name: community.rabbitmq
-    version: 1.6.0
+    version: 1.7.0

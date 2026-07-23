@@ -3,4 +3,4 @@ collections:
   - name: linode.cloud
     version: 0.47.0
   - name: community.docker
-    version: 5.2.0
+    version: 5.2.1
