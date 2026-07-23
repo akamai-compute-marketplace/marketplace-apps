@@ -8,6 +8,9 @@ class BasePage:
     def navigate(self, url: str):
         self.page.goto(url)
 
+    def reload(self):
+        self.page.reload()
+
     def open_new_tab(self) -> Page:
         new_tab = self.page.context.new_page()
         return new_tab
