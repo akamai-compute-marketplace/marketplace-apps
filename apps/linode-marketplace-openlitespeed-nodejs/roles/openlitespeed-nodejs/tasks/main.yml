@@ -1,0 +1,15 @@
+---
+- name: Configure apt repositories
+  import_tasks: repos.yml
+
+- name: Install OpenLiteSpeed and Node.js
+  import_tasks: install.yml
+
+- name: Configure the WebAdmin console
+  import_tasks: webadmin.yml
+
+- name: Deploy the Node.js application and vhost
+  import_tasks: app.yml
+
+- name: Configure TLS
+  import_tasks: ssl.yml

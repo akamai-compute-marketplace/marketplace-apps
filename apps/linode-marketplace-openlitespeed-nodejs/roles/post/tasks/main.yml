@@ -1,0 +1,28 @@
+---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+# motd and creds gen
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0600'
+
+- name: Writing creds into file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    mode: '0600'
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      # OpenLiteSpeed
+      Sample Node.js App URL: https://{{ _domain }}
+      WebAdmin Console URL: https://{{ _domain }}:7080
+      WebAdmin Username: {{ webadmin_user }}
+      WebAdmin Password: {{ webadmin_password }}

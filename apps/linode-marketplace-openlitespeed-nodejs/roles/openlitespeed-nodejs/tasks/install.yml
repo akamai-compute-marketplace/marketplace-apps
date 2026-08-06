@@ -1,0 +1,9 @@
+---
+- name: Install OpenLiteSpeed, Node.js and certbot
+  apt:
+    name:
+      - openlitespeed
+      - nodejs
+      - certbot
+    state: present
+    update_cache: true

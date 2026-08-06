@@ -15,3 +15,9 @@
   include_tasks:
     file: standalone-certbot.yml
   when: webserver_stack == 'standalone'
+
+# for web servers certbot has no installer plugin for. requires certbot_webroot
+- name: use certbot webroot authenticator
+  include_tasks:
+    file: webroot-certbot.yml
+  when: webserver_stack == 'webroot'

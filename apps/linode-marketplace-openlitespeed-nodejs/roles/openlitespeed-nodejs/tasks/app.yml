@@ -1,0 +1,57 @@
+---
+- name: Create the Node.js application directory
+  file:
+    path: "{{ ols_node_dir }}"
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: '0755'
+
+- name: Create the ACME challenge directory
+  file:
+    path: "{{ ols_docroot }}/.well-known"
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: '0755'
+
+- name: Deploy the sample Node.js application
+  copy:
+    src: app.js
+    dest: "{{ ols_node_dir }}/app.js"
+    owner: nobody
+    group: nogroup
+    mode: '0644'
+
+- name: Configure the Example virtual host
+  template:
+    src: vhconf.conf.j2
+    dest: "{{ ols_vhost_conf }}"
+    owner: lsadm
+    group: nogroup
+    mode: '0750'
+
+- name: Move the default listener from :8088 to :80
+  replace:
+    path: "{{ ols_httpd_conf }}"
+    regexp: '^(\s*address\s+)\*:8088\s*$'
+    replace: '\g<1>*:80'
+  notify:
+    - Stop lshttpd
+    - Start lshttpd
+
+- name: Apply the listener change before continuing
+  meta: flush_handlers
+
+- name: Enable and start lshttpd
+  systemd_service:
+    name: "{{ ols_service }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Wait for OpenLiteSpeed to serve on port 80
+  wait_for:
+    host: 127.0.0.1
+    port: 80
+    timeout: 60

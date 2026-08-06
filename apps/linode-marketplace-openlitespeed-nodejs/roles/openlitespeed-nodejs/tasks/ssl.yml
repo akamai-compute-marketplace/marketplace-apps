@@ -1,0 +1,81 @@
+---
+- name: Obtain a Let's Encrypt certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: webroot
+    certbot_webroot: "{{ ols_docroot }}"
+
+- name: Create the certbot deploy hook directory
+  file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    mode: '0755'
+
+- name: Install the certbot deploy hook
+  copy:
+    content: |
+      #!/bin/sh
+      systemctl restart {{ ols_service }}
+    dest: /etc/letsencrypt/renewal-hooks/deploy/restart-lshttpd.sh
+    mode: '0755'
+
+- name: Check for the issued certificate
+  stat:
+    path: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
+  register: ols_certificate
+
+- name: Configure TLS
+  when: ols_certificate.stat.exists
+  block:
+    - name: Add the TLS listener
+      blockinfile:
+        path: "{{ ols_httpd_conf }}"
+        marker: "# {mark} OPENLITESPEED NODEJS TLS LISTENER"
+        block: |
+          listener SSL{
+            address                  *:443
+            secure                   1
+            keyFile                  /etc/letsencrypt/live/{{ _domain }}/privkey.pem
+            certFile                 /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+            certChain                1
+            map                      Example *
+          }
+
+    - name: Assert the WebAdmin listener is TLS-only
+      lineinfile:
+        path: "{{ ols_admin_conf }}"
+        regexp: '^\s*secure\s+.*$'
+        line: "  secure                1"
+
+    - name: Point the WebAdmin listener at the Let's Encrypt certificate
+      lineinfile:
+        path: "{{ ols_admin_conf }}"
+        regexp: '^\s*{{ item.key }}\s+.*$'
+        line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+      loop:
+        - {key: 'keyFile', file: 'privkey.pem'}
+        - {key: 'certFile', file: 'fullchain.pem'}
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Enable the force-HTTPS rewrite on the virtual host
+      template:
+        src: vhconf.conf.j2
+        dest: "{{ ols_vhost_conf }}"
+        owner: lsadm
+        group: nogroup
+        mode: '0750'
+      vars:
+        ols_tls_enabled: true
+
+    - name: Restart lshttpd to load the certificate
+      systemd_service:
+        name: "{{ ols_service }}"
+        state: restarted
+
+    - name: Wait for OpenLiteSpeed to serve on port 443
+      wait_for:
+        host: 127.0.0.1
+        port: 443
+        timeout: 60

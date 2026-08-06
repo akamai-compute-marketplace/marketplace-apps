@@ -1,0 +1,15 @@
+---
+nodejs_version: "26.x"
+
+litespeed_suite: "{{ ansible_distribution_release }}"
+
+ols_service: lshttpd
+
+ols_root: /usr/local/lsws
+ols_docroot: /usr/local/lsws/Example/html
+ols_node_dir: /usr/local/lsws/Example/html/node
+ols_vhost_conf: /usr/local/lsws/conf/vhosts/Example/vhconf.conf
+ols_httpd_conf: /usr/local/lsws/conf/httpd_config.conf
+ols_admin_conf: /usr/local/lsws/admin/conf/admin_config.conf
+
+ols_tls_enabled: false

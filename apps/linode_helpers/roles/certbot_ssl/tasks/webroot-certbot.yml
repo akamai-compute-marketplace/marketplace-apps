@@ -1,0 +1,77 @@
+---
+# apps/linode_helpers/roles/certbot_ssl/tasks/webroot-certbot.yml
+# requires certbot_webroot: a document root the running web server already serves
+- name: install certbot
+  apt:
+    name: certbot
+    state: present
+
+- name: set certbot plugin
+  set_fact:
+    certbot_plugin: webroot
+    cacheable: yes
+
+# certbot dry-runs
+- name: run dry-run for subdomain
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos --dry-run certonly -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+  when:
+    - domain is defined
+    - subdomain != 'www'
+
+- name: run dry-run for tld and default subdomain
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos --dry-run certonly -d {{ domain }} -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+  when:
+    - domain is defined
+    - subdomain == 'www'
+
+- name: run dry-run for default domain
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos --dry-run certonly -d {{ default_dns }} -m {{ soa_email_address }}"
+  register: dry_run
+  until: dry_run is not failed
+  retries: 3
+  delay: 3
+  ignore_errors: true
+  when: default_dns is defined
+
+# assert that we can get valid certs. Otherwise fail - can't achieve final state
+
+- name: validate certbot dry-run
+  assert:
+    that: dry_run is not failed
+    fail_msg: "[Error] Certbot dry-run domain. Please check /var/log/letsencrypt/letsencrypt.log"
+    success_msg: "[Info] Certbot dry-run successful!"
+  run_once: true
+
+# get certs
+
+- name: installing let's encrypt certificate on subdomain provided via UDF
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos certonly -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+  when:
+    - domain is defined
+    - subdomain != 'www'
+
+- name: installing let's encrypt certificate on tld and default subdomain provided via UDF
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos certonly -d {{ domain }} -d {{ subdomain }}.{{ domain }} -m {{ soa_email_address }}"
+  when:
+    - domain is defined
+    - subdomain == 'www'
+
+- name: installing let's encrypt certificate on default domain
+  shell:
+    cmd: "certbot -n --webroot -w {{ certbot_webroot }} --agree-tos certonly -d {{ default_dns }} -m {{ soa_email_address }}"
+  when: default_dns is defined
