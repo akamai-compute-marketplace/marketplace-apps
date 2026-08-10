@@ -1,7 +1,7 @@
 ---
 - name: Install apt repository prerequisites
   apt:
-    name: python3-debian
+    name: python3-apt
     state: present
     update_cache: true
 
@@ -24,21 +24,13 @@
     mode: '0644'
 
 - name: Add the LiteSpeed apt repository
-  deb822_repository:
-    name: litespeed
-    types: deb
-    uris: http://rpms.litespeedtech.com/debian/
-    suites: "{{ ansible_distribution_release }}"
-    components: main
-    signed_by: /etc/apt/keyrings/litespeed.gpg
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/litespeed.gpg] http://rpms.litespeedtech.com/debian/ {{ ansible_distribution_release }} main"
+    filename: litespeed
     state: present
 
 - name: Add the NodeSource apt repository
-  deb822_repository:
-    name: nodesource
-    types: deb
-    uris: "https://deb.nodesource.com/node_{{ nodejs_version }}"
-    suites: nodistro
-    components: main
-    signed_by: /etc/apt/keyrings/nodesource.asc
+  apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_{{ nodejs_version }} nodistro main"
+    filename: nodesource
     state: present
