@@ -1,6 +1,6 @@
 ---
 - name: Create the WebAdmin credential
-  community.general.htpasswd:
+  htpasswd:
     path: "{{ ols_root }}/admin/conf/htpasswd"
     name: "{{ webadmin_user }}"
     password: "{{ webadmin_password }}"

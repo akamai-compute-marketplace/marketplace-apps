@@ -90,7 +90,6 @@ function udf {
 	sed 's/  //g' <<EOF >"${group_vars}"
   # sudo username
   username: ${USER_NAME}
-  # openlitespeed webadmin. the password is generated in provision.yml
   webadmin_user: admin
   # BEGIN CI-UDF-ADDONS
   # addons

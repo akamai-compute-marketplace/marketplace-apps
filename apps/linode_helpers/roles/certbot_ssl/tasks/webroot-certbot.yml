@@ -1,6 +1,5 @@
 ---
 # apps/linode_helpers/roles/certbot_ssl/tasks/webroot-certbot.yml
-# requires certbot_webroot: a document root the running web server already serves
 - name: install certbot
   apt:
     name: certbot
@@ -9,7 +8,7 @@
 - name: set certbot plugin
   set_fact:
     certbot_plugin: webroot
-    cacheable: yes
+    cacheable: true
 
 # certbot dry-runs
 - name: run dry-run for subdomain
