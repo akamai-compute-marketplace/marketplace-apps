@@ -1,5 +1,4 @@
 docRoot                   $VH_ROOT/html/
-enableGzip                1
 
 errorlog $VH_ROOT/logs/error.log {
   useServer               0
@@ -14,43 +13,18 @@ accesslog $VH_ROOT/logs/access.log {
   compressArchive         0
 }
 
-index  {
-  useServer               0
-  indexFiles              index.html
-  autoIndex               0
-}
-
-errorpage 404 {
-  url                     /error404.html
-}
-
-expires  {
-  enableExpires           1
-}
-
-accessControl  {
-  allow                   *
-}
-
 context /.well-known/ {
   location                {{ ols_docroot }}/.well-known/
-  allowBrowse             1
-  addDefaultCharset       off
 }
 
 context / {
   type                    appserver
   location                {{ ols_node_dir }}/
-  binPath                 /usr/bin/node
-  appType                 node
-  addDefaultCharset       off
 }
 {% if ols_tls_enabled | bool %}
 
 rewrite  {
   enable                  1
-  autoLoadHtaccess        1
-  logLevel                0
   rules                   <<<END_rules
 RewriteCond %{HTTPS} !on
 RewriteRule ^(.*)$ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]

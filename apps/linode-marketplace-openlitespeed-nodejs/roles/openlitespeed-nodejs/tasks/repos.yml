@@ -1,11 +1,7 @@
 ---
 - name: Install apt repository prerequisites
   apt:
-    name:
-      - ca-certificates
-      - curl
-      - gnupg
-      - python3-debian
+    name: python3-debian
     state: present
     update_cache: true
 
@@ -32,7 +28,7 @@
     name: litespeed
     types: deb
     uris: http://rpms.litespeedtech.com/debian/
-    suites: "{{ litespeed_suite }}"
+    suites: "{{ ansible_distribution_release }}"
     components: main
     signed_by: /etc/apt/keyrings/litespeed.gpg
     state: present

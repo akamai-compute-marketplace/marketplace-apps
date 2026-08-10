@@ -36,19 +36,17 @@
     path: "{{ ols_httpd_conf }}"
     regexp: '^(\s*address\s+)\*:8088\s*$'
     replace: '\g<1>*:80'
-  notify:
-    - Stop lshttpd
-    - Start lshttpd
 
-- name: Apply the listener change before continuing
-  meta: flush_handlers
+- name: Stop lshttpd to release the old listener
+  systemd_service:
+    name: "{{ ols_service }}"
+    state: stopped
 
-- name: Enable and start lshttpd
+- name: Start and enable lshttpd
   systemd_service:
     name: "{{ ols_service }}"
     state: started
     enabled: true
-    daemon_reload: true
 
 - name: Wait for OpenLiteSpeed to serve on port 80
   wait_for:

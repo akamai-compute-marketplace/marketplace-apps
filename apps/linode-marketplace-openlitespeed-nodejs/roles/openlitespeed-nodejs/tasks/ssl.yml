@@ -6,12 +6,6 @@
     webserver_stack: webroot
     certbot_webroot: "{{ ols_docroot }}"
 
-- name: Create the certbot deploy hook directory
-  file:
-    path: /etc/letsencrypt/renewal-hooks/deploy
-    state: directory
-    mode: '0755'
-
 - name: Install the certbot deploy hook
   copy:
     content: |
@@ -38,15 +32,8 @@
             secure                   1
             keyFile                  /etc/letsencrypt/live/{{ _domain }}/privkey.pem
             certFile                 /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
-            certChain                1
             map                      Example *
           }
-
-    - name: Assert the WebAdmin listener is TLS-only
-      lineinfile:
-        path: "{{ ols_admin_conf }}"
-        regexp: '^\s*secure\s+.*$'
-        line: "  secure                1"
 
     - name: Point the WebAdmin listener at the Let's Encrypt certificate
       lineinfile:

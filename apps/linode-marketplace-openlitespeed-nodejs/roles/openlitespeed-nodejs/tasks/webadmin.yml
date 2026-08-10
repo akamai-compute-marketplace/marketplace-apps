@@ -1,16 +1,10 @@
 ---
-- name: Hash the WebAdmin password
-  command: >-
-    {{ ols_root }}/admin/fcgi-bin/admin_php -q
-    {{ ols_root }}/admin/misc/htpasswd.php {{ webadmin_password }}
-  register: webadmin_password_hash
-  changed_when: false
-  no_log: true
-
-- name: Write the WebAdmin htpasswd file
-  copy:
-    content: "{{ webadmin_user }}:{{ webadmin_password_hash.stdout }}\n"
-    dest: "{{ ols_root }}/admin/conf/htpasswd"
+- name: Create the WebAdmin credential
+  community.general.htpasswd:
+    path: "{{ ols_root }}/admin/conf/htpasswd"
+    name: "{{ webadmin_user }}"
+    password: "{{ webadmin_password }}"
+    crypt_scheme: bcrypt
     owner: lsadm
     group: lsadm
     mode: '0600'
