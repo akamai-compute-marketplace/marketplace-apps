@@ -22,7 +22,6 @@ context / {
   location                {{ ols_node_dir }}/
   appType                 node
 }
-{% if ols_tls_enabled | bool %}
 
 rewrite  {
   enable                  1
@@ -31,4 +30,3 @@ RewriteCond %{HTTPS} !on
 RewriteRule ^(.*)$ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
   END_rules
 }
-{% endif %}

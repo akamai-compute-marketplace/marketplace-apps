@@ -9,5 +9,3 @@ ols_httpd_conf: "{{ ols_root }}/conf/httpd_config.conf"
 ols_admin_conf: "{{ ols_root }}/admin/conf/admin_config.conf"
 
 ols_service: lshttpd
-
-ols_tls_enabled: false

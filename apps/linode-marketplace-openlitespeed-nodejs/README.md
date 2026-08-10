@@ -6,9 +6,8 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server. This 
 
 | Software | Version | Description |
 | :---     | :----   | :---        |
-| OpenLiteSpeed | Latest | High-performance, lightweight, open-source HTTP server; also the Node.js application server via LSAPI |
-| Node.js | Latest 26.x | JavaScript runtime, installed from the NodeSource apt repository (major pinned to 26.x) |
-| LSPHP | Bundled | PHP runtime, selected automatically by the `openlitespeed` package; powers the WebAdmin console |
+| OpenLiteSpeed | Latest | High-performance, lightweight, open-source HTTP server |
+| Node.js | 26.x | JavaScript runtime, installed from the NodeSource apt repository |
 
 **Supported Distributions:**
 
@@ -20,7 +19,7 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server. This 
 | :---  | :---    |
 | Hostname | Assigns a hostname to the Linode based on the domain provided via UDF, or uses the default rDNS. For consistency, DNS and SSL configurations use the Hostname-generated `_domain` var. |
 | Sudo User | Creates a limited `sudo` user from the UDF-supplied `username` and generates its password. Usernames containing illegal characters will cause the play to fail. |
-| SSH Key | Assigns the account SSH key to the limited user. To add an SSH key to `root`, use [Cloud Manager SSH Keys](https://www.linode.com/docs/products/tools/cloud-manager/guides/manage-ssh-keys/). |
+| SSH Key | Assigns the account SSH key to the limited user. To add an SSH key to `root`, use [Cloud Manager SSH Keys](https://techdocs.akamai.com/cloud-computing/docs/manage-ssh-keys). |
 | Secure SSH | Standard SSH hardening — writes to `/etc/ssh/sshd_config` to disable password auth and require public-key auth (applied only when `disable_root` is set to `Yes`). |
 | Create DNS Record | Creates the DNS zone and A record via the Linode API when a `domain` and API `token_password` are supplied. |
 | Update Packages | Performs standard apt update and upgrade actions as root. |
@@ -33,19 +32,15 @@ OpenLiteSpeed is a high-performance, lightweight, open-source HTTP server. This 
 
 When the playbook finishes, the operator can:
 
-- Browse to the sample Node.js application at `https://<domain-or-rdns>/`. It responds with
-  `Hello World! From OpenLiteSpeed NodeJS`. Plain HTTP on port 80 redirects to HTTPS.
-- Log in to the OpenLiteSpeed WebAdmin console at `https://<domain-or-rdns>:7080`, using the
-  credentials below.
+- Browse to the sample Node.js application at `https://<domain-or-rdns>/`. It responds with `Hello World! From OpenLiteSpeed NodeJS`. Plain HTTP on port 80 redirects to HTTPS.
+- Log in to the OpenLiteSpeed WebAdmin console at `https://<domain-or-rdns>:7080`, using the credentials below.
 - Read the generated credentials from `/home/<sudo_user>/.credentials`. The file contains:
   - Sudo username + password
   - WebAdmin username (`admin`) + password
 
 ### Replacing the sample application
 
-The sample app lives at `/usr/local/lsws/Example/html/node/app.js` and is owned by
-`nobody:nogroup`. To deploy your own application, place it in that directory (OpenLiteSpeed's Node
-LSAPI looks for `app.js` by default) and restart the server:
+The sample app lives at `/usr/local/lsws/Example/html/node/app.js` and is owned by `nobody:nogroup`. To deploy your own application, place it in that directory (OpenLiteSpeed's Node LSAPI looks for `app.js` by default) and restart the server:
 
 ```
 sudo systemctl restart lshttpd
