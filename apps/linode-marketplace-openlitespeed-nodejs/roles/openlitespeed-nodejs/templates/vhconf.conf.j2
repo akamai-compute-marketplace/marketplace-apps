@@ -20,6 +20,7 @@ context /.well-known/ {
 context / {
   type                    appserver
   location                {{ ols_node_dir }}/
+  appType                 node
 }
 {% if ols_tls_enabled | bool %}
 
