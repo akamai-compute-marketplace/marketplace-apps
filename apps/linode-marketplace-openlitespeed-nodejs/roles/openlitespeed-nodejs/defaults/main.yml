@@ -1,11 +1,9 @@
 ---
 nodejs_version: "26.x"
-
 ols_root: /usr/local/lsws
 ols_docroot: "{{ ols_root }}/Example/html"
 ols_node_dir: "{{ ols_docroot }}/node"
 ols_vhost_conf: "{{ ols_root }}/conf/vhosts/Example/vhconf.conf"
 ols_httpd_conf: "{{ ols_root }}/conf/httpd_config.conf"
 ols_admin_conf: "{{ ols_root }}/admin/conf/admin_config.conf"
-
 ols_service: lshttpd

@@ -14,45 +14,26 @@
     dest: /etc/letsencrypt/renewal-hooks/deploy/restart-lshttpd.sh
     mode: '0755'
 
-- name: Check for the issued certificate
-  stat:
-    path: "/etc/letsencrypt/live/{{ _domain }}/fullchain.pem"
-  register: ols_certificate
+- name: Add the TLS listener
+  blockinfile:
+    path: "{{ ols_httpd_conf }}"
+    marker: "# {mark} OPENLITESPEED NODEJS TLS LISTENER"
+    block: |
+      listener SSL{
+        address                  *:443
+        secure                   1
+        keyFile                  /etc/letsencrypt/live/{{ _domain }}/privkey.pem
+        certFile                 /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
+        map                      Example *
+      }
+  notify: Restart lshttpd
 
-- name: Configure TLS
-  when: ols_certificate.stat.exists
-  block:
-    - name: Add the TLS listener
-      blockinfile:
-        path: "{{ ols_httpd_conf }}"
-        marker: "# {mark} OPENLITESPEED NODEJS TLS LISTENER"
-        block: |
-          listener SSL{
-            address                  *:443
-            secure                   1
-            keyFile                  /etc/letsencrypt/live/{{ _domain }}/privkey.pem
-            certFile                 /etc/letsencrypt/live/{{ _domain }}/fullchain.pem
-            map                      Example *
-          }
-
-    - name: Point the WebAdmin listener at the Let's Encrypt certificate
-      lineinfile:
-        path: "{{ ols_admin_conf }}"
-        regexp: '^\s*{{ item.key }}\s+.*$'
-        line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
-      loop:
-        - {key: 'keyFile', file: 'privkey.pem'}
-        - {key: 'certFile', file: 'fullchain.pem'}
-      loop_control:
-        label: "{{ item.key }}"
-
-    - name: Restart lshttpd to load the certificate
-      systemd_service:
-        name: "{{ ols_service }}"
-        state: restarted
-
-    - name: Wait for OpenLiteSpeed to serve on port 443
-      wait_for:
-        host: 127.0.0.1
-        port: 443
-        timeout: 60
+- name: Point the WebAdmin listener at the Let's Encrypt certificate
+  lineinfile:
+    path: "{{ ols_admin_conf }}"
+    regexp: '^\s*{{ item.key }}\s+.*$'
+    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+  loop:
+    - {key: 'keyFile', file: 'privkey.pem'}
+    - {key: 'certFile', file: 'fullchain.pem'}
+  notify: Restart lshttpd

@@ -1,10 +1,4 @@
 ---
-- name: Install apt repository prerequisites
-  apt:
-    name: python3-apt
-    state: present
-    update_cache: true
-
 - name: Create the apt keyrings directory
   file:
     path: /etc/apt/keyrings
