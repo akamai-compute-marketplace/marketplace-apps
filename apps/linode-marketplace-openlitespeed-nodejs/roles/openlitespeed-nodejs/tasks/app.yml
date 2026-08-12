@@ -34,8 +34,8 @@
 - name: Move the default listener from :8088 to :80
   replace:
     path: "{{ ols_httpd_conf }}"
-    regexp: '^(\s*address\s+)\*:8088\s*$'
-    replace: '\g<1>*:80'
+    regexp: '\*:8088'
+    replace: '*:80'
   notify:
     - Stop lshttpd
     - Start lshttpd
