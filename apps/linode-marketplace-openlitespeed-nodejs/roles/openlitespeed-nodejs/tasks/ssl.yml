@@ -15,10 +15,10 @@
     mode: '0755'
 
 - name: Add the TLS listener
-  blockinfile:
+  lineinfile:
+    insertafter: EOF
     path: "{{ ols_httpd_conf }}"
-    marker: "# {mark} OPENLITESPEED NODEJS TLS LISTENER"
-    block: |
+    line: |
       listener SSL{
         address                  *:443
         secure                   1
