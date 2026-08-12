@@ -28,12 +28,21 @@
       }
   notify: Restart lshttpd
 
-- name: Point the WebAdmin listener at the Let's Encrypt certificate
+# - name: Point the WebAdmin listener at the Let's Encrypt certificate
+#   lineinfile:
+#     path: "{{ ols_admin_conf }}"
+#     regexp: '^\s*{{ item.key }}\s+.*$'
+#     line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+#   loop:
+#     - {key: 'keyFile', file: 'privkey.pem'}
+#     - {key: 'certFile', file: 'fullchain.pem'}
+#   notify: Restart lshttpd
+
+- name: Update certs
   lineinfile:
     path: "{{ ols_admin_conf }}"
-    regexp: '^\s*{{ item.key }}\s+.*$'
-    line: "  {{ item.key }}               /etc/letsencrypt/live/{{ _domain }}/{{ item.file }}"
+    line: "{{ item.line }}"
+    search_string: "{{ item.cert }}"
   loop:
-    - {key: 'keyFile', file: 'privkey.pem'}
-    - {key: 'certFile', file: 'fullchain.pem'}
-  notify: Restart lshttpd
+    - { line: "  keyFile \t\t   /etc/letsencrypt/live/{{ _domain }}/privkey.pem", cert: 'privkey.pem' }
+    - { line: "  certFile \t\t   /etc/letsencrypt/live/{{ _domain }}/fullchain.pem", cert: 'certFile' }
