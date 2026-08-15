@@ -1,16 +1,16 @@
-ansible==14.0.0
+ansible==14.3.1
 #molecule==5.1.0
 #molecule-vagrant==2.0.0
 #python-vagrant==0.5.15
 yamllint==1.38.0
 pyyaml==6.0.3
-ansible-lint==26.4.0
+ansible-lint==26.8.0
 flake8==7.3.0
-linode_api4==5.45.0
+linode_api4==5.46.1
 polling==0.3.2
 ansible-specdoc==0.0.20
 dnspython==2.8.0
-certbot==5.6.0
+certbot==5.7.0
 #
 # OpenVPN Access Server Dependancies 
 # the following packages are required in the venv to touch OpenVPN python scripts // functions
@@ -18,15 +18,15 @@ certbot==5.6.0
 #  /usr/local/openvpn_as/lib/python
 #  /usr/loca/openvpn_as/lib/python/sitecustomize.py
 #
-zope==6.1
+zope==6.2
 incremental==24.11.0
 constantly==23.10.4
-typing_extensions==4.15.0
+typing_extensions==4.16.0
 hyperlink==21.0.0
 defusedxml==0.7.1
 arrow==1.4.0
 migrate==0.3.8
-sqlalchemy==2.0.51
+sqlalchemy==2.0.52
 sqlalchemy-migrate==0.13.0
 ldap3==2.9.1
 lxml==6.1.1
