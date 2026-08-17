@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-REGION="us-ord"
+REGION="us-sea"
 LINODE_TYPE="g2-gpu-rtx4000a1-s"
 IMAGE="linode/ubuntu24.04"
 
