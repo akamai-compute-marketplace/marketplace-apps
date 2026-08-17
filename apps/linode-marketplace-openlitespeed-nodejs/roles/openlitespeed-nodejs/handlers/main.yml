@@ -1,14 +1,4 @@
 ---
-- name: Stop lshttpd
-  systemd_service:
-    name: "{{ ols_service }}"
-    state: stopped
-
-- name: Start lshttpd
-  systemd_service:
-    name: "{{ ols_service }}"
-    state: started
-
 - name: Restart lshttpd
   systemd_service:
     name: "{{ ols_service }}"
