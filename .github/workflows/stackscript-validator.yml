@@ -1,0 +1,45 @@
+---
+name: Stackscript Validator
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 3'
+
+permissions:
+  contents: read
+
+jobs:
+  stackscript-validator:
+    name: Validate StackScripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install validator dependencies
+        run: python3 -m pip install -r tests/stackscript_validator/requirements.txt
+
+      - name: Run StackScript validator
+        id: validator
+        run: |
+          python3 tests/stackscript_validator/stackscript_validator.py \
+            --show-failed \
+            --text > stackscript-validator-output.txt
+          cat stackscript-validator-output.txt
+
+      - name: Send StackScript validator report to Slack
+        if: always()
+        env:
+          REPO_NAME: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VALIDATOR_OUTCOME: ${{ steps.validator.outcome }}
+          VALIDATOR_OUTPUT: stackscript-validator-output.txt
+        run: bash .github/scripts/stackscript-validator-slack-payload.sh
