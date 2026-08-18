@@ -36,23 +36,4 @@
     path: "{{ ols_httpd_conf }}"
     regexp: '\*:8088'
     replace: '*:80'
-
-- name: Stop lshttpd
-  systemd_service:
-    name: "{{ ols_service }}"
-    state: stopped
-
-- name: Wait for lshttpd to release its listener sockets
-  wait_for:
-    port: "{{ item }}"
-    state: stopped
-    timeout: 60
-  loop:
-    - 8088
-    - 80
-
-- name: Enable and start lshttpd on the new listener
-  systemd_service:
-    name: "{{ ols_service }}"
-    state: started
-    enabled: true
+  notify: Restart lshttpd
