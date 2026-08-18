@@ -36,4 +36,8 @@
     path: "{{ ols_httpd_conf }}"
     regexp: '\*:8088'
     replace: '*:80'
-  notify: Restart lshttpd
+
+- name: Restart lshttpd after listener change
+  systemd_service:
+    name: "{{ ols_service }}"
+    state: restarted
