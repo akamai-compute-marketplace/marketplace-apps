@@ -31,7 +31,7 @@
     group: nogroup
     mode: '0750'
 
-- name: Move the default listener from :8088 to :80
+- name: Update config to listen on port 80
   replace:
     path: "{{ ols_httpd_conf }}"
     regexp: '\*:8088'
