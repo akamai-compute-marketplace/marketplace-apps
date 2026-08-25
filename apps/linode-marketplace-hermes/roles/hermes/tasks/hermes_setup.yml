@@ -14,6 +14,7 @@
       - zlib1g-dev
       - ripgrep
       - ffmpeg
+      - chromium
     state: present
     update_cache: true
 
@@ -69,19 +70,6 @@
   environment:
     PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
-- name: Install Playwright system dependencies (as root)
-  command: npx playwright install-deps chromium
-  args:
-    chdir: "{{ hermes_install_dir }}"
-  become: true
-
-- name: Download Playwright Chromium browser binaries (as hermes user)
-  command: npx playwright install chromium
-  args:
-    chdir: "{{ hermes_install_dir }}"
-  become: true
-  become_user: "{{ hermes_user }}"
-
 - name: Install TUI dependencies
   npm:
     path: "{{ hermes_install_dir }}/ui-tui"
@@ -125,6 +113,16 @@
   lineinfile:
     path: "{{ hermes_home }}/.bashrc"
     line: 'export PATH="{{ hermes_home }}/.local/bin:$PATH"'
+    create: true
+    owner: "{{ hermes_user }}"
+    group: "{{ hermes_user }}"
+    mode: '0644'
+    state: present
+
+- name: Set Playwright executable path in Hermes user .bashrc
+  lineinfile:
+    path: "{{ hermes_home }}/.bashrc"
+    line: 'export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/usr/bin/chromium"'
     create: true
     owner: "{{ hermes_user }}"
     group: "{{ hermes_user }}"
