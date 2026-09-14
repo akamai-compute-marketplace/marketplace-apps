@@ -30,7 +30,7 @@
 
 - name: Download and unpack OpenFang release archive
   unarchive:
-    src: "{{ openfang_release_url }}/latest/download/openfang-x86_64-unknown-linux-gnu.tar.gz"
+    src: https://github.com/RightNow-AI/openfang/releases/latest/download/openfang-x86_64-unknown-linux-gnu.tar.gz
     dest: "{{ openfang_temp.path }}"
     remote_src: true
     owner: "{{ username }}"

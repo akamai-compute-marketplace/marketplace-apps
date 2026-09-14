@@ -9,7 +9,7 @@ Type=simple
 WorkingDirectory={{ openfang_home }}
 EnvironmentFile=-{{ openfang_env_file }}
 Environment="OPENFANG_HOME={{ openfang_home }}"
-Environment="OPENFANG_LISTEN={{ openfang_listen }}"
+Environment="OPENFANG_LISTEN=127.0.0.1:4200"
 ExecStart={{ openfang_bin_path }}/openfang start
 Restart=on-failure
 RestartSec=10s

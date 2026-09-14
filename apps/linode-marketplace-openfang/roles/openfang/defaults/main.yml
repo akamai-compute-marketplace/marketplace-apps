@@ -1,18 +1,7 @@
 ---
-# OpenFang default variables
 openfang_release_url: "https://github.com/RightNow-AI/openfang/releases"
-
-# Binary install path (owned by and scoped to the sudo user)
 openfang_bin_path: "/opt/openfang/bin"
-
-# OpenFang home (fixed layout OpenFang expects: ~/.openfang for the run user)
 openfang_home: "/home/{{ username }}/.openfang"
 openfang_data_dir: "{{ openfang_home }}/data"
 openfang_agents_dir: "{{ openfang_home }}/agents"
 openfang_env_file: "{{ openfang_home }}/.env"
-
-# API / networking
-openfang_listen: "127.0.0.1:4200"
-
-# First-login onboarding
-openfang_onboarding_script: /etc/profile.d/openfang_onboarding.sh
