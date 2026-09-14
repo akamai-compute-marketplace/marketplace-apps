@@ -26,4 +26,3 @@
       OnlyOffice URL: https://{{ _domain }}/example
       OnlyOffice Username: onlyoffice
       OnlyOffice Password: {{ onlyoffice_admin_password }}
-
