@@ -1,0 +1,65 @@
+---
+- name: Install prerequisite APT packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - wget
+      - curl
+    state: present
+    update_cache: true
+
+- name: Create host persistent data directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /app/onlyoffice/DocumentServer/logs
+    - /app/onlyoffice/DocumentServer/data
+    - /app/onlyoffice/DocumentServer/lib
+    - /app/onlyoffice/DocumentServer/rabbitmq
+    - /app/onlyoffice/DocumentServer/redis
+    - /app/onlyoffice/DocumentServer/db
+
+- name: Deploy ONLYOFFICE DocumentServer Container
+  community.docker.docker_container:
+    name: onlyoffice-docs
+    image: onlyoffice/documentserver:latest
+    state: started
+    restart_policy: always
+    published_ports:
+      - "127.0.0.1:8080:80"
+    env:
+      JWT_ENABLED: "true"
+      JWT_SECRET: "{{ jwt_secret }}"
+    volumes:
+      - /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
+      - /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
+      - /app/onlyoffice/DocumentServer/lib:/var/lib/onlyoffice
+      - /app/onlyoffice/DocumentServer/rabbitmq:/var/lib/rabbitmq
+      - /app/onlyoffice/DocumentServer/redis:/var/lib/redis
+      - /app/onlyoffice/DocumentServer/db:/var/lib/postgresql
+
+- name: Wait for ONLYOFFICE DocumentServer to be ready
+  uri:
+    url: http://127.0.0.1:8080/healthcheck
+    return_content: true
+  register: onlyoffice_healthcheck
+  until: onlyoffice_healthcheck.status == 200 and (onlyoffice_healthcheck.content | trim | lower) == 'true'
+  retries: 30
+  delay: 10
+
+- name: Ensure ONLYOFFICE example (demo) autostart is enabled
+  community.docker.docker_container_exec:
+    container: onlyoffice-docs
+    command: sed -i 's/autostart=false/autostart=true/' /etc/supervisor/conf.d/ds-example.conf
+  changed_when: false
+
+- name: Start the ONLYOFFICE example (demo) service
+  community.docker.docker_container_exec:
+    container: onlyoffice-docs
+    command: supervisorctl start ds:example
+  changed_when: false
+  failed_when: false

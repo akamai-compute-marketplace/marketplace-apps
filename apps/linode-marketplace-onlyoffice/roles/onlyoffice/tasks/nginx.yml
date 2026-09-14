@@ -1,0 +1,47 @@
+---
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Create basic auth password file
+  community.general.htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: onlyoffice
+    password: "{{ onlyoffice_admin_password }}"
+    owner: root
+    group: www-data
+    mode: '0640'
+
+- name: Create ONLYOFFICE NGINX site configuration with basic auth
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ _domain }}
+    mode: '0644'
+  notify: Restart nginx
+
+- name: Enable ONLYOFFICE NGINX site
+  file:
+    src: /etc/nginx/sites-available/{{ _domain }}
+    dest: /etc/nginx/sites-enabled/onlyoffice
+    state: link
+  notify: Restart nginx
+
+- name: Remove default NGINX site configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart nginx
+
+- name: Enable and start NGINX service
+  systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Setting up ssl certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
