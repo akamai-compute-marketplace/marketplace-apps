@@ -87,7 +87,7 @@
     create: true
     mode: '0644'
 
-- name: Ensure user systemd directory exists
+- name: Creat systemd directory for sudo user```
   file:
     path: "/home/{{ username }}/.config/systemd/user"
     state: directory
