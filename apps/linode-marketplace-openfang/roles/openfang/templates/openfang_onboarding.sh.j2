@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+if [ "$EUID" -ne 0 ]; then
+    return
+fi
+
+while true; do
+	echo ""
+	echo "[OpenFang Onboarding]"
+	read -rp "Do you want to run the 'openfang init' setup wizard now? [y/n]: " answer
+
+	if [[ "$answer" =~ ^[Yy]$ ]]; then
+		echo "[***] Launching 'openfang init' as {{ username }}."
+		runuser -u {{ username }} -- \
+			env OPENFANG_HOME="{{ openfang_home }}" \
+			{{ openfang_bin_path }}/openfang init
+		onboard_rc=$?
+
+		if [ "$onboard_rc" -eq 0 ]; then
+			echo "[***] Applying configuration: restarting the openfang service."
+			systemctl restart openfang
+
+			echo "[***] Initial onboarding complete. Removing {{ openfang_onboarding_script }}."
+			if [ -f '{{ openfang_onboarding_script }}' ]; then
+				rm {{ openfang_onboarding_script }}
+			fi
+		else
+			echo "[***] 'openfang init' exited with status $onboard_rc. Try again by logging in."
+		fi
+		break
+	elif [[ "$answer" =~ ^[Nn]$ ]]; then
+		echo "[***] Skipping OpenFang onboarding."
+		while true; do
+			read -rp "[***] Do you want to remove the onboarding script? [y/n]: " remove_script
+			if [[ "$remove_script" =~ ^[Yy]$ ]]; then
+				echo "[***] Removing {{ openfang_onboarding_script }}"
+				if [ -f '{{ openfang_onboarding_script }}' ]; then
+					rm {{ openfang_onboarding_script }}
+				fi
+				break
+			elif [[ "$remove_script" =~ ^[Nn]$ ]]; then
+				echo "[***] Not removing onboarding script. This script will run again on next login."
+				break
+			else
+				echo -e "\n[***] Please answer y or n."
+			fi
+		done
+		break
+	else
+		echo -e "\n[***] Please answer y or n."
+	fi
+done

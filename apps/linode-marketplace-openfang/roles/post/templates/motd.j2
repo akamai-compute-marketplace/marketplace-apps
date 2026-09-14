@@ -1,0 +1,18 @@
+*********************************************************
+Akamai Connected Cloud OpenFang Quick Deploy App
+Dashboard Access: SSH tunnel required (see details below)
+Credentials File: /home/{{ username }}/.credentials
+Documentation: https://www.linode.com/docs/marketplace-docs/guides/openfang/
+*********************************************************
+
+OpenFang listens on 127.0.0.1 only. To reach the dashboard, open an SSH
+tunnel from your local machine:
+
+  ssh -L 4200:127.0.0.1:4200 {{ username }}@{{ _domain }}
+
+Then browse to: http://127.0.0.1:4200
+
+On your first login as root, an onboarding prompt runs the interactive
+'openfang init' wizard so you can configure your LLM provider and API key.
+
+To delete this message of the day: rm /etc/motd
