@@ -22,7 +22,6 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      
       # ONLYOFFICE CREDENTIALS
       OnlyOffice Username: onlyoffice
       OnlyOffice Password: {{ onlyoffice_admin_password }}
