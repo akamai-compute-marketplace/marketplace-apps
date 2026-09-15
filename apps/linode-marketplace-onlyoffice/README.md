@@ -1,12 +1,13 @@
 # Linode OnlyOffice One-Click APP
-Deploy a production-ready ONLYOFFICE Docs (Document Server) instance hardened to industry standards using the official onlyoffice/documentserver:latest Docker image. ONLYOFFICE Docs provides online editing and real-time co-authoring for text documents, spreadsheets, presentations, fillable forms, and PDFs, integrating seamlessly with your existing cloud storage or custom document management platform. HTTPS is terminated with an automatically issued and renewed Let's Encrypt certificate, and all API communications between your host application and the Document Server are secured via JWT signature validation. A host firewall restricts inbound traffic strictly to SSH and HTTPS, while fail2ban guards against brute-force attempts. Once deployed, connect your document management system using the generated JWT secret key to enable secure, high-performance collaborative editing across your organization.
+Deploy a production-ready OnlyOffice Docs (Document Server) instance hardened to industry standards using the official onlyoffice/documentserver:latest Docker image. OnlyOffice Docs provides online editing and real-time co-authoring for text documents, spreadsheets, presentations, fillable forms, and PDFs, integrating seamlessly with your existing cloud storage or custom document management platform. HTTPS is terminated with an automatically issued and renewed Let's Encrypt certificate, and all API communications between your host application and the Document Server are secured via JWT signature validation. A host firewall restricts inbound traffic strictly to SSH and HTTPS, while fail2ban guards against brute-force attempts. Once deployed, connect your document management system using the generated JWT secret key to enable secure, high-performance collaborative editing across your organization.
 
 ## Software Included
 
 | Software        | Version   | Description                                        |
 | :---            | :----     | :---                                               |
-| Document Server | Latest    | ONLYOFFICE editors (documents, sheets, slides)      |
+| Document Server | Latest    | OnlyOffice editors (documents, sheets, slides)      |
 | Docker          | Latest    | Container runtime for the DocSpace stack            |
+| Nginx	          | 1.24.0	  | HTTP server used to serve web applications          |
 
 **Supported Distributions:**
 
@@ -14,7 +15,7 @@ Deploy a production-ready ONLYOFFICE Docs (Document Server) instance hardened to
 
 **Recommended Minimum Plan:**
 
-- 4 CPU cores, 8 GB RAM, and 40 GB+ storage (Dedicated 8 GB or larger). The installer creates a swap file automatically.
+- 4 CPU cores, 8 GB RAM, and 40 GB+ storage (Dedicated 8 GB or larger).
 
 ## Linode Helpers Included
 
@@ -30,9 +31,9 @@ Deploy a production-ready ONLYOFFICE Docs (Document Server) instance hardened to
 | Certbot SSL | The Certbot SSL module handles SSL/TLS certificate installation via Let's Encrypt, supporting Nginx certificate issuance. |                                                                                                                                          |
 
 ## Post Deployment
-When the ONLYOFFICE Docs deployment finishes, your Document Server will be running behind an Nginx reverse proxy with automatically configured Let's Encrypt SSL/TLS termination. Here are key details regarding your installation:
+When the OnlyOffice Docs deployment finishes, your Document Server will be running behind an Nginx reverse proxy with automatically configured Let's Encrypt SSL/TLS termination. Here are key details regarding your installation:
 
-* Container Runtime: ONLYOFFICE Docs runs as a Docker container named onlyoffice-docs using the onlyoffice/documentserver:latest image.
+* Container Runtime: OnlyOffice Docs runs as a Docker container named onlyoffice-docs using the onlyoffice/documentserver:latest image.
 * Reverse Proxy & SSL: Nginx manages HTTP/HTTPS traffic routing and SSL/TLS termination via Let's Encrypt certificates.
 * JWT Authentication: Document editing API requests are secured using JWT signatures. The secret key required to connect your host application (e.g., Nextcloud, ownCloud, or custom integration) is stored in /etc/onlyoffice/documentserver/local.json and saved to your administrative user's ~/.credentials file.
-* Verification & Testing: The built-in test page is enabled at https://$Domain/example. Visit this URL in your web browser to upload sample files, test real-time editing, and verify server operations before integrating your production application.
+* Verification & Testing: The built-in test page is enabled at https://<domain-or-rdns>/example/. Visit this URL in your web browser to upload sample files, test real-time editing, and verify server operations before integrating your production application.

@@ -22,7 +22,8 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
+      
       # ONLYOFFICE CREDENTIALS
-      OnlyOffice URL: https://{{ _domain }}/example
       OnlyOffice Username: onlyoffice
       OnlyOffice Password: {{ onlyoffice_admin_password }}
+      JWT Token: {{ jwt_secret }}

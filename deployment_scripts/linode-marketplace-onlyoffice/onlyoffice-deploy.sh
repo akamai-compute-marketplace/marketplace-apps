@@ -38,8 +38,11 @@ fi
 
 # BEGIN CI-ADDONS
 ## Addons
-#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
+#<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy,none" default="none">
 # END CI-ADDONS
+
+#GH_USER=""
+#BRANCH=""
 
 # git user and branch
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then

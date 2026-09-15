@@ -1,5 +1,5 @@
 ---
-- name: Install NGINX
+- name: Install Nginx
   apt:
     name: nginx
     state: present
@@ -14,27 +14,27 @@
     group: www-data
     mode: '0640'
 
-- name: Create ONLYOFFICE NGINX site configuration with basic auth
+- name: Create OnlyOffice Nginx site configuration with basic auth
   template:
     src: nginx.conf.j2
     dest: /etc/nginx/sites-available/{{ _domain }}
     mode: '0644'
   notify: Restart nginx
 
-- name: Enable ONLYOFFICE NGINX site
+- name: Enable OnlyOffice Nginx site
   file:
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/onlyoffice
     state: link
   notify: Restart nginx
 
-- name: Remove default NGINX site configuration
+- name: Remove default Nginx site configuration
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: Restart nginx
 
-- name: Enable and start NGINX service
+- name: Enable and start Nginx service
   systemd_service:
     name: nginx
     state: started

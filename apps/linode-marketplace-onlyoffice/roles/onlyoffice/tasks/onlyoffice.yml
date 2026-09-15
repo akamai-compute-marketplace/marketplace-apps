@@ -1,15 +1,4 @@
 ---
-- name: Install prerequisite APT packages
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-      - software-properties-common
-      - wget
-      - curl
-    state: present
-    update_cache: true
-
 - name: Create host persistent data directories
   file:
     path: "{{ item }}"
@@ -23,7 +12,7 @@
     - /app/onlyoffice/DocumentServer/redis
     - /app/onlyoffice/DocumentServer/db
 
-- name: Deploy ONLYOFFICE DocumentServer Container
+- name: Deploy OnlyOffice DocumentServer Container
   community.docker.docker_container:
     name: onlyoffice-docs
     image: onlyoffice/documentserver:latest
@@ -42,7 +31,7 @@
       - /app/onlyoffice/DocumentServer/redis:/var/lib/redis
       - /app/onlyoffice/DocumentServer/db:/var/lib/postgresql
 
-- name: Wait for ONLYOFFICE DocumentServer to be ready
+- name: Wait for OnlyOffice DocumentServer to be ready
   uri:
     url: http://127.0.0.1:8080/healthcheck
     return_content: true
@@ -51,13 +40,13 @@
   retries: 30
   delay: 10
 
-- name: Ensure ONLYOFFICE example (demo) autostart is enabled
+- name: Ensure OnlyOffice example (demo) autostart is enabled
   community.docker.docker_container_exec:
     container: onlyoffice-docs
     command: sed -i 's/autostart=false/autostart=true/' /etc/supervisor/conf.d/ds-example.conf
   changed_when: false
 
-- name: Start the ONLYOFFICE example (demo) service
+- name: Start the OnlyOffice example (demo) service
   community.docker.docker_container_exec:
     container: onlyoffice-docs
     command: supervisorctl start ds:example
