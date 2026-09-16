@@ -13,17 +13,8 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
 # END CI-MODE
+set -e
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -131,17 +122,6 @@ EOF
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
-  # staging or production mode (ci)
-  # BEGIN CI-UDF-CI-MODE
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
-  fi
-  # END CI-UDF-CI-MODE
 }
 
 function run {

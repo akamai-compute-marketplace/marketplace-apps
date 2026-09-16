@@ -14,6 +14,7 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 # END CI-MODE
+set -e
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -118,16 +119,6 @@ EOF
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
   fi
 
-  # BEGIN CI-UDF-CI-MODE
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
-  fi
-# END CI-UDF-CI-MODE
 }
 
 function run {
@@ -162,11 +153,4 @@ function installation_complete {
 # main
 run
 installation_complete
-
-# only reboot on production
-if [[ "${MODE}" == "staging" ]]; then
-  echo "[info] not rebooting in staging"
-else
-  echo "[info] running in production mode...rebooting"
-  reboot
-fi
+reboot
