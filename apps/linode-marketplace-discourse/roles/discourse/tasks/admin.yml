@@ -1,0 +1,20 @@
+---
+- name: Create Discourse admin user
+  community.docker.docker_container_exec:
+    container: app
+    command: bundle exec rake admin:create
+    chdir: /var/www/discourse
+    user: discourse
+    env:
+      RAILS_ENV: production
+    stdin: "{{ admin_email }}\n{{ discourse_admin_password }}\n{{ discourse_admin_password }}\ny\ny\n"
+
+- name: Disable new user self-registration
+  community.docker.docker_container_exec:
+    container: app
+    command: bundle exec rails runner "SiteSetting.allow_new_registrations = false"
+    chdir: /var/www/discourse
+    user: discourse
+    env:
+      RAILS_ENV: production
+  changed_when: true
