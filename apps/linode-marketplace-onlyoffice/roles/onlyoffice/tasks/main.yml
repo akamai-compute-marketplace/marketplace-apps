@@ -1,9 +1,0 @@
----
-- name: Import Docker task
-  import_tasks: docker.yml
-
-- name: Import OnlyOffice task
-  import_tasks: onlyoffice.yml
-
-- name: Import Nginx task
-  import_tasks: nginx.yml

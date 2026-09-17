@@ -1,9 +1,0 @@
----
-- name: Install Docker latest
-  import_role:
-    name: docker
-
-- name: Installing docker-compose
-  apt:
-    pkg: [docker-compose]
-    state: present
