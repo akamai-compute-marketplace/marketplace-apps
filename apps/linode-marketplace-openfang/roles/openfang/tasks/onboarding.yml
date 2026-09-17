@@ -2,5 +2,5 @@
 - name: Add OpenFang onboarding script on login
   template:
     src: openfang_onboarding.sh.j2
-    dest: /etc/profile.d/openfang_onboarding.sh
+    dest: "{{ openfang_onboarding_script }}"
     mode: '0755'
