@@ -153,4 +153,8 @@ function installation_complete {
 # main
 run
 installation_complete
-reboot
+if [[ "${DEBUG}" == "YES" ]]; then
+  :
+else
+  reboot
+fi
