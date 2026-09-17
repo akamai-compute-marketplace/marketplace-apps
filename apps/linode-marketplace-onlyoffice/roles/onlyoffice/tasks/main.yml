@@ -7,4 +7,3 @@
 
 - name: Import Nginx task
   import_tasks: nginx.yml
-
