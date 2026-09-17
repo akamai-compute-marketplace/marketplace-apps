@@ -9,6 +9,16 @@
       RAILS_ENV: production
     stdin: "{{ admin_email }}\n{{ discourse_admin_password }}\n{{ discourse_admin_password }}\ny\ny\n"
 
+- name: Rename default user to admin username
+  community.docker.docker_container_exec:
+    container: app
+    command: "bundle exec rake users:rename[user1,{{ discourse_admin_username }}]"
+    chdir: /var/www/discourse
+    user: discourse
+    env:
+      RAILS_ENV: production
+  changed_when: true
+
 - name: Disable new user self-registration
   community.docker.docker_container_exec:
     container: app
