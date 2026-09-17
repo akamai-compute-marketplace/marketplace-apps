@@ -26,7 +26,6 @@
     src: /etc/nginx/sites-available/{{ _domain }}
     dest: /etc/nginx/sites-enabled/onlyoffice
     state: link
-  notify: Restart nginx
 
 - name: Remove default Nginx site configuration
   file:
