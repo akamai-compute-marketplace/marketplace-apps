@@ -27,12 +27,13 @@ fi
 # <UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
 ## Discourse Settings
-# <UDF name="admin_email" label="Admin email address (becomes the Discourse admin account's login)" example="admin@example.com">
-# <UDF name="smtp_address" label="SMTP server address (optional - required for Discourse to send email)" example="smtp.mailgun.org" default="">
+# <UDF name="discourse_admin_email" label="Admin email address (Discourse admin account email)" example="admin@example.com">
+# <UDF name="discourse_admin_username" label="Admin username (Discourse admin username for login)" example="admin">
+# <UDF name="smtp_address" label="SMTP server address" example="smtp.mailgun.org">
 # <UDF name="smtp_port" label="SMTP port" example="587" default="587">
-# <UDF name="smtp_user_name" label="SMTP username" default="">
-# <UDF name="smtp_password" label="SMTP password" default="">
-# <UDF name="smtp_notification_email" label="Dicourse notification email" default="">
+# <UDF name="smtp_user_name" label="SMTP username">
+# <UDF name="smtp_password" label="SMTP password">
+# <UDF name="smtp_notification_email" label="Dicourse notification email" example="noreply@example.com">
 
 ## Addons
 # <UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
@@ -66,7 +67,8 @@ function udf {
 username: ${USER_NAME}
 
 # smtp vars
-admin_email: ${ADMIN_EMAIL}
+discourse_admin_email: ${DISCOURSE_ADMIN_EMAIL}
+discourse_admin_username: ${DISCOURSE_ADMIN_USERNAME}
 smtp_address: ${SMTP_ADDRESS}
 smtp_user_name: ${SMTP_USER_NAME}
 smtp_port: ${SMTP_PORT}
