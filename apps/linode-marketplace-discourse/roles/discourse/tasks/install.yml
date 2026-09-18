@@ -7,4 +7,3 @@
   git:
     repo: "{{ discourse_docker_repo }}"
     dest: "{{ discourse_docker_dir }}"
-    #version: "{{ discourse_docker_ref }}"
