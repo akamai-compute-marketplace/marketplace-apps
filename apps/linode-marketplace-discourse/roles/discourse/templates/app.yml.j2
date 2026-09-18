@@ -16,8 +16,8 @@ env:
   LANG: en_US.UTF-8
   LANGUAGE: en_US.UTF-8
   DISCOURSE_HOSTNAME: "{{ _domain }}"
-  DISCOURSE_DEVELOPER_EMAILS: "{{ admin_email }}"
-  LETSENCRYPT_ACCOUNT_EMAIL: "{{ admin_email }}"
+  DISCOURSE_DEVELOPER_EMAILS: "{{ discourse_admin_email }}"
+  LETSENCRYPT_ACCOUNT_EMAIL: "{{ discourse_admin_email }}"
   UNICORN_WORKERS: 8
   DISCOURSE_SMTP_ADDRESS: "{{ smtp_address }}"
   DISCOURSE_SMTP_PORT: '587'

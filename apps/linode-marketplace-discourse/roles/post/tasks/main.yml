@@ -22,7 +22,8 @@
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
 
-      Discourse Admin Email: {{ admin_email }}
+      Discourse Admin username: {{ discourse_admin_username  }}
+      Discourse Admin Email: {{ discourse_admin_email }}
       Discourse Admin Password: {{ discourse_admin_password }}
 
       SMTP Address: {{ smtp_address }}
