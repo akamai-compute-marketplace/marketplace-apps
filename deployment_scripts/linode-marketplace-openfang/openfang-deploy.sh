@@ -20,7 +20,6 @@ if [ "${MODE}" == "staging" ]; then
 else
   set -e
 fi
-# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
