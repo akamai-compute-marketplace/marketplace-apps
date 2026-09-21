@@ -1,11 +1,13 @@
 #!/bin/bash
+set -e
 # STACKSCRIPT_ID: 401698
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# BEGIN CI-MODE
-# modes
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
@@ -14,17 +16,6 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
-# END CI-MODE
 
 ## Linode/SSH Security Settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *All lowercase*">
@@ -44,10 +35,8 @@ fi
 #<UDF name="drupal_account_email" label="Account email address for admin user" example="admin@example.com">
 #<UDF name="drupal_username" label="Site maintenance account username" example="admin">
 
-# BEGIN CI-ADDONS
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
-# END CI-ADDONS
 
 # git repo
 # git user and branch
@@ -63,30 +52,6 @@ fi
 
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-drupal"
-
-# BEGIN CI-PROVISION-FUNC
-function provision_failed {
-  echo "[info] Provision failed. Sending status.."
-
-  # dep
-  apt install jq -y
-
-  # set token
-  local token=($(curl -ks -X POST ${KC_SERVER} \
-     -H "Content-Type: application/json" \
-     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
-
-  # send pre-provision failure
-  curl -sk -X POST ${DATA_ENDPOINT} \
-     -H "Authorization: ${token}" \
-     -H "Content-Type: application/json" \
-     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
-        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
-  exit $?
-}
-# END CI-PROVISION-FUNC
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -109,10 +74,8 @@ function udf {
   drupal_account_email: ${DRUPAL_ACCOUNT_EMAIL}
   drupal_username: ${DRUPAL_USERNAME}
 
-  # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -140,14 +103,6 @@ EOF
     echo "No API token entered"
   fi
 
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
-  fi
 }
 
 function run {
