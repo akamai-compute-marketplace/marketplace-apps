@@ -6,6 +6,4 @@
   user: root
   vars_files: [group_vars/linode/vars]
   roles:
-    - common
     - cpanel-ubuntu
-    - post
