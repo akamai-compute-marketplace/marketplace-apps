@@ -5,6 +5,9 @@ set -e
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
