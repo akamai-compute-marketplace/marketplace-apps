@@ -116,14 +116,6 @@ EOF
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
-  fi
 }
 
 function run {
