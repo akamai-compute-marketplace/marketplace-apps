@@ -7,6 +7,9 @@
     group: "{{ openclaw_user }}"
     mode: "{{ item.mode }}"
   loop:
+    - { path: "{{ openclaw_home }}/.config", mode: '0700' }
+    - { path: "{{ openclaw_home }}/.config/systemd", mode: '0700' }
+    - { path: "{{ openclaw_home }}/.config/systemd/user", mode: '0700' }
     - { path: "{{ openclaw_config_dir }}", mode: '0755' }
     - { path: "{{ openclaw_config_dir }}/sessions", mode: '0755' }
     - { path: "{{ openclaw_config_dir }}/credentials", mode: '0700' }
