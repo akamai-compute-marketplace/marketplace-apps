@@ -5,8 +5,6 @@ set -e
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# BEGIN CI-MODE
-# modes
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
