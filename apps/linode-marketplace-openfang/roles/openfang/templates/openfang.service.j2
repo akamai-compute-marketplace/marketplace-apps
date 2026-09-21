@@ -6,6 +6,8 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+User={{ username }}
+Group={{ username }}
 WorkingDirectory={{ openfang_home }}
 EnvironmentFile=-{{ openfang_env_file }}
 Environment="OPENFANG_HOME={{ openfang_home }}"
@@ -24,9 +26,8 @@ RestrictRealtime=true
 LimitNOFILE=65536
 LimitNPROC=4096
 
-StandardOutput=journal
-StandardError=journal
 SyslogIdentifier=openfang
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
+
