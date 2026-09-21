@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # STACKSCRIPT_ID: 2165610
 
 # enable logging
