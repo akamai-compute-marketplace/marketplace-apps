@@ -14,9 +14,6 @@ else
   trap "cleanup $? $LINENO" EXIT
 fi
 
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
 
 if [ "${MODE}" == "staging" ]; then
   trap "provision_failed $? $LINENO" ERR
