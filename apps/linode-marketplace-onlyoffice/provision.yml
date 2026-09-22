@@ -18,4 +18,3 @@
         line: |
           jwt_secret: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
           onlyoffice_admin_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}
-
