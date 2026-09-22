@@ -128,7 +128,7 @@ function udf {
 
 function final_run {
   # clone repo and set up ansible environment
-  git -C /root clone -b ${BRANCH} ${GIT_REPO}
+  git -C /root clone --recurse-submodules -b ${BRANCH} ${GIT_REPO}
   # for a single testing branch
   # git -C /root clone -b ${BRANCH} ${GIT_REPO}
 
