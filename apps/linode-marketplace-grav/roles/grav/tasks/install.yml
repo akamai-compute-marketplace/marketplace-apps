@@ -73,9 +73,9 @@
         responses:
           (?i)Do you want to continue: "yes"
 
-    - name: Install Grav admin plugin
+    - name: Install Grav Admin2 plugin
       expect:
-        command: bin/gpm install admin
+        command: bin/gpm install admin2
         chdir: /var/www/grav
         responses:
           (?i)^.*Install these packages: "y"
