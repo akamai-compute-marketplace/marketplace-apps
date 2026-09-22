@@ -1,0 +1,30 @@
+---
+- name: Bootstrap discourse (slow, first run only)
+  command: ./launcher bootstrap app
+  args:
+    chdir: "{{ discourse_docker_dir }}"
+  async: 1800
+  poll: 30
+
+- name: Install Discourse service file
+  template:
+    src: discourse.service.j2
+    dest: /etc/systemd/system/discourse.service
+    mode: '0644'
+
+- name: Enable and start Discourse service
+  systemd_service:
+    name: discourse
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Wait for Discourse to answer over HTTPS
+  uri:
+    url: "https://{{ _domain }}/"
+    validate_certs: true
+    status_code: [200, 301, 302]
+  register: discourse_up
+  until: discourse_up.status == 200
+  retries: 30
+  delay: 20

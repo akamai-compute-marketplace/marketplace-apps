@@ -1,0 +1,3 @@
+---
+discourse_docker_repo: https://github.com/discourse/discourse_docker.git
+discourse_docker_dir: /var/discourse

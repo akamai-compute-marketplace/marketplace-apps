@@ -1,0 +1,29 @@
+---
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Write credentials file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Discourse Admin username: {{ discourse_admin_username  }}
+      Discourse Admin Email: {{ discourse_admin_email }}
+      Discourse Admin Password: {{ discourse_admin_password }}
+
+      SMTP Address: {{ smtp_address }}
