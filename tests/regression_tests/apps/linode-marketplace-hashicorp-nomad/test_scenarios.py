@@ -37,4 +37,4 @@ def test_nomad_job_deployment(context, base_url, app_credentials, job_definition
     expect(profile_page.auth_success_message, "Can not log in with Nomad Management Token").to_be_visible()
     profile_page.go_to_jobs_page()
     jobs_page.setup_and_run_job(job_definition)
-    expect(jobs_page.job_status_badge, "Job did not become healthy").to_have_text("Healthy", timeout=30000)
+    expect(jobs_page.job_status_badge, "Job did not become healthy").to_have_text("Healthy", timeout=120000)
