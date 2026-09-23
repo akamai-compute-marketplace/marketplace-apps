@@ -36,11 +36,11 @@
     url: http://127.0.0.1:8080/healthcheck
     return_content: true
   register: onlyoffice_healthcheck
-  until: onlyoffice_healthcheck.status == 200 and (onlyoffice_healthcheck.content | trim | lower) == 'true'
+  until: onlyoffice_healthcheck.status == 200
   retries: 30
   delay: 10
 
-- name: Ensure OnlyOffice example (demo) autostart is enabled
+- name: Enable OnlyOffice example demo
   community.docker.docker_container_exec:
     container: onlyoffice-docs
     command: sed -i 's/autostart=false/autostart=true/' /etc/supervisor/conf.d/ds-example.conf

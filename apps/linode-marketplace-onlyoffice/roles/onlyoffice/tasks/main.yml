@@ -1,9 +1,9 @@
 ---
-- name: Import Docker task
+- name: Install Docker
   import_tasks: docker.yml
 
-- name: Import OnlyOffice task
+- name: Configure OnlyOffice
   import_tasks: onlyoffice.yml
 
-- name: Import Nginx task
+- name: Configure Nginx
   import_tasks: nginx.yml

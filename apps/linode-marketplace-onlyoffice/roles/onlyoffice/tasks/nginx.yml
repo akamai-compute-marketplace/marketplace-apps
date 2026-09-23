@@ -26,19 +26,13 @@
     dest: /etc/nginx/sites-enabled/onlyoffice
     state: link
 
-- name: Remove default Nginx site configuration
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: Restart Nginx
-
 - name: Enable and start Nginx service
   systemd_service:
     name: nginx
     state: started
     enabled: true
 
-- name: Setting up ssl certificate
+- name: Setting up SSL certificate
   import_role:
     name: certbot_ssl
   vars:
