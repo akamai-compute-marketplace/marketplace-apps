@@ -1,11 +1,13 @@
 #!/bin/bash
+set -e
 # STACKSCRIPT_ID: 688903
 
 # enable logging
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# BEGIN CI-MODE
-# modes
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
 #DEBUG="NO"
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
@@ -14,17 +16,6 @@ if [[ -n ${DEBUG} ]]; then
 else
   trap "cleanup $? $LINENO" EXIT
 fi
-
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
-fi
-# END CI-MODE
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
@@ -35,16 +26,13 @@ fi
 #<UDF name="subdomain" label="Subdomain" example="The subdomain for the DNS record: www (Requires Domain)" default="">
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 
-# BEGIN CI-ADDONS
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,none" default="none">
-# END CI-ADDONS
 
 ## code-server setup
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)" example="user@domain.tld">
 #<UDF name="code_server_version" label="Which version of Code-Server to install" oneOf="4.96.1">
 
-# BEGIN CI-GH
 #GH_USER=""
 #BRANCH=""
 # git user and branch
@@ -57,34 +45,9 @@ else
         export BRANCH="main"
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
 fi
-# END CI-GH
 
 export WORK_DIR="/tmp/marketplace-apps" 
 export MARKETPLACE_APP="apps/linode-marketplace-code-server"
-
-# BEGIN CI-PROVISION-FUNC
-function provision_failed {
-  echo "[info] Provision failed. Sending status.."
-
-  # dep
-  apt install jq -y
-
-  # set token
-  local token=($(curl -ks -X POST ${KC_SERVER} \
-     -H "Content-Type: application/json" \
-     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
-
-  # send pre-provision failure
-  curl -sk -X POST ${DATA_ENDPOINT} \
-     -H "Authorization: ${token}" \
-     -H "Content-Type: application/json" \
-     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
-        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
-  exit $?
-}
-# END CI-PROVISION-FUNC
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -103,10 +66,8 @@ function udf {
   webserver_stack: lemp
   # code-server version
   code_server_version: ${CODE_SERVER_VERSION}
-  # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS  
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -134,16 +95,6 @@ EOF
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
 
-  # BEGIN CI-UDF-CI-MODE
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
-  fi
-# END CI-UDF-CI-MODE
 }
 
 function run {
