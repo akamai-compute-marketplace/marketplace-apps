@@ -1,0 +1,12 @@
+---
+- name: Clone Discourse repository
+  import_tasks: install.yml
+
+- name: Configure container image
+  import_tasks: configure.yml
+
+- name: Bootstrap and start Discourse
+  import_tasks: bootstrap.yml
+
+- name: Create Discourse admin account
+  import_tasks: admin.yml

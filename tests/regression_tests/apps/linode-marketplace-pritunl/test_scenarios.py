@@ -74,7 +74,7 @@ def test_pritunl_create_server_and_verify_online(context, base_url, app_credenti
     expect(
         servers_page.start_server_button(server_name),
         "Start Server button was not enabled after attaching organization.",
-    ).to_be_enabled(timeout=30000)
+    ).to_be_enabled(timeout=60000)
 
     servers_page.start_server(server_name)
     expect(

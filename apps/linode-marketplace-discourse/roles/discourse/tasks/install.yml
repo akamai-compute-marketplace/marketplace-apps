@@ -1,0 +1,9 @@
+---
+- name: Install docker
+  import_role:
+    name: docker
+
+- name: Clone Discourse repository
+  git:
+    repo: "{{ discourse_docker_repo }}"
+    dest: "{{ discourse_docker_dir }}"

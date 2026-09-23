@@ -1,0 +1,11 @@
+---
+- name: Install Discourse
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  roles:
+    - common
+    - discourse
+    - post
