@@ -1,0 +1,130 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - curl
+      - tar
+      - ca-certificates
+    state: present
+
+- name: Create OpenFang directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+  loop:
+    - "{{ openfang_bin_path }}"
+    - "{{ openfang_home }}"
+    - "{{ openfang_data_dir }}"
+    - "{{ openfang_agents_dir }}"
+
+- name: Create secure temporary directory for download
+  tempfile:
+    state: directory
+    suffix: openfang
+  register: openfang_temp
+  become: true
+  become_user: "{{ username }}"
+
+- name: Download and unpack OpenFang release archive
+  unarchive:
+    src: https://github.com/RightNow-AI/openfang/releases/latest/download/openfang-x86_64-unknown-linux-gnu.tar.gz
+    dest: "{{ openfang_temp.path }}"
+    remote_src: true
+    owner: "{{ username }}"
+    group: "{{ username }}"
+  become: true
+  become_user: "{{ username }}"
+
+- name: Locate extracted OpenFang binary
+  find:
+    paths: "{{ openfang_temp.path }}"
+    patterns: openfang
+    file_type: file
+    recurse: true
+  register: openfang_binary
+  become: true
+  become_user: "{{ username }}"
+
+- name: Install OpenFang binary
+  copy:
+    src: "{{ openfang_binary.files[0].path }}"
+    dest: "{{ openfang_bin_path }}/openfang"
+    remote_src: true
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+  become: true
+  become_user: "{{ username }}"
+
+- name: Clean up download artifacts
+  file:
+    path: "{{ openfang_temp.path }}"
+    state: absent
+  become: true
+  become_user: "{{ username }}"
+
+- name: Create OpenFang env file with API key
+  copy:
+    content: "OPENFANG_API_KEY={{ openfang_api_key }}\n"
+    dest: "{{ openfang_env_file }}"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    force: false
+
+- name: Add OpenFang environment to the sudo user's shell
+  blockinfile:
+    path: "/home/{{ username }}/.bashrc"
+    marker: "# {mark} OPENFANG ENVIRONMENT"
+    block: |
+      export OPENFANG_HOME="{{ openfang_home }}"
+      export PATH="{{ openfang_bin_path }}:$PATH"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    create: true
+    mode: '0644'
+
+- name: Creat systemd directory for sudo user```
+  file:
+    path: "/home/{{ username }}/.config/systemd/user"
+    state: directory
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0755'
+
+- name: Create OpenFang systemd user service
+  template:
+    src: openfang.service.j2
+    dest: "/home/{{ username }}/.config/systemd/user/openfang.service"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0644'
+
+- name: Enable linger so user services start at boot without active login
+  command: "loginctl enable-linger {{ username }}"
+  args:
+    creates: "/var/lib/systemd/linger/{{ username }}"
+
+- name: Set XDG_RUNTIME_DIR in .bashrc for user
+  lineinfile:
+    path: "/home/{{ username }}/.bashrc"
+    line: 'export XDG_RUNTIME_DIR=/run/user/$(id -u)'
+    state: present
+    create: true
+    insertafter: EOF
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0644'
+
+- name: Enable and start OpenFang user service
+  systemd_service:
+    name: openfang
+    state: started
+    enabled: true
+    scope: user
+    daemon_reload: true
+  become: true
+  become_user: "{{ username }}"

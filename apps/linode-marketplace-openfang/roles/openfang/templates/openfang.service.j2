@@ -1,0 +1,33 @@
+[Unit]
+Description=OpenFang Agent Operating System
+Documentation=https://openfang.sh/docs/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ username }}
+Group={{ username }}
+WorkingDirectory={{ openfang_home }}
+EnvironmentFile=-{{ openfang_env_file }}
+Environment="OPENFANG_HOME={{ openfang_home }}"
+Environment="OPENFANG_LISTEN=127.0.0.1:4200"
+ExecStart={{ openfang_bin_path }}/openfang start
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=30
+
+# User-supported security hardening
+NoNewPrivileges=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+SyslogIdentifier=openfang
+
+[Install]
+WantedBy=multi-user.target
+
