@@ -1,0 +1,3 @@
+---
+- name: Install OpenCode
+  import_tasks: opencode.yml
