@@ -25,6 +25,6 @@
     path: "{{ item }}"
     line: 'export VAULT_ADDR=https://{{ listen_address }}:8200'
     insertbefore: EOF
-  loop: 
+  loop:
     - "/root/.bashrc"
     - "/home/{{ username }}/.bashrc"
