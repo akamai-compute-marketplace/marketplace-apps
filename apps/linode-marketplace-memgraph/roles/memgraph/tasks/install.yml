@@ -15,17 +15,11 @@
   set_fact:
     memgraph_version: "{{ release_tag.json.tag_name[1:] }}"
 
-# Future proof. Contains fallback OS.
-- name: Installing Memgraph...
-  block:
-    - name: Installing Memgraph for {{ distribution_version }}
-      apt:
-        deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/ubuntu-{{ distribution_version }}/memgraph_{{ memgraph_version }}-1_amd64.deb"
-  rescue:
-    - name: Installing Memgraph for Ubuntu 24.04
-      apt:
-        deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/ubuntu-24.04/memgraph_{{ memgraph_version }}-1_amd64.deb"
+- name: Installing Memgraph
+  apt:
+    deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/memgraph_{{ memgraph_version }}-1_amd64.deb"
 
+# Stopping to configure users otherwise it's unauthed
 - name: Stopping Memgraph service
   systemd_service:
     name: memgraph
