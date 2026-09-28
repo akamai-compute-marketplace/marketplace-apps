@@ -1,5 +1,6 @@
 import uuid
 
+from regression_tests.services.alloy.alloy_service import AlloyService
 from regression_tests.services.pgvector.pgvector_service import PgvectorService
 
 
@@ -82,3 +83,29 @@ def test_pgvector_distance_operator(remote_exec, app_credentials):
     )
     assert code == 0, f"distance query failed (exit {code}): {err or out}"
     assert out == "1.414214", f"L2 distance between orthogonal unit vectors was wrong: {out!r}"
+
+
+def test_alloy_alive(remote_exec):
+    # Verifies the alloy add-on runs as an enabled service and reports ready.
+    alloy = AlloyService(remote_exec)
+    assert alloy.unit_active() == "active", "alloy unit is not active"
+    assert alloy.unit_enabled() == "enabled", "alloy unit is not enabled"
+    assert alloy.ready_status() == "200", "alloy /-/ready did not return 200"
+
+
+def test_alloy_config_loaded(remote_exec):
+    # Verifies the installed config is valid and Alloy has loaded it successfully.
+    alloy = AlloyService(remote_exec)
+    code, err = alloy.config_valid()
+    assert code == 0, f"alloy config failed validation: {err}"
+    assert "alloy_config_last_load_successful 1" in alloy.metrics(), "alloy did not load its config successfully"
+
+
+def test_alloy_ships_logs(remote_exec):
+    # Verifies Alloy tails a /var/log/*.log file and a Loki endpoint accepts the pushed entries.
+    alloy = AlloyService(remote_exec)
+    alloy.start_shipping_to_fake_loki()
+    assert alloy.shipped_test_log(), (
+        f"alloy did not ship the test log: lines read={alloy.lines_read_from_test_log()}, "
+        f"entries sent={alloy.entries_sent()}"
+    )

@@ -1,0 +1,13 @@
+{
+  "resourceSpans": [{
+    "resource": {"attributes": [{"key": "service.name", "value": {"stringValue": "regression-test"}}]},
+    "scopeSpans": [{"spans": [{
+      "traceId": "5b8efff798038103d269b633813fc60c",
+      "spanId": "eee19b7ec3c1b174",
+      "name": "regression-span",
+      "kind": 1,
+      "startTimeUnixNano": "@START@",
+      "endTimeUnixNano": "@END@"
+    }]}]
+  }]
+}

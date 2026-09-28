@@ -1,6 +1,7 @@
 import uuid
 
 from regression_tests.services.chroma.chroma_service import ChromaService
+from regression_tests.services.otelcol.otelcol_service import OtelcolService
 
 
 def test_chroma_service_active(remote_exec):
@@ -77,3 +78,22 @@ def test_chroma_collection(http_session, base_url, app_credentials):
     assert ids[0] == "near", f"expected 'near' as closest match, got order {ids}"
     assert documents[0] == "document about pineapple", "closest match returned the wrong document"
     assert distances[0] < distances[1], "distances are not ordered nearest-first"
+
+
+def test_otelcol_alive(remote_exec):
+    # Verifies the opentelemetry_collector add-on runs as an enabled service with its OTLP receivers open.
+    otel = OtelcolService(remote_exec)
+    assert otel.unit_active() == "active", "otelcol unit is not active"
+    assert otel.unit_enabled() == "enabled", "otelcol unit is not enabled"
+    ports = otel.listening_ports()
+    assert f":{otel.OTLP_GRPC_PORT}" in ports, "OTLP gRPC port 4317 is not listening"
+    assert f":{otel.OTLP_HTTP_PORT}" in ports, "OTLP HTTP port 4318 is not listening"
+
+
+def test_otelcol_accepts_traces(remote_exec):
+    # Verifies the collector really ingests telemetry: a posted span raises its accepted-spans counter.
+    otel = OtelcolService(remote_exec)
+    before = otel.accepted_spans()
+    assert otel.send_trace() == "200", "OTLP HTTP endpoint did not accept the trace"
+    after = otel.accepted_spans()
+    assert after >= before + 1, f"accepted spans did not increase (before={before}, after={after})"

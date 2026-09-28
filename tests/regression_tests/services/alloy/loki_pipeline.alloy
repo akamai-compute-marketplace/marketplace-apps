@@ -1,0 +1,22 @@
+logging {
+  level = "info"
+}
+
+local.file_match "system_logs" {
+  path_targets = [{"__path__" = "/var/log/*.log"}]
+}
+
+loki.source.file "system_logs" {
+  targets    = local.file_match.system_logs.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://127.0.0.1:3100/loki/api/v1/push"
+    basic_auth {
+      username = "loki"
+      password = "regression"
+    }
+  }
+}
