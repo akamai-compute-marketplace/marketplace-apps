@@ -17,7 +17,7 @@
 
 - name: Installing Memgraph
   apt:
-    deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/memgraph_{{ memgraph_version }}-1_amd64.deb"
+    deb: "https://download.memgraph.com/memgraph/v{{ memgraph_version }}/x86_64-deb/memgraph_{{ memgraph_version }}-1_amd64.deb"
 
 # Stopping to configure users otherwise it's unauthed
 - name: Stopping Memgraph service
