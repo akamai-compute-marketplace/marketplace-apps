@@ -78,10 +78,10 @@
     ownca_privatekey_path: "{{ milvus_directory }}/certs/ca.key"
     state: present
 
-- name: Set cert permissions
-  file:
-    path: "{{ milvus_directory }}/certs"
-    recurse: true
-    owner: root
-    group: root
-    mode: '0644'
+#- name: Set cert permissions
+#  file:
+#    path: "{{ milvus_directory }}/certs"
+#    recurse: true
+#    owner: root
+#    group: root
+#    mode: '0644'
