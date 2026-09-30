@@ -1,4 +1,4 @@
-# Langflow Quick Deploy App
+# Easypanel Quick Deploy App
 
 Easypanel is a self-hosted server control panel and Platform-as-aService (PasaS) built on Docker. It lets you easily deploy and manage websites, apps, and databases via a user-friendly dashboard.
 
@@ -24,7 +24,7 @@ Easypanel is a self-hosted server control panel and Platform-as-aService (PasaS)
 | Update Packages | Performs standard apt update and upgrade actions as root. |
 | UFW | Imports `ufw_rules.yml` (22, 80, 443) and enables the firewall. PostgreSQL (5432) is not exposed. |
 | Fail2Ban | Installs, activates, and enables the Fail2Ban service. |
-| Docker | Installs Docker CE (used to run the Langflow + PostgreSQL Compose project). |
+| Docker | Installs Docker CE. |
 | Addons | Optional monitoring/observability exporters (`newrelic`, `node_exporter`, `mysqld_exporter`, `opentelemetry_collector`, `alloy`). |
 
 ## Post-Deployment
