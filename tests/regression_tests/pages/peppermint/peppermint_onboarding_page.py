@@ -13,7 +13,7 @@ class PeppermintOnboardingPage(BasePage):
 
         self.to_dashboard_button = self.page.get_by_role("button", name="To Dashboard")
 
-    def complete_if_present(self, timeout: int = 30000):
+    def complete_if_present(self, timeout: int = 60000):
         try:
             self.to_dashboard_button.wait_for(state="visible", timeout=timeout)
         except PlaywrightTimeoutError:

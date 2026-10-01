@@ -11,7 +11,6 @@ class CyberPanelCreateWebsitePage(BasePage):
         self.email_input = self.page.locator("input[name='email']")
         self.php_select = self.page.locator("select[ng-model='phpSelection']")
         self.create_button = self.page.get_by_role("button", name="Create Website")
-        self.success_alert = self.page.locator(".alert.alert-success")
 
     def create_website(self, domain: str, email: str, package: str = "Default", owner: str = "admin", php_version: str = "PHP 8.1"):
         self.package_select.select_option(package)
