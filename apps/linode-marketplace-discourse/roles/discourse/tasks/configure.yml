@@ -1,0 +1,6 @@
+---
+- name: Add container build config
+  template:
+    src: app.yml.j2
+    dest: "{{ discourse_docker_dir }}/containers/app.yml"
+    mode: '0600'

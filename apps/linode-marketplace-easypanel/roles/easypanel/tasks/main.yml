@@ -1,0 +1,6 @@
+---
+- name: Import Docker tasks
+  import_tasks: docker.yml
+
+- name: Import Easypanel tasks
+  import_tasks: easypanel.yml

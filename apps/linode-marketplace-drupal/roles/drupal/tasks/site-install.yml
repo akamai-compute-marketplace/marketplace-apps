@@ -33,14 +33,6 @@
   become: true
   become_user: www-data
 
-- name: Enable update module using Drush
-  command: >
-    /var/www/{{ _domain }}/vendor/bin/drush pm:enable update -y
-  args:
-    chdir: /var/www/{{ _domain }}/web
-  become: true
-  become_user: www-data
-
 - name: Configure update notification email
   command: >
     /var/www/{{ _domain }}/vendor/bin/drush config:set update.settings notification.emails.0

@@ -1,6 +1,6 @@
 # Linode Grav CMS One-Click APP
 
-Deploy a production-ready Grav CMS website with built-in security and optimized performance. This setup includes Nginx as a web server with SSL termination, PHP 8.3 processing, and Redis for advanced caching capabilities. Grav is a modern flat-file CMS requiring no database, making it fast, simple, and flexible while maintaining robust content management features. The installation comes with the Admin plugin pre-installed, allowing for easy content management through a user-friendly interface.
+Deploy a production-ready Grav CMS website with built-in security and optimized performance. This setup includes Nginx as a web server with SSL termination, PHP 8.3 processing, and Redis for advanced caching capabilities. Grav is a modern flat-file CMS requiring no database, making it fast, simple, and flexible while maintaining robust content management features. The installation comes with the Admin2 plugin pre-installed, allowing for easy content management through a user-friendly interface.
 
 ## Software Included
 
@@ -111,6 +111,6 @@ linode-cli linodes create \
 - [Create Linode via API](https://www.linode.com/docs/api/linode-instances/#linode-create)
 - [Stackscript reference](https://www.linode.com/docs/guides/writing-scripts-for-use-with-linode-stackscripts-a-tutorial/#user-defined-fields-udfs)
 - [Grav Documentation](https://learn.getgrav.org/)
-- [Grav Admin Plugin](https://github.com/getgrav/grav-plugin-admin)
+- [Grav Admin2 Plugin](https://github.com/getgrav/grav-plugin-admin2)
 - [Nginx Documentation](https://nginx.org/en/docs/)
 - [PHP Documentation](https://www.php.net/docs.php)

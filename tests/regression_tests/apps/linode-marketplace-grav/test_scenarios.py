@@ -10,7 +10,7 @@ def test_grav_startup(context, admin_url):
     # Verifies that the app started and the admin login page loads successfully.
     login_page = GravLoginPage(context)
     login_page.navigate(admin_url)
-    expect(context, "Grav is not started").to_have_title("Grav Admin Login | Grav")
+    expect(context, "Grav is not started").to_have_title("Login — Grav Admin")
     expect(login_page.username_input, "Login form did not render.").to_be_visible()
 
 
@@ -21,7 +21,7 @@ def test_grav_login(context, admin_url, app_credentials):
     login_page = GravLoginPage(context)
     login_page.navigate(admin_url)
     login_page.login(username, password)
-    expect(context, "Credentials are invalid or something went wrong.").to_have_title("Dashboard | Grav")
+    expect(context, "Credentials are invalid or something went wrong.").to_have_title("Dashboard — Grav Admin")
 
 
 def test_grav_create_page(context, base_url, admin_url, app_credentials):
@@ -41,7 +41,6 @@ def test_grav_create_page(context, base_url, admin_url, app_credentials):
 
     editor_page = GravPageEditorPage(context)
     editor_page.set_content(body_text)
-    editor_page.save()
 
     published_page = GravPublishedPage(context, body_text=body_text)
     published_page.navigate(f"{base_url}/test-automation-page")

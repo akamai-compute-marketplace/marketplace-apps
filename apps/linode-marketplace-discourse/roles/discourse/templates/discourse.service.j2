@@ -1,0 +1,16 @@
+[Unit]
+Description=Discourse (launcher)
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory={{ discourse_docker_dir }}
+ExecStart={{ discourse_docker_dir }}/launcher start app
+ExecStop={{ discourse_docker_dir }}/launcher stop app
+ExecReload={{ discourse_docker_dir }}/launcher restart app
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
