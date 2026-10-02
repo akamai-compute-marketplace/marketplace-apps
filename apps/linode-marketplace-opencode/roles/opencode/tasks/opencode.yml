@@ -1,10 +1,16 @@
 ---
-- name: Download OpenCode installer
-  get_url:
-    url: https://opencode.ai/install
-    dest: /tmp/opencode-install.sh
-    mode: '0755'
+# - name: Download OpenCode installer
+#   get_url:
+#     url: https://opencode.ai/install
+#     dest: /tmp/opencode-install.sh
+#     mode: '0755'
+
+# - name: Install OpenCode
+#   command:
+#     cmd: /tmp/opencode-install.sh
 
 - name: Install OpenCode
-  command:
-    cmd: /tmp/opencode-install.sh
+  npm:
+    name: "@opencode/cli"
+    global: true
+    state: present
