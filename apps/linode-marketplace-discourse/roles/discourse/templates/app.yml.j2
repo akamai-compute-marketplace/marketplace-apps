@@ -1,0 +1,43 @@
+templates:
+  - templates/postgres.template.yml
+  - templates/redis.template.yml
+  - templates/web.template.yml
+  - templates/web.ratelimited.template.yml
+  - templates/web.ssl.template.yml
+  - templates/web.letsencrypt.ssl.template.yml
+expose:
+  - 80:80
+  - 443:443
+params:
+  db_default_text_search_config: pg_catalog.english
+  db_shared_buffers: 2048MB
+env:
+  LC_ALL: en_US.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+  DISCOURSE_HOSTNAME: "{{ _domain }}"
+  DISCOURSE_DEVELOPER_EMAILS: "{{ discourse_admin_email }}"
+  LETSENCRYPT_ACCOUNT_EMAIL: "{{ discourse_admin_email }}"
+  UNICORN_WORKERS: 8
+  DISCOURSE_SMTP_ADDRESS: "{{ smtp_address }}"
+  DISCOURSE_SMTP_PORT: '587'
+  DISCOURSE_SMTP_USER_NAME: "{{ smtp_user_name }}"
+  DISCOURSE_SMTP_PASSWORD: "{{ smtp_password }}"
+  DISCOURSE_NOTIFICATION_EMAIL: "{{ smtp_notification_email }}"
+  DISCOURSE_SMTP_DOMAIN: "{{ smtp_address }}"
+volumes:
+  - volume:
+      host: "/var/discourse/shared/standalone"
+      guest: "/shared"
+  - volume:
+      host: "/var/discourse/shared/standalone/log/var-log"
+      guest: "/var/log"
+hooks:
+  after_code:
+    - exec:
+        cd: "$home/plugins"
+        cmd:
+          - git clone https://github.com/discourse/docker_manager.git
+run:
+  - exec: echo "Beginning of custom commands"
+  - exec: echo "End of custom commands"

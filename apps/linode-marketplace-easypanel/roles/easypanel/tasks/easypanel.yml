@@ -1,0 +1,64 @@
+---
+- name: Create Easypanel config directory
+  file:
+    path: /etc/easypanel
+    state: directory
+    mode: '0755'
+
+- name: Run Easypanel setup
+  docker_container:
+    name: easypanel-setup
+    image: easypanel/easypanel:latest
+    command: setup
+    detach: false
+    cleanup: true
+    volumes:
+      - /etc/easypanel:/etc/easypanel
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+- name: Wait for the Easypanel API to be ready
+  uri:
+    url: "{{ easypanel_api }}/getSetupStatus"
+  register: easypanel_status
+  until: easypanel_status.json is defined
+  retries: 60
+  delay: 5
+
+- name: Setup Easypanel admin account
+  uri:
+    url: "{{ easypanel_api }}/setup"
+    method: POST
+    body_format: json
+    body:
+      email: "{{ soa_email_address }}"
+      password: "{{ easypanel_admin_password }}"
+      source: akamai-qda
+      subscribe: false
+      terms: true
+  register: easypanel_setup
+  no_log: true
+
+- name: Setup the Easypanel panel domain
+  uri:
+    url: "{{ easypanel_api }}/setPanelDomain"
+    method: POST
+    body_format: json
+    body:
+      customPanelDomain: "{{ _domain }}"
+      serveOnIp: false
+    headers:
+      Authorization: "Bearer {{ easypanel_setup.json.token }}"
+  no_log: true
+
+- name: Wait for panel domain to get certificate
+  uri:
+    url: "{{ easypanel_api }}/listCertificates"
+    headers:
+      Authorization: "Bearer {{ easypanel_setup.json.token }}"
+  register: easypanel_certificates
+  until:
+    - easypanel_certificates.json is defined
+    - _domain in (easypanel_certificates.json | map(attribute='domain.main') | list)
+  retries: 24
+  delay: 5
+  no_log: true

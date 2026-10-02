@@ -6,9 +6,9 @@ class GravLoginPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
 
-        self.username_input = self.page.locator('input[name="data[username]"]')
-        self.password_input = self.page.locator('input[name="data[password]"]')
-        self.login_button = self.page.get_by_role("button", name="Login")
+        self.username_input = self.page.locator('#username')
+        self.password_input = self.page.locator('#password')
+        self.login_button = self.page.get_by_role("button", name="Sign In")
 
     def login(self, username: str, password: str):
         self.username_input.fill(username)

@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
       - name: Run ShellCheck
         run: bash .github/scripts/static-code-shellcheck.sh
   static-code-analysis-yamllint:
@@ -23,6 +25,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
       - name: Run yamllint
         run: bash .github/scripts/static-code-yamllint.sh
   static-code-analysis-ansbible-lint:
@@ -33,6 +37,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
       - name: Run ansible-lint
         run: bash .github/scripts/static-code-ansible-lint.sh
   get-all-apps:
@@ -72,6 +78,8 @@ jobs:
     steps:
       - name: Checkout branch
         uses: actions/checkout@v7
+        with:
+          submodules: true
       - name: Get Linode configuration for ${{ matrix.app }}
         run: bash deployment_scripts/${{ matrix.app }}/linode-config.sh
       - name: Provisioning Linode for ${{ matrix.app }}
