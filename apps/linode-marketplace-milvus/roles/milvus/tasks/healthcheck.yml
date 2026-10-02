@@ -1,0 +1,19 @@
+---
+- name: Inspect Milvus container states
+  community.docker.docker_container_info:
+    name: "{{ item }}"
+  loop:
+    - milvus-etcd
+    - milvus-rustfs
+    - milvus-standalone
+  register: milvus_container_info
+
+- name: Ensure Milvus containers are running
+  ansible.builtin.assert:
+    that:
+      - item.exists
+      - item.container.State.Status == 'running'
+    fail_msg: "Container {{ item.container }} is not healthy."
+  loop: "{{ milvus_container_info.results }}"
+  loop_control:
+    label: "{{ item.container }}"

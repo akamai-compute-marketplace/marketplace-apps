@@ -71,6 +71,13 @@ services:
       - ./volumes/milvus:/fix_path
     command: chown -R 999:999 /fix_path
 
+  milvus_certs:
+    image: alpine
+    user: root
+    volumes:
+      - ./certs:/fix_certs
+    command: chown -R 999:999 /fix_certs/client.key /fix_certs/server.key
+
   standalone:
     container_name: milvus-standalone
     image: milvusdb/milvus:v3.0.1
@@ -100,6 +107,8 @@ services:
       retries: 3
     depends_on:
       milvus_perms:
+        condition: service_completed_successfully
+      milvus_certs:
         condition: service_completed_successfully
       etcd:
         condition: service_healthy
