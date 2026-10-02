@@ -1,6 +1,6 @@
 # OpenCode Quick Deploy App
 
-Deploy OpenCode: a model agnostic, open-source AI coding agent. Use natural language to write and edit code. 
+[OpenCode](https://opencode.ai/) is a model agnostic, open-source AI coding agent that allows you to use natural language to write and edit code. OpenCode works with 75+ large language model (LLM) providers, including Anthropic, OpenAI, Google, and local models via Ollama or LM Studio. This Quick Deploy App installs OpenCode directly to an Ubuntu 24.04 server, allowing you to work privately on the VM itself, or connect remotely using the `/attach` command from your local machine, via an ssh tunnel.
 
 ## Software Included
 
