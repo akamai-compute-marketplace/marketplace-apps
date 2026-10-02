@@ -1,14 +1,4 @@
 ---
-# - name: Download OpenCode installer
-#   get_url:
-#     url: https://opencode.ai/install
-#     dest: /tmp/opencode-install.sh
-#     mode: '0755'
-
-# - name: Install OpenCode
-#   command:
-#     cmd: /tmp/opencode-install.sh
-
 - name: Install Node.js and npm
   apt:
     name:
@@ -22,4 +12,3 @@
     name: opencode-ai
     global: true
     state: present
-    
