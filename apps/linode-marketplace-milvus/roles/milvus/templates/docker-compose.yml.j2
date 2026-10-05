@@ -99,6 +99,15 @@ services:
       - "127.0.0.1:19530:19530"
       - "127.0.0.1:19121:19121"
       - "127.0.0.1:9091:9091"
+{% if _has_gpu | default(false) %}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: ["gpu"]
+              device_ids: ["0"]
+{% endif %}      
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
       interval: 30s
