@@ -1,5 +1,5 @@
 ---
-- name: Import OpenFang tasks
+- name: Configure OpenFang
   import_tasks: openfang.yml
 
 - name: Configure first-login onboarding

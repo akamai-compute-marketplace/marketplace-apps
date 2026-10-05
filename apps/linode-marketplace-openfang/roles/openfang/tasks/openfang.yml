@@ -1,12 +1,4 @@
 ---
-- name: Install system dependencies
-  apt:
-    name:
-      - curl
-      - tar
-      - ca-certificates
-    state: present
-
 - name: Create OpenFang directories
   file:
     path: "{{ item }}"
@@ -66,28 +58,27 @@
   become: true
   become_user: "{{ username }}"
 
-- name: Create OpenFang env file with API key
-  copy:
-    content: "OPENFANG_API_KEY={{ openfang_api_key }}\n"
-    dest: "{{ openfang_env_file }}"
+- name: Ensure OpenFang API key is present in env file
+  lineinfile:
+    path: "{{ openfang_env_file }}"
+    regexp: '^OPENFANG_API_KEY='
+    line: "OPENFANG_API_KEY={{ openfang_api_key }}"
     owner: "{{ username }}"
     group: "{{ username }}"
     mode: '0600'
-    force: false
+    create: true
 
 - name: Add OpenFang environment to the sudo user's shell
-  blockinfile:
-    path: "/home/{{ username }}/.bashrc"
-    marker: "# {mark} OPENFANG ENVIRONMENT"
-    block: |
+  copy:
+    dest: "/home/{{ username }}/.bashrc"
+    content: |
       export OPENFANG_HOME="{{ openfang_home }}"
       export PATH="{{ openfang_bin_path }}:$PATH"
     owner: "{{ username }}"
     group: "{{ username }}"
-    create: true
     mode: '0644'
 
-- name: Creat systemd directory for sudo user```
+- name: Create systemd directory for sudo user
   file:
     path: "/home/{{ username }}/.config/systemd/user"
     state: directory

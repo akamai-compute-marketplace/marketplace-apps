@@ -34,10 +34,8 @@ fi
 #<UDF name="domain" label="Domain" example="The domain for the DNS record: example.com (Requires API token)" default="">
 #<UDF name="soa_email_address" label="Email address for SOA email" example="user@domain.tld" default="">
 
-# BEGIN CI-ADDONS
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,opentelemetry_collector,alloy,none" default="none">
-# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
@@ -54,28 +52,6 @@ fi
 
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-openfang"
-
-function provision_failed {
-  echo "[info] Provision failed. Sending status.."
-
-  # dep
-  apt install jq -y
-
-  # set token
-  local token=($(curl -ks -X POST ${KC_SERVER} \
-     -H "Content-Type: application/json" \
-     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
-
-  # send pre-provision failure
-  curl -sk -X POST ${DATA_ENDPOINT} \
-     -H "Authorization: ${token}" \
-     -H "Content-Type: application/json" \
-     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
-        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
-  exit $?
-}
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
