@@ -1,7 +1,10 @@
 import uuid
 
+from playwright.sync_api import expect
+
 from regression_tests.services.chroma.chroma_service import ChromaService
 from regression_tests.services.otelcol.otelcol_service import OtelcolService
+from regression_tests.pages.chroma.chroma_tech_docs_page import ChromaTechDocsPage
 
 
 def test_chroma_service_active(remote_exec):
@@ -97,3 +100,11 @@ def test_otelcol_accepts_traces(remote_exec):
     assert otel.send_trace() == "200", "OTLP HTTP endpoint did not accept the trace"
     after = otel.accepted_spans()
     assert after >= before + 1, f"accepted spans did not increase (before={before}, after={after})"
+
+
+def test_chroma_tech_docs(context, techdocs_url):
+    """Verify that the Chroma tech docs page is accessible."""
+    tech_docs_page = ChromaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Chroma tech docs page did not load.").to_have_title("Chroma")
+    expect(tech_docs_page.chroma_header, "Chroma tech docs header did not render.").to_be_visible()

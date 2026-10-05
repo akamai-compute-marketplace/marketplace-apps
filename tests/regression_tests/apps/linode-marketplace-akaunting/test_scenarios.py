@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.akaunting.akaunting_dashboard_page import AkauntingDashboardPage
 from regression_tests.pages.akaunting.akaunting_login_page import AkauntingLoginPage
+from regression_tests.pages.akaunting.akaunting_tech_docs_page import AkauntingTechDocsPage
 
 
 def test_akaunting_startup(context, base_url):
@@ -29,3 +30,11 @@ def test_akaunting_login(context, base_url, app_credentials):
            "Akaunting Dashboard navigation did not appear after login.").to_be_visible(timeout=15000)
     expect(dashboard_page.welcome_heading,
            "Akaunting Welcome heading did not appear after login.").to_be_visible(timeout=15000)
+
+
+def test_akaunting_tech_docs(context, techdocs_url):
+    """Verify that the Akaunting tech docs page is accessible."""
+    tech_docs_page = AkauntingTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Akaunting tech docs page did not load.").to_have_title("Akaunting")
+    expect(tech_docs_page.akaunting_header, "Akaunting tech docs header did not render.").to_be_visible()

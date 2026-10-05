@@ -73,6 +73,31 @@ def remote_exec(ssh_credentials):
 
 
 @pytest.fixture(scope="session")
+def techdocs_url(remote_exec) -> str:
+    """
+    Reads the tech docs link from the 'Documentation:' line of /etc/motd on the VM.
+
+    Args:
+        remote_exec: Callable that runs a command on the VM over SSH.
+
+    Returns:
+        str: The documentation URL, e.g. https://techdocs.akamai.com/quick-deploy-apps/docs/apache-airflow
+
+    Raises:
+        RuntimeError: If /etc/motd cannot be read or has no 'Documentation:' link.
+    """
+    motd, err, code = remote_exec("cat /etc/motd")
+    if code != 0:
+        raise RuntimeError(f"Failed to read /etc/motd (exit code {code}): {err}")
+
+    prefix = "Documentation:"
+    for line in motd.splitlines():
+        if line.startswith(prefix):
+            return line.removeprefix(prefix).strip()
+    raise RuntimeError(f"No Documentation link found in MOTD")
+
+
+@pytest.fixture(scope="session")
 def http_session():
     """
     Returns a requests.Session for backend apps that expose an HTTP API
