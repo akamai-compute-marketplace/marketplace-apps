@@ -9,5 +9,8 @@
 - name: Install Milvus
   import_tasks: install.yml
 
+- name: Check container health
+  import_tasks: healthcheck.yml
+
 - name: Install Nginx
   import_tasks: nginx.yml
