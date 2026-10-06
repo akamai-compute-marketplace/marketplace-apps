@@ -36,6 +36,10 @@
     project_name: azuracast_installer
     pull: always
     services: [installer]
+  register: azuracast_installer_result
+  retries: 6
+  delay: 10
+  until: azuracast_installer_result is succeeded
 
 - name: Remove docker-compose.installer.yml
   file:
