@@ -1,8 +1,4 @@
 ---
-- name: Set AzuraCast directory path
-  set_fact:
-    azuracast_dir: /var/azuracast
-
 - name: Create AzuraCast directory
   file:
     path: "{{ azuracast_dir }}"
@@ -53,10 +49,6 @@
   ufw:
     state: disabled
 
-#- name: Pull a Docker image from a registry
-#  community.docker.docker_image_pull:
-#    name: "ghcr.io/azuracast/azuracast:stable"
-
 - name: Pull AzuraCast images
   community.docker.docker_compose_v2:
     project_src: "{{ azuracast_dir }}"
@@ -71,6 +63,7 @@
 - name: Get AzuraCast DB password from env file for installer
   slurp:
     src: "{{ azuracast_dir }}/azuracast.env"
+  no_log: true
   register: azuracast_env_pre
 
 - name: Run azuracast_install in web container
@@ -154,6 +147,7 @@
 - name: Get AzuraCast DB password from env file
   slurp:
     src: "{{ azuracast_dir }}/azuracast.env"
+  no_log: true
   register: azuracast_env
 
 - name: Set DB password fact
