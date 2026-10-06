@@ -49,11 +49,24 @@
 - name: Rename docker-compose.new.yml to docker-compose.yml
   command: mv {{ azuracast_dir }}/docker-compose.new.yml {{ azuracast_dir }}/docker-compose.yml
 
+- name: Disable UFW for AzuraCast installation
+  ufw:
+    state: disabled
+
+- name: Pull a Docker image from a registry
+  community.docker.docker_image_pull:
+    name: "ghcr.io/azuracast/azuracast:stable"
+
 - name: Pull AzuraCast images
   community.docker.docker_compose_v2:
     project_src: "{{ azuracast_dir }}"
     pull: always
     state: present
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
 
 - name: Get AzuraCast DB password from env file for installer
   slurp:
