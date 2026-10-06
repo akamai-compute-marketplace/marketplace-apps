@@ -9,8 +9,16 @@
     state: present
     update_cache: true
 
-- name: Ensure Docker service is running
-  service:
+- name: Update Docker daemon to support concurrent downloads
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "max-concurrent-downloads": 10
+      }
+
+- name: Restart Docker service
+  systemd_service:
     name: docker
-    state: started
+    state: restarted
     enabled: true
