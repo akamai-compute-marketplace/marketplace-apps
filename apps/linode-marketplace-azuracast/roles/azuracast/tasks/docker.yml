@@ -14,7 +14,7 @@
     dest: /etc/docker/daemon.json
     mode: '0644'
     owner: root
-    group: root    
+    group: root
     content: |
       {
         "max-concurrent-downloads": 10
