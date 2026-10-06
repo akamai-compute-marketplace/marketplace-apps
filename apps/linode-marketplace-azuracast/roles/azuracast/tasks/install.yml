@@ -28,6 +28,10 @@
     regexp: '^AZURACAST_VERSION='
     line: 'AZURACAST_VERSION=stable'
 
+- name: Disable UFW for AzuraCast installation
+  ufw:
+    state: disabled
+    
 - name: Run AzuraCast installer container
   community.docker.docker_compose_v2:
     project_src: "{{ azuracast_dir }}"
@@ -36,6 +40,11 @@
     project_name: azuracast_installer
     pull: always
     services: [installer]
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
 
 - name: Remove docker-compose.installer.yml
   file:
