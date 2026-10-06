@@ -53,9 +53,9 @@
   ufw:
     state: disabled
 
-- name: Pull a Docker image from a registry
-  community.docker.docker_image_pull:
-    name: "ghcr.io/azuracast/azuracast:stable"
+#- name: Pull a Docker image from a registry
+#  community.docker.docker_image_pull:
+#    name: "ghcr.io/azuracast/azuracast:stable"
 
 - name: Pull AzuraCast images
   community.docker.docker_compose_v2:
