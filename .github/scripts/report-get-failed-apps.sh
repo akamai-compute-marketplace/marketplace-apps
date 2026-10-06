@@ -1,8 +1,21 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
-FAILED_JOBS=$(gh api repos/"$GITHUB_REPOSITORY"/actions/runs/"$GITHUB_RUN_ID"/jobs \
-  --jq '[.jobs[] | select(.conclusion == "failure" or .conclusion == "timed_out") | .name | sub("App deployment and testing \\("; "") | sub("\\)$"; "")] | join(", ")')
+JOBS_URL="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100"
+
+FAILED_JOB_NAMES='
+  .jobs[]
+  | select(.conclusion == "failure" or .conclusion == "timed_out")
+  | .name
+  | sub("^App deployment and testing \\("; "")
+  | sub("\\)$"; "")
+'
+
+FAILED_JOBS=$(
+  gh api --paginate "$JOBS_URL" --jq "$FAILED_JOB_NAMES" \
+    | paste -sd ',' - \
+    | sed 's/,/, /g'
+)
 
 if [ -z "$FAILED_JOBS" ]; then
   WORKFLOW_STATUS="success"

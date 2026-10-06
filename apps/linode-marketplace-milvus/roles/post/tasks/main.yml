@@ -16,9 +16,9 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      # Minio
-      Minio Username: {{ minio_root_username }}
-      Minio Password: {{ minio_root_password }}
+      # RustFS
+      RustFS Username: {{ rustfs_username }}
+      RustFS Password: {{ rustfs_password }}
       # Milvus
       Milvus Username: root
       Milvus Password: {{ milvus_password }}

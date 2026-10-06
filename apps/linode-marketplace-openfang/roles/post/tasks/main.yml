@@ -1,0 +1,37 @@
+---
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Writing sudo creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      OpenFang listens on 127.0.0.1:4200 (loopback only) and is reached over an
+      SSH tunnel - no public web port is exposed.
+
+      Dashboard access (run locally):
+        ssh -L 4200:127.0.0.1:4200 {{ username }}@{{ _domain }}
+      Then browse to: http://127.0.0.1:4200
+
+      OpenFang API Bearer Token: {{ openfang_api_key }}
+
+      # Configure your LLM provider with the interactive `openfang init` wizard,
+      # which runs automatically on your first login as root. You can also run it
+      # manually at any time (as {{ username }}): openfang init
+      # After changing providers/keys, apply them with: systemctl restart openfang

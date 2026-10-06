@@ -1,6 +1,7 @@
 import uuid
 
 from regression_tests.services.postgresql.postgresql_service import PostgresqlService
+from regression_tests.services.newrelic.newrelic_service import NewrelicService
 
 
 def test_postgresql_up(remote_exec, app_credentials):
@@ -47,3 +48,20 @@ def test_postgresql_data_roundtrip(remote_exec, app_credentials):
     assert out == label, f"row did not round-trip, expected {label}: {out!r}"
 
     service.query(password, f"DROP TABLE {table};")
+
+
+def test_newrelic_cli_installed(remote_exec):
+    # Verifies the New Relic CLI is installed root-owned and executable, and actually runs.
+    newrelic = NewrelicService(remote_exec)
+    assert newrelic.file_mode_owner(newrelic.CLI) == "755 root:root", "newrelic CLI has unexpected mode or owner"
+    code, output = newrelic.cli_version()
+    assert code == 0 and "newrelic" in output.lower(), f"newrelic CLI did not run (exit {code}): {output}"
+
+
+def test_newrelic_first_login_script_ready(remote_exec):
+    # Verifies the first-login setup script is staged, valid, and still waiting for a user to run it.
+    newrelic = NewrelicService(remote_exec)
+    assert newrelic.file_mode_owner(newrelic.LOGIN_SCRIPT) == "755 root:root", "login script has unexpected mode or owner"
+    error = newrelic.login_script_syntax_error()
+    assert error is None, f"login script has a syntax error: {error}"
+    assert not newrelic.login_script_completed(), "login script already ran; expected it to wait for the first login"

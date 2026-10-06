@@ -37,7 +37,7 @@ fi
 #<UDF name="soa_email_address" label="Email address (for the Let's Encrypt SSL certificate)">
 
 ## Milvus Settings
-#<UDF name="minio_user" label="The Minio user name to be utilized for this deployment: *No Capital Letters or Special Characters*">
+#<UDF name="rustfs_username" label="The RustFS frontend user login: *No Capital Letters or Special Characters*">
 
 # BEGIN CI-ADDONS
 ## Addons
@@ -93,9 +93,7 @@ function udf {
   sed 's/  //g' <<EOF > ${group_vars}
   # sudo username
   username: ${USER_NAME}
-  # minio
-  minio_root_username: ${MINIO_USER}
-  # BEGIN CI-UDF-ADDONS
+  rustfs_username: ${RUSTFS_USERNAME}
   # addons
   add_ons: [${ADD_ONS}]
   # END CI-UDF-ADDONS   

@@ -1,6 +1,7 @@
 import uuid
 
 from regression_tests.services.mysql.mysql_service import MysqlService
+from regression_tests.services.mysqld_exporter.mysqld_exporter_service import MysqldExporterService
 
 
 def test_mysql_up(remote_exec, app_credentials):
@@ -45,3 +46,42 @@ def test_mysql_rejects_invalid_password(remote_exec):
     out, err, code = service.query("invalid-" + uuid.uuid4().hex, "SELECT 1;")
     assert code != 0, f"authentication with an invalid password unexpectedly succeeded: {out}"
     assert "Access denied" in err, f"unexpected error for an invalid password: {err or out}"
+
+
+def test_mysqld_exporter_alive(remote_exec):
+    # Verifies the add-on unit is active, enabled at boot and runs as the unprivileged prometheus user.
+    exporter = MysqldExporterService(remote_exec)
+    assert exporter.unit_active() == "active", "mysqld_exporter unit is not active"
+    assert exporter.unit_enabled() == "enabled", "mysqld_exporter is not enabled at boot"
+    user = exporter.process_user()
+    assert user == "prometheus", f"mysqld_exporter runs as unexpected user: {user}"
+
+
+def test_mysqld_exporter_connected_to_database(remote_exec):
+    # Verifies the exporter authenticates to MariaDB and reports its version.
+    exporter = MysqldExporterService(remote_exec)
+    assert exporter.value("mysql_up") == 1, "mysql_up is not 1 - exporter cannot log in to the database"
+    version = exporter.line("mysql_version_info{")
+    assert version and "MariaDB" in version, f"unexpected version info: {version}"
+
+
+def test_mysqld_exporter_tracks_database_activity(remote_exec, app_credentials):
+    # Verifies that real INSERTs are reflected in the exported command counters.
+    service = MysqlService(remote_exec)
+    exporter = MysqldExporterService(remote_exec)
+    password = app_credentials["MySQL Root Password"]
+    database = f"exporter_{uuid.uuid4().hex[:12]}"
+    rows = 5
+    insert_counter = 'mysql_global_status_commands_total{command="insert"}'
+    before = exporter.value(insert_counter)
+    assert before is not None, "insert command counter is not exported"
+    out, err, code = service.query(
+        password,
+        f"CREATE DATABASE {database};"
+        f"CREATE TABLE {database}.items (id INT);"
+        + "".join(f"INSERT INTO {database}.items VALUES ({i});" for i in range(rows)),
+    )
+    assert code == 0, f"database workload failed (exit {code}): {err or out}"
+    after = exporter.value(insert_counter)
+    assert after is not None, "insert command counter disappeared after the workload"
+    assert after - before >= rows, f"insert counter did not grow by {rows}: {before} -> {after}"

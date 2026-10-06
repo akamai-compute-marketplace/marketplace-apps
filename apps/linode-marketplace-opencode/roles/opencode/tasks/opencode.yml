@@ -1,0 +1,14 @@
+---
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: true
+
+- name: Install OpenCode
+  npm:
+    name: opencode-ai
+    global: true
+    state: present
