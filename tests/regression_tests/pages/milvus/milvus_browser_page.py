@@ -4,18 +4,15 @@ from regression_tests.pages.base_page import BasePage
 
 
 class MilvusBrowserPage(BasePage):
-    def __init__(self, page: Page):
+    def __init__(self, page: Page, bucket_name: str = ''):
         super().__init__(page)
-        self.acknowledge_button = self.page.get_by_role("button", name="Acknowledge")
-        # First "Create Bucket" is the persistent sidebar button; the second appears in the open drawer.
-        self.create_bucket_button = self.page.get_by_role("button", name="Create Bucket").first
-        self.bucket_name_input = self.page.get_by_role("textbox", name="Bucket Name*")
-        self.create_bucket_submit = self.page.locator("#create-bucket")
+        self.bucket_name = bucket_name
+        self.create_bucket_button = self.page.get_by_role("button", name="Create Bucket", exact=True)
+        self.bucket_name_input = self.page.locator("#bucket-name")
+        self.create_bucket_submit = self.page.get_by_role("button", name="Create", exact=True)
+        self.bucket_name_label = self.page.get_by_role("link", name=self.bucket_name, exact=True)
 
-    def bucket_heading(self, name: str):
-        return self.page.get_by_role("heading", name=name)
-
-    def create_bucket(self, name: str):
+    def create_bucket(self):
         self.create_bucket_button.click()
-        self.bucket_name_input.fill(name)
+        self.bucket_name_input.fill(self.bucket_name)
         self.create_bucket_submit.click()
