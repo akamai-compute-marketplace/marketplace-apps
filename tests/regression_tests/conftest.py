@@ -98,7 +98,7 @@ def browser():
     print("Launching browser...")
     with sync_playwright() as p:
         browser = p.chromium.launch(
-            headless=False,
+            headless=True,
             args=[
                 "--use-fake-ui-for-media-stream",
                 "--use-fake-device-for-media-stream",
