@@ -1,0 +1,3 @@
+[submodule "apps/linode_helpers"]
+	path = apps/linode_helpers
+	url = https://github.com/akamai-compute-marketplace/linode_helpers.git

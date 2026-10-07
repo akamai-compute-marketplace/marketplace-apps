@@ -29,7 +29,7 @@ def test_mistral_login(context, base_url, app_credentials):
 def test_mistral_chat(context, base_url, app_credentials):
     # Verifies that user can send prompt and get the correct response from model.
     model = "mistralai/Mistral-7B-Instruct-v0.3"
-    prompt = "What is the capital of France?"
+    prompt = "What is the capital of France? One-word answer."
     expected_response = "Paris"
     username = app_credentials["Open WebUI admin email"]
     password = app_credentials["Open WebUI admin password"]

@@ -156,7 +156,7 @@ function run {
   # clone repo and set up ansible environment
   #git -C /tmp clone ${GIT_REPO}
   # for a single testing branch
-  git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+  git -C /tmp clone --recurse-submodules -b ${BRANCH} ${GIT_REPO}
 
   # venv
   cd ${WORK_DIR}/${MARKETPLACE_APP}
