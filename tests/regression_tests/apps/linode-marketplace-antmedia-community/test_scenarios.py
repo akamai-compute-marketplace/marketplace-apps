@@ -2,6 +2,9 @@ from playwright.sync_api import expect
 from regression_tests.pages.antmedia_community.dashboard_page import DashboardPage
 from regression_tests.pages.antmedia_community.login_page import LoginPage
 from regression_tests.pages.antmedia_community.stream_page import StreamPage
+from regression_tests.pages.antmedia_community.antmedia_community_tech_docs_page import (
+    AntMediaCommunityTechDocsPage,
+)
 
 
 def test_antmedia_startup(context, base_url):
@@ -40,3 +43,16 @@ def test_antmedia_start_stream(context, base_url, app_credentials):
     expect(stream_page.stream_frame.status_online_label, "Stream is not started").to_be_visible()
     expect(dashboard_page.active_live_streams_label, "Stream info is not displayed on the dashboard").to_contain_text(
         "Active Live Streams 1")
+
+
+def test_antmedia_community_tech_docs(context, techdocs_url):
+    """Verify that the Ant Media Server Community Edition docs page is accessible."""
+    tech_docs_page = AntMediaCommunityTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Ant Media Server Community Edition docs page did not load.").to_have_title(
+        "Ant Media Server - Community Edition"
+    )
+    expect(
+        tech_docs_page.antmedia_community_header,
+        "Ant Media Server Community Edition docs header did not render.",
+    ).to_be_visible()

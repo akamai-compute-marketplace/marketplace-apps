@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.arangodb.arangodb_login_page import ArangoDBLoginPage
 from regression_tests.pages.arangodb.arangodb_collections_page import ArangoDBCollectionsPage
+from regression_tests.pages.arangodb.arangodb_tech_docs_page import ArangoDBTechDocsPage
 
 
 def test_arangodb_startup(context, base_url):
@@ -41,3 +42,11 @@ def test_arangodb_create_collection(context, base_url, app_credentials):
         collections_page.collections_content,
         "Newly created collection did not appear in the collections list.",
     ).to_contain_text(collection_name, timeout=15000)
+
+
+def test_arangodb_tech_docs(context, techdocs_url):
+    """Verify that the ArangoDB tech docs page is accessible."""
+    tech_docs_page = ArangoDBTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "ArangoDB tech docs page did not load.").to_have_title("ArangoDB")
+    expect(tech_docs_page.arangodb_header, "ArangoDB tech docs header did not render.").to_be_visible()

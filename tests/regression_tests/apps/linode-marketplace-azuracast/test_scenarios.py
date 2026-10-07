@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.azuracast.azuracast_login_page import AzuracastLoginPage
 from regression_tests.pages.azuracast.azuracast_setup_page import AzuracastSetupPage
+from regression_tests.pages.azuracast.azuracast_tech_docs_page import AzuracastTechDocsPage
 
 
 def test_azuracast_startup(context, base_url):
@@ -52,3 +53,11 @@ def test_azuracast_radio_station_creation(context, base_url, app_credentials):
         context.get_by_role("cell", name=station, exact=False),
         f"Station '{station}' was not found in the dashboard after wizard completion.",
     ).to_be_visible()
+
+
+def test_azuracast_tech_docs(context, techdocs_url):
+    """Verify that the AzuraCast tech docs page is accessible."""
+    tech_docs_page = AzuracastTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "AzuraCast tech docs page did not load.").to_have_title("AzuraCast")
+    expect(tech_docs_page.azuracast_header, "AzuraCast tech docs header did not render.").to_be_visible()

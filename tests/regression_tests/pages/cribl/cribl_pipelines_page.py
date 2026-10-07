@@ -7,7 +7,7 @@ class CriblPipelinesPage(BasePage):
         super().__init__(page)
         self.add_pipeline_button = page.locator("button.ant-btn-primary.ant-dropdown-trigger")
         self.add_pipeline_menu_item = page.get_by_role("menuitem", name="Add Pipeline")
-        self.pipeline_id_input = page.locator("[id='root.id']")
+        self.pipeline_id_input = page.locator("input[id$='root.id']")
         self.save_button = page.locator("button.ant-btn-primary", has_text="Save")
 
     def navigate_to_pipelines(self, base_url: str):
