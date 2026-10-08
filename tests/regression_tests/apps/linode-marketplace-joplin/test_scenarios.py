@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.joplin.joplin_login_page import JoplinLoginPage
 from regression_tests.pages.joplin.joplin_dashboard_page import JoplinDashboardPage
+from regression_tests.pages.joplin.joplin_tech_docs_page import JoplinTechDocsPage
 
 
 def test_joplin_startup(context, base_url):
@@ -24,3 +25,11 @@ def test_joplin_login(context, base_url, app_credentials):
     expect(context, "Admin dashboard did not load after login.").to_have_title("Joplin Server - Admin dashboard")
     expect(dashboard_page.heading, "Dashboard heading not visible after login.").to_be_visible()
     expect(dashboard_page.logout_button, "Logout button not visible — login may have failed.").to_be_visible()
+
+
+def test_joplin_tech_docs(context, techdocs_url):
+    """Verify that the Joplin tech docs page is accessible."""
+    tech_docs_page = JoplinTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Joplin tech docs page did not load.").to_have_title("Joplin")
+    expect(tech_docs_page.joplin_header, "Joplin tech docs header did not render.").to_be_visible()

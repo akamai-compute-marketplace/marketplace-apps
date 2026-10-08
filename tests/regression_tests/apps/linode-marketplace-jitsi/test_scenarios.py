@@ -3,6 +3,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.jitsi.jitsi_login_page import JitsiLoginPage
 from regression_tests.pages.jitsi.jitsi_prejoin_page import JitsiPrejoinPage
 from regression_tests.pages.jitsi.jitsi_meeting_page import JitsiMeetingPage
+from regression_tests.pages.jitsi.jitsi_tech_docs_page import JitsiTechDocsPage
 
 
 def test_jitsi_startup(context, base_url):
@@ -30,3 +31,11 @@ def test_jitsi_start_stream(context, base_url):
     # WebRTC device setup and room connection can take 15–30 s on a fresh instance.
     expect(meeting_page.toolbar_heading, "Meeting room did not load: toolbar not visible.").to_be_visible(timeout=30000)
     expect(meeting_page.leave_meeting_button, "Meeting is not active: leave button not visible.").to_be_visible()
+
+
+def test_jitsi_tech_docs(context, techdocs_url):
+    """Verify that the Jitsi tech docs page is accessible."""
+    tech_docs_page = JitsiTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Jitsi tech docs page did not load.").to_have_title("Jitsi")
+    expect(tech_docs_page.jitsi_header, "Jitsi tech docs header did not render.").to_be_visible()

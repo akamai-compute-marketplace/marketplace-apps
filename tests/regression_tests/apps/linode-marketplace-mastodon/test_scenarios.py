@@ -3,6 +3,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.mastodon.mastodon_landing_page import MastodonLandingPage
 from regression_tests.pages.mastodon.mastodon_login_page import MastodonLoginPage
 from regression_tests.pages.mastodon.mastodon_home_page import MastodonHomePage
+from regression_tests.pages.mastodon.mastodon_tech_docs_page import MastodonTechDocsPage
 
 
 def test_mastodon_startup(context, base_url):
@@ -37,3 +38,11 @@ def test_mastodon_write_post(context, base_url, app_credentials):
     post_text = "Hello from the regression test suite!"
     home_page.write_post(post_text)
     expect(home_page.home_feed, "Post did not appear in the home feed after posting.").to_contain_text(post_text)
+
+
+def test_mastodon_tech_docs(context, techdocs_url):
+    """Verify that the Mastodon tech docs page is accessible."""
+    tech_docs_page = MastodonTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Mastodon tech docs page did not load.").to_have_title("Mastodon")
+    expect(tech_docs_page.mastodon_header, "Mastodon tech docs header did not render.").to_be_visible()
