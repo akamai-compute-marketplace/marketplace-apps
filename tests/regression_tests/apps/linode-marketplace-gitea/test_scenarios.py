@@ -4,6 +4,7 @@ from regression_tests.pages.gitea.gitea_create_repo_page import GiteaCreateRepoP
 from regression_tests.pages.gitea.gitea_dashboard_page import GiteaDashboardPage
 from regression_tests.pages.gitea.gitea_login_page import GiteaLoginPage
 from regression_tests.pages.gitea.gitea_repo_page import GiteaRepoPage
+from regression_tests.pages.gitea.gitea_tech_docs_page import GiteaTechDocsPage
 
 
 def test_gitea_startup(context, base_url):
@@ -41,3 +42,11 @@ def test_gitea_create_repo(context, base_url, app_credentials):
 
     repo_page = GiteaRepoPage(context, repo_name)
     expect(repo_page.repo_name_link, "Failed to create the repository.").to_be_visible()
+
+
+def test_gitea_tech_docs(context, techdocs_url):
+    """Verify that the Gitea tech docs page is accessible."""
+    tech_docs_page = GiteaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Gitea tech docs page did not load.").to_have_title("Gitea")
+    expect(tech_docs_page.gitea_header, "Gitea tech docs header did not render.").to_be_visible()

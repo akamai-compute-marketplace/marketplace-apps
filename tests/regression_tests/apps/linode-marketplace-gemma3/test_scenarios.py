@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.gemma.gemma_chat_page import GemmaChatPage
 from regression_tests.pages.gemma.gemma_login_page import GemmaLoginPage
+from regression_tests.pages.gemma.gemma_tech_docs_page import GemmaTechDocsPage
 
 
 def test_gemma_startup(context, base_url):
@@ -42,3 +43,11 @@ def test_gemma_chat(context, base_url, app_credentials):
     chat_page.send_prompt(prompt)
     expect(chat_page.edit_prompt_button, "Model is not responding after sending a prompt.").to_be_visible(timeout=180000)
     expect(chat_page.prompt_response_field, "Model response is not correct").to_contain_text(expected_response, timeout=180000)
+
+
+def test_gemma_tech_docs(context, techdocs_url):
+    """Verify that the Gemma3 tech docs page is accessible."""
+    tech_docs_page = GemmaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Gemma3 tech docs page did not load.").to_have_title("Gemma3")
+    expect(tech_docs_page.gemma_header, "Gemma3 tech docs header did not render.").to_be_visible()

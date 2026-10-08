@@ -5,6 +5,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.influxdb.influxdb_login_page import InfluxDBLoginPage
 from regression_tests.pages.influxdb.influxdb_home_page import InfluxDBHomePage
 from regression_tests.pages.influxdb.influxdb_buckets_page import InfluxDBBucketsPage
+from regression_tests.pages.influxdb.influxdb_tech_docs_page import InfluxDBTechDocsPage
 
 
 def test_influxdb_startup(context, base_url):
@@ -42,3 +43,11 @@ def test_influxdb_create_bucket(context, base_url, influxdb_admin_credentials):
     buckets_page.navigate(f"{base_url}/orgs/{org_id}/load-data/buckets")
     buckets_page.create_bucket(bucket_name)
     expect(buckets_page.get_bucket_item(bucket_name), "Created bucket did not appear in the list.").to_be_visible()
+
+
+def test_influxdb_tech_docs(context, techdocs_url):
+    """Verify that the InfluxDB tech docs page is accessible."""
+    tech_docs_page = InfluxDBTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "InfluxDB tech docs page did not load.").to_have_title("InfluxDB")
+    expect(tech_docs_page.influxdb_header, "InfluxDB tech docs header did not render.").to_be_visible()
