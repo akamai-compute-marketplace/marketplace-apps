@@ -5,6 +5,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.microweber.microweber_dashboard_page import MicroweberDashboardPage
 from regression_tests.pages.microweber.microweber_login_page import MicroweberLoginPage
 from regression_tests.pages.microweber.microweber_page_editor import MicroweberPageEditor
+from regression_tests.pages.microweber.microweber_tech_docs_page import MicroweberTechDocsPage
 
 
 def test_microweber_startup(context, admin_url):
@@ -50,3 +51,11 @@ def test_microweber_create_and_open_page(context, base_url, admin_url, app_crede
     editor.create_page(page_title)
     editor.navigate(f"{base_url}/{page_title}")
     expect(context, "The newly created Microweber page did not open.").to_have_title(page_title)
+
+
+def test_microweber_tech_docs(context, techdocs_url):
+    """Verify that the Microweber tech docs page is accessible."""
+    tech_docs_page = MicroweberTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Microweber tech docs page did not load.").to_have_title("Microweber")
+    expect(tech_docs_page.microweber_header, "Microweber tech docs header did not render.").to_be_visible()

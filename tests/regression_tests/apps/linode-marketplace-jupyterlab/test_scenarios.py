@@ -3,6 +3,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.jupyterlab.jupyterlab_login_page import JupyterlabLoginPage
 from regression_tests.pages.jupyterlab.jupyterlab_lab_page import JupyterlabLabPage
 from regression_tests.pages.jupyterlab.jupyterlab_notebook_page import JupyterlabNotebookPage
+from regression_tests.pages.jupyterlab.jupyterlab_tech_docs_page import JupyterLabTechDocsPage
 
 
 def test_jupyterlab_startup(context, base_url):
@@ -40,3 +41,11 @@ def test_jupyterlab_run_notebook(context, base_url, app_credentials):
     notebook_page.active_cell_input.fill('print("hello")')
     notebook_page.run_cell_button.click()
     expect(notebook_page.notebook_content, "Cell output did not appear after running print('hello').").to_contain_text("hello")
+
+
+def test_jupyterlab_tech_docs(context, techdocs_url):
+    """Verify that the JupyterLab tech docs page is accessible."""
+    tech_docs_page = JupyterLabTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "JupyterLab tech docs page did not load.").to_have_title("JupyterLab")
+    expect(tech_docs_page.jupyterlab_header, "JupyterLab tech docs header did not render.").to_be_visible()

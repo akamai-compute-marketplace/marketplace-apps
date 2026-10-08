@@ -8,6 +8,7 @@ from regression_tests.pages.joomla.joomla_dashboard_page import JoomlaDashboardP
 from regression_tests.pages.joomla.joomla_home_article_page import JoomlaHomeArticlePage
 from regression_tests.pages.joomla.joomla_home_page import JoomlaHomePage
 from regression_tests.pages.joomla.joomla_menu_items_page import JoomlaMenuItemsPage
+from regression_tests.pages.joomla.joomla_tech_docs_page import JoomlaTechDocsPage
 
 
 def test_joomla_startup(context, admin_url):
@@ -61,3 +62,11 @@ def test_joomla_publish_article(context, base_url, admin_url, app_credentials):
     home_article_page = JoomlaHomeArticlePage(context)
     expect(home_article_page.article_title, "Article title is incorrect").to_have_text(article_title)
     expect(home_article_page.article_text, "Article text is incorrect").to_have_text(article_text)
+
+
+def test_joomla_tech_docs(context, techdocs_url):
+    """Verify that the Joomla tech docs page is accessible."""
+    tech_docs_page = JoomlaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Joomla tech docs page did not load.").to_have_title("Joomla")
+    expect(tech_docs_page.joomla_header, "Joomla tech docs header did not render.").to_be_visible()

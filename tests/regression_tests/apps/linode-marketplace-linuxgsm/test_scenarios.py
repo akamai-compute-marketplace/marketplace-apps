@@ -1,3 +1,6 @@
+from playwright.sync_api import expect
+
+from regression_tests.pages.linuxgsm.linuxgsm_tech_docs_page import LinuxGSMTechDocsPage
 from regression_tests.services.linuxgsm.linuxgsm_service import LinuxGSMService
 
 
@@ -16,3 +19,11 @@ def test_linuxgsm_list_servers(remote_exec):
     out, code = service.list_servers()
     assert code == 0, f"linuxgsm.sh list failed (exit {code}): {out}"
     assert "arma3server" in out, f"expected game server missing from the catalog: {out}"
+
+
+def test_linuxgsm_tech_docs(context, techdocs_url):
+    """Verify that the LinuxGSM tech docs page is accessible."""
+    tech_docs_page = LinuxGSMTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "LinuxGSM tech docs page did not load.").to_have_title("LinuxGSM")
+    expect(tech_docs_page.linuxgsm_header, "LinuxGSM tech docs header did not render.").to_be_visible()
