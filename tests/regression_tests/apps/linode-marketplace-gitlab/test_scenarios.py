@@ -6,6 +6,7 @@ from regression_tests.pages.gitlab.gitlab_login_page import GitLabLoginPage
 from regression_tests.pages.gitlab.gitlab_setup_page import GitLabSetupPage
 from regression_tests.pages.gitlab.gitlab_home_page import GitLabHomePage
 from regression_tests.pages.gitlab.gitlab_new_project_page import GitLabNewProjectPage
+from regression_tests.pages.gitlab.gitlab_tech_docs_page import GitLabTechDocsPage
 
 
 def test_gitlab_startup(context, base_url):
@@ -43,3 +44,11 @@ def test_gitlab_create_project(context, base_url, app_credentials):
     new_project_page.navigate(f"{base_url}/projects/new")
     new_project_page.create_project(project)
     expect(context, "Project page did not load after creation.").to_have_title(re.compile(project))
+
+
+def test_gitlab_tech_docs(context, techdocs_url):
+    """Verify that the GitLab tech docs page is accessible."""
+    tech_docs_page = GitLabTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "GitLab tech docs page did not load.").to_have_title("GitLab")
+    expect(tech_docs_page.gitlab_header, "GitLab tech docs header did not render.").to_be_visible()

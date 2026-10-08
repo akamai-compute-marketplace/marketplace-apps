@@ -3,6 +3,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.drupal.drupal_create_article_page import DrupalCreateArticlePage
 from regression_tests.pages.drupal.drupal_home_page import DrupalHomePage
 from regression_tests.pages.drupal.drupal_login_page import DrupalLoginPage
+from regression_tests.pages.drupal.drupal_tech_docs_page import DrupalTechDocsPage
 
 
 def test_drupal_startup(context, base_url):
@@ -44,3 +45,11 @@ def test_drupal_create_article(context, base_url, app_credentials):
     home_page.navigate(base_url)
     expect(home_page.article_heading, "Failed to create a new article.").to_be_visible()
     expect(home_page.article_body, "Article body is not displayed on the home page.").to_be_visible()
+
+
+def test_drupal_tech_docs(context, techdocs_url):
+    """Verify that the Drupal tech docs page is accessible."""
+    tech_docs_page = DrupalTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Drupal tech docs page did not load.").to_have_title("Drupal")
+    expect(tech_docs_page.drupal_header, "Drupal tech docs header did not render.").to_be_visible()

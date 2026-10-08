@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.harbor.harbor_login_page import HarborLoginPage
 from regression_tests.pages.harbor.harbor_projects_page import HarborProjectsPage
+from regression_tests.pages.harbor.harbor_tech_docs_page import HarborTechDocsPage
 
 
 def test_harbor_startup(context, base_url):
@@ -35,3 +36,12 @@ def test_harbor_create_project(context, base_url, app_credentials):
     projects_page.projects_heading.wait_for()
     projects_page.create_project(project)
     expect(projects_page.get_project_link(project), "Created project did not appear in the list.").to_be_visible()
+
+
+def test_harbor_tech_docs(context):
+    """Verify that the Harbor tech docs page is accessible."""
+    # The VM MOTD links to the Linode marketplace page, so the techdocs page URL is set explicitly.
+    tech_docs_page = HarborTechDocsPage(context)
+    tech_docs_page.navigate("https://techdocs.akamai.com/quick-deploy-apps/docs/harbor")
+    expect(context, "Harbor tech docs page did not load.").to_have_title("Harbor")
+    expect(tech_docs_page.harbor_header, "Harbor tech docs header did not render.").to_be_visible()
