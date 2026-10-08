@@ -1,8 +1,4 @@
 ---
-- name: Set AzuraCast directory path
-  set_fact:
-    azuracast_dir: /var/azuracast
-
 - name: Create AzuraCast directory
   file:
     path: "{{ azuracast_dir }}"
@@ -40,6 +36,10 @@
     project_name: azuracast_installer
     pull: always
     services: [installer]
+  register: azuracast_installer_result
+  retries: 6
+  delay: 10
+  until: azuracast_installer_result is succeeded
 
 - name: Remove docker-compose.installer.yml
   file:
@@ -49,15 +49,25 @@
 - name: Rename docker-compose.new.yml to docker-compose.yml
   command: mv {{ azuracast_dir }}/docker-compose.new.yml {{ azuracast_dir }}/docker-compose.yml
 
+- name: Disable UFW for AzuraCast installation
+  ufw:
+    state: disabled
+
 - name: Pull AzuraCast images
   community.docker.docker_compose_v2:
     project_src: "{{ azuracast_dir }}"
     pull: always
     state: present
 
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
+
 - name: Get AzuraCast DB password from env file for installer
   slurp:
     src: "{{ azuracast_dir }}/azuracast.env"
+  no_log: true
   register: azuracast_env_pre
 
 - name: Run azuracast_install in web container
@@ -141,6 +151,7 @@
 - name: Get AzuraCast DB password from env file
   slurp:
     src: "{{ azuracast_dir }}/azuracast.env"
+  no_log: true
   register: azuracast_env
 
 - name: Set DB password fact

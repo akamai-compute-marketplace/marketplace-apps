@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.airflow.airflow_login_page import AirflowLoginPage
 from regression_tests.pages.airflow.airflow_dashboard_page import AirflowDashboardPage
+from regression_tests.pages.airflow.airflow_tech_docs_page import AirflowTechDocsPage
 
 
 def test_airflow_startup(context, base_url):
@@ -21,3 +22,11 @@ def test_airflow_login(context, base_url, app_credentials):
     login_page.login(username, password)
     dashboard_page = AirflowDashboardPage(context)
     expect(dashboard_page.dag_runs_header, "DAGs dashboard did not load after login.").to_be_visible(timeout=10000)
+
+
+def test_airflow_tech_docs(context, techdocs_url):
+    """Verify that the Apache Airflow tech docs page is accessible."""
+    tech_docs_page = AirflowTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Apache Airflow tech docs page did not load.").to_have_title("Apache Airflow")
+    expect(tech_docs_page.airflow_header, "Apache Airflow tech docs header did not render.").to_be_visible()

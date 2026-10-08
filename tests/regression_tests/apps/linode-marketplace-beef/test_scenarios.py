@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.beef.beef_login_page import BeefLoginPage
 from regression_tests.pages.beef.beef_dashboard_page import BeefDashboardPage
+from regression_tests.pages.beef.beef_tech_docs_page import BeefTechDocsPage
 
 
 def test_beef_startup(context, base_url):
@@ -21,3 +22,11 @@ def test_beef_login(context, base_url, app_credentials):
     login_page.login(username, password)
     dashboard_page = BeefDashboardPage(context)
     expect(dashboard_page.logout_link, "Dashboard did not load after login.").to_be_visible()
+
+
+def test_beef_tech_docs(context, techdocs_url):
+    """Verify that the BeEF tech docs page is accessible."""
+    tech_docs_page = BeefTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "BeEF tech docs page did not load.").to_have_title("BeEF")
+    expect(tech_docs_page.beef_header, "BeEF tech docs header did not render.").to_be_visible()
