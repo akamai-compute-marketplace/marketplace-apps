@@ -1,7 +1,7 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.owncast.owncast_admin_page import OwncastAdminPage
 from regression_tests.pages.owncast.owncast_home_page import OwncastHomePage
+from regression_tests.pages.owncast.owncast_tech_docs_page import OwncastTechDocsPage
 
 
 def test_owncast_startup(context, base_url):
@@ -19,3 +19,11 @@ def test_owncast_admin_login(context, base_url):
     admin_page.navigate(f"{base_url}/admin")
     expect(context, "Owncast admin did not load").to_have_title("Owncast Admin")
     expect(admin_page.heading, "Credentials are invalid or something went wrong.").to_be_visible()
+
+
+def test_owncast_tech_docs(context, techdocs_url):
+    """Verify that the Owncast tech docs page is accessible."""
+    tech_docs_page = OwncastTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Owncast tech docs title did not match.").to_have_title("Owncast")
+    expect(tech_docs_page.owncast_header, "Owncast tech docs header did not render.").to_be_visible()

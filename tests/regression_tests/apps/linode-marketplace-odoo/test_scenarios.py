@@ -1,8 +1,8 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.odoo.odoo_database_creation_page import OdooDatabaseCreationPage
 from regression_tests.pages.odoo.odoo_login_page import OdooLoginPage
 from regression_tests.pages.odoo.odoo_apps_page import OdooAppsPage
+from regression_tests.pages.odoo.odoo_tech_docs_page import OdooTechDocsPage
 
 
 def test_odoo_startup(context, base_url):
@@ -42,3 +42,11 @@ def test_odoo_login(context, base_url, db_test_data):
         apps_page.user_menu_button,
         "Login with the fixture credentials failed -- dashboard did not load.",
     ).to_be_visible()
+
+
+def test_odoo_tech_docs(context, techdocs_url):
+    """Verify that the Odoo tech docs page is accessible."""
+    tech_docs_page = OdooTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Odoo tech docs title did not match.").to_have_title("Odoo")
+    expect(tech_docs_page.odoo_header, "Odoo tech docs header did not render.").to_be_visible()
