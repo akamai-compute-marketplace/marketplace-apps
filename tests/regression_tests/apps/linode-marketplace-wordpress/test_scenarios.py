@@ -1,8 +1,8 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.wordpress.wordpress_dashboard_page import WordPressDashboardPage
 from regression_tests.pages.wordpress.wordpress_login_page import WordPressLoginPage
 from regression_tests.pages.wordpress.wordpress_site_page import WordPressSitePage
+from regression_tests.pages.wordpress.wordpress_tech_docs_page import WordPressTechDocsPage
 
 
 def test_wordpress_site_startup(context, base_url):
@@ -33,3 +33,11 @@ def test_wordpress_admin_login(context, base_url, app_credentials):
 
     dashboard_page = WordPressDashboardPage(context)
     expect(dashboard_page.dashboard_heading, "Dashboard did not load after login.").to_be_visible()
+
+
+def test_wordpress_tech_docs(context, techdocs_url):
+    """Verify that the WordPress tech docs page is accessible."""
+    tech_docs_page = WordPressTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "WordPress tech docs page title is incorrect.").to_have_title("WordPress")
+    expect(tech_docs_page.wordpress_header, "WordPress tech docs header did not render.").to_be_visible()
