@@ -1,9 +1,11 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.prometheus_grafana.prometheus_grafana_login_page import GrafanaLoginPage
 from regression_tests.pages.prometheus_grafana.prometheus_grafana_home_page import GrafanaHomePage
 from regression_tests.pages.prometheus_grafana.prometheus_grafana_prometheus_page import PrometheusPage
 from regression_tests.pages.prometheus_grafana.prometheus_grafana_datasource_page import GrafanaDataSourcePage
+from regression_tests.pages.prometheus_grafana.prometheus_grafana_tech_docs_page import (
+    PrometheusGrafanaTechDocsPage,
+)
 
 
 def test_prometheus_grafana_grafana_startup(context, base_url):
@@ -56,3 +58,11 @@ def test_prometheus_grafana_add_prometheus_data_source(context, base_url, app_cr
     expect(
         datasource_page.success_message, "Save & test did not report success."
     ).to_be_visible(timeout=30000)
+
+
+def test_prometheus_grafana_tech_docs(context, techdocs_url):
+    """Verify that the Prometheus & Grafana tech docs page is accessible."""
+    tech_docs_page = PrometheusGrafanaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Prometheus & Grafana tech docs page title is incorrect.").to_have_title("Prometheus & Grafana")
+    expect(tech_docs_page.prometheus_grafana_header, "Prometheus & Grafana tech docs header did not render.").to_be_visible()

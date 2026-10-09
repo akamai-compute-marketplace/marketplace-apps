@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.qwen.qwen_chat_page import QwenChatPage
 from regression_tests.pages.qwen.qwen_login_page import QwenLoginPage
+from regression_tests.pages.qwen.qwen_tech_docs_page import QwenTechDocsPage
 
 
 def test_qwen_startup(context, base_url):
@@ -42,3 +43,11 @@ def test_qwen_chat(context, base_url, app_credentials):
     chat_page.send_prompt(prompt)
     expect(chat_page.edit_prompt_button, "Model is not responding after sending a prompt.").to_be_visible(timeout=180000)
     expect(chat_page.prompt_response_field, "Model response is not correct").to_contain_text(expected_response, timeout=180000)
+
+
+def test_qwen_tech_docs(context, techdocs_url):
+    """Verify that the Qwen tech docs page is accessible."""
+    tech_docs_page = QwenTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Qwen tech docs page title is incorrect.").to_have_title("Qwen")
+    expect(tech_docs_page.qwen_header, "Qwen tech docs header did not render.").to_be_visible()

@@ -1,12 +1,11 @@
 import re
 import time
-
 from playwright.sync_api import expect
-
 from regression_tests.pages.pritunl.pritunl_login_page import PritunlLoginPage
 from regression_tests.pages.pritunl.pritunl_setup_wizard_page import PritunlSetupWizardPage
 from regression_tests.pages.pritunl.pritunl_organizations_page import PritunlOrganizationsPage
 from regression_tests.pages.pritunl.pritunl_servers_page import PritunlServersPage
+from regression_tests.pages.pritunl.pritunl_tech_docs_page import PritunlTechDocsPage
 
 
 def test_pritunl_startup(context, base_url):
@@ -90,3 +89,11 @@ def test_pritunl_create_server_and_verify_online(context, base_url, app_credenti
     assert match, f"Could not parse the dashboard's servers-online status: {status_text!r}"
     online, total = match.groups()
     assert online == total and online != "0", f"Dashboard does not show all servers online: {status_text!r}"
+
+
+def test_pritunl_tech_docs(context, techdocs_url):
+    """Verify that the Pritunl tech docs page is accessible."""
+    tech_docs_page = PritunlTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Pritunl tech docs page title is incorrect.").to_have_title("Pritunl")
+    expect(tech_docs_page.pritunl_header, "Pritunl tech docs header did not render.").to_be_visible()

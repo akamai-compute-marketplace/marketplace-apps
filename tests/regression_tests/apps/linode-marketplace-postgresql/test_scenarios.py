@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.postgresql.postgresql_tech_docs_page import PostgresqlTechDocsPage
 from regression_tests.services.postgresql.postgresql_service import PostgresqlService
 from regression_tests.services.newrelic.newrelic_service import NewrelicService
 
@@ -65,3 +66,11 @@ def test_newrelic_first_login_script_ready(remote_exec):
     error = newrelic.login_script_syntax_error()
     assert error is None, f"login script has a syntax error: {error}"
     assert not newrelic.login_script_completed(), "login script already ran; expected it to wait for the first login"
+
+
+def test_postgresql_tech_docs(context, techdocs_url):
+    """Verify that the PostgreSQL tech docs page is accessible."""
+    tech_docs_page = PostgresqlTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "PostgreSQL tech docs page title is incorrect.").to_have_title("PostgreSQL")
+    expect(tech_docs_page.postgresql_header, "PostgreSQL tech docs header did not render.").to_be_visible()

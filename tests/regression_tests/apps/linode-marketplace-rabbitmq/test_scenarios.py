@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.rabbitmq.rabbitmq_login_page import RabbitMQLoginPage
 from regression_tests.pages.rabbitmq.rabbitmq_overview_page import RabbitMQOverviewPage
+from regression_tests.pages.rabbitmq.rabbitmq_tech_docs_page import RabbitMQTechDocsPage
 
 
 def test_rabbitmq_startup(context, base_url):
@@ -24,3 +25,11 @@ def test_rabbitmq_login(context, base_url, app_credentials):
     expect(context, "RabbitMQ overview page did not load after login.").to_have_title("RabbitMQ: Overview")
     expect(overview_page.overview_heading, "Overview heading not visible after login.").to_be_visible()
     expect(overview_page.logout_button, "Log out button not visible after login.").to_be_visible()
+
+
+def test_rabbitmq_tech_docs(context, techdocs_url):
+    """Verify that the RabbitMQ tech docs page is accessible."""
+    tech_docs_page = RabbitMQTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "RabbitMQ tech docs page title is incorrect.").to_have_title("RabbitMQ")
+    expect(tech_docs_page.rabbitmq_header, "RabbitMQ tech docs header did not render.").to_be_visible()

@@ -1,9 +1,9 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.saltcorn.saltcorn_create_page_page import SaltcornCreatePagePage
 from regression_tests.pages.saltcorn.saltcorn_create_table_page import SaltcornCreateTablePage
 from regression_tests.pages.saltcorn.saltcorn_dashboard_page import SaltcornDashboardPage
 from regression_tests.pages.saltcorn.saltcorn_login_page import SaltcornLoginPage
+from regression_tests.pages.saltcorn.saltcorn_tech_docs_page import SaltcornTechDocsPage
 
 
 def test_saltcorn_startup(context, base_url):
@@ -55,3 +55,11 @@ def test_saltcorn_create_page(context, base_url, app_credentials):
     create_page_page.create_page(test_page_name)
     create_page_page.navigate_to_dashboard()
     expect(dashboard_page.pages_card, "Page can't be created").to_contain_text(test_page_name)
+
+
+def test_saltcorn_tech_docs(context, techdocs_url):
+    """Verify that the Saltcorn tech docs page is accessible."""
+    tech_docs_page = SaltcornTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Saltcorn tech docs page title is incorrect.").to_have_title("Saltcorn")
+    expect(tech_docs_page.saltcorn_header, "Saltcorn tech docs header did not render.").to_be_visible()

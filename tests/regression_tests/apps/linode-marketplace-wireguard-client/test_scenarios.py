@@ -1,6 +1,6 @@
-from regression_tests.services.wireguard_client.wireguard_client_service import (
-    WireGuardClientService,
-)
+from playwright.sync_api import expect
+from regression_tests.pages.wireguard_client.wireguard_client_tech_docs_page import WireGuardClientTechDocsPage
+from regression_tests.services.wireguard_client.wireguard_client_service import WireGuardClientService
 
 
 def test_wireguard_client_up_and_interface_present(remote_exec):
@@ -55,3 +55,11 @@ def test_wireguard_client_kernel_registers_the_configured_peer(remote_exec):
         assert route in allowed_ips, (
             f"configured allowed-ip {route!r} is not routed to the peer; kernel has {allowed_ips!r}"
         )
+
+
+def test_wireguard_client_tech_docs(context, techdocs_url):
+    """Verify that the WireGuard tech docs page is accessible."""
+    tech_docs_page = WireGuardClientTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "WireGuard tech docs page title is incorrect.").to_have_title("WireGuard")
+    expect(tech_docs_page.wireguard_client_header, "WireGuard tech docs header did not render.").to_be_visible()

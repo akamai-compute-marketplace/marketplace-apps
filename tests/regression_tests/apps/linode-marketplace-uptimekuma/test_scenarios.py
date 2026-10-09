@@ -1,9 +1,9 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.uptime_kuma.uptime_kuma_login_page import UptimeKumaLoginPage
 from regression_tests.pages.uptime_kuma.uptime_kuma_dashboard_page import UptimeKumaDashboardPage
 from regression_tests.pages.uptime_kuma.uptime_kuma_add_monitor_page import UptimeKumaAddMonitorPage
 from regression_tests.pages.uptime_kuma.uptime_kuma_monitor_page import UptimeKumaMonitorPage
+from regression_tests.pages.uptime_kuma.uptime_kuma_tech_docs_page import UptimeKumaTechDocsPage
 
 
 def test_uptime_kuma_startup(context, base_url):
@@ -41,3 +41,11 @@ def test_uptime_kuma_add_monitor_status_up(context, base_url, app_credentials):
     monitor_page = UptimeKumaMonitorPage(context)
     expect(monitor_page.monitor_heading, "Monitor page did not load after saving.").to_have_text("Self Check")
     expect(monitor_page.status_badge, "Monitor status is not Up.").to_have_text("Up", timeout=30000)
+
+
+def test_uptime_kuma_tech_docs(context, techdocs_url):
+    """Verify that the Uptime Kuma tech docs page is accessible."""
+    tech_docs_page = UptimeKumaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Uptime Kuma tech docs page title is incorrect.").to_have_title("Uptime Kuma")
+    expect(tech_docs_page.uptime_kuma_header, "Uptime Kuma tech docs header did not render.").to_be_visible()
