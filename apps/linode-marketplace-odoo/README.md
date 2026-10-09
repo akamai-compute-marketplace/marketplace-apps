@@ -9,7 +9,7 @@ Odoo is a free and comprehensive business app suite of tools that seamlessly int
 | Docker    | 20.10    | Container Management tool |
 | Docker-Compose  | 1.29   | Container Management tool |
 | odoo | Latest | all-in-one business app suite |
-| postgres:13 | 13 | Free and open-source relational database management system |
+| postgres | 16 | Free and open-source relational database management system |
 
 **Supported Distributions:**
 
