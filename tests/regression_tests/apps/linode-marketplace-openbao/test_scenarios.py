@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.openbao.openbao_tech_docs_page import OpenBaoTechDocsPage
 from regression_tests.services.openbao.openbao_service import OpenBaoService
 
 
@@ -61,3 +62,11 @@ def test_openbao_secret_roundtrip(remote_exec, app_credentials):
     out, err, code = service.kv_get_field(f"{mount}/probe", token, "value")
     assert code == 0, f"reading the secret back failed (exit {code}): {err or out}"
     assert out == value, f"secret did not round-trip, expected {value}: {out}"
+
+
+def test_openbao_tech_docs(context, techdocs_url):
+    """Verify that the OpenBao tech docs page is accessible."""
+    tech_docs_page = OpenBaoTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "OpenBao tech docs title did not match.").to_have_title("OpenBao")
+    expect(tech_docs_page.openbao_header, "OpenBao tech docs header did not render.").to_be_visible()

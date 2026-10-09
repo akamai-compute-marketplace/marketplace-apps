@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.mysql.mysql_tech_docs_page import MysqlTechDocsPage
 from regression_tests.services.mysql.mysql_service import MysqlService
 from regression_tests.services.mysqld_exporter.mysqld_exporter_service import MysqldExporterService
 
@@ -85,3 +86,11 @@ def test_mysqld_exporter_tracks_database_activity(remote_exec, app_credentials):
     after = exporter.value(insert_counter)
     assert after is not None, "insert command counter disappeared after the workload"
     assert after - before >= rows, f"insert counter did not grow by {rows}: {before} -> {after}"
+
+
+def test_mysql_tech_docs(context, techdocs_url):
+    """Verify that the MySQL/MariaDB tech docs page is accessible."""
+    tech_docs_page = MysqlTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "MySQL/MariaDB tech docs page did not load.").to_have_title("MySQL/MariaDB")
+    expect(tech_docs_page.mysql_header, "MySQL/MariaDB tech docs header did not render.").to_be_visible()

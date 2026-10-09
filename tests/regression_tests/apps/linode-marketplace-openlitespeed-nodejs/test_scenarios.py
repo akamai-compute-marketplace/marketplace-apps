@@ -9,6 +9,9 @@ from regression_tests.pages.openlitespeed_nodejs.openlitespeed_nodejs_home_page 
 from regression_tests.pages.openlitespeed_nodejs.openlitespeed_nodejs_login_page import (
     OpenLiteSpeedNodeJsLoginPage,
 )
+from regression_tests.pages.openlitespeed_nodejs.openlitespeed_nodejs_tech_docs_page import (
+    OpenLitespeedNodejsTechDocsPage,
+)
 
 
 def test_openlitespeed_nodejs_startup(context, base_url):
@@ -36,3 +39,11 @@ def test_openlitespeed_nodejs_admin_login(context, admin_url, app_credentials):
     )
     dashboard_page = OpenLiteSpeedNodeJsDashboardPage(context)
     expect(dashboard_page.dashboard_heading, "OpenLiteSpeed WebAdmin dashboard did not load after login.").to_be_visible()
+
+
+def test_openlitespeed_nodejs_tech_docs(context, techdocs_url):
+    """Verify that the OpenLiteSpeed Node.js tech docs page is accessible."""
+    tech_docs_page = OpenLitespeedNodejsTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "OpenLiteSpeed Node.js tech docs title did not match.").to_have_title("OpenLiteSpeed Node.js")
+    expect(tech_docs_page.openlitespeed_nodejs_header, "OpenLiteSpeed Node.js tech docs header did not render.").to_be_visible()
