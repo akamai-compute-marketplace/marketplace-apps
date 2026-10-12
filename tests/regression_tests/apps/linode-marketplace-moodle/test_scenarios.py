@@ -7,6 +7,7 @@ from regression_tests.pages.moodle.moodle_dashboard_page import MoodleDashboardP
 from regression_tests.pages.moodle.moodle_create_course_page import MoodleCreateCoursePage
 from regression_tests.pages.moodle.moodle_course_page import MoodleCoursePage
 from regression_tests.pages.moodle.moodle_course_management_page import MoodleCourseManagementPage
+from regression_tests.pages.moodle.moodle_tech_docs_page import MoodleTechDocsPage
 
 
 def test_moodle_startup(context, base_url):
@@ -51,3 +52,11 @@ def test_moodle_create_course(context, base_url, app_credentials):
         f"{base_url}/course/management.php?search={urllib.parse.quote(course_fullname)}"
     )
     expect(management_page.course_link, "New course does not appear in course management listing.").to_be_visible()
+
+
+def test_moodle_tech_docs(context, techdocs_url):
+    """Verify that the Moodle tech docs page is accessible."""
+    tech_docs_page = MoodleTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Moodle tech docs page did not load.").to_have_title("Moodle")
+    expect(tech_docs_page.moodle_header, "Moodle tech docs header did not render.").to_be_visible()

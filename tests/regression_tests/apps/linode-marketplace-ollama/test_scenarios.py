@@ -1,7 +1,7 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.ollama.ollama_chat_page import OllamaChatPage
 from regression_tests.pages.ollama.ollama_login_page import OllamaLoginPage
+from regression_tests.pages.ollama.ollama_tech_docs_page import OllamaTechDocsPage
 
 
 def test_ollama_startup(context, base_url):
@@ -42,3 +42,11 @@ def test_ollama_chat(context, base_url, app_credentials):
     chat_page.send_prompt(prompt)
     expect(chat_page.edit_prompt_button, "Model is not responding after sending a prompt.").to_be_visible(timeout=180000)
     expect(chat_page.prompt_response_field, "Model response is not correct").to_contain_text(expected_response, timeout=180000)
+
+
+def test_ollama_tech_docs(context, techdocs_url):
+    """Verify that the Ollama tech docs page is accessible."""
+    tech_docs_page = OllamaTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Ollama tech docs title did not match.").to_have_title("Ollama")
+    expect(tech_docs_page.ollama_header, "Ollama tech docs header did not render.").to_be_visible()

@@ -1,8 +1,7 @@
 import random
-
-from regression_tests.services.secure_your_server.secure_your_server_service import (
-    SecureYourServerService,
-)
+from playwright.sync_api import expect
+from regression_tests.pages.secure_your_server.secure_your_server_tech_docs_page import SecureYourServerTechDocsPage
+from regression_tests.services.secure_your_server.secure_your_server_service import SecureYourServerService
 
 BLOCKED_PORT = 8080
 
@@ -77,3 +76,11 @@ def test_secure_your_server_sudo_user_has_root_privilege(
 
     assert code == 0, f"sudo failed (exit {code}): {err or out}"
     assert out == "root", f"expected sudo to run as root, got: {out}"
+
+
+def test_secure_your_server_tech_docs(context, techdocs_url):
+    """Verify that the Secure Your Server tech docs page is accessible."""
+    tech_docs_page = SecureYourServerTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Secure Your Server tech docs page title is incorrect.").to_have_title("Secure Your Server")
+    expect(tech_docs_page.secure_your_server_header, "Secure Your Server tech docs header did not render.").to_be_visible()

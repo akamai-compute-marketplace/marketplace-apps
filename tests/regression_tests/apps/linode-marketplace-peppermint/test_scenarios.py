@@ -1,10 +1,10 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.peppermint.peppermint_create_issue_page import PeppermintCreateIssuePage
 from regression_tests.pages.peppermint.peppermint_dashboard_page import PeppermintDashboardPage
 from regression_tests.pages.peppermint.peppermint_issues_page import PeppermintIssuesPage
 from regression_tests.pages.peppermint.peppermint_login_page import PeppermintLoginPage
 from regression_tests.pages.peppermint.peppermint_onboarding_page import PeppermintOnboardingPage
+from regression_tests.pages.peppermint.peppermint_tech_docs_page import PeppermintTechDocsPage
 
 
 def test_peppermint_startup(context, base_url):
@@ -64,3 +64,11 @@ def test_peppermint_create_issue(context, base_url, app_credentials):
     expect(
         issues_page.issue_link(issue_title), "Failed to create a new issue."
     ).to_be_visible()
+
+
+def test_peppermint_tech_docs(context, techdocs_url):
+    """Verify that the Peppermint tech docs page is accessible."""
+    tech_docs_page = PeppermintTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Peppermint tech docs page title is incorrect.").to_have_title("Peppermint")
+    expect(tech_docs_page.peppermint_header, "Peppermint tech docs header did not render.").to_be_visible()

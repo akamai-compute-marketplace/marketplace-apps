@@ -1,6 +1,8 @@
 import shlex
 import uuid
 
+from playwright.sync_api import expect
+from regression_tests.pages.redis.redis_tech_docs_page import RedisTechDocsPage
 from regression_tests.services.redis.redis_service import RedisService
 
 
@@ -46,3 +48,11 @@ def test_redis_set_get_roundtrip(remote_exec, app_credentials):
     assert out == value, f"value did not round-trip, expected {value}: {out!r}"
 
     service.cli(password, f"DEL {shlex.quote(key)}")
+
+
+def test_redis_tech_docs(context, techdocs_url):
+    """Verify that the Redis tech docs page is accessible."""
+    tech_docs_page = RedisTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Redis tech docs page title is incorrect.").to_have_title("Redis")
+    expect(tech_docs_page.redis_header, "Redis tech docs header did not render.").to_be_visible()

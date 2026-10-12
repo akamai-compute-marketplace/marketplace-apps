@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.gpt.gpt_chat_page import GPTChatPage
 from regression_tests.pages.gpt.gpt_login_page import GPTLoginPage
+from regression_tests.pages.gpt.gpt_tech_docs_page import GPTTechDocsPage
 
 
 def test_gpt_startup(context, base_url):
@@ -42,3 +43,11 @@ def test_gpt_chat(context, base_url, app_credentials):
     chat_page.send_prompt(prompt)
     expect(chat_page.edit_prompt_button, "Model is not responding after sending a prompt.").to_be_visible(timeout=180000)
     expect(chat_page.prompt_response_field, "Model response is not correct").to_contain_text(expected_response, timeout=180000)
+
+
+def test_gpt_oss_tech_docs(context, techdocs_url):
+    """Verify that the GPT-OSS tech docs page is accessible."""
+    tech_docs_page = GPTTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "GPT-OSS tech docs page did not load.").to_have_title("GPT-OSS")
+    expect(tech_docs_page.gpt_oss_header, "GPT-OSS tech docs header did not render.").to_be_visible()

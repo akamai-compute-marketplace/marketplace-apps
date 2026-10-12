@@ -4,6 +4,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.milvus.milvus_login_page import MilvusLoginPage
 from regression_tests.pages.milvus.milvus_browser_page import MilvusBrowserPage
+from regression_tests.pages.milvus.milvus_tech_docs_page import MilvusTechDocsPage
 
 
 def test_milvus_startup(context, base_url):
@@ -40,3 +41,11 @@ def test_milvus_create_bucket(context, base_url, app_credentials):
         browser_page.bucket_name_label,
         f"Bucket '{bucket_name}' heading not visible — bucket creation may have failed.",
     ).to_be_visible()
+
+
+def test_milvus_tech_docs(context, techdocs_url):
+    """Verify that the Milvus tech docs page is accessible."""
+    tech_docs_page = MilvusTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Milvus tech docs page did not load.").to_have_title("Milvus")
+    expect(tech_docs_page.milvus_header, "Milvus tech docs header did not render.").to_be_visible()

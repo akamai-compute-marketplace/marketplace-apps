@@ -1,3 +1,6 @@
+from playwright.sync_api import expect
+
+from regression_tests.pages.docker.docker_tech_docs_page import DockerTechDocsPage
 from regression_tests.services.node_exporter.node_exporter_service import NodeExporterService
 from regression_tests.services.docker.docker_service import DockerService
 
@@ -40,3 +43,11 @@ def test_node_exporter_sees_docker(remote_exec):
     # Verifies that the exporter observes the Docker bridge interface.
     exporter = NodeExporterService(remote_exec)
     assert exporter.value('node_network_receive_bytes_total{device="docker0"}') is not None, "docker0 not reported"
+
+
+def test_docker_tech_docs(context, techdocs_url):
+    """Verify that the Docker tech docs page is accessible."""
+    tech_docs_page = DockerTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Docker tech docs page did not load.").to_have_title("Docker")
+    expect(tech_docs_page.docker_header, "Docker tech docs header did not render.").to_be_visible()

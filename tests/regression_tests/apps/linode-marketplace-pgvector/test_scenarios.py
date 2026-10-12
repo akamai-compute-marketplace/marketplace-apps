@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.pgvector.pgvector_tech_docs_page import PgvectorTechDocsPage
 from regression_tests.services.alloy.alloy_service import AlloyService
 from regression_tests.services.pgvector.pgvector_service import PgvectorService
 
@@ -109,3 +110,11 @@ def test_alloy_ships_logs(remote_exec):
         f"alloy did not ship the test log: lines read={alloy.lines_read_from_test_log()}, "
         f"entries sent={alloy.entries_sent()}"
     )
+
+
+def test_pgvector_tech_docs(context, techdocs_url):
+    """Verify that the Pgvector tech docs page is accessible."""
+    tech_docs_page = PgvectorTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Pgvector tech docs page title is incorrect.").to_have_title("Pgvector")
+    expect(tech_docs_page.pgvector_header, "Pgvector tech docs header did not render.").to_be_visible()

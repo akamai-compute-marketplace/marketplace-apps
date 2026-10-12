@@ -1,3 +1,7 @@
+from playwright.sync_api import expect
+
+from regression_tests.pages.minecraft.minecraft_tech_docs_page import MinecraftTechDocsPage
+
 from regression_tests.services.minecraft.minecraft_service import MinecraftService
 
 
@@ -24,3 +28,11 @@ def test_minecraft_ports_listening(remote_exec):
     assert "udp" in ports and "UNCONN" in ports and "*:25565" in ports, (
         f"Minecraft UDP port is not listening on *:25565:\n{ports}"
     )
+
+
+def test_minecraft_tech_docs(context, techdocs_url):
+    """Verify that the Minecraft Game Server – Java Edition tech docs page is accessible."""
+    tech_docs_page = MinecraftTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Minecraft Game Server – Java Edition tech docs page did not load.").to_have_title("Minecraft Game Server – Java Edition")
+    expect(tech_docs_page.minecraft_header, "Minecraft Game Server – Java Edition tech docs header did not render.").to_be_visible()

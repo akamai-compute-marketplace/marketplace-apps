@@ -4,6 +4,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.discourse.discourse_home_page import DiscourseHomePage
 from regression_tests.pages.discourse.discourse_login_page import DiscourseLoginPage
+from regression_tests.pages.discourse.discourse_tech_docs_page import DiscourseTechDocsPage
 
 
 def test_discourse_startup(context, base_url):
@@ -41,3 +42,11 @@ def test_discourse_create_topic(context, base_url, app_credentials):
     home_page.navigate(base_url)
     home_page.reload()
     expect(home_page.get_topic_link(topic_title), "Created topic did not appear in the topic list.").to_be_visible()
+
+
+def test_discourse_tech_docs(context, techdocs_url):
+    """Verify that the Discourse tech docs page is accessible."""
+    tech_docs_page = DiscourseTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Discourse tech docs page did not load.").to_have_title("Discourse")
+    expect(tech_docs_page.discourse_header, "Discourse tech docs header did not render.").to_be_visible()

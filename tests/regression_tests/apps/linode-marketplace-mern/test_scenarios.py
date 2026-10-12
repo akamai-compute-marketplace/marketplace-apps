@@ -1,5 +1,8 @@
 import uuid
 
+from playwright.sync_api import expect
+
+from regression_tests.pages.mern.mern_tech_docs_page import MernTechDocsPage
 from regression_tests.services.mern.mern_service import MernService
 
 
@@ -57,3 +60,11 @@ def test_mern_mongodb_auth_enforced(remote_exec):
     out, err, code = service.mongo_eval_unauthenticated("db.adminCommand({listDatabases: 1}).ok")
     assert "requires authentication" in (out + err), \
         f"MongoDB did not enforce authentication: {out or err}"
+
+
+def test_mern_tech_docs(context, techdocs_url):
+    """Verify that the MERN Stack tech docs page is accessible."""
+    tech_docs_page = MernTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "MERN Stack tech docs page did not load.").to_have_title("MERN Stack")
+    expect(tech_docs_page.mern_header, "MERN Stack tech docs header did not render.").to_be_visible()
