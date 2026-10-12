@@ -2,6 +2,19 @@ import pytest
 from playwright.sync_api import expect
 
 from regression_tests.pages.openfang.openfang_tech_docs_page import OpenFangTechDocsPage
+from regression_tests.services.openfang.openfang_service import OpenFangService
+
+
+def test_openfang_up(remote_exec):
+    # Verifies that the OpenFang binary runs and the daemon answers its public health endpoint.
+    service = OpenFangService(remote_exec)
+    out, code = service.version()
+    assert code == 0, f"openfang CLI did not run (exit {code}): {out}"
+    assert out.startswith("openfang "), f"unexpected openfang version output: {out}"
+
+    body, status = service.api_get("/api/health")
+    assert status == "200", f"/api/health returned {status}: {body}"
+    assert '"status":"ok"' in body, f"OpenFang health is not ok: {body}"
 
 
 @pytest.mark.xfail(reason="Tech docs page is not ready yet")

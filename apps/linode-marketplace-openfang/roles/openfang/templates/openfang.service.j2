@@ -6,8 +6,6 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-User={{ username }}
-Group={{ username }}
 WorkingDirectory={{ openfang_home }}
 EnvironmentFile=-{{ openfang_env_file }}
 Environment="OPENFANG_HOME={{ openfang_home }}"
@@ -29,5 +27,5 @@ LimitNPROC=4096
 SyslogIdentifier=openfang
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 
