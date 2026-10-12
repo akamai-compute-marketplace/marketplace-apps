@@ -1,3 +1,5 @@
+from playwright.sync_api import expect
+from regression_tests.pages.simplex_chat.simplex_chat_tech_docs_page import SimplexChatTechDocsPage
 from regression_tests.services.simplex_chat.simplex_chat_service import SimplexChatService
 
 
@@ -37,3 +39,11 @@ def test_simplex_ports_reachable(remote_exec, ssh_credentials):
 
     assert smp_up, f"SMP port {SimplexChatService.SMP_PORT} is not reachable: {smp_error}"
     assert xftp_up, f"XFTP port {SimplexChatService.XFTP_PORT} is not reachable: {xftp_error}"
+
+
+def test_simplex_chat_tech_docs(context, techdocs_url):
+    """Verify that the SimpleX Chat tech docs page is accessible."""
+    tech_docs_page = SimplexChatTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "SimpleX Chat tech docs page title is incorrect.").to_have_title("SimpleX Chat")
+    expect(tech_docs_page.simplex_chat_header, "SimpleX Chat tech docs header did not render.").to_be_visible()

@@ -1,7 +1,7 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.splunk.splunk_login_page import SplunkLoginPage
 from regression_tests.pages.splunk.splunk_home_page import SplunkHomePage
+from regression_tests.pages.splunk.splunk_tech_docs_page import SplunkTechDocsPage
 
 
 def test_splunk_startup(context, base_url):
@@ -24,3 +24,11 @@ def test_splunk_login(context, base_url, app_credentials):
     expect(context, "Splunk home page did not load after login.").to_have_title("Home")
     expect(home_page.welcome_heading, "Welcome heading not visible after login.").to_be_visible()
     expect(home_page.administrator_button, "Administrator nav button not visible after login.").to_be_visible()
+
+
+def test_splunk_tech_docs(context, techdocs_url):
+    """Verify that the Splunk tech docs page is accessible."""
+    tech_docs_page = SplunkTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Splunk tech docs page title is incorrect.").to_have_title("Splunk")
+    expect(tech_docs_page.splunk_header, "Splunk tech docs header did not render.").to_be_visible()

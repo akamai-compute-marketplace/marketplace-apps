@@ -1,7 +1,7 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.zabbix.zabbix_login_page import ZabbixLoginPage
 from regression_tests.pages.zabbix.zabbix_dashboard_page import ZabbixDashboardPage
+from regression_tests.pages.zabbix.zabbix_tech_docs_page import ZabbixTechDocsPage
 
 
 def test_zabbix_startup(context, base_url):
@@ -39,3 +39,11 @@ def test_zabbix_server_is_running(context, base_url, app_credentials):
     expect(
         dashboard_page.server_running_value, "Zabbix server is not reported as running."
     ).to_have_text("Yes")
+
+
+def test_zabbix_tech_docs(context, techdocs_url):
+    """Verify that the Zabbix tech docs page is accessible."""
+    tech_docs_page = ZabbixTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Zabbix tech docs page title is incorrect.").to_have_title("Zabbix")
+    expect(tech_docs_page.zabbix_header, "Zabbix tech docs header did not render.").to_be_visible()

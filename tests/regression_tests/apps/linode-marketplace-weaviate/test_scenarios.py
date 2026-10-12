@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.weaviate.weaviate_tech_docs_page import WeaviateTechDocsPage
 from regression_tests.services.weaviate.weaviate_service import WeaviateService
 
 ADMIN_KEY = "Admin API Key"
@@ -59,3 +60,11 @@ def test_weaviate_stores_and_retrieves_a_vector(remote_exec, http_session, base_
     assert service.nearest_title(api_key, collection, [0.1, 0.9, 0]) == "beta", (
         "a query vector closest to beta did not return beta"
     )
+
+
+def test_weaviate_tech_docs(context, techdocs_url):
+    """Verify that the Weaviate tech docs page is accessible."""
+    tech_docs_page = WeaviateTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Weaviate tech docs page title is incorrect.").to_have_title("Weaviate")
+    expect(tech_docs_page.weaviate_header, "Weaviate tech docs header did not render.").to_be_visible()
