@@ -1,20 +1,21 @@
 services:
   etcd:
-    image: quay.io/coreos/etcd:v3.5.26
     container_name: milvus-etcd
-    command: >
-      etcd
-      --name milvus-etcd
-      --data-dir /etcd-data
-      --listen-client-urls=https://0.0.0.0:2379
-      --advertise-client-urls=https://milvus-etcd:2379
-      --client-cert-auth=true
-      --trusted-ca-file=/certs/ca.crt
-      --cert-file=/certs/server.crt
-      --key-file=/certs/server.key
+    image: quay.io/coreos/etcd:v3.5.26
     volumes:
-      - ./etcd-data:/etcd-data
+      - ./volumes/etcd:/etcd
       - ./certs:/certs:ro
+    command:
+      - etcd
+      - -name=milvus-etcd
+      - -advertise-client-urls=https://milvus-etcd:2379
+      - -listen-client-urls=https://0.0.0.0:2379
+      - --data-dir
+      - /etcd
+      - --client-cert-auth=true
+      - --trusted-ca-file=/certs/ca.crt
+      - --cert-file=/certs/server.crt
+      - --key-file=/certs/server.key
 
     healthcheck:
       test: ["CMD", "etcdctl",
@@ -27,48 +28,73 @@ services:
       timeout: 5s
       retries: 5
 
-  minio:
-    container_name: milvus-minio
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z-cpuv1
-      # image: minio/minio:RELEASE.2024-05-28T17-19-04Z
+  rustfs_perms:
+    image: alpine
+    user: root
+    volumes:
+      - ./volumes/rustfs:/fix_path
+    command: chown -R 10001:10001 /fix_path
+
+  rustfs:
+    container_name: milvus-rustfs
+    image: rustfs/rustfs:latest
+    depends_on:
+      rustfs_perms:
+        condition: service_completed_successfully
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_OBS_LOGGER_LEVEL: error
     ports:
       - "127.0.0.1:9000:9000"
       - "127.0.0.1:9001:9001"
+
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
-    command: minio server /minio_data --console-address ":9001"
+      - ./volumes/rustfs/data:/data
+      - ./volumes/rustfs/logs:/var/log/rustfs/
+    command:
+      - /data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "--fail", "http://localhost:9000/health"]
       interval: 30s
-      timeout: 20s
+      timeout: 10s
       retries: 3
+    restart: unless-stopped
+
+  milvus_perms:
+    image: alpine
+    user: root
+    volumes:
+      - ./volumes/milvus:/fix_path
+    command: chown -R 999:999 /fix_path
+
+  milvus_certs:
+    image: alpine
+    user: root
+    volumes:
+      - ./certs:/fix_certs
+    command: chown -R 999:999 /fix_certs/client.key /fix_certs/server.key
 
   standalone:
     container_name: milvus-standalone
-    image: milvusdb/milvus:2.6-20251217-6b728b3d
-      #command: sleep infinity
+    image: milvusdb/milvus:v3.0.1
+    #command: sleep infinity # for debugging purposes
     command: ["milvus", "run", "standalone"]
     security_opt:
-    - seccomp:unconfined
+      - seccomp:unconfined
     environment:
       MINIO_REGION: us-east-1
+      MINIO_ADDRESS: rustfs:9000
+      MINIO_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY}
+      MINIO_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY}
       ETCD_ENDPOINTS: https://milvus-etcd:2379
-      MINIO_ADDRESS: minio:9000
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
-      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
-      - {{ milvus_directory }}/milvus.yaml:/milvus/configs/milvus.yaml
+      - ./volumes/milvus:/var/lib/milvus
+      - ./milvus.yaml:/milvus/configs/milvus.yaml
       - ./certs:/certs:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
-      interval: 30s
-      start_period: 90s
-      timeout: 20s
-      retries: 3
     ports:
       - "127.0.0.1:19530:19530"
       - "127.0.0.1:19121:19121"
@@ -81,11 +107,23 @@ services:
             - driver: nvidia
               capabilities: ["gpu"]
               device_ids: ["0"]
-{% endif %}
+{% endif %}      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
     depends_on:
-      - etcd
-      - minio
-      
+      milvus_perms:
+        condition: service_completed_successfully
+      milvus_certs:
+        condition: service_completed_successfully
+      etcd:
+        condition: service_healthy
+      rustfs:
+        condition: service_healthy
+
 networks:
   default:
     name: milvus

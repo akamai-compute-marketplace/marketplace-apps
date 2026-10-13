@@ -1,6 +1,7 @@
 from playwright.sync_api import expect
 
 from regression_tests.pages.rocketchat.rocketchat_login_page import RocketchatLoginPage
+from regression_tests.pages.rocketchat.rocketchat_tech_docs_page import RocketchatTechDocsPage
 
 
 def test_rocketchat_startup(context, base_url):
@@ -20,3 +21,11 @@ def test_rocketchat_login(context, base_url, app_credentials):
     expect(login_page.username_input, "Login form did not render.").to_be_visible(timeout=30000)
     login_page.login(username, password)
     expect(login_page.login_button, "Login failed - login form is still visible.").to_be_hidden(timeout=30000)
+
+
+def test_rocketchat_tech_docs(context, techdocs_url):
+    """Verify that the Rocket.Chat tech docs page is accessible."""
+    tech_docs_page = RocketchatTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Rocket.Chat tech docs page title is incorrect.").to_have_title("Rocket.Chat")
+    expect(tech_docs_page.rocketchat_header, "Rocket.Chat tech docs header did not render.").to_be_visible()

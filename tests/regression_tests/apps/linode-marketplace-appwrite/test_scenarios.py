@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.appwrite.appwrite_login_page import AppwriteLoginPage
 from regression_tests.pages.appwrite.appwrite_organization_page import AppwriteOrganizationPage
+from regression_tests.pages.appwrite.appwrite_tech_docs_page import AppwriteTechDocsPage
 
 
 def test_appwrite_startup(context, base_url):
@@ -35,3 +36,11 @@ def test_appwrite_create_project(context, base_url, app_credentials):
     project_name = "Test Project"
     org_page.create_project(project_name)
     expect(org_page.menu_bar, "Project was not created successfully.").to_contain_text(project_name, timeout=15000)
+
+
+def test_appwrite_tech_docs(context, techdocs_url):
+    """Verify that the Appwrite tech docs page is accessible."""
+    tech_docs_page = AppwriteTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Appwrite tech docs page did not load.").to_have_title("Appwrite")
+    expect(tech_docs_page.appwrite_header, "Appwrite tech docs header did not render.").to_be_visible()

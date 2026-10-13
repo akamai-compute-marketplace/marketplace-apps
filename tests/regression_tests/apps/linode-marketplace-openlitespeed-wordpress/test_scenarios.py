@@ -9,6 +9,9 @@ from regression_tests.pages.openlitespeed_wordpress.openlitespeed_wordpress_logi
 from regression_tests.pages.openlitespeed_wordpress.openlitespeed_wordpress_site_page import (
     OpenLitespeedWordpressSitePage,
 )
+from regression_tests.pages.openlitespeed_wordpress.openlitespeed_wordpress_tech_docs_page import (
+    OpenlitespeedWordpressTechDocsPage,
+)
 
 
 def test_openlitespeed_wordpress_admin_startup(context, base_url):
@@ -36,3 +39,11 @@ def test_openlitespeed_wordpress_site_page(context, base_url):
     site_page.navigate(base_url)
     expect(context, "WordPress site did not load.").to_have_title("My WP Site")
     expect(site_page.heading, "Blog page did not render on the site homepage.").to_be_visible()
+
+
+def test_openlitespeed_wordpress_tech_docs(context, techdocs_url):
+    """Verify that the OpenLiteSpeed WordPress tech docs page is accessible."""
+    tech_docs_page = OpenlitespeedWordpressTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "OpenLiteSpeed WordPress tech docs title did not match.").to_have_title("OpenLiteSpeed WordPress")
+    expect(tech_docs_page.openlitespeed_wordpress_header, "OpenLiteSpeed WordPress tech docs header did not render.").to_be_visible()

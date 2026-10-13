@@ -9,6 +9,9 @@ from regression_tests.pages.openlitespeed_django.openlitespeed_django_login_page
 from regression_tests.pages.openlitespeed_django.openlitespeed_django_site_page import (
     OpenLitespeedDjangoSitePage,
 )
+from regression_tests.pages.openlitespeed_django.openlitespeed_django_tech_docs_page import (
+    OpenLitespeedDjangoTechDocsPage,
+)
 
 
 def test_openlitespeed_django_admin_startup(context, base_url):
@@ -41,3 +44,11 @@ def test_openlitespeed_django_view_site(context, base_url, app_credentials):
     dashboard_page.view_site()
     site_page = OpenLitespeedDjangoSitePage(context)
     expect(site_page.hello_world_text, "Public site did not load after clicking View site.").to_be_visible()
+
+
+def test_openlitespeed_django_tech_docs(context, techdocs_url):
+    """Verify that the OpenLiteSpeed Django tech docs page is accessible."""
+    tech_docs_page = OpenLitespeedDjangoTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "OpenLiteSpeed Django tech docs title did not match.").to_have_title("OpenLiteSpeed Django")
+    expect(tech_docs_page.openlitespeed_django_header, "OpenLiteSpeed Django tech docs header did not render.").to_be_visible()

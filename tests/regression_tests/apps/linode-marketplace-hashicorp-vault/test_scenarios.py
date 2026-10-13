@@ -1,5 +1,6 @@
 from playwright.sync_api import expect
 
+from regression_tests.pages.hashicorp_vault.vault_tech_docs_page import VaultTechDocsPage
 from regression_tests.pages.hashicorp_vault.vault_dashboard_page import VaultDashboardPage
 from regression_tests.pages.hashicorp_vault.vault_login_page import VaultLoginPage
 from regression_tests.pages.hashicorp_vault.vault_secrets_page import VaultSecretsPage
@@ -44,3 +45,11 @@ def test_vault_create_secret(context, base_url, app_credentials):
     secrets_page.get_secret_data()
     expect(secrets_page.secret_data_row, "The secret key is not visible on the screen or incorrect").to_contain_text(test_secret_key)
     expect(secrets_page.secret_data_row, "The secret value is not visible on the screen or incorrect").to_contain_text(test_secret_value)
+
+
+def test_hashicorp_vault_tech_docs(context, techdocs_url):
+    """Verify that the HashiCorp Vault tech docs page is accessible."""
+    tech_docs_page = VaultTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "HashiCorp Vault tech docs page did not load.").to_have_title("HashiCorp Vault")
+    expect(tech_docs_page.hashicorp_vault_header, "HashiCorp Vault tech docs header did not render.").to_be_visible()

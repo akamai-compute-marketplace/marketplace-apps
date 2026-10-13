@@ -65,7 +65,7 @@ function udf {
 	sed 's/  //g' <<EOF > ${group_vars}
 # sudo username
 username: ${USER_NAME}
-
+soa_email_address: ${DISCOURSE_ADMIN_EMAIL}
 # smtp vars
 discourse_admin_email: ${DISCOURSE_ADMIN_EMAIL}
 discourse_admin_username: ${DISCOURSE_ADMIN_USERNAME}

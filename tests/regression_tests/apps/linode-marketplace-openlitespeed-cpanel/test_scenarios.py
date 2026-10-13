@@ -15,6 +15,9 @@ from regression_tests.pages.openlitespeed_cpanel.openlitespeed_cpanel_whm_initia
 from regression_tests.pages.openlitespeed_cpanel.openlitespeed_cpanel_whm_login_page import (
     OpenlitespeedCpanelWhmLoginPage,
 )
+from regression_tests.pages.openlitespeed_cpanel.openlitespeed_cpanel_tech_docs_page import (
+    OpenlitespeedCpanelTechDocsPage,
+)
 
 
 def test_openlitespeed_cpanel_whm_startup(context, base_url):
@@ -84,3 +87,11 @@ def test_openlitespeed_cpanel_default_web_page(context, http_base_url):
     expect(
         default_page.sorry_text, "Expected 'SORRY!' placeholder text was not visible on the default web page."
     ).to_be_visible()
+
+
+def test_openlitespeed_cpanel_tech_docs(context, cpanel_techdocs_url):
+    """Verify that the LiteSpeed cPanel tech docs page is accessible."""
+    tech_docs_page = OpenlitespeedCpanelTechDocsPage(context)
+    tech_docs_page.navigate(cpanel_techdocs_url)
+    expect(context, "LiteSpeed cPanel tech docs title did not match.").to_have_title("LiteSpeed cPanel")
+    expect(tech_docs_page.openlitespeed_cpanel_header, "LiteSpeed cPanel tech docs header did not render.").to_be_visible()

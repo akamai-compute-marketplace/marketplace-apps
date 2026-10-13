@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.deepseek.deepseek_chat_page import DeepseekChatPage
 from regression_tests.pages.deepseek.deepseek_login_page import DeepseekLoginPage
+from regression_tests.pages.deepseek.deepseek_tech_docs_page import DeepseekTechDocsPage
 
 
 def test_deepseek_startup(context, base_url):
@@ -29,7 +30,7 @@ def test_deepseek_login(context, base_url, app_credentials):
 def test_deepseek_chat(context, base_url, app_credentials):
     # Verifies that user can send prompt and get the correct response from model.
     model = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-    prompt = "What is the capital of France?"
+    prompt = "What is the capital of France? One-word answer."
     expected_response = "Paris"
     username = app_credentials["Open WebUI admin email"]
     password = app_credentials["Open WebUI admin password"]
@@ -42,3 +43,11 @@ def test_deepseek_chat(context, base_url, app_credentials):
     chat_page.send_prompt(prompt)
     expect(chat_page.edit_prompt_button, "Model is not responding after sending a prompt.").to_be_visible(timeout=180000)
     expect(chat_page.prompt_response_field, "Model response is not correct").to_contain_text(expected_response, timeout=180000)
+
+
+def test_deepseek_tech_docs(context, techdocs_url):
+    """Verify that the DeepSeek tech docs page is accessible."""
+    tech_docs_page = DeepseekTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "DeepSeek tech docs page did not load.").to_have_title("DeepSeek")
+    expect(tech_docs_page.deepseek_header, "DeepSeek tech docs header did not render.").to_be_visible()

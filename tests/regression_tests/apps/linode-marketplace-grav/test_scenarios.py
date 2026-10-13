@@ -4,6 +4,7 @@ from regression_tests.pages.grav.grav_login_page import GravLoginPage
 from regression_tests.pages.grav.grav_page_editor_page import GravPageEditorPage
 from regression_tests.pages.grav.grav_pages_list_page import GravPagesListPage
 from regression_tests.pages.grav.grav_published_page import GravPublishedPage
+from regression_tests.pages.grav.grav_tech_docs_page import GravTechDocsPage
 
 
 def test_grav_startup(context, admin_url):
@@ -45,3 +46,11 @@ def test_grav_create_page(context, base_url, admin_url, app_credentials):
     published_page = GravPublishedPage(context, body_text=body_text)
     published_page.navigate(f"{base_url}/test-automation-page")
     expect(published_page.body_text, "Created page is not displayed on the public site.").to_be_visible()
+
+
+def test_grav_tech_docs(context, techdocs_url):
+    """Verify that the Grav tech docs page is accessible."""
+    tech_docs_page = GravTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Grav tech docs page did not load.").to_have_title("Grav")
+    expect(tech_docs_page.grav_header, "Grav tech docs header did not render.").to_be_visible()

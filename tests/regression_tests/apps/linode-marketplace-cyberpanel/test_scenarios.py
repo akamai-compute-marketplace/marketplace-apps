@@ -6,6 +6,7 @@ from regression_tests.pages.cyberpanel.cyberpanel_login_page import CyberPanelLo
 from regression_tests.pages.cyberpanel.cyberpanel_dashboard_page import CyberPanelDashboardPage
 from regression_tests.pages.cyberpanel.cyberpanel_create_website_page import CyberPanelCreateWebsitePage
 from regression_tests.pages.cyberpanel.cyberpanel_websites_page import CyberPanelWebsitesPage
+from regression_tests.pages.cyberpanel.cyberpanel_tech_docs_page import CyberPanelTechDocsPage
 
 
 def test_cyberpanel_startup(context, base_url):
@@ -54,3 +55,11 @@ def test_cyberpanel_create_website(context, base_url, app_credentials):
         websites_page.website_name(unique_domain),
         f"Created website {unique_domain} was not listed.",
     ).to_be_visible(timeout=30000)
+
+
+def test_cyberpanel_tech_docs(context, techdocs_url):
+    """Verify that the CyberPanel tech docs page is accessible."""
+    tech_docs_page = CyberPanelTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "CyberPanel tech docs page did not load.").to_have_title("CyberPanel")
+    expect(tech_docs_page.cyberpanel_header, "CyberPanel tech docs header did not render.").to_be_visible()

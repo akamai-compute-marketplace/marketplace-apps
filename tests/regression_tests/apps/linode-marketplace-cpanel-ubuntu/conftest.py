@@ -35,3 +35,30 @@ def app_credentials(ssh_credentials) -> dict:
         "username": user,
         "password": password,
     }
+
+
+@pytest.fixture(scope="session")
+def cpanel_techdocs_url(remote_exec) -> str:
+    """
+    Reads the tech docs link from /etc/motd.sh on the VM.
+    cPanel uses a dynamic MOTD script (run from root's .bash_profile) instead of
+    /etc/motd, so the line has the form: echo "Documentation: <url>"
+
+    Args:
+        remote_exec: Callable that runs a command on the VM over SSH.
+
+    Returns:
+        str: The documentation URL, e.g. https://techdocs.akamai.com/quick-deploy-apps/docs/cpanel
+
+    Raises:
+        RuntimeError: If /etc/motd.sh cannot be read or has no 'Documentation:' link.
+    """
+    motd, err, code = remote_exec("cat /etc/motd.sh")
+    if code != 0:
+        raise RuntimeError(f"Failed to read /etc/motd.sh (exit code {code}): {err}")
+
+    prefix = 'echo "Documentation:'
+    for line in motd.splitlines():
+        if line.startswith(prefix):
+            return line.removeprefix(prefix).strip().rstrip('"')
+    raise RuntimeError("No Documentation link found in /etc/motd.sh")
