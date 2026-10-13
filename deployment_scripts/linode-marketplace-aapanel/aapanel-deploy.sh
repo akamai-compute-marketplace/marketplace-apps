@@ -1,13 +1,15 @@
 #!/bin/bash
-set -e
 # STACKSCRIPT_ID: 869129
+
 # enable logging
+set -e
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+#DEBUG="NO"
 # cleanup will always happen. If DEBUG is passed and is anything
 # other than NO, it will always trigger cleanup. This is useful for
 # ci testing and passing vars to the instance.
-#DEBUG="NO"
+
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -31,7 +33,7 @@ fi
 
 #GH_USER=""
 #BRANCH=""
-# git user and branch
+
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
         echo "[info] git user and branch set.."
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
@@ -49,11 +51,9 @@ function cleanup {
   if [ -d "${WORK_DIR}" ]; then
     rm -rf ${WORK_DIR}
   fi
-
 }
 
 function udf {
-  
   local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
   sed 's/  //g' <<EOF > ${group_vars}
 
@@ -88,7 +88,6 @@ EOF
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars}
   fi
-
 }
 
 function run {
@@ -114,7 +113,6 @@ function run {
   udf
   # run playbooks
   ansible-playbook -v provision.yml && ansible-playbook -v site.yml
-
 }
 
 function installation_complete {
