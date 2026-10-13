@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.shadowsocks.shadowsocks_tech_docs_page import ShadowsocksTechDocsPage
 from regression_tests.services.shadowsocks.shadowsocks_service import ShadowsocksService
 
 ORIGIN_PORT = 9000
@@ -35,3 +36,11 @@ def test_shadowsocks_proxies_traffic_end_to_end(remote_exec, ssh_credentials, ap
     assert client_state == "active", f"ss-local client did not start: {client_state}"
     assert code == 0, f"fetch through the proxy failed (curl exit {code}): {err or out}"
     assert out == token, f"expected {token} back through the proxy, got: {out!r}"
+
+
+def test_shadowsocks_tech_docs(context, techdocs_url):
+    """Verify that the Shadowsocks tech docs page is accessible."""
+    tech_docs_page = ShadowsocksTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Shadowsocks tech docs page title is incorrect.").to_have_title("Shadowsocks")
+    expect(tech_docs_page.shadowsocks_header, "Shadowsocks tech docs header did not render.").to_be_visible()

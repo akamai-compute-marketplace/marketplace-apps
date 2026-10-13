@@ -1,6 +1,6 @@
 *********************************************************
 {% if vnc_enabled %}
-Akamai Connected Cloud Kali Marketplace App
+Akamai - Kali Linux Quick Deploy App
 
 ###################################
 #   VNC SSH Tunnel Instructions   #
@@ -13,16 +13,16 @@ Akamai Connected Cloud Kali Marketplace App
 
 * For more Detailed documentation please visit the official Documentation below
 
-    https://www.linode.com/docs/marketplace-docs/guides/kali-linux/
+    https://techdocs.akamai.com/quick-deploy-apps/docs/kali-linux
 
 ### To remove this message, you can edit the /etc/motd file ###
 
 Credentials File: /home/{{ username }}/.credentials
 {% else %}
-Akamai Connected Cloud Kali Linux Marketplace App
+Akamai - Kali Linux Quick Deploy App
 App URL: https://{{ ansible_default_ipv4.address }}
 Credentials File: /home/{{ username }}/.credentials
-Documentation: https://www.linode.com/marketplace/apps/linode/kali-linux/
+Documentation: https://techdocs.akamai.com/quick-deploy-apps/docs/kali-linux
 {% endif %}
 *********************************************************
 To delete this message of the day: rm /etc/motd

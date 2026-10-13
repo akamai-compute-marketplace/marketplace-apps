@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.code_server.code_server_main_page import CodeServerMainPage
 from regression_tests.pages.code_server.code_server_explorer_page import CodeServerExplorerPage
+from regression_tests.pages.code_server.code_server_tech_docs_page import CodeServerTechDocsPage
 
 
 def test_code_server_login(context, base_url):
@@ -33,3 +34,11 @@ def test_code_server_create_file(context, base_url):
     # Verify the new file is visible in the Explorer tree
     file_item = explorer_page.get_file_item(filename)
     expect(file_item, f"File '{filename}' was not found in the Explorer after creation.").to_be_visible()
+
+
+def test_code_server_tech_docs(context, techdocs_url):
+    """Verify that the code-server tech docs page is accessible."""
+    tech_docs_page = CodeServerTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "code-server tech docs page did not load.").to_have_title("VS Code Server")
+    expect(tech_docs_page.code_server_header, "code-server tech docs header did not render.").to_be_visible()

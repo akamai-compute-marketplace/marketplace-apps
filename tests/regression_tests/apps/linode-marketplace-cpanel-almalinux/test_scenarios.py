@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.cpanel.cpanel_login_page import CpanelLoginPage
 from regression_tests.pages.cpanel.cpanel_trial_page import CpanelTrialPage
+from regression_tests.pages.cpanel.cpanel_almalinux_tech_docs_page import CpanelAlmalinuxTechDocsPage
 
 
 def test_cpanel_startup(context, base_url):
@@ -28,3 +29,11 @@ def test_cpanel_login(context, base_url, app_credentials):
     expect(trial_page.proceed_to_store_button,
            "WHM trial-activation page did not load after login — login may have failed.",
            ).to_be_visible(timeout=30000)
+
+
+def test_cpanel_almalinux_tech_docs(context, cpanel_techdocs_url):
+    """Verify that the cPanel AlmaLinux tech docs page is accessible."""
+    tech_docs_page = CpanelAlmalinuxTechDocsPage(context)
+    tech_docs_page.navigate(cpanel_techdocs_url)
+    expect(context, "cPanel AlmaLinux tech docs page did not load.").to_have_title("cPanel")
+    expect(tech_docs_page.cpanel_header, "cPanel tech docs header did not render.").to_be_visible()

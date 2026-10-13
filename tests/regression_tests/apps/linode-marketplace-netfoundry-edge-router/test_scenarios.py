@@ -1,3 +1,5 @@
+from playwright.sync_api import expect
+from regression_tests.pages.netfoundry_edge_router.netfoundry_edge_router_tech_docs_page import NetFoundryEdgeRouterTechDocsPage
 from regression_tests.services.netfoundry_edge_router.netfoundry_edge_router_service import (
     NetFoundryEdgeRouterService,
 )
@@ -55,3 +57,11 @@ def test_netfoundry_exposes_no_service_port(remote_exec):
         if ":22" not in line and ":53" not in line
     ]
     assert not unexpected, f"unexpected listening tcp ports before registration: {unexpected}"
+
+
+def test_netfoundry_edge_router_tech_docs(context, techdocs_url):
+    """Verify that the NetFoundry Edge Router tech docs page is accessible."""
+    tech_docs_page = NetFoundryEdgeRouterTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "NetFoundry Edge Router tech docs page did not load.").to_have_title("NetFoundry Edge Router")
+    expect(tech_docs_page.netfoundry_edge_router_header, "NetFoundry Edge Router tech docs header did not render.").to_be_visible()

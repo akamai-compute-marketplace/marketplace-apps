@@ -1,11 +1,10 @@
 import re
 import time
-
 from playwright.sync_api import expect
-
 from regression_tests.pages.plesk.plesk_login_page import PleskLoginPage
 from regression_tests.pages.plesk.plesk_setup_wizard_page import PleskSetupWizardPage
 from regression_tests.pages.plesk.plesk_domains_page import PleskDomainsPage
+from regression_tests.pages.plesk.plesk_tech_docs_page import PleskTechDocsPage
 
 
 def test_plesk_startup(context, base_url):
@@ -67,3 +66,10 @@ def test_plesk_create_domain_and_check_active(context, base_url, plesk_admin_log
         "Newly created domain does not show an Active status.",
     ).to_be_visible(timeout=30000)
 
+
+def test_plesk_tech_docs(context, techdocs_url):
+    """Verify that the Plesk tech docs page is accessible."""
+    tech_docs_page = PleskTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Plesk tech docs page title is incorrect.").to_have_title("Plesk")
+    expect(tech_docs_page.plesk_header, "Plesk tech docs header did not render.").to_be_visible()

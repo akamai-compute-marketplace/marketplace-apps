@@ -1,5 +1,8 @@
 import uuid
 
+from playwright.sync_api import expect
+
+from regression_tests.pages.memgraph.memgraph_tech_docs_page import MemgraphTechDocsPage
 from regression_tests.services.memgraph.memgraph_service import MemgraphService
 
 
@@ -34,3 +37,11 @@ def test_memgraph_data_roundtrip(remote_exec, app_credentials):
     out, err, code = service.cypher(user, password, query)
     assert code == 0, f"cypher round-trip failed (exit {code}): {err or out}"
     assert '"42"' in out, f"node property did not round-trip: {out}"
+
+
+def test_memgraph_tech_docs(context, techdocs_url):
+    """Verify that the Memgraph tech docs page is accessible."""
+    tech_docs_page = MemgraphTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Memgraph tech docs page did not load.").to_have_title("Memgraph")
+    expect(tech_docs_page.memgraph_header, "Memgraph tech docs header did not render.").to_be_visible()

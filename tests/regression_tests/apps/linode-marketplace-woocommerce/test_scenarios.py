@@ -1,8 +1,8 @@
 from playwright.sync_api import expect
-
 from regression_tests.pages.woocommerce.woocommerce_dashboard_page import WooCommerceDashboardPage
 from regression_tests.pages.woocommerce.woocommerce_login_page import WooCommerceLoginPage
 from regression_tests.pages.woocommerce.woocommerce_site_page import WooCommerceSitePage
+from regression_tests.pages.woocommerce.woocommerce_tech_docs_page import WooCommerceTechDocsPage
 
 
 def test_woocommerce_site_startup(context, base_url):
@@ -33,3 +33,11 @@ def test_woocommerce_wp_admin_login(context, base_url, app_credentials):
 
     dashboard_page = WooCommerceDashboardPage(context)
     expect(dashboard_page.dashboard_heading, "Dashboard did not load after login.").to_be_visible()
+
+
+def test_woocommerce_tech_docs(context, techdocs_url):
+    """Verify that the WooCommerce tech docs page is accessible."""
+    tech_docs_page = WooCommerceTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "WooCommerce tech docs page title is incorrect.").to_have_title("WooCommerce")
+    expect(tech_docs_page.woocommerce_header, "WooCommerce tech docs header did not render.").to_be_visible()

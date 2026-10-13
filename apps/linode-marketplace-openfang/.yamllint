@@ -1,0 +1,8 @@
+---
+extends: default
+rules:
+  line-length:
+    max: 120
+  trailing-spaces: disable
+  comments:
+    min-spaces-from-content: 1

@@ -5,6 +5,7 @@ from playwright.sync_api import expect
 from regression_tests.pages.cribl.cribl_login_page import CriblLoginPage
 from regression_tests.pages.cribl.cribl_registration_page import CriblRegistrationPage
 from regression_tests.pages.cribl.cribl_pipelines_page import CriblPipelinesPage
+from regression_tests.pages.cribl.cribl_tech_docs_page import CriblTechDocsPage
 
 
 def test_cribl_startup(context, base_url):
@@ -58,3 +59,11 @@ def test_cribl_create_pipeline(context, base_url, app_credentials):
         pipelines_page.pipeline_link(pipeline_name),
         f"Newly created pipeline '{pipeline_name}' did not appear in the pipelines list.",
     ).to_be_visible(timeout=15000)
+
+
+def test_cribl_tech_docs(context, techdocs_url):
+    """Verify that the Cribl tech docs page is accessible."""
+    tech_docs_page = CriblTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Cribl tech docs page did not load.").to_have_title("Cribl")
+    expect(tech_docs_page.cribl_header, "Cribl tech docs header did not render.").to_be_visible()

@@ -1,5 +1,6 @@
 import uuid
-
+from playwright.sync_api import expect
+from regression_tests.pages.valkey.valkey_tech_docs_page import ValkeyTechDocsPage
 from regression_tests.services.valkey.valkey_service import ValkeyService
 
 DEFAULT_USER = "default"
@@ -74,3 +75,11 @@ def test_valkey_expires_a_key(remote_exec, sudo_user_credentials):
     assert 0 < int(remaining) <= ttl_seconds, (
         f"valkey reported a TTL outside the requested window: {remaining}"
     )
+
+
+def test_valkey_tech_docs(context, techdocs_url):
+    """Verify that the Valkey tech docs page is accessible."""
+    tech_docs_page = ValkeyTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Valkey tech docs page title is incorrect.").to_have_title("Valkey")
+    expect(tech_docs_page.valkey_header, "Valkey tech docs header did not render.").to_be_visible()

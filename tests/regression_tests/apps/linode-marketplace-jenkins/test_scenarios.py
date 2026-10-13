@@ -1,5 +1,6 @@
 from playwright.sync_api import expect
 
+from regression_tests.pages.jenkins.jenkins_tech_docs_page import JenkinsTechDocsPage
 from regression_tests.pages.jenkins.jenkins_unlock_page import JenkinsUnlockPage
 from regression_tests.pages.jenkins.jenkins_setup_wizard_page import JenkinsSetupWizardPage
 from regression_tests.pages.jenkins.jenkins_login_page import JenkinsLoginPage
@@ -69,3 +70,11 @@ def test_jenkins_dashboard_login(context, base_url, app_credentials):
     job_config_page = JenkinsJobConfigPage(context)
     job_config_page.save_button.click()
     expect(context, "Job was not created: job page did not load.").to_have_title("dummy-test-job - Jenkins")
+
+
+def test_jenkins_tech_docs(context, techdocs_url):
+    """Verify that the Jenkins tech docs page is accessible."""
+    tech_docs_page = JenkinsTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Jenkins tech docs page did not load.").to_have_title("Jenkins")
+    expect(tech_docs_page.jenkins_header, "Jenkins tech docs header did not render.").to_be_visible()

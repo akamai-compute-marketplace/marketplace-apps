@@ -2,6 +2,7 @@ from playwright.sync_api import expect
 
 from regression_tests.pages.langflow.langflow_login_page import LangflowLoginPage
 from regression_tests.pages.langflow.langflow_flows_page import LangflowFlowsPage
+from regression_tests.pages.langflow.langflow_tech_docs_page import LangflowTechDocsPage
 
 
 def test_langflow_startup(context, base_url):
@@ -21,3 +22,11 @@ def test_langflow_login(context, base_url, app_credentials):
     login_page.login(username, password)
     flows_page = LangflowFlowsPage(context)
     expect(flows_page.user_menu_button, "App shell did not load after login.").to_be_visible(timeout=30000)
+
+
+def test_langflow_tech_docs(context, techdocs_url):
+    """Verify that the Langflow tech docs page is accessible."""
+    tech_docs_page = LangflowTechDocsPage(context)
+    tech_docs_page.navigate(techdocs_url)
+    expect(context, "Langflow tech docs page did not load.").to_have_title("Langflow")
+    expect(tech_docs_page.langflow_header, "Langflow tech docs header did not render.").to_be_visible()
