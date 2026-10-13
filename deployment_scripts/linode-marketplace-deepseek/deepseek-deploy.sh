@@ -1,14 +1,15 @@
 #!/bin/bash
-set -e
 # STACKSCRIPT_ID: 2025976
 
 # enable logging
+set -e
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
+#DEBUG="NO"
 # cleanup will always happen. If DEBUG is passed and is anything
 # other than NO, it will always trigger cleanup. This is useful for
 # ci testing and passing vars to the instance.
-#DEBUG="NO"
+
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
@@ -37,7 +38,7 @@ fi
 
 #GH_USER=""
 #BRANCH=""
-# git user and branch
+
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
         echo "[info] git user and branch set.."
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
@@ -98,7 +99,6 @@ EOF
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
   fi
-
 }
 
 function run {
