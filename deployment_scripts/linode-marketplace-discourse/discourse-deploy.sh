@@ -6,10 +6,10 @@ set -e
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
 #DEBUG="NO"
-
 # cleanup will always happen. If DEBUG is passed and is anything
 # other than NO, it will always trigger cleanup. This is useful for
 # ci testing and passing vars to the instance.
+
 if [[ -n ${DEBUG} ]]; then
 	if [ "${DEBUG}" == "NO" ]; then
 		trap "cleanup $? $LINENO" EXIT
@@ -63,6 +63,7 @@ function cleanup {
 function udf {
 	local group_vars="${WORK_DIR}/${MARKETPLACE_APP}/group_vars/linode/vars"
 	sed 's/  //g' <<EOF > ${group_vars}
+
 # sudo username
 username: ${USER_NAME}
 soa_email_address: ${DISCOURSE_ADMIN_EMAIL}
