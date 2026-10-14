@@ -1,19 +1,31 @@
 ---
-name: Stackscript Validator
+name: StackScript Validator
 
 on:
   workflow_dispatch:
   schedule:
     - cron: '0 9 * * 3'
+  push:
+    branches:
+      - main
+    paths:
+      - 'deployment_scripts/**'
 
 permissions:
   contents: read
 
+concurrency:
+  group: stackscript-validator
+  cancel-in-progress: true
+
 jobs:
-  stackscript-validator:
+  validate:
     name: Validate StackScripts
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
+    outputs:
+      results: ${{ steps.validate.outputs.results }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -23,23 +35,39 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install validator dependencies
-        run: python3 -m pip install -r tests/stackscript_validator/requirements.txt
+      - name: Install dependencies
+        run: pip install -r .github/scripts/stackscripts/requirements.txt
 
-      - name: Run StackScript validator
-        id: validator
-        run: |
-          python3 tests/stackscript_validator/stackscript_validator.py \
-            --show-failed \
-            --text > stackscript-validator-output.txt
-          cat stackscript-validator-output.txt
-
-      - name: Send StackScript validator report to Slack
-        if: always()
+      - name: Validate StackScripts
+        id: validate
+        working-directory: .github/scripts
         env:
-          REPO_NAME: ${{ github.repository }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          VALIDATOR_OUTCOME: ${{ steps.validator.outcome }}
-          VALIDATOR_OUTPUT: stackscript-validator-output.txt
-        run: bash .github/scripts/stackscript-validator-slack-payload.sh
+        run: python -m stackscripts validate
+
+  update:
+    name: Update mismatched StackScripts
+    needs: validate
+    if: contains(needs.validate.outputs.results, '"MISMATCH"')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: stackscript_production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r .github/scripts/stackscripts/requirements.txt
+
+      - name: Update StackScripts
+        working-directory: .github/scripts
+        env:
+          VALIDATION_RESULTS: ${{ needs.validate.outputs.results }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          STACKSCRIPT_API_TOKEN: ${{ secrets.STACKSCRIPT_API_TOKEN }}
+        run: python -m stackscripts update --results "$VALIDATION_RESULTS"

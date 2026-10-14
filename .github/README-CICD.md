@@ -54,15 +54,16 @@ This directory contains the GitHub Actions workflows and supporting scripts that
 
 ---
 
-### 5. Stackscript Validator (`stackscript-validator.yml`)
+### 5. StackScript Validator (`stackscript-validator.yml`)
 
 **Trigger:**
 - Weekly cron schedule — every **Wednesday at 09:00 UTC**
+- Push to `main` that changes `deployment_scripts/**`
 - Manual run
 
-**Scope:** Runs the StackScript validator in `--show-failed --text` mode against the configured GitHub and Linode sources.
+**Scope:** Compares every deploy script on `main` with the StackScript named in its `# STACKSCRIPT_ID:` header.
 
-**Purpose:** Sends a success message to Slack when no failures are found, or sends a readable list of failed StackScript checks.
+**Purpose:** Reports the result to Slack. When mismatches are found, the message asks whether to fix them and links to the run; the `update` job waits for approval in the `stackscript_production` environment, then pushes the deploy scripts to the mismatched StackScripts and verifies them. Errors such as a missing or unknown StackScript ID are reported only. See [`scripts/stackscripts/README.md`](scripts/stackscripts/README.md).
 
 ---
 
@@ -89,6 +90,7 @@ linode-deletion.sh                 → Delete the Linode instance (always runs, 
 | `DEPS_APP_ID`       | Secret | GitHub App ID used for authenticating dependency updates          |
 | `DEPS_APP_SECRET`   | Secret | GitHub App private key used for authenticating dependency updates |
 | `SLACK_WEBHOOK_URL` | Secret | Webhook URL for posting deployment notifications to Slack         |
+| `STACKSCRIPT_API_TOKEN` | Environment secret (`stackscript_production`) | Linode API token used to update StackScripts |
 ---
 
 ## Scripts
@@ -112,7 +114,7 @@ All supporting scripts live in `.github/scripts/`:
 | `report-dependency-pr.sh`            | Generate a payload and send a notification to Slack about the dependency update PR |
 | `report-get-failed-apps.sh`          | Gets information about failed jobs in the scheduled workflow                       |
 | `report-generate-payload.sh`         | Generates a payload for reporting scheduled workflow results to Slack              |
-| `stackscript-validator-slack-payload.sh` | Generates a payload for reporting StackScript validator results to Slack          |
+| `stackscripts/`                      | Python package that validates StackScripts, updates mismatches and reports to Slack |
 
 ---
 
