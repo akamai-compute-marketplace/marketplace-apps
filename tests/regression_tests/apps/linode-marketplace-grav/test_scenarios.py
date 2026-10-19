@@ -35,6 +35,7 @@ def test_grav_create_page(context, base_url, admin_url, app_credentials):
     login_page = GravLoginPage(context)
     login_page.navigate(admin_url)
     login_page.login(username, password)
+    expect(context, "Login did not complete.").to_have_title("Dashboard — Grav Admin")
 
     pages_list_page = GravPagesListPage(context)
     pages_list_page.navigate(f"{admin_url}/pages")
@@ -42,6 +43,7 @@ def test_grav_create_page(context, base_url, admin_url, app_credentials):
 
     editor_page = GravPageEditorPage(context)
     editor_page.set_content(body_text)
+    expect(editor_page.saved_notification, "Page was not saved.").to_be_visible()
 
     published_page = GravPublishedPage(context, body_text=body_text)
     published_page.navigate(f"{base_url}/test-automation-page")
