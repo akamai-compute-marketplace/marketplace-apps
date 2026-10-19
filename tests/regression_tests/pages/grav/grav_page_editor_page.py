@@ -8,6 +8,7 @@ class GravPageEditorPage(BasePage):
 
         self.content_editor = self.page.locator('div[contenteditable="true"][role="textbox"]')
         self.save_button = self.page.get_by_role("button", name="Save")
+        self.saved_notification = self.page.get_by_text("Page saved successfully")
 
     def set_content(self, text: str):
         self.content_editor.fill(text)
