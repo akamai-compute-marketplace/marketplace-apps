@@ -142,7 +142,7 @@ function run {
 	apt-get install -y git python3 python3-pip
 
 	# for a single testing branch
-	git -C /tmp clone -b ${BRANCH} ${GIT_REPO}
+	git -C /tmp clone --recurse-submodules -b ${BRANCH} ${GIT_REPO}
 
 	# set up python virtual environment
 	cd ${WORK_DIR}/${MARKETPLACE_APP}
