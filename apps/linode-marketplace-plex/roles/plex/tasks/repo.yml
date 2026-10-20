@@ -1,8 +1,8 @@
 ---
 - name: Download plex key
   get_url:
-    url: https://downloads.plex.tv/plex-keys/PlexSign.key
-    dest: '/tmp/PlexSign.key'
+    url: https://downloads.plex.tv/plex-keys/PlexSign.v2.key
+    dest: '/tmp/PlexSign.v2.key'
     owner: root
     group: root
     mode: '0744'
@@ -18,7 +18,7 @@
 
 - name: Add plex repo
   apt_repository:
-    repo: 'deb [signed-by=/usr/share/keyrings/plex.gpg] https://downloads.plex.tv/repo/deb public main'
+    repo: 'deb [signed-by=/usr/share/keyrings/plex.gpg] https://repo.plex.tv/deb/ public main'
     filename: plexmediaserver
     update_cache: true
     state: present
