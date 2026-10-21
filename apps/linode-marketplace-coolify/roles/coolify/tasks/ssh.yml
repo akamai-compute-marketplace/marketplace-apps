@@ -1,0 +1,16 @@
+---
+- name: Generate SSH key for Coolify localhost access
+  community.crypto.openssh_keypair:
+    path: "{{ coolify_ssh_key }}"
+    type: ed25519
+    comment: coolify
+    owner: '9999'
+    group: root
+    mode: '0600'
+
+- name: Authorize SSH key for Coolify localhost access
+  lineinfile:
+    path: /root/.ssh/authorized_keys
+    line: "{{ lookup('file', coolify_ssh_key ~ '.pub') }}"
+    create: true
+    mode: '0600'

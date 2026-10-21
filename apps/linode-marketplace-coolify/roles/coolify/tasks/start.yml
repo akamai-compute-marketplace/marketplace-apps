@@ -1,0 +1,7 @@
+---
+- name: Start Coolify
+  command: bash ./upgrade.sh latest latest docker.io true
+  args:
+    chdir: "{{ coolify_source_directory }}"
+  async: 600
+  poll: 10

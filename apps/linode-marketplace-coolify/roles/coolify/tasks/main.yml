@@ -1,0 +1,15 @@
+---
+- name: Import docker tasks
+  import_tasks: docker.yml
+
+- name: Import install tasks
+  import_tasks: install.yml
+
+- name: Import ssh tasks
+  import_tasks: ssh.yml
+
+- name: Import start tasks
+  import_tasks: start.yml
+
+- name: Import nginx tasks
+  import_tasks: nginx.yml

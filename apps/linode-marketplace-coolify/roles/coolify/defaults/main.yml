@@ -1,0 +1,18 @@
+---
+coolify_cdn_url: https://cdn.coollabs.io/coolify
+coolify_data_directory: /data/coolify
+coolify_source_directory: "{{ coolify_data_directory }}/source"
+coolify_ssh_key: "{{ coolify_data_directory }}/ssh/keys/id.root@host.docker.internal"
+coolify_directories:
+  - "{{ coolify_data_directory }}"
+  - "{{ coolify_data_directory }}/applications"
+  - "{{ coolify_data_directory }}/databases"
+  - "{{ coolify_data_directory }}/backups"
+  - "{{ coolify_data_directory }}/services"
+  - "{{ coolify_data_directory }}/proxy"
+  - "{{ coolify_data_directory }}/proxy/dynamic"
+  - "{{ coolify_data_directory }}/sentinel"
+  - "{{ coolify_data_directory }}/source"
+  - "{{ coolify_data_directory }}/images"
+  - "{{ coolify_data_directory }}/ssh/keys"
+  - "{{ coolify_data_directory }}/ssh/mux"

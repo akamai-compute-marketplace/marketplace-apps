@@ -1,0 +1,41 @@
+---
+- name: Create Coolify directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: '9999'
+    group: root
+    mode: '0700'
+  loop: "{{ coolify_directories }}"
+
+- name: Download Coolify configuration files
+  get_url:
+    url: "{{ coolify_cdn_url }}/{{ item.name }}"
+    dest: "{{ coolify_source_directory }}/{{ item.name }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - { name: docker-compose.yml, mode: '0644' }
+    - { name: docker-compose.prod.yml, mode: '0644' }
+    - { name: .env.production, mode: '0644' }
+    - { name: upgrade.sh, mode: '0755' }
+    - { name: upgrade-postgres.sh, mode: '0755' }
+
+- name: Bind Coolify ports to localhost for nginx
+  copy:
+    dest: "{{ coolify_source_directory }}/docker-compose.custom.yml"
+    mode: '0644'
+    content: |
+      services:
+        coolify:
+          ports: !override
+            - "127.0.0.1:8000:8080"
+            - "127.0.0.1:6001:6001"
+            - "127.0.0.1:6002:6002"
+
+- name: Create Coolify env file
+  template:
+    src: templates/coolify-env.j2
+    dest: "{{ coolify_source_directory }}/.env"
+    mode: '0600'
+    force: false
+  no_log: true
