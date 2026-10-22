@@ -89,6 +89,7 @@ linode-deletion.sh                 → Delete the Linode instance (always runs, 
 | `DEPS_APP_ID`       | Secret | GitHub App ID used for authenticating dependency updates          |
 | `DEPS_APP_SECRET`   | Secret | GitHub App private key used for authenticating dependency updates |
 | `SLACK_WEBHOOK_URL` | Secret | Webhook URL for posting deployment notifications to Slack         |
+| `CERTBOT_TEST_CERT` | Var    | Set to `--test-cert` by `app-installation.sh` (staging certs)     |
 ---
 
 ## Scripts
