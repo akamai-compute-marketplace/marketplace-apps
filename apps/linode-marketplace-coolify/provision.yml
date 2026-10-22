@@ -16,7 +16,7 @@
         insertafter: EOF
         path: group_vars/linode/vars
         line: |
-          coolify_admin_password: "{{ lookup('password', '/dev/null length=10 chars=ascii_lowercase') }}{{ lookup('password', '/dev/null length=10 chars=ascii_uppercase') }}{{ lookup('password', '/dev/null length=10 chars=digits') }}-"
+          coolify_admin_password: "{{ lookup('community.general.random_string', length=32, min_lower=1, min_upper=1, min_numeric=1, min_special=1) }}"
           coolify_app_id: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
           coolify_app_key: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
           coolify_db_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
