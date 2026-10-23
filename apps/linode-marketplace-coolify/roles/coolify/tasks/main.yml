@@ -1,0 +1,15 @@
+---
+- name: Setting up Docker
+  import_tasks: docker.yml
+
+- name: Installing Coolify
+  import_tasks: install.yml
+
+- name: Setting up SSH access for Coolify
+  import_tasks: ssh.yml
+
+- name: Starting Coolify
+  import_tasks: start.yml
+
+- name: Install & Configure Nginx Reverse Proxy
+  import_tasks: nginx.yml
