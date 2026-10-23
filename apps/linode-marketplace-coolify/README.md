@@ -79,10 +79,12 @@ Nginx owns ports 80 and 443, so Coolify's built-in Traefik proxy (`coolify-proxy
 
 ### Manage and upgrade
 
+Coolify runs as the `coolify` systemd service (`/etc/systemd/system/coolify.service`), which brings up the compose stack in `/data/coolify/source` on every boot.
+
 ```
-cd /data/coolify/source
-sudo docker compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.custom.yml up -d   # start or recreate
-docker logs -f coolify                                                                     
+sudo systemctl status coolify
+sudo systemctl restart coolify   # recreate the containers
+docker logs -f coolify           # application logs
 ```
 
 Upgrades are run from the dashboard under **Settings > Updates**. Do not edit `docker-compose.yml` or `docker-compose.prod.yml`, because they are overwritten on upgrade. Make changes in `docker-compose.custom.yml` instead.

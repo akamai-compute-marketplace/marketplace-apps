@@ -11,5 +11,5 @@
 - name: Starting Coolify
   import_tasks: start.yml
 
-- name: Putting Coolify behind nginx with SSL
+- name: Install & Configure Nginx Reverse Proxy
   import_tasks: nginx.yml

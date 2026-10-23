@@ -1,7 +1,13 @@
 ---
-- name: Running Coolify install script
-  command: bash ./upgrade.sh latest latest docker.io true
-  args:
-    chdir: "{{ coolify_data_directory }}/source"
-  async: 600
-  poll: 10
+- name: Creating the Coolify systemd service
+  template:
+    src: templates/coolify.service.j2
+    dest: /etc/systemd/system/coolify.service
+    mode: '0644'
+
+- name: Enabling and starting Coolify
+  systemd:
+    name: coolify
+    state: started
+    enabled: true
+    daemon_reload: true

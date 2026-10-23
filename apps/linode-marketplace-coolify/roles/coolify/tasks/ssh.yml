@@ -1,5 +1,5 @@
 ---
-- name: Generating the SSH key Coolify uses to manage this server
+- name: Generating the SSH key for Coolify
   community.crypto.openssh_keypair:
     path: "{{ coolify_data_directory }}/ssh/keys/id.root@host.docker.internal"
     type: ed25519

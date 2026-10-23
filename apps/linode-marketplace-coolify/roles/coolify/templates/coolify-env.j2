@@ -1,5 +1,7 @@
 APP_ID={{ coolify_app_id }}
+APP_NAME=Coolify
 APP_KEY=base64:{{ coolify_app_key | b64encode }}
+DB_USERNAME=coolify
 DB_PASSWORD={{ coolify_db_password }}
 REDIS_PASSWORD={{ coolify_redis_password }}
 PUSHER_APP_ID={{ coolify_pusher_app_id }}
@@ -8,3 +10,4 @@ PUSHER_APP_SECRET={{ coolify_pusher_app_secret }}
 ROOT_USERNAME=admin
 ROOT_USER_EMAIL={{ soa_email_address }}
 ROOT_USER_PASSWORD={{ coolify_admin_password }}
+REGISTRY_URL=docker.io

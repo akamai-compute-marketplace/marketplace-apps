@@ -27,7 +27,7 @@
     state: restarted
     enabled: true
 
-- name: Getting a Let's Encrypt certificate
+- name: Generate Let's Encrypt certificate
   import_role:
     name: certbot_ssl
   vars:
