@@ -1,14 +1,14 @@
-# Linode Coolify Deployment One-Click APP
+# Akamai Coolify Quick Deploy App
 
-Coolify is an open-source, self-hostable platform for deploying and managing applications, databases, and services on your own server.
+Coolify lets you run your own deployment platform on a single Linode. You can deploy apps, databases and ready-made services from a web dashboard, much like you would on Heroku or Vercel, but on a server you control.
 
 ## Software Included
 
 | Software  | Version   | Description   |
 | :---      | :----     | :---          |
-| Docker    | Latest    | Container Management tool |
-| Coolify   | Latest    | Self-hosted PaaS for applications, databases and services. |
-| Nginx     | Latest    | Reverse proxy for the Coolify dashboard, live updates and web terminal. |
+| Docker    | Latest    | Runs Coolify and everything you deploy with it. |
+| Coolify   | Latest    | The dashboard and deployment engine. |
+| Nginx     | Latest    | Sits in front of Coolify and handles HTTPS, including the live-update and terminal websockets. |
 
 **Supported Distributions:**
 
@@ -18,16 +18,16 @@ Coolify is an open-source, self-hostable platform for deploying and managing app
 
 | Name  | Action  |
 | :---  | :---    |
-| Hostname   | The Hostname module uses `dnsdomainname -A` to detect the Linode's FQDN and write to the `/etc/hosts` file. |
-| Update Packages   | The Update Packages module performs apt update and upgrade actions as root.  |
-| UFW   | The UFW module enables the firewall with the app specific rules in `roles/common/tasks/ufw_rules.yml`.  |
-| Fail2Ban   | The Fail2Ban module installs, activates and enables the Fail2Ban service.  |
+| Hostname   | Works out the Linode's fully qualified domain name and adds it to `/etc/hosts`. |
+| Update Packages   | Brings the system packages up to date before anything else is installed. |
+| UFW   | Turns on the firewall and opens only the ports Coolify needs, listed in `roles/common/tasks/ufw_rules.yml`. |
+| Fail2Ban   | Installs and starts Fail2Ban to block repeated failed logins. |
 
 ## Post-installation
 
 ### Access the dashboard
 
-Open `https://<domain>` once the deployment finishes. The domain is the one you provided, or the Linode's default rDNS name (`<ip>.ip.linodeusercontent.com`). Sign in with the **admin email** and password stored in `/home/<user>/.credentials` on the Linode:
+Open `https://<domain>` once the deployment finishes. The domain is the one you provided, or the Linode's default rDNS name (`<ip>.ip.linodeusercontent.com`). Sign in with the email you entered at deployment and the password stored in `/home/<user>/.credentials` on the Linode:
 
 ```
 sudo cat /home/<user>/.credentials
@@ -102,7 +102,7 @@ Make sure that the following values are updated at the top of the code block bef
 export TOKEN="YOUR API TOKEN"
 export ROOT_PASS="aComplexP@ssword"
 export USERNAME="user1"
-export SOA_EMAIL_ADDRESS="email@domain.com"
+export SOA_EMAIL_ADDRESS="user@domain.tld"
 
 curl -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \

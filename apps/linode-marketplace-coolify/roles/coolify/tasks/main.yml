@@ -1,15 +1,15 @@
 ---
-- name: Import docker tasks
+- name: Setting up Docker
   import_tasks: docker.yml
 
-- name: Import install tasks
+- name: Installing Coolify
   import_tasks: install.yml
 
-- name: Import ssh tasks
+- name: Setting up SSH access for Coolify
   import_tasks: ssh.yml
 
-- name: Import start tasks
+- name: Starting Coolify
   import_tasks: start.yml
 
-- name: Import nginx tasks
+- name: Putting Coolify behind nginx with SSL
   import_tasks: nginx.yml

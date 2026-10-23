@@ -1,16 +1,17 @@
 ---
-- name: Generate SSH key for Coolify localhost access
+- name: Generating the SSH key Coolify uses to manage this server
   community.crypto.openssh_keypair:
-    path: "{{ coolify_ssh_key }}"
+    path: "{{ coolify_data_directory }}/ssh/keys/id.root@host.docker.internal"
     type: ed25519
     comment: coolify
     owner: '9999'
     group: root
     mode: '0600'
+  register: coolify_key
 
-- name: Authorize SSH key for Coolify localhost access
+- name: Allowing that key to log in as root
   lineinfile:
     path: /root/.ssh/authorized_keys
-    line: "{{ lookup('file', coolify_ssh_key ~ '.pub') }}"
+    line: "{{ coolify_key.public_key }}"
     create: true
     mode: '0600'

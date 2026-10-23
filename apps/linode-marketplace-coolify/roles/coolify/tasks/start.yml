@@ -1,7 +1,7 @@
 ---
-- name: Start Coolify
+- name: Running Coolify install script
   command: bash ./upgrade.sh latest latest docker.io true
   args:
-    chdir: "{{ coolify_source_directory }}"
+    chdir: "{{ coolify_data_directory }}/source"
   async: 600
   poll: 10

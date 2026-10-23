@@ -1,30 +1,34 @@
 ---
-- name: Install nginx
+- name: Installing nginx
   apt:
     pkg: nginx
     state: present
 
-- name: Config file setup
+- name: Writing the nginx site for Coolify
   template:
     src: templates/nginx.conf.j2
     dest: "/etc/nginx/sites-available/{{ _domain }}"
     mode: '0644'
 
-- name: Create a symbolic link for the nginx configuration
+- name: Enabling the Coolify site
   file:
     src: "/etc/nginx/sites-available/{{ _domain }}"
     dest: "/etc/nginx/sites-enabled/{{ _domain }}"
     state: link
 
-- name: Unlink the default nginx configuration
+- name: Removing the default nginx site
   file:
-    path: "/etc/nginx/sites-enabled/default"
+    path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: Reload nginx service
 
-- name: Install SSL certificate
+- name: Restarting nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: Getting a Let's Encrypt certificate
   import_role:
     name: certbot_ssl
   vars:
     webserver_stack: lemp
-  notify: Reload nginx service

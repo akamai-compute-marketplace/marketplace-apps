@@ -1,5 +1,5 @@
 ---
-- name: Install Docker latest
+- name: Installing Docker
   import_role:
     name: docker
 
@@ -8,23 +8,7 @@
     pkg: [docker-compose]
     state: present
 
-- name: Configure docker daemon
-  copy:
-    dest: /etc/docker/daemon.json
-    mode: '0644'
-    content: |
-      {
-        "log-driver": "json-file",
-        "log-opts": {
-          "max-size": "10m",
-          "max-file": "3"
-        },
-        "default-address-pools": [
-          {"base": "10.0.0.0/8", "size": 24}
-        ]
-      }
-
-- name: Restart docker service
+- name: Restarting Docker to pick up the new settings
   systemd:
     name: docker
     state: restarted
