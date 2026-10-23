@@ -1,26 +1,21 @@
 #!/bin/bash
 # STACKSCRIPT_ID: 1160820
+
 # enable logging
+set -e
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-# modes
 #DEBUG="NO"
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
+
 if [[ -n ${DEBUG} ]]; then
   if [ "${DEBUG}" == "NO" ]; then
     trap "cleanup $? $LINENO" EXIT
   fi
 else
   trap "cleanup $? $LINENO" EXIT
-fi
-
-# cleanup will always happen. If DEBUG is passed and is anything
-# other than NO, it will always trigger cleanup. This is useful for
-# ci testing and passing vars to the instance.
-
-if [ "${MODE}" == "staging" ]; then
-  trap "provision_failed $? $LINENO" ERR
-else
-  set -e
 fi
 
 ## Linode/SSH security settings
@@ -36,14 +31,12 @@ fi
 ## Appwrite Vars
 #<UDF name="appwrite_version" label="Appwrite version" default="1.9.0">
 
-# BEGIN CI-ADDONS
 ## Addons
 #<UDF name="add_ons" label="Optional data exporter Add-ons for your deployment" manyOf="node_exporter,mysqld_exporter,newrelic,alloy,none" default="none">
-# END CI-ADDONS
 
 #GH_USER=""
 #BRANCH=""
-# git user and branch
+
 if [[ -n ${GH_USER} && -n ${BRANCH} ]]; then
         echo "[info] git user and branch set.."
         export GIT_REPO="https://github.com/${GH_USER}/marketplace-apps.git"
@@ -56,28 +49,6 @@ fi
 
 export WORK_DIR="/tmp/marketplace-apps"
 export MARKETPLACE_APP="apps/linode-marketplace-appwrite"
-
-function provision_failed {
-  echo "[info] Provision failed. Sending status.."
-
-  # dep
-  apt install jq -y
-
-  # set token
-  local token=($(curl -ks -X POST ${KC_SERVER} \
-     -H "Content-Type: application/json" \
-     -d "{ \"username\":\"${KC_USERNAME}\", \"password\":\"${KC_PASSWORD}\" }" | jq -r .token) )
-
-  # send pre-provision failure
-  curl -sk -X POST ${DATA_ENDPOINT} \
-     -H "Authorization: ${token}" \
-     -H "Content-Type: application/json" \
-     -d "{ \"app_label\":\"${APP_LABEL}\", \"status\":\"provision_failed\", \"branch\": \"${BRANCH}\", \
-        \"gituser\": \"${GH_USER}\", \"runjob\": \"${RUNJOB}\", \"image\":\"${IMAGE}\", \
-        \"type\":\"${TYPE}\", \"region\":\"${REGION}\", \"instance_env\":\"${INSTANCE_ENV}\" }"
-
-  exit $?
-}
 
 function cleanup {
   if [ -d "${WORK_DIR}" ]; then
@@ -93,10 +64,8 @@ function udf {
   # Appwrite
   appwrite_version: ${APPWRITE_VERSION}
 
-  # BEGIN CI-UDF-ADDONS
   # addons
   add_ons: [${ADD_ONS}]
-  # END CI-UDF-ADDONS
 EOF
 
   if [ "$DISABLE_ROOT" = "Yes" ]; then
@@ -122,15 +91,6 @@ EOF
 
   if [[ -n ${SOA_EMAIL_ADDRESS} ]]; then
     echo "soa_email_address: ${SOA_EMAIL_ADDRESS}" >> ${group_vars};
-  fi
-
-  # staging or production mode (ci)
-  if [[ "${MODE}" == "staging" ]]; then
-    echo "[info] running in staging mode..."
-    echo "mode: ${MODE}" >> ${group_vars}
-  else
-    echo "[info] running in production mode..."
-    echo "mode: production" >> ${group_vars}
   fi
 }
 
