@@ -40,6 +40,20 @@
     chdir: /home
   changed_when: true
 
+- name: Enable the LiteSpeed WebAdmin console
+  ansible.builtin.copy:
+    content: ""
+    dest: /usr/local/lsws/admin/conf/enable_webadmin
+    owner: lsadm
+    group: lsadm
+    mode: '0600'
+    force: false
+
+- name: Restart LiteSpeed to apply the WebAdmin setting
+  ansible.builtin.systemd_service:
+    name: lsws
+    state: restarted
+
 - name: Check whether LiteSpeed actually started
   ansible.builtin.command: systemctl is-active lsws
   register: lsws_active_check
