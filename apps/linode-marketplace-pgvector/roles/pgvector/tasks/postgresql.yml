@@ -29,7 +29,7 @@
 - name: Grant all privileges on database to admin
   community.postgresql.postgresql_privs:
     type: database
-    database: "{{ postgresql_app_db }}"
+    login_db: "{{ postgresql_app_db }}"
     roles: "{{ postgresql_admin_user }}"
     privs: ALL
     state: present
