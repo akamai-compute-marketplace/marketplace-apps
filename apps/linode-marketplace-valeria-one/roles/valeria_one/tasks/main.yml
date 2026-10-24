@@ -1,0 +1,40 @@
+---
+# Valeria One's own installer sets up Docker (official repository), PostgreSQL 16, the app, its
+# background jobs and Caddy, which serves {{ _domain }} with an automatic Let's Encrypt certificate.
+# It also installs nightly backups and updates that roll back by themselves (systemd timers).
+- name: Download the Valeria One installer
+  get_url:
+    url: "{{ valeria_one_installer }}"
+    dest: /root/valeria-one-install.sh
+    mode: '0700'
+
+- name: Install Valeria One
+  command: >
+    bash /root/valeria-one-install.sh
+    --ref {{ valeria_one_version }}
+    --domain {{ _domain }}
+    --signup closed
+  args:
+    creates: /opt/valeria-one/app/.env
+
+- name: Wait until Valeria One answers
+  uri:
+    url: "http://127.0.0.1/health"
+    headers:
+      Host: "{{ _domain }}"
+    status_code: [200, 308]
+    follow_redirects: none
+  register: valeria_one_health
+  until: valeria_one_health.status in [200, 308]
+  retries: 30
+  delay: 10
+
+- name: Get the one-time setup link for the first account
+  command: /usr/local/bin/valeria-one setup-link
+  register: valeria_one_setup_link
+  changed_when: false
+
+- name: Remove the installer
+  file:
+    path: /root/valeria-one-install.sh
+    state: absent

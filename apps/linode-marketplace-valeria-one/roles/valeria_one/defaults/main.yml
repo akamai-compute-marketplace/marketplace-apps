@@ -1,0 +1,4 @@
+---
+# The Valeria One release this app installs (a tag of github.com/valeriaone/valeria-one)
+valeria_one_version: v0.4.0
+valeria_one_installer: "https://raw.githubusercontent.com/valeriaone/valeria-one/{{ valeria_one_version }}/deploy/install.sh"

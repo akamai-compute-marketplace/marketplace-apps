@@ -1,0 +1,26 @@
+---
+# Install Addons if requested
+- name: Add addons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Set up MOTD
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Writing creds into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+      Valeria One URL: https://{{ _domain }}
+      Valeria One first account (setup link, works once): {{ valeria_one_setup_link.stdout }}
