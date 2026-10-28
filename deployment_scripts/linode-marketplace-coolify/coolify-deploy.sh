@@ -2,10 +2,19 @@
 # STACKSCRIPT_ID: 2260640
 
 # enable logging
+set -e
 exec > >(tee /dev/ttyS0 /var/log/stackscript.log) 2>&1
 
-set -e
-trap cleanup EXIT
+#DEBUG="NO"
+# cleanup will always happen. If DEBUG is passed and is anything
+# other than NO, it will always trigger cleanup. This is useful for
+# ci testing and passing vars to the instance.
+
+if [[ -n ${DEBUG} ]]; then
+  if [ "${DEBUG}" == "NO" ]; then
+    trap "cleanup $? $LINENO" EXIT
+  trap "cleanup $? $LINENO" EXIT
+fi
 
 ## Linode/SSH security settings
 #<UDF name="user_name" label="The limited sudo user to be created for the Linode: *No Capital Letters or Special Characters*">
