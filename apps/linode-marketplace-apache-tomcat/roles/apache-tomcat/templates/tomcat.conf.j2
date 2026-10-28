@@ -1,0 +1,13 @@
+<VirtualHost *:80>
+    ServerName {{ _domain }}
+{% if domain is defined and subdomain == 'www' %}
+    ServerAlias www.{{ _domain }}
+{% endif %}
+
+    ProxyPreserveHost On
+    ProxyPass / http://127.0.0.1:{{ tomcat_port }}/
+    ProxyPassReverse / http://127.0.0.1:{{ tomcat_port }}/
+
+    ErrorLog ${APACHE_LOG_DIR}/tomcat-error.log
+    CustomLog ${APACHE_LOG_DIR}/tomcat-access.log combined
+</VirtualHost>

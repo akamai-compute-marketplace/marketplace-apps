@@ -1,0 +1,23 @@
+---
+- name: Install requested add-ons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+
+- name: Write credentials file
+  copy:
+    dest: "/home/{{ username }}/.credentials"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: '0600'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}

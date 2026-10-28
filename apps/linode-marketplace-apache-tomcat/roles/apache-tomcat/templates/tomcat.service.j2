@@ -1,0 +1,26 @@
+[Unit]
+Description=Apache Tomcat Web Application Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tomcat
+Group=tomcat
+WorkingDirectory={{ tomcat_install_dir }}
+Environment="JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
+Environment="CATALINA_HOME={{ tomcat_install_dir }}"
+Environment="CATALINA_BASE={{ tomcat_install_dir }}"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -XX:+UseG1GC"
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom"
+ExecStart={{ tomcat_install_dir }}/bin/catalina.sh run
+KillSignal=SIGTERM
+SuccessExitStatus=143
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65536
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
