@@ -38,3 +38,7 @@
     url: "http://127.0.0.1:{{ tomcat_port }}/"
     status_code: 200
     timeout: 60
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 2
