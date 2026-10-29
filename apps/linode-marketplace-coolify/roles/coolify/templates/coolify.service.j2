@@ -1,0 +1,22 @@
+[Unit]
+Description=Coolify
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+BindsTo=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory={{ coolify_data_directory }}/source
+Environment=COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml:docker-compose.custom.yml
+EnvironmentFile=-/etc/coolify/compose.env
+ExecStartPre=-/usr/bin/docker network create --attachable coolify
+ExecStart=/usr/bin/docker compose up --remove-orphans
+ExecStop=/usr/bin/docker compose down
+Restart=always
+RestartSec=10
+TimeoutStartSec=600
+SyslogIdentifier=coolify
+
+[Install]
+WantedBy=multi-user.target
