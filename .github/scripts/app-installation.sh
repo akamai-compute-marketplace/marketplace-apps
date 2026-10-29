@@ -49,6 +49,7 @@ run_remote_deploy() {
    export APP_NAME=$APP_NAME
    export DEPLOYMENT_SCRIPT=$DEPLOYMENT_SCRIPT
    export HF_TOKEN=$HF_TOKEN
+   export CERTBOT_TEST_CERT=--test-cert
 
    cd $REMOTE_DIR
    chmod +x test-vars.sh $DEPLOYMENT_SCRIPT

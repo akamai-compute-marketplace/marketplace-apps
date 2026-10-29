@@ -8,7 +8,8 @@ class VaultSecretsPage(BasePage):
 
         # Engine locators
         self.enable_new_engine_button = page.get_by_role("link", name="Enable new engine")
-        self.kv_engine_label = page.get_by_label("KV - enabled engine type")
+        self.kv_engine_card = page.get_by_text("KV", exact=True)
+        self.next_button = page.get_by_role("button", name="Next")
         self.engine_path_input = page.locator('input[name="path"]')
         self.enable_engine_button = page.get_by_role("button", name="Enable engine")
 
@@ -27,7 +28,8 @@ class VaultSecretsPage(BasePage):
 
     def create_new_engine(self, engine_name: str):
         self.enable_new_engine_button.click()
-        self.kv_engine_label.click()
+        self.kv_engine_card.click()
+        self.next_button.click()
         self.engine_path_input.clear()
         self.engine_path_input.fill(engine_name)
         self.enable_engine_button.click()
