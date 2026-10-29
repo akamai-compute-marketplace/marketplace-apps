@@ -105,7 +105,7 @@ EOF
 function run {
 	apt-get update
 	apt-get install -y git python3 python3-pip python3-venv
-	git -C /tmp clone -b "${BRANCH}" "${GIT_REPO}"
+	git -C /tmp clone --recurse-submodules -b ${BRANCH} ${GIT_REPO}
 	cd "${WORK_DIR}/${MARKETPLACE_APP}"
 	python3 -m venv env
 	source env/bin/activate
