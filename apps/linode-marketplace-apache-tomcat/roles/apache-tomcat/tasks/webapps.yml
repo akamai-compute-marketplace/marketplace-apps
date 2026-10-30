@@ -5,6 +5,7 @@
     state: absent
   loop: [ROOT, docs, examples, host-manager, manager]
 
+# Deploying sample app as ROOT allows it to be accessed at "/"
 - name: Deploy official Tomcat sample application as ROOT
   get_url:
     url: https://tomcat.apache.org/tomcat-11.0-doc/appdev/sample/sample.war

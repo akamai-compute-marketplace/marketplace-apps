@@ -25,12 +25,6 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | Tomcat logs        | `/opt/tomcat/logs/` and `journalctl -u tomcat` |
 | Apache vhosts      | `/etc/apache2/sites-available/tomcat.conf`, `tomcat-le-ssl.conf` |
 
-The following security measures are applied on top of the stock Tomcat deployment:
-
-- The bundled `ROOT`, `docs`, `examples`, `manager`, and `host-manager` applications are removed. These are protected by a localhost-only valve, which is bypassed when requests arrive through the local Apache proxy.
-
-See the [Tomcat Security Considerations](https://tomcat.apache.org/tomcat-11.0-doc/security-howto.html) guide.
-
 ## Deploying Your Application
 
 Tomcat redeploys WAR files placed in `/opt/tomcat/webapps/` while running. To replace the sample application at `/`:
@@ -43,7 +37,7 @@ sudo chmod 0640 /tmp/myapp.war
 sudo mv -f /tmp/myapp.war /opt/tomcat/webapps/ROOT.war
 ```
 
-No stop, start, or manual delete is needed. Wait for redeployment, then check `https://<your-domain>/`. 
+No stop, start, or manual delete is needed. Wait for redeployment, then check `https://<your-domain>/`. To add your application to a different URL path (e.g. - `/sample`), follow the above steps but use `/opt/tomcat/webapps/sample.war` instead.
 
 ## Linode Helpers Included
 
