@@ -14,12 +14,6 @@
                      proxyName="{{ _domain }}"
                      proxyPort="443" />
 
-- name: Disable Tomcat shutdown port
-  replace:
-    path: "{{ tomcat_install_dir }}/conf/server.xml"
-    regexp: '<Server port="8005"'
-    replace: '<Server port="-1"'
-
 - name: Install Tomcat systemd unit
   template:
     src: tomcat.service.j2

@@ -1,17 +1,16 @@
 # Linode Apache Tomcat One-Click App
 
-Deploy Apache Tomcat, the open source Jakarta EE servlet container, on Ubuntu 24.04. Tomcat runs as an unprivileged `tomcat` systemd service and listens only on `127.0.0.1:8081`. Apache HTTP Server is the public edge: it terminates Let's Encrypt TLS on port 443, redirects HTTP to HTTPS, and reverse-proxies requests to Tomcat.
+Deploy Apache Tomcat, an open-source web server for Java-based web applications. Tomcat runs as an unprivileged `tomcat` systemd service and listens only on `127.0.0.1:8081`. An Apache HTTP Server terminates the Let's Encrypt TLS on port 443, redirects HTTP to HTTPS, and reverse-proxies requests to Tomcat.
 
-The official Tomcat sample application is deployed as the root context (`https://<your-domain>/`) so you can confirm the stack works end to end. Replace it with your own application as described below.
+The official Tomcat sample application is deployed as the root context (`https://<your-domain>/`) so you can confirm the stack works end-to-end. Replace it with your own application as described below.
 
 ## Software Included
 
-| Software      | Version       | Description                                   |
-| :---          | :----         | :---                                          |
-| Apache Tomcat | Latest 11.0.x | Jakarta EE 11 servlet container               |
-| OpenJDK       | 17            | Java runtime                                  |
-| Apache HTTP   | Latest        | TLS termination and reverse proxy             |
-| Certbot       | Latest        | Let's Encrypt certificate issuance and renewal |
+| Software      | Version       | Description                                            |
+| :---          | :----         | :---                                                   |
+| Apache Tomcat | Latest 11.0.x | Open-source web server for Java-based web applications |
+| OpenJDK       | 17            | Open-source Java runtime                               |
+| Apache HTTP   | Latest        | TLS termination and reverse proxy                      |
 
 **Supported Distributions:**
 
@@ -25,32 +24,26 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | Web applications   | `/opt/tomcat/webapps/`                      |
 | Tomcat logs        | `/opt/tomcat/logs/` and `journalctl -u tomcat` |
 | Apache vhosts      | `/etc/apache2/sites-available/tomcat.conf`, `tomcat-le-ssl.conf` |
-| Credentials        | `/home/$USERNAME/.credentials`              |
 
-Hardening applied on top of the stock Tomcat distribution:
+The following security measures are applied on top of the stock Tomcat deployment:
 
-- The default HTTP connector on port 8080 is replaced by a loopback-only connector on `127.0.0.1:8081`.
-- The shutdown port is disabled (`port="-1"`).
 - The bundled `ROOT`, `docs`, `examples`, `manager`, and `host-manager` applications are removed. These are protected by a localhost-only valve, which is bypassed when requests arrive through the local Apache proxy.
 
 See the [Tomcat Security Considerations](https://tomcat.apache.org/tomcat-11.0-doc/security-howto.html) guide.
 
 ## Deploying Your Application
 
-Tomcat auto-deploys WAR files placed in `/opt/tomcat/webapps/`. To replace the sample application with your own, copy your WAR to the server and install it as `ROOT.war`:
+Tomcat redeploys WAR files placed in `/opt/tomcat/webapps/` while running. To replace the sample application at `/`:
 
 ```
-scp myapp.war $USERNAME@<your-domain>:/tmp/
-ssh $USERNAME@<your-domain>
-sudo systemctl stop tomcat
-sudo rm -rf /opt/tomcat/webapps/ROOT /opt/tomcat/webapps/ROOT.war
-sudo install -o tomcat -g tomcat -m 0640 /tmp/myapp.war /opt/tomcat/webapps/ROOT.war
-sudo systemctl start tomcat
+scp myapp.war $USERNAME@<ip-address>:/tmp/
+ssh $USERNAME@<ip-address>
+sudo chown tomcat:tomcat /tmp/myapp.war
+sudo chmod 0640 /tmp/myapp.war
+sudo mv -f /tmp/myapp.war /opt/tomcat/webapps/ROOT.war
 ```
 
-To serve an application under a path instead (for example `https://<your-domain>/myapp/`), install it as `/opt/tomcat/webapps/myapp.war`.
-
-Tomcat 11 implements Jakarta EE 11 (`jakarta.*` packages). Applications built against `javax.*` APIs must be migrated first, for example with the [Apache Tomcat migration tool for Jakarta EE](https://tomcat.apache.org/download-migration.cgi).
+No stop, start, or manual delete is needed. Wait for redeployment, then check `https://<your-domain>/`. 
 
 ## Linode Helpers Included
 
@@ -68,6 +61,3 @@ Tomcat 11 implements Jakarta EE 11 (`jakarta.*` packages). Applications built ag
 ## Resources
 
 - [Apache Tomcat 11 Documentation](https://tomcat.apache.org/tomcat-11.0-doc/)
-- [Tomcat Proxy Configuration](https://tomcat.apache.org/tomcat-11.0-doc/proxy-howto.html)
-- [Tomcat Security Considerations](https://tomcat.apache.org/tomcat-11.0-doc/security-howto.html)
-- [Apache HTTP Server mod_proxy](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html)
