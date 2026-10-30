@@ -1,0 +1,38 @@
+---
+- name: Replace default 8080 connector with loopback proxy connector
+  replace:
+    path: "{{ tomcat_install_dir }}/conf/server.xml"
+    regexp: '<Connector port="8080" protocol="HTTP/1.1"\s+connectionTimeout="20000"\s+redirectPort="8443" />'
+    replace: |-
+      <Connector address="127.0.0.1"
+                     port="{{ tomcat_port }}"
+                     protocol="HTTP/1.1"
+                     connectionTimeout="20000"
+                     redirectPort="8443"
+                     scheme="https"
+                     secure="true"
+                     proxyName="{{ _domain }}"
+                     proxyPort="443" />
+
+- name: Install Tomcat systemd unit
+  template:
+    src: tomcat.service.j2
+    dest: /etc/systemd/system/tomcat.service
+    mode: '0644'
+
+- name: Enable and start Tomcat
+  systemd_service:
+    name: tomcat
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Wait for Tomcat to serve the sample application
+  uri:
+    url: "http://127.0.0.1:{{ tomcat_port }}/"
+    status_code: 200
+    timeout: 60
+  register: _result
+  until: _result.status == 200
+  retries: 30
+  delay: 2

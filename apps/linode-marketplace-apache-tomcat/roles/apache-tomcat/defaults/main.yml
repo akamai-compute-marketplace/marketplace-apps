@@ -1,0 +1,4 @@
+---
+tomcat_major: 11
+tomcat_install_dir: /opt/tomcat
+tomcat_port: 8081

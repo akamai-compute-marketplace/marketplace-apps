@@ -1,0 +1,11 @@
+[Service]
+Type=simple
+User=tomcat
+Group=tomcat
+ExecStart={{ tomcat_install_dir }}/bin/catalina.sh run
+SuccessExitStatus=143
+Restart=on-failure
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

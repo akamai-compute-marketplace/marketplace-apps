@@ -1,0 +1,65 @@
+---
+- name: Install OpenJDK 17
+  apt:
+    name: openjdk-17-jdk
+    state: present
+    update_cache: true
+
+- name: Fetch Tomcat 11 release index
+  uri:
+    url: https://dlcdn.apache.org/tomcat/tomcat-11/
+    return_content: true
+  register: tomcat_index
+
+- name: Set latest Tomcat 11 version
+  set_fact:
+    tomcat_version: "{{ tomcat_index.content | regex_findall('v(11\\.0\\.\\d+)/') | community.general.version_sort | last }}"
+
+- name: Create tomcat service account
+  user:
+    name: tomcat
+    system: true
+    home: "{{ tomcat_install_dir }}"
+    shell: /usr/sbin/nologin
+    create_home: false
+
+- name: Create Tomcat installation directory
+  file:
+    path: "{{ tomcat_install_dir }}"
+    state: directory
+    owner: root
+    group: tomcat
+    mode: '0750'
+
+- name: Download Tomcat archive
+  get_url:
+    url: "https://dlcdn.apache.org/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    checksum: "sha512:https://dlcdn.apache.org/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz.sha512"
+    mode: '0644'
+
+- name: Extract Tomcat archive
+  unarchive:
+    src: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    dest: "{{ tomcat_install_dir }}"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+    creates: "{{ tomcat_install_dir }}/bin/catalina.sh"
+
+- name: Set Tomcat ownership and permissions
+  file:
+    path: "{{ tomcat_install_dir }}"
+    owner: root
+    group: tomcat
+    recurse: true
+    mode: '0750'
+
+- name: Make Tomcat runtime directories writable
+  file:
+    path: "{{ tomcat_install_dir }}/{{ item }}"
+    state: directory
+    owner: tomcat
+    group: tomcat
+    mode: '0750'
+  loop: [logs, temp, work, webapps]

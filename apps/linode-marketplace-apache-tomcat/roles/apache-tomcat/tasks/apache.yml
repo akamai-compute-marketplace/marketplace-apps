@@ -1,0 +1,40 @@
+---
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+
+- name: Enable Apache proxy modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop: [proxy, proxy_http]
+
+- name: Install Tomcat Apache vhost
+  template:
+    src: tomcat.conf.j2
+    dest: /etc/apache2/sites-available/tomcat.conf
+    mode: '0644'
+
+- name: Disable Apache default vhost
+  file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+
+- name: Enable Tomcat Apache vhost
+  file:
+    src: /etc/apache2/sites-available/tomcat.conf
+    dest: /etc/apache2/sites-enabled/tomcat.conf
+    state: link
+
+- name: Restart Apache with Tomcat vhost
+  systemd_service:
+    name: apache2
+    state: restarted
+    enabled: true
+
+- name: Configure SSL with Certbot
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lamp
