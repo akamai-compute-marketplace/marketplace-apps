@@ -1,0 +1,67 @@
+---
+- name: Obtain certificate using Tomcat webroot
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: webroot
+    certbot_webroot: "{{ tomcat_certbot_webroot }}"
+
+- name: Create Tomcat PKCS12 keystore
+  community.crypto.openssl_pkcs12:
+    action: export
+    path: "{{ tomcat_tls_dir }}/tomcat.p12"
+    friendly_name: tomcat
+    privatekey_path: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem"
+    certificate_path: "/etc/letsencrypt/live/{{ _domain }}/cert.pem"
+    other_certificates: "/etc/letsencrypt/live/{{ _domain }}/chain.pem"
+    other_certificates_parse_all: true
+    passphrase: "{{ tomcat_keystore_password }}"
+    owner: root
+    group: tomcat
+    mode: '0640'
+  no_log: true
+  notify: Restart Tomcat
+
+- name: Remove automatic Tomcat certificate renewal hook
+  file:
+    path: /etc/letsencrypt/renewal-hooks/deploy/tomcat.sh
+    state: absent
+
+- name: Add Tomcat HTTPS connector
+  blockinfile:
+    path: "{{ tomcat_install_dir }}/conf/server.xml"
+    marker: "<!-- {mark} TOMCAT TLS -->"
+    insertbefore: '^[ \t]*<Engine name="Catalina" defaultHost="localhost">'
+    block: |
+      <Connector port="{{ tomcat_https_port }}"
+                 protocol="org.apache.coyote.http11.Http11NioProtocol"
+                 sslImplementationName="org.apache.tomcat.util.net.jsse.JSSEImplementation"
+                 SSLEnabled="true">
+        <SSLHostConfig>
+          <Certificate certificateKeystoreFile="{{ tomcat_tls_dir }}/tomcat.p12"
+                       certificateKeystoreType="PKCS12"
+                       certificateKeystorePassword="{{ tomcat_keystore_password }}"
+                       certificateKeyAlias="tomcat" />
+        </SSLHostConfig>
+      </Connector>
+  no_log: true
+
+- name: Add Tomcat HTTP redirect valve
+  blockinfile:
+    path: "{{ tomcat_install_dir }}/conf/server.xml"
+    marker: "<!-- {mark} TOMCAT REDIRECT -->"
+    insertafter: '(?m)^[ \t]*<Host name="localhost"[^>]*autoDeploy="true">'
+    block: |
+      <Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+
+- name: Restart Tomcat
+  systemd_service:
+    name: tomcat
+    state: restarted
+    daemon_reload: true
+
+- name: Disable automatic renewal for manually maintained certificates
+  systemd_service:
+    name: certbot.timer
+    enabled: false
+    state: stopped
