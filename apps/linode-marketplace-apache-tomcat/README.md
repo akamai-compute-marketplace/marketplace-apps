@@ -1,6 +1,6 @@
 # Linode Apache Tomcat One-Click App
 
-Deploy Apache Tomcat, an open-source web server for Java-based web applications. Tomcat runs as an unprivileged `tomcat` systemd service and listens only on `127.0.0.1:8081`. An Apache HTTP Server terminates the Let's Encrypt TLS on port 443, redirects HTTP to HTTPS, and reverse-proxies requests to Tomcat.
+Deploy Apache Tomcat, an open-source web server for Java-based web applications. Tomcat runs as an unprivileged `tomcat` systemd service, serves HTTPS directly on port 443, and redirects HTTP on port 80 to HTTPS. No Apache HTTP Server or NGINX proxy is installed.
 
 The official Tomcat sample application is deployed as the root context (`https://<your-domain>/`) so you can confirm the stack works end-to-end. Replace it with your own application as described below.
 
@@ -10,7 +10,7 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | :---          | :----         | :---                                                   |
 | Apache Tomcat | Latest 11.0.x | Open-source web server for Java-based web applications |
 | OpenJDK       | 17            | Open-source Java runtime                               |
-| Apache HTTP   | Latest        | TLS termination and reverse proxy                      |
+| Certbot       | Latest        | Let's Encrypt certificate issuance and renewal         |
 
 **Supported Distributions:**
 
@@ -23,7 +23,17 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | Tomcat home        | `/opt/tomcat`                               |
 | Web applications   | `/opt/tomcat/webapps/`                      |
 | Tomcat logs        | `/opt/tomcat/logs/` and `journalctl -u tomcat` |
-| Apache vhosts      | `/etc/apache2/sites-available/tomcat.conf`, `tomcat-le-ssl.conf` |
+| Tomcat configuration | `/opt/tomcat/conf/server.xml`             |
+| TLS keystore       | `/etc/tomcat-tls/tomcat.p12`                 |
+| Keystore password file | `/etc/tomcat-tls/keystore-password`        |
+
+Tomcat uses a password-protected PKCS#12 keystore containing the Let's Encrypt certificate and private key. The keystore password is recorded in the sudo user's `~/.credentials`.
+
+Certificate challenges are served by a separate Tomcat context at `/.well-known/acme-challenge/`, backed by `/var/lib/letsencrypt`. This path is exempt from HTTP redirects and does not depend on your application's WAR. Do not remove that context or block the challenge path.
+
+**Certificate renewal is manual.** Automatic renewal is disabled. Before the certificate expires, renew it, rebuild Tomcat's keystore, and restart Tomcat using the commands below. Running Certbot alone does not update the certificate Tomcat serves.
+
+The bundled Manager, Host Manager, documentation, and examples applications are removed. Deploy your WAR using SSH as described below.
 
 ## Deploying Your Application
 
@@ -39,6 +49,35 @@ sudo mv -f /tmp/myapp.war /opt/tomcat/webapps/ROOT.war
 
 No stop, start, or manual delete is needed. Wait for redeployment, then check `https://<your-domain>/`. To add your application to a different URL path (e.g. - `/sample`), follow the above steps but use `/opt/tomcat/webapps/sample.war` instead.
 
+## Renewing Your Certificate
+
+Run these commands as root on the server. Set `DOMAIN` to the certificate hostname used for your deployment:
+
+```bash
+DOMAIN=your-domain
+certbot certificates
+certbot renew --cert-name "$DOMAIN"
+```
+
+After renewal succeeds, package the certificate, private key, and chain into a new keystore using the existing password:
+
+```bash
+umask 077
+openssl pkcs12 -export -name tomcat -in "/etc/letsencrypt/live/$DOMAIN/cert.pem" -inkey "/etc/letsencrypt/live/$DOMAIN/privkey.pem" -certfile "/etc/letsencrypt/live/$DOMAIN/chain.pem" -out /etc/tomcat-tls/tomcat.p12.pending -passout file:/etc/tomcat-tls/keystore-password
+```
+
+Only if that export succeeds, set permissions, replace the keystore, and restart Tomcat:
+
+```bash
+chown root:tomcat /etc/tomcat-tls/tomcat.p12.pending
+chmod 0640 /etc/tomcat-tls/tomcat.p12.pending
+mv -f /etc/tomcat-tls/tomcat.p12.pending /etc/tomcat-tls/tomcat.p12
+systemctl restart tomcat
+curl --retry 20 --retry-connrefused --retry-delay 1 --max-time 10 --fail "https://$DOMAIN/"
+```
+
+Do not replace the existing keystore if renewal or export fails. Keep the saved keystore password unchanged. Restarting briefly interrupts requests and may discard in-memory sessions.
+
 ## Linode Helpers Included
 
 | Name              | Action |
@@ -50,7 +89,7 @@ No stop, start, or manual delete is needed. Wait for redeployment, then check `h
 | Create DNS Record | Creates DNS records for the domain and subdomain using the Linode API. |
 | Secure SSH        | Disables root login and password authentication when requested. |
 | SSH Key           | Deploys SSH keys for the sudo user. |
-| Certbot SSL       | Issues a Let's Encrypt certificate with the Apache plugin and configures HTTP to HTTPS redirects. |
+| Certbot SSL       | Issues a Let's Encrypt certificate using Tomcat-served webroot challenges. Tomcat handles TLS and HTTP to HTTPS redirects. |
 
 ## Resources
 

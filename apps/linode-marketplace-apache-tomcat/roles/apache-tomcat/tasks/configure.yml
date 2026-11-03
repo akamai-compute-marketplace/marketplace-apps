@@ -1,18 +1,70 @@
 ---
-- name: Replace default 8080 connector with loopback proxy connector
+- name: Install certificate tools
+  apt:
+    name: [openssl, python3-cryptography]
+    state: present
+
+- name: Create Tomcat TLS directory
+  file:
+    path: "{{ tomcat_tls_dir }}"
+    state: directory
+    owner: root
+    group: tomcat
+    mode: '0750'
+
+- name: Store Tomcat keystore password
+  copy:
+    content: "{{ tomcat_keystore_password }}\n"
+    dest: "{{ tomcat_tls_dir }}/keystore-password"
+    mode: '0600'
+  no_log: true
+
+- name: Create Tomcat context configuration directory
+  file:
+    path: "{{ tomcat_install_dir }}/conf/Catalina/{{ item }}"
+    state: directory
+    owner: root
+    group: tomcat
+    mode: '0750'
+  loop: ['', localhost]
+
+- name: Create certificate challenge directories
+  file:
+    path: "{{ tomcat_certbot_webroot }}/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop: ['', .well-known, .well-known/acme-challenge]
+
+- name: Install Tomcat certificate challenge context
+  template:
+    src: acme-context.xml.j2
+    dest: "{{ tomcat_install_dir }}/conf/Catalina/localhost/.well-known.xml"
+    owner: root
+    group: tomcat
+    mode: '0640'
+
+- name: Install Tomcat HTTPS redirect rules
+  template:
+    src: rewrite.config.j2
+    dest: "{{ tomcat_install_dir }}/conf/Catalina/localhost/rewrite.config"
+    owner: root
+    group: tomcat
+    mode: '0640'
+
+- name: Configure Tomcat HTTP for certificate issuance
   replace:
     path: "{{ tomcat_install_dir }}/conf/server.xml"
     regexp: '<Connector port="8080" protocol="HTTP/1.1"\s+connectionTimeout="20000"\s+redirectPort="8443" />'
     replace: |-
-      <Connector address="127.0.0.1"
-                     port="{{ tomcat_port }}"
-                     protocol="HTTP/1.1"
-                     connectionTimeout="20000"
-                     redirectPort="8443"
-                     scheme="https"
-                     secure="true"
-                     proxyName="{{ _domain }}"
-                     proxyPort="443" />
+      <Connector port="{{ tomcat_http_port }}" protocol="HTTP/1.1"
+                 connectionTimeout="20000" redirectPort="{{ tomcat_https_port }}" />
+
+- name: Protect Tomcat server configuration
+  file:
+    path: "{{ tomcat_install_dir }}/conf/server.xml"
+    owner: root
+    group: tomcat
+    mode: '0640'
 
 - name: Install Tomcat systemd unit
   template:
@@ -26,13 +78,3 @@
     state: started
     enabled: true
     daemon_reload: true
-
-- name: Wait for Tomcat to serve the sample application
-  uri:
-    url: "http://127.0.0.1:{{ tomcat_port }}/"
-    status_code: 200
-    timeout: 60
-  register: _result
-  until: _result.status == 200
-  retries: 30
-  delay: 2

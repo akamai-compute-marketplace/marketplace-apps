@@ -62,4 +62,5 @@
     owner: tomcat
     group: tomcat
     mode: '0750'
+    recurse: true
   loop: [logs, temp, work, webapps]

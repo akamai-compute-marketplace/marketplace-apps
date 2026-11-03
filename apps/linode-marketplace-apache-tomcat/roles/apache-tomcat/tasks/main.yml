@@ -8,5 +8,5 @@
 - name: Import Tomcat configuration tasks
   import_tasks: configure.yml
 
-- name: Import Apache reverse proxy tasks
-  import_tasks: apache.yml
+- name: Import Tomcat TLS tasks
+  import_tasks: ssl.yml

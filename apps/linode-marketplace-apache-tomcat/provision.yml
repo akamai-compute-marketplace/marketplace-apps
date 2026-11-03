@@ -8,3 +8,10 @@
   tasks:
     - name: Generating sudo user and password
       import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Generate Tomcat keystore password
+      lineinfile:
+        path: group_vars/linode/vars
+        insertafter: EOF
+        line: "tomcat_keystore_password: {{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+      no_log: true
