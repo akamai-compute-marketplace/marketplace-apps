@@ -17,7 +17,7 @@
 - name: Enable pgvector extension
   community.postgresql.postgresql_ext:
     name: vector
-    db: "{{ postgresql_app_db }}"
+    login_db: "{{ postgresql_app_db }}"
     state: present
     login_user: postgres
     login_unix_socket: /var/run/postgresql
