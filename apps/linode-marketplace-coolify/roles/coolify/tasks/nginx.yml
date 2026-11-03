@@ -1,0 +1,34 @@
+---
+- name: Installing nginx
+  apt:
+    pkg: nginx
+    state: present
+
+- name: Writing the nginx site for Coolify
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ _domain }}"
+    mode: '0644'
+
+- name: Enabling the Coolify site
+  file:
+    src: "/etc/nginx/sites-available/{{ _domain }}"
+    dest: "/etc/nginx/sites-enabled/{{ _domain }}"
+    state: link
+
+- name: Removing the default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restarting nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: true
+
+- name: Generate Let's Encrypt certificate
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: lemp
