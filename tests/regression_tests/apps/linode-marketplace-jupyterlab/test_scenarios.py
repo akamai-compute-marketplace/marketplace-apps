@@ -34,12 +34,11 @@ def test_jupyterlab_run_notebook(context, base_url, app_credentials):
     login_page.login(token)
     lab_page = JupyterlabLabPage(context)
     expect(context, "JupyterLab workspace did not load.").to_have_title("JupyterLab")
-    lab_page.new_launcher_button.click()
-    lab_page.notebook_python3_button.click()
+    lab_page.open_new_notebook()
     notebook_page = JupyterlabNotebookPage(context)
     expect(notebook_page.run_cell_button, "Notebook toolbar not visible: notebook may not have opened.").to_be_visible()
-    notebook_page.active_cell_input.fill('print("hello")')
-    notebook_page.run_cell_button.click()
+    lab_page.accept_kernel_dialog()
+    notebook_page.run_cell('print("hello")')
     expect(notebook_page.notebook_content, "Cell output did not appear after running print('hello').").to_contain_text("hello")
 
 
