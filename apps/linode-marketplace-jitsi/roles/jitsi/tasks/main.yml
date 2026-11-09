@@ -48,3 +48,9 @@
     echo {{ soa_email_address }} | /usr/share/jitsi-meet/scripts/install-letsencrypt-cert.sh
   args:
     executable: /bin/bash
+
+- name: Restart jicofo and jvb
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop: [jicofo, jitsi-videobridge2]
