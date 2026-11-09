@@ -57,23 +57,22 @@
   environment:
     UV_PYTHON_INSTALL_DIR: "{{ hermes_uv_python_install_dir }}"
 
-- name: Install main repository Node.js dependencies
+- name: Read pm/lock.json from the target machine
+  slurp:
+    src: "{{ hermes_install_dir }}/pm/lock.json"
+  register: hermes_pm_lock
+
+- name: Install specific pnpm version
   npm:
-    path: "{{ hermes_install_dir }}"
+    name: pnpm
+    version: "{{ (hermes_pm_lock.content | b64decode | from_json).packages.pnpm.version }}"
+    global: true
     state: present
 
-- name: Install Playwright npm package
-  npm:
-    name: playwright
-    path: "{{ hermes_install_dir }}"
-    state: present
-  environment:
-    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-
-- name: Install TUI dependencies
-  npm:
-    path: "{{ hermes_install_dir }}/ui-tui"
-    state: present
+- name: Install dependencies with pnpm
+  command: pnpm install --frozen-lockfile --trust-lockfile --filter "{./ui-tui}..."
+  args:
+    chdir: "{{ hermes_install_dir }}"
 
 - name: Ensure user local bin directory exists
   file:

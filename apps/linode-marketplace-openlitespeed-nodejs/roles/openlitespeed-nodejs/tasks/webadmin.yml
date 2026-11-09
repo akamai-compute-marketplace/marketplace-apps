@@ -10,6 +10,15 @@
     mode: '0600'
   no_log: true
 
+- name: Enable the LiteSpeed WebAdmin console
+  copy:
+    content: ""
+    dest: "{{ ols_root }}/admin/conf/enable_webadmin"
+    owner: lsadm
+    group: lsadm
+    mode: '0600'
+    force: false
+
 - name: Remove the plaintext WebAdmin password hint file
   file:
     path: "{{ ols_root }}/adminpasswd"

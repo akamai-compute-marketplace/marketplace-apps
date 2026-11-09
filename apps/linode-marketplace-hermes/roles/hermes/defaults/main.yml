@@ -4,4 +4,4 @@ hermes_home: /home/hermes
 hermes_install_dir: /opt/hermes-agent
 hermes_uv_python_install_dir: "{{ hermes_home }}/.local/share/uv/python"
 repo_url: https://github.com/NousResearch/hermes-agent.git
-node_version: 22.x
+node_version: 26.x
