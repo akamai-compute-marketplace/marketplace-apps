@@ -1,7 +1,4 @@
 ---
-tomcat_major: 11
 tomcat_install_dir: /opt/tomcat
-tomcat_http_port: 80
-tomcat_https_port: 443
 tomcat_tls_dir: /etc/tomcat-tls
 tomcat_certbot_webroot: /var/lib/letsencrypt

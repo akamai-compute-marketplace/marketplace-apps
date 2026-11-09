@@ -1,6 +1,6 @@
 # Linode Apache Tomcat One-Click App
 
-Deploy Apache Tomcat, an open-source web server for Java-based web applications. Tomcat runs as an unprivileged `tomcat` systemd service, serves HTTPS directly on port 443, and redirects HTTP on port 80 to HTTPS. No Apache HTTP Server or NGINX proxy is installed.
+Deploy Apache Tomcat, an open-source web server for Java-based web applications. Tomcat runs as an unprivileged `tomcat` systemd service, serves HTTPS directly on port 443, and redirects HTTP on port 80 to HTTPS.
 
 The official Tomcat sample application is deployed as the root context (`https://<your-domain>/`) so you can confirm the stack works end-to-end. Replace it with your own application as described below.
 

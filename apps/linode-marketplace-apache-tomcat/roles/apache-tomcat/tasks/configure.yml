@@ -1,8 +1,8 @@
 ---
-- name: Install certificate tools
-  apt:
-    name: [openssl, python3-cryptography]
-    state: present
+# - name: Install certificate tools
+#   apt:
+#     name: [openssl, python3-cryptography]
+#     state: present
 
 - name: Create Tomcat TLS directory
   file:
@@ -56,8 +56,8 @@
     path: "{{ tomcat_install_dir }}/conf/server.xml"
     regexp: '<Connector port="8080" protocol="HTTP/1.1"\s+connectionTimeout="20000"\s+redirectPort="8443" />'
     replace: |-
-      <Connector port="{{ tomcat_http_port }}" protocol="HTTP/1.1"
-                 connectionTimeout="20000" redirectPort="{{ tomcat_https_port }}" />
+      <Connector port="80" protocol="HTTP/1.1"
+                 connectionTimeout="20000" redirectPort="443" />
 
 - name: Protect Tomcat server configuration
   file:

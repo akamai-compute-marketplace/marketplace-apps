@@ -22,10 +22,10 @@
   no_log: true
   notify: Restart Tomcat
 
-- name: Remove automatic Tomcat certificate renewal hook
-  file:
-    path: /etc/letsencrypt/renewal-hooks/deploy/tomcat.sh
-    state: absent
+# - name: Remove automatic Tomcat certificate renewal hook
+#   file:
+#     path: /etc/letsencrypt/renewal-hooks/deploy/tomcat.sh
+#     state: absent
 
 - name: Add Tomcat HTTPS connector
   blockinfile:
@@ -33,7 +33,7 @@
     marker: "<!-- {mark} TOMCAT TLS -->"
     insertbefore: '^[ \t]*<Engine name="Catalina" defaultHost="localhost">'
     block: |
-      <Connector port="{{ tomcat_https_port }}"
+      <Connector port="443"
                  protocol="org.apache.coyote.http11.Http11NioProtocol"
                  sslImplementationName="org.apache.tomcat.util.net.jsse.JSSEImplementation"
                  SSLEnabled="true">
@@ -46,7 +46,7 @@
       </Connector>
   no_log: true
 
-- name: Add Tomcat HTTP redirect valve
+- name: Add Tomcat HTTP redirect
   blockinfile:
     path: "{{ tomcat_install_dir }}/conf/server.xml"
     marker: "<!-- {mark} TOMCAT REDIRECT -->"
@@ -60,8 +60,8 @@
     state: restarted
     daemon_reload: true
 
-- name: Disable automatic renewal for manually maintained certificates
-  systemd_service:
-    name: certbot.timer
-    enabled: false
-    state: stopped
+# - name: Disable automatic renewal for manually maintained certificates
+#   systemd_service:
+#     name: certbot.timer
+#     enabled: false
+#     state: stopped
