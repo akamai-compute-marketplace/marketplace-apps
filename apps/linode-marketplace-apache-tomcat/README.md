@@ -18,13 +18,13 @@ The official Tomcat sample application is deployed as the root context (`https:/
 
 ## Deployment Details
 
-| Item               | Location                                    |
-| :---               | :---                                        |
-| Tomcat home        | `/opt/tomcat`                               |
-| Web applications   | `/opt/tomcat/webapps/`                      |
+| Item               | Location                                       |
+| :---               | :---                                           |
+| Tomcat home        | `/opt/tomcat`                                  |
+| Web applications   | `/opt/tomcat/webapps/`                         |
 | Tomcat logs        | `/opt/tomcat/logs/` and `journalctl -u tomcat` |
-| Tomcat configuration | `/opt/tomcat/conf/server.xml`             |
-| TLS keystore       | `/etc/tomcat-tls/tomcat.p12`                 |
+| Tomcat configuration | `/opt/tomcat/conf/server.xml`                |
+| TLS keystore       | `/etc/tomcat-tls/tomcat.p12`                   |
 | Keystore password file | `/etc/tomcat-tls/keystore-password`        |
 
 Tomcat uses a password-protected PKCS#12 keystore containing the Let's Encrypt certificate and private key. The keystore password is recorded in the sudo user's `~/.credentials`.
@@ -48,35 +48,6 @@ sudo mv -f /tmp/myapp.war /opt/tomcat/webapps/ROOT.war
 ```
 
 No stop, start, or manual delete is needed. Wait for redeployment, then check `https://<your-domain>/`. To add your application to a different URL path (e.g. - `/sample`), follow the above steps but use `/opt/tomcat/webapps/sample.war` instead.
-
-## Renewing Your Certificate
-
-Run these commands as root on the server. Set `DOMAIN` to the certificate hostname used for your deployment:
-
-```bash
-DOMAIN=your-domain
-certbot certificates
-certbot renew --cert-name "$DOMAIN"
-```
-
-After renewal succeeds, package the certificate, private key, and chain into a new keystore using the existing password:
-
-```bash
-umask 077
-openssl pkcs12 -export -name tomcat -in "/etc/letsencrypt/live/$DOMAIN/cert.pem" -inkey "/etc/letsencrypt/live/$DOMAIN/privkey.pem" -certfile "/etc/letsencrypt/live/$DOMAIN/chain.pem" -out /etc/tomcat-tls/tomcat.p12.pending -passout file:/etc/tomcat-tls/keystore-password
-```
-
-Only if that export succeeds, set permissions, replace the keystore, and restart Tomcat:
-
-```bash
-chown root:tomcat /etc/tomcat-tls/tomcat.p12.pending
-chmod 0640 /etc/tomcat-tls/tomcat.p12.pending
-mv -f /etc/tomcat-tls/tomcat.p12.pending /etc/tomcat-tls/tomcat.p12
-systemctl restart tomcat
-curl --retry 20 --retry-connrefused --retry-delay 1 --max-time 10 --fail "https://$DOMAIN/"
-```
-
-Do not replace the existing keystore if renewal or export fails. Keep the saved keystore password unchanged. Restarting briefly interrupts requests and may discard in-memory sessions.
 
 ## Linode Helpers Included
 

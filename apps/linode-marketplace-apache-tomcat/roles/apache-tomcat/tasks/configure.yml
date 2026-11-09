@@ -1,9 +1,4 @@
 ---
-# - name: Install certificate tools
-#   apt:
-#     name: [openssl, python3-cryptography]
-#     state: present
-
 - name: Create Tomcat TLS directory
   file:
     path: "{{ tomcat_tls_dir }}"

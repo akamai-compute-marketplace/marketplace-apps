@@ -22,11 +22,6 @@
   no_log: true
   notify: Restart Tomcat
 
-# - name: Remove automatic Tomcat certificate renewal hook
-#   file:
-#     path: /etc/letsencrypt/renewal-hooks/deploy/tomcat.sh
-#     state: absent
-
 - name: Add Tomcat HTTPS connector
   blockinfile:
     path: "{{ tomcat_install_dir }}/conf/server.xml"
@@ -59,9 +54,3 @@
     name: tomcat
     state: restarted
     daemon_reload: true
-
-# - name: Disable automatic renewal for manually maintained certificates
-#   systemd_service:
-#     name: certbot.timer
-#     enabled: false
-#     state: stopped

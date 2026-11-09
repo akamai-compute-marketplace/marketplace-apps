@@ -2,9 +2,6 @@
 - name: Import Tomcat install tasks
   import_tasks: install.yml
 
-- name: Import Tomcat webapps tasks
-  import_tasks: webapps.yml
-
 - name: Import Tomcat configuration tasks
   import_tasks: configure.yml
 
