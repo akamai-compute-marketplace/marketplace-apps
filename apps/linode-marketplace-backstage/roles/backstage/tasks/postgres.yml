@@ -2,7 +2,7 @@
 # update postgresql access
 - name: Update postgres password
   postgresql_query:
-    db: postgres
+    login_db: postgres
     query: "ALTER USER postgres PASSWORD '{{ postgres_password }}';"
   become: true
   become_method: ansible.builtin.su

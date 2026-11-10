@@ -1,0 +1,28 @@
+---
+# Install Addons if requested
+- name: Installing the requested add-ons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Writing the login message
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Saving the login credentials
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      Admin Username: admin
+      Admin Email: {{ soa_email_address }}
+      Admin Password: {{ coolify_admin_password }}

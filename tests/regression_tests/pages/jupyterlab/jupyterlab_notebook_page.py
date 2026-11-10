@@ -9,3 +9,7 @@ class JupyterlabNotebookPage(BasePage):
         self.run_cell_button = self.page.get_by_role("button", name="Run this cell and advance")
         self.notebook_content = self.page.get_by_role("region", name="notebook content")
         self.active_cell_input = self.page.get_by_role("region", name="notebook content").get_by_role("textbox").first
+
+    def run_cell(self, code: str):
+        self.active_cell_input.fill(code)
+        self.run_cell_button.click()

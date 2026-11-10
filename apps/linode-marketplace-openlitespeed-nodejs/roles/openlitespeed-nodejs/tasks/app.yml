@@ -7,6 +7,14 @@
     group: nogroup
     mode: '0755'
 
+- name: Create the Node.js application log directory
+  file:
+    path: "{{ ols_node_dir }}/log"
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: '0755'
+
 - name: Create the ACME challenge directory
   file:
     path: "{{ ols_docroot }}/.well-known"

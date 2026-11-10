@@ -29,7 +29,7 @@
 
 - name: Grant database privileges to django user
   postgresql_privs:
-    db: "{{ postgres_db_name }}"
+    login_db: "{{ postgres_db_name }}"
     privs: ALL
     type: database
     role: "{{ postgres_db_user }}"
@@ -38,7 +38,7 @@
 
 - name: Grant schema privileges to django user
   postgresql_privs:
-    db: "{{ postgres_db_name }}"
+    login_db: "{{ postgres_db_name }}"
     privs: ALL
     type: schema
     obj: public
@@ -48,7 +48,7 @@
 
 - name: Set client_encoding for django
   postgresql_query:
-    db: "{{ postgres_db_name }}"
+    login_db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
     login_unix_socket: /var/run/postgresql
     query: ["ALTER ROLE {{ postgres_db_user }} SET client_encoding TO 'utf8';"]
@@ -57,7 +57,7 @@
 
 - name: Set default_transaction_isolation for django
   postgresql_query:
-    db: "{{ postgres_db_name }}"
+    login_db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
     query:
       - "ALTER ROLE {{ postgres_db_user }} SET default_transaction_isolation TO 'read committed';"
@@ -66,7 +66,7 @@
 
 - name: Set timezone for django
   postgresql_query:
-    db: "{{ postgres_db_name }}"
+    login_db: "{{ postgres_db_name }}"
     login_user: "{{ postgres_system_user }}"
     login_password: "{{ postgres_db_password }}"
     query:

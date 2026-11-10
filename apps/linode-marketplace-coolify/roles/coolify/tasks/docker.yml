@@ -1,0 +1,15 @@
+---
+- name: Installing Docker
+  import_role:
+    name: docker
+
+- name: Installing docker-compose
+  apt:
+    pkg: [docker-compose]
+    state: present
+
+- name: Restarting Docker to pick up the new settings
+  systemd:
+    name: docker
+    state: restarted
+    enabled: true

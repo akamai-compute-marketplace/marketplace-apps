@@ -1,0 +1,26 @@
+---
+# coolify
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  tasks:
+    # generate creds
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Generating the Coolify secrets
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          coolify_admin_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_lowercase,ascii_uppercase,digits,chars=%,?,!,@,#') }}"
+          coolify_app_id: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_app_key: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_db_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_redis_password: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_pusher_app_id: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_pusher_app_key: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
+          coolify_pusher_app_secret: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters,digits') }}"
