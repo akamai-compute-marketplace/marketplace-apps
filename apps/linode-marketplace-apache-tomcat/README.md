@@ -27,14 +27,6 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | TLS keystore       | `/etc/tomcat-tls/tomcat.p12`                   |
 | Keystore password file | `/etc/tomcat-tls/keystore-password`        |
 
-Tomcat uses a password-protected PKCS#12 keystore containing the Let's Encrypt certificate and private key. The keystore password is recorded in the sudo user's `~/.credentials`.
-
-Certificate challenges are served by a separate Tomcat context at `/.well-known/acme-challenge/`, backed by `/var/lib/letsencrypt`. This path is exempt from HTTP redirects and does not depend on your application's WAR. Do not remove that context or block the challenge path.
-
-**Certificate renewal is manual.** Automatic renewal is disabled. Before the certificate expires, renew it, rebuild Tomcat's keystore, and restart Tomcat using the commands below. Running Certbot alone does not update the certificate Tomcat serves.
-
-The bundled Manager, Host Manager, documentation, and examples applications are removed. Deploy your WAR using SSH as described below.
-
 ## Deploying Your Application
 
 Tomcat redeploys WAR files placed in `/opt/tomcat/webapps/` while running. To replace the sample application at `/`:

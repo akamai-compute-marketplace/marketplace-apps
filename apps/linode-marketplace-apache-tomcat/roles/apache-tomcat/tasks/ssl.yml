@@ -20,7 +20,6 @@
     group: tomcat
     mode: '0640'
   no_log: true
-  notify: Restart Tomcat
 
 - name: Add Tomcat HTTPS connector
   blockinfile:
