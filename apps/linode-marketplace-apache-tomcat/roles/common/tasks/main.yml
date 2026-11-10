@@ -1,0 +1,51 @@
+---
+- name: Set hostname
+  import_role:
+    name: hostname
+
+- name: Write _domain to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+  when: _domain is defined
+
+- name: Create DNS A record
+  import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - default_dns is not defined
+
+- name: Set SSH public key
+  import_role:
+    name: sshkey
+
+- name: Disable root login
+  import_role:
+    name: securessh
+  when: disable_root is defined
+
+- name: Update system packages
+  import_role:
+    name: update_pkgs
+
+- name: Enable UFW
+  import_role:
+    name: ufw
+
+- name: Apply UFW rules
+  import_tasks: ufw_rules.yml
+
+- name: Enable fail2ban
+  import_role:
+    name: fail2ban_install
+
+- name: Install base packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+    state: present
+    update_cache: true

@@ -1,0 +1,4 @@
+---
+tomcat_install_dir: /opt/tomcat
+tomcat_tls_dir: /etc/tomcat-tls
+tomcat_certbot_webroot: /var/lib/letsencrypt

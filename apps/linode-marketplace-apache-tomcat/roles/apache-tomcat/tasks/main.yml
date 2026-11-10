@@ -1,0 +1,9 @@
+---
+- name: Import Tomcat install tasks
+  import_tasks: install.yml
+
+- name: Import Tomcat configuration tasks
+  import_tasks: configure.yml
+
+- name: Import Tomcat TLS tasks
+  import_tasks: ssl.yml
