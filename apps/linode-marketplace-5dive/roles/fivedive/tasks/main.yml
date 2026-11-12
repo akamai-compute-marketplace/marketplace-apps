@@ -1,0 +1,6 @@
+---
+- name: Install 5dive
+  import_tasks: install.yml
+
+- name: Install the 5dive login line
+  import_tasks: login_line.yml
