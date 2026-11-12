@@ -1,0 +1,11 @@
+---
+# ssh, plus 80/443 for the server's own HTTPS secret links
+- name: Allow access to 5dive tcp ports
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - '22'
+    - '80'
+    - '443'

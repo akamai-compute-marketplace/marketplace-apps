@@ -1,0 +1,8 @@
+---
+# The one login line: how to link this server to a 5dive account. It goes
+# silent by itself once the server is linked.
+- name: Install the 5dive login line
+  ansible.builtin.copy:
+    src: 99-5dive
+    dest: /etc/update-motd.d/99-5dive
+    mode: '0755'
