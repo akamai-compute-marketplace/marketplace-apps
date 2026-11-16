@@ -36,7 +36,6 @@ def test_opencode_session_roundtrip(remote_exec, opencode_server):
         f"session {created['id']} missing from 'opencode session list': {cli_sessions}"
 
 
-@pytest.mark.xfail(reason="Tech docs page is not ready yet")
 def test_opencode_tech_docs(context, techdocs_url):
     """Verify that the OpenCode tech docs page is accessible."""
     tech_docs_page = OpenCodeTechDocsPage(context)
