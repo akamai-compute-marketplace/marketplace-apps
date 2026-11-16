@@ -17,7 +17,6 @@ def test_openfang_up(remote_exec):
     assert '"status":"ok"' in body, f"OpenFang health is not ok: {body}"
 
 
-@pytest.mark.xfail(reason="Tech docs page is not ready yet")
 def test_openfang_tech_docs(context, techdocs_url):
     """Verify that the OpenFang tech docs page is accessible."""
     tech_docs_page = OpenFangTechDocsPage(context)
