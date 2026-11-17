@@ -1,8 +1,8 @@
 ---
-- name: Install Drush 13.3.3 via Composer
+- name: Install Drush via Composer
   composer:
     command: require
-    arguments: "drush/drush:13.3.3"
+    arguments: "drush/drush"
     working_dir: /var/www/{{ _domain }}
   become: true
   become_user: www-data
@@ -19,6 +19,28 @@
       --account-mail="{{ drupal_account_email }}"
       --locale="en"
       --yes
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  become: true
+  become_user: www-data
+
+- name: Apply core recipes for standard content defaults
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush recipe core/recipes/{{ item }}
+  args:
+    chdir: /var/www/{{ _domain }}/web
+  loop:
+    - page_content_type
+    - article_comment
+    - article_tags
+    - content_search
+    - basic_shortcuts
+  become: true
+  become_user: www-data
+
+- name: Enable content and help search pages
+  command: >
+    /var/www/{{ _domain }}/vendor/bin/drush pm:install search_node search_help -y
   args:
     chdir: /var/www/{{ _domain }}/web
   become: true

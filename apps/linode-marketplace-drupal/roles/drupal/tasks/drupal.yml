@@ -40,9 +40,8 @@
       fail:
         msg: "Checksum validation failed. Installation aborted."
 
-- name: Install Composer 2.8.3 globally
+- name: Install Composer globally
   command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
-    --version=2.8.3
   args:
     creates: /usr/local/bin/composer
 
@@ -68,10 +67,10 @@
     group: www-data
     mode: '0755'
 
-- name: Install Drupal 10.4.1 using Composer
+- name: Install Drupal using Composer
   composer:
     command: create-project
-    arguments: "drupal/recommended-project:10.4.1 /var/www/{{ _domain }} --no-interaction"
+    arguments: "drupal/recommended-project /var/www/{{ _domain }} --no-interaction"
     working_dir: /var/www
   become: true
   become_user: www-data
