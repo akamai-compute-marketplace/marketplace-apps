@@ -21,5 +21,4 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-      Tomcat Keystore Password: {{ tomcat_keystore_password }}
   no_log: true

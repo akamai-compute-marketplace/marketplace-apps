@@ -5,21 +5,10 @@
     state: present
     update_cache: true
 
-- name: Fetch Tomcat 11 release index
-  uri:
-    url: https://dlcdn.apache.org/tomcat/tomcat-11/
-    return_content: true
-  register: tomcat_index
-
-- name: Set latest Tomcat 11 version
-  set_fact:
-    tomcat_version: "{{ tomcat_index.content | regex_findall('v(11\\.0\\.\\d+)/') | community.general.version_sort | last }}"
-
 - name: Create tomcat service account
   user:
     name: tomcat
     system: true
-    home: "{{ tomcat_install_dir }}"
     shell: /usr/sbin/nologin
     create_home: false
 
@@ -33,9 +22,9 @@
 
 - name: Download Tomcat archive
   get_url:
-    url: "https://dlcdn.apache.org/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
+    url: "https://archive.apache.org/dist/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz"
     dest: "/tmp/apache-tomcat-{{ tomcat_version }}.tar.gz"
-    checksum: "sha512:https://dlcdn.apache.org/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz.sha512"
+    checksum: "sha512:https://archive.apache.org/dist/tomcat/tomcat-11/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz.sha512"
     mode: '0644'
 
 - name: Extract Tomcat archive
@@ -45,7 +34,6 @@
     remote_src: true
     extra_opts:
       - --strip-components=1
-    creates: "{{ tomcat_install_dir }}/bin/catalina.sh"
 
 - name: Set Tomcat ownership and permissions
   file:

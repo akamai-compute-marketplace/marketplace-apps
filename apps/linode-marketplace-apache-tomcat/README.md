@@ -8,7 +8,7 @@ The official Tomcat sample application is deployed as the root context (`https:/
 
 | Software      | Version       | Description                                            |
 | :---          | :----         | :---                                                   |
-| Apache Tomcat | Latest 11.0.x | Open-source web server for Java-based web applications |
+| Apache Tomcat | 11.0.29       | Open-source web server for Java-based web applications |
 | OpenJDK       | 17            | Open-source Java runtime                               |
 | Certbot       | Latest        | Let's Encrypt certificate issuance and renewal         |
 
@@ -24,8 +24,6 @@ The official Tomcat sample application is deployed as the root context (`https:/
 | Web applications   | `/opt/tomcat/webapps/`                         |
 | Tomcat logs        | `/opt/tomcat/logs/` and `journalctl -u tomcat` |
 | Tomcat configuration | `/opt/tomcat/conf/server.xml`                |
-| TLS keystore       | `/etc/tomcat-tls/tomcat.p12`                   |
-| Keystore password file | `/etc/tomcat-tls/keystore-password`        |
 
 ## Deploying Your Application
 

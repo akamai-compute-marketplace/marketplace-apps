@@ -41,11 +41,3 @@
 - name: Enable fail2ban
   import_role:
     name: fail2ban_install
-
-- name: Install base packages
-  apt:
-    name:
-      - apt-transport-https
-      - ca-certificates
-    state: present
-    update_cache: true
