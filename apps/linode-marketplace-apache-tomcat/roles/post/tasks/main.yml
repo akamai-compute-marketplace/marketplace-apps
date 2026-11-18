@@ -21,4 +21,3 @@
     content: |
       Sudo Username: {{ username }}
       Sudo Password: {{ password }}
-  no_log: true
