@@ -1,0 +1,42 @@
+---
+# motd and creds gen
+- name: Copy MOTD template to /etc/motd
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Reading the panel database root credentials
+  ansible.builtin.shell:
+    cmd: grep -i '^password' /root/.my.cnf | head -n1 | cut -d= -f2- | tr -d '\"[:space:]'
+  register: cwp_mysql_root
+  changed_when: false
+  failed_when: false
+
+- name: Writing sudo and panel credentials into file
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      CWP Control Web Panel
+      URL: https://{{ _domain }}:2031 (or http://{{ _domain }}:2030)
+      Username: root
+      Password: {{ cwp_root_password }}
+
+      MariaDB root password: {{ cwp_mysql_root.stdout | default('see /root/.my.cnf', true) }}
+      Panel version: {{ cwp_version | default('latest') }}
+
+- name: Removing deployment artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /root/marketplace-apps
+    - /tmp/marketplace-apps

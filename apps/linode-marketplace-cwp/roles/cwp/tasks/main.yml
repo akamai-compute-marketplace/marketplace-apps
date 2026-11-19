@@ -1,0 +1,3 @@
+---
+- name: Running the installation tasks
+  ansible.builtin.import_tasks: install.yml

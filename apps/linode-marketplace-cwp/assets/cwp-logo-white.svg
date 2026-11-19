@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="CWP - Control Web Panel">
+  <defs>
+    <mask id="cwp-knockout">
+      <rect width="512" height="512" fill="#FFFFFF"/>
+      <text x="256" y="262" text-anchor="middle" dominant-baseline="central" textLength="330" lengthAdjust="spacingAndGlyphs" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="800" font-size="166" fill="#000000">CWP</text>
+    </mask>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="#FFFFFF" mask="url(#cwp-knockout)"/>
+</svg>

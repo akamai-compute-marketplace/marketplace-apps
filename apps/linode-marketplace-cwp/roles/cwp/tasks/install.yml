@@ -1,0 +1,49 @@
+---
+# CWP installs itself from the official cwp-latest wrapper. The flag set below
+# keeps the installer non-interactive so the Linode Marketplace deployment needs
+# no terminal input:
+#   -p php-fpm version, -c php-cgi version, -d MariaDB version, -m mod_security,
+#   -r reboot after install (no: the panel starts on its own)
+- name: Downloading the CWP installer
+  ansible.builtin.get_url:
+    url: https://centos-webpanel.com/cwp-latest
+    dest: /usr/local/src/cwp-latest
+    mode: '0755'
+    force: true
+
+- name: Running the CWP installer unattended
+  ansible.builtin.shell:
+    cmd: >
+      sh /usr/local/src/cwp-latest
+      -p "{{ cwp_php_fpm | default('8.2') }}"
+      -c "{{ cwp_php_cgi | default('8.1') }}"
+      -d "{{ cwp_mariadb | default('11.4') }}"
+      -m "{{ cwp_modsecurity | default('no') }}"
+      -r no < /dev/null 2>&1 | tee /root/cwp-install.log
+    chdir: /usr/local/src
+    creates: /usr/local/cwpsrv
+
+- name: Checking that the panel files exist
+  ansible.builtin.stat:
+    path: /usr/local/cwpsrv
+  register: cwp_panel_dir
+
+- name: Failing when the panel was not installed
+  ansible.builtin.fail:
+    msg: "CWP installation did not complete. See /root/cwp-install.log"
+  when: not cwp_panel_dir.stat.exists
+
+- name: Enabling the panel services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - cwpsrv
+    - cwp-phpfpm
+  failed_when: false
+
+- name: Removing the installer binary
+  ansible.builtin.file:
+    path: /usr/local/src/cwp-latest
+    state: absent
