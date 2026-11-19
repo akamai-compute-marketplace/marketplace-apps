@@ -1,0 +1,33 @@
+# linode ansible playbook
+
+# linodes
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  tasks:
+    - name: Generating sudo user password
+      set_fact:
+        sudo_password: "{{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}"
+      no_log: true
+
+    - name: Writing sudo user password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          password: {{ sudo_password }}
+
+    - name: Generating CWP root password
+      set_fact:
+        cwp_root_password: "{{ lookup('password', '/dev/null length=20 chars=ascii_letters,digits') }}"
+      no_log: true
+
+    - name: Writing CWP root password to vars
+      lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          cwp_root_password: {{ cwp_root_password }}

@@ -1,0 +1,95 @@
+---
+# hostname from the Linode rDNS / domain UDFs
+- name: Setting up hostname
+  import_role:
+    name: hostname
+
+# write _domain to vars.
+- name: Write _domain to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+
+# base system updates
+- name: Updating all system packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+# SELinux must be permissive for the panel services
+- name: Setting SELinux to permissive
+  ansible.builtin.lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=permissive
+
+- name: Enforcing permissive mode now
+  ansible.builtin.command: setenforce 0
+  failed_when: false
+  changed_when: false
+
+# limited sudo user (the real sudo group on EL is wheel)
+- name: Creating the limited sudo user
+  ansible.builtin.user:
+    name: "{{ username }}"
+    password: "{{ password | password_hash('sha512') }}"
+    groups: wheel
+    append: true
+    shell: /bin/bash
+    update_password: on_create
+    state: present
+
+- name: Creating .ssh directory for the limited user
+  ansible.builtin.file:
+    path: '/home/{{ username }}/.ssh'
+    state: directory
+    mode: '0700'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+# sets account ssh pubkey to limited user
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
+
+# disable root login w/wo pubkey
+- name: Secure ssh
+  import_role:
+    name: securessh
+  when: disable_root is defined
+
+- name: Setting the panel root password
+  ansible.builtin.user:
+    name: root
+    password: "{{ cwp_root_password | password_hash('sha512') }}"
+    update_password: always
+
+- name: Installing firewalld
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+- name: Starting and enabling firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+# ufw rules
+- name: Apply firewall rules
+  ansible.builtin.import_tasks: firewall.yml
+
+- name: Installing EPEL and fail2ban
+  ansible.builtin.dnf:
+    name:
+      - epel-release
+      - fail2ban
+    state: present
+
+- name: Starting and enabling fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: started
+    enabled: true

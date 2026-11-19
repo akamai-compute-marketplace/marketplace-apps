@@ -1,0 +1,30 @@
+---
+# ports used by CWP: panel, web, mail, DNS, FTP
+- name: Allowing standard services
+  loop:
+    - ssh
+    - http
+    - https
+    - smtp
+    - smtps
+    - submission
+    - imap
+    - imaps
+    - pop3
+    - pop3s
+    - dns
+    - ftp
+  ansible.builtin.command: "firewall-cmd --permanent --add-service={{ item }}"
+
+- name: Allowing CWP panel ports
+  loop:
+    - 2030/tcp
+    - 2031/tcp
+    - 2082/tcp
+    - 2083/tcp
+    - 2086/tcp
+    - 2087/tcp
+  ansible.builtin.command: "firewall-cmd --permanent --add-port={{ item }}"
+
+- name: Reloading firewall
+  ansible.builtin.command: firewall-cmd --reload
