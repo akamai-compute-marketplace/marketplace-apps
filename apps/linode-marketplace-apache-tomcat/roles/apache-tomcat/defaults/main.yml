@@ -1,0 +1,4 @@
+---
+tomcat_install_dir: /opt/tomcat
+tomcat_version: 11.0.29
+tomcat_certbot_webroot: /var/lib/letsencrypt

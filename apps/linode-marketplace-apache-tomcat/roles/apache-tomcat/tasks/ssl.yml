@@ -1,0 +1,54 @@
+---
+- name: Obtain certificate using Tomcat webroot
+  import_role:
+    name: certbot_ssl
+  vars:
+    webserver_stack: webroot
+    certbot_webroot: "{{ tomcat_certbot_webroot }}"
+
+- name: Update permissions on letsencrypt directories
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: tomcat
+    mode: '0750'
+    state: directory
+  loop:
+    - /etc/letsencrypt/live
+    - /etc/letsencrypt/archive
+    - "/etc/letsencrypt/live/{{ _domain }}"
+    - "/etc/letsencrypt/archive/{{ _domain }}"
+
+- name: Allow Tomcat to read the certificate private key
+  file:
+    path: "/etc/letsencrypt/live/{{ _domain }}/privkey.pem"
+    owner: root
+    group: tomcat
+    mode: '0640'
+    follow: true
+  no_log: true
+
+- name: Configure Tomcat HTTPS
+  template:
+    src: server.xml.j2
+    dest: "{{ tomcat_install_dir }}/conf/server.xml"
+    owner: root
+    group: tomcat
+    mode: '0640'
+  vars:
+    tomcat_tls_enabled: true
+
+- name: Install Tomcat certificate renewal hook
+  copy:
+    content: |
+      #!/bin/sh
+      set -eu
+      systemctl restart tomcat
+    dest: /etc/letsencrypt/renewal-hooks/deploy/tomcat.sh
+    mode: '0755'
+
+- name: Restart Tomcat
+  systemd_service:
+    name: tomcat
+    state: restarted
+    daemon_reload: true
