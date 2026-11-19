@@ -30,8 +30,8 @@ apps/linode-marketplace-cwp/DOCUMENTATION.md
 
 App Assets
 apps/linode-marketplace-cwp/assets/ (logo in full colour and white, SVG)
-Brand Color 1: #0B5FA5
-Brand Color 2: #F26522
+Brand Color 1: #C8202F
+Brand Color 2: #0B1D33
 
 Contact for reviews
 Jose Nunez - The CWP Team - support@centos-webpanel.com

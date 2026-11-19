@@ -39,10 +39,12 @@ Control Web Panel (CWP) is a free, open-source hosting control panel for Linux. 
     - Accept the self-signed certificate warning on first access.
 4.  Log in with **root** and the password from `~/.credentials`, then complete the first-run wizard (nameservers, email and panel settings).
 
-The portal lists the server services, mail queue, disk usage and the hosting accounts created.
+![CWP login screen](assets/cwp-login.png)
 
-Screenshots of the login screen and the dashboard are attached to the submission (`assets/cwp-login.png`,
-`assets/cwp-dashboard.png`).
+After logging in, the panel dashboard shows the server health, the services running, the number of hosting
+accounts, mailboxes and domains, along with the firewall and backup state.
+
+![CWP dashboard](assets/cwp-dashboard.png)
 
 ## Limited user fields
 
