@@ -1,0 +1,43 @@
+---
+# set_hostname
+- name: Setting up hostname
+  import_role:
+    name: hostname
+
+# sets account ssh pubkey to limited user
+- name: Set ssh pubkey
+  import_role:
+    name: sshkey
+
+- name: Disable root login
+  import_role:
+    name: securessh
+  when: disable_root is defined
+
+# write _domain to vars.
+- name: Write _domain to vars
+  lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+  when: _domain is defined
+
+# dns creation
+- name: Create dns A record
+  import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - default_dns is not defined
+
+# apt_setup_update
+- name: Update system packages
+  import_role:
+    name: update_pkgs
+
+# No ufw or fail2ban helper here: the OpenPlex installer sets up its own host
+# firewall (nftables table "inet openplex": SSH, HTTP/HTTPS, DNS, mail and SFTP)
+# and Fail2Ban (SSH and panel logins). Both are managed from the panel's
+# Firewall page; an active ufw would block the ports OpenPlex opens for mail,
+# DNS and SFTP.

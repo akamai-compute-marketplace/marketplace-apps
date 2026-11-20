@@ -1,0 +1,22 @@
+---
+- name: Writing the login message
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0644'
+
+- name: Saving the login credentials
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      OpenPlex Panel: https://{{ _domain | lower }}
+      OpenPlex Username: admin
+      OpenPlex Password: {{ openplex_admin_password_file['content'] | b64decode | trim }}
+      (change it after signing in; a one-time sign-in link: sudo openplexd login-link)
+  no_log: true
