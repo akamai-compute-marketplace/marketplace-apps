@@ -1,4 +1,4 @@
-# Marketplace App Development Guidelines
+# Quick Deploy Apps Development Guidelines
 
 A Marketplace App leverages the Linode API and Ansible to deploy and configure a single node service. The end-user’s Linode API token must be scoped with appropriate permissions to add and remove the necessary platform resources, such as compute, DNS, storage, etc. In additon, please adhere to the following guidelines for Marketplace apps:
 
