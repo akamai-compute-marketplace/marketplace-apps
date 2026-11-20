@@ -1,16 +1,16 @@
-# Linode Marketplace Apps
+# Akamai Quick Deploy Apps
 
-The Linode Marketplace is designed to make it easier for developers and companies to share [One-Click Apps](https://www.linode.com/marketplace/) with the Linode community. One-Click Apps are portable and modular solutioning tools written as Ansible playbooks. The Linode Marketplace allows users to quickly deploy services and perform essential configurations on a Linode compute instance's first boot. 
+Quick Deploy Apps are designed to make it easier for developers and companies to share [One-Click Apps](https://www.akamai.com/cloud/apps) with the Linode community. Quick Deploy Apps are portable and modular solutioning tools written as Ansible playbooks. Quick Deploy Apps allows users to quickly deploy services and perform essential configurations on a Akamai compute instance's first boot. 
 
-A Marketplace deployment refers to an application (single service on a single node) or a cluster (multi-node clustered service such as Galera). A combination of StackScripts and Ansible playbooks give the Marketplace a one-click installation and delivery mechanism for deployments. The end user is billed just for the underlying cloud resources (compute instances, storage volumes, etc) in addition to any applicable BYOLs.
+A Quick Deploy App refers to an application (single service on a single node) or a cluster (multi-node clustered service such as Galera). A combination of StackScripts and Ansible playbooks give the Marketplace a one-click installation and delivery mechanism for deployments. The end user is billed just for the underlying cloud resources (compute instances, storage volumes, etc) in addition to any applicable BYOLs.
 
-## Marketplace App Development Guidelines.
+## Quick Deploy App Development Guidelines.
 
-A Marketplace application consists of three major components: a Stackscript, Ansible playbooks, and Git repository to clone from.
+A Quick Deploy App consists of three major components: a Stackscript, Ansible playbooks, and Git repository to clone from.
 
 ### Stackscript
 
-A [Stackscript](https://www.linode.com/docs/products/tools/stackscripts/guides/write-a-custom-script) is a Bash script adhering to industry best practices that is stored on Linode hosts and is accessible to all customers.
+A [Stackscript](https://techdocs.akamai.com/cloud-computing/docs/write-a-custom-script-for-use-with-stackscripts) is a Bash script adhering to industry best practices that is stored on Linode hosts and is accessible to all customers.
 
 ### Ansible Playbook
 
@@ -38,7 +38,3 @@ git commit -m "chore: bump linode_helpers to vX.Y.Z"
 More detailed information on the available helper functions and variables can be found in the [`linode_helpers` documentation](https://github.com/akamai-compute-marketplace/linode_helpers/blob/main/docs/README.md). See the submodule's [development guide](https://github.com/akamai-compute-marketplace/linode_helpers/blob/main/docs/CONTRIBUTING.md) for release and update conventions.
 
 For more information on roles please refer to the [Ansible documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#using-roles-at-the-play-level).
-
-## Creating Your Own
-
-For more information on creating and submitting a Partner App for the Linode Marketplace please see [Contributing](docs/CONTRIBUTING.md) and [Development](docs/DEVELOPMENT.md).

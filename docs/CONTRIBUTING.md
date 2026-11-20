@@ -1,5 +1,8 @@
 # Contributing
 
+Thank you for considering contributing to our repo! We are currently not receiving app submissions at this time.
+
+<del>
 Thanks for your interest in contributing to the Akamai Connected Cloud Marketplace!
 
 You can contribute by [opening an issue](https://github.com/akamai-compute-marketplace/marketplace-apps/issues) or submitting a pull request. Best practices for development of Akamai Marketplace Apps are discussed in the [Development Readme](docs/DEVELOPMENT.md).
@@ -73,4 +76,4 @@ Akamai Marketplace listings features gradient backgrounds and a prominent logo d
 
 **Logo**  
 *Submit vector files of your app's logo in white and full color. (SVG, EPS, or AI files accepted.)*
-
+</del>
