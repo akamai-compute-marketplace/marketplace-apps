@@ -1,0 +1,42 @@
+---
+- name: Downloading the OpenPlex installer
+  get_url:
+    url: "{{ openplex_release_url }}/install.sh"
+    dest: "{{ openplex_installer }}"
+    checksum: "sha256:{{ openplex_release_url }}/SHA256SUMS"
+    mode: '0700'
+
+# The installer adds Docker Engine from Docker's repository, the openplexd
+# binary (checked against the signed release checksums), the systemd service,
+# the host firewall and Fail2Ban, then starts OpenPlex. The panel gets its
+# Let's Encrypt certificate for _domain through its edge proxy. The installer
+# prints the initial admin password: that line is kept out of the logs.
+- name: Running the OpenPlex installer
+  shell: |
+    set -o pipefail
+    bash {{ openplex_installer }} \
+      --version {{ openplex_version | quote }} \
+      --panel-domain {{ _domain | lower | quote }} \
+      --acme-email {{ soa_email_address | quote }} 2>&1 | sed -u '/Password:/d'
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/openplexd
+
+- name: Removing the installer
+  file:
+    path: "{{ openplex_installer }}"
+    state: absent
+
+- name: Waiting for OpenPlex to answer
+  uri:
+    url: http://127.0.0.1:7080/api/v1/system/health
+  register: openplex_health
+  until: openplex_health.status == 200
+  retries: 30
+  delay: 5
+
+- name: Reading the initial admin password
+  slurp:
+    src: "{{ openplex_data_dir }}/initial-admin-password"
+  register: openplex_admin_password_file
+  no_log: true

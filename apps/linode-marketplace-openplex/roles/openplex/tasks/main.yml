@@ -1,0 +1,3 @@
+---
+- name: Installing OpenPlex
+  import_tasks: install.yml

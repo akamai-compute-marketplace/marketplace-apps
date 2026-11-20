@@ -1,0 +1,7 @@
+---
+# Pinned OpenPlex release. The panel updates itself from its dashboard
+# (signed releases) after deployment.
+openplex_version: v0.33.0
+openplex_release_url: "https://github.com/avakiam/openplex/releases/download/{{ openplex_version }}"
+openplex_data_dir: /var/lib/openplex
+openplex_installer: /root/openplex-install.sh
