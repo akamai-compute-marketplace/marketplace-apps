@@ -8,6 +8,17 @@ ob_user: openbroadcaster
 ob_home: /home/openbroadcaster
 ob_root: "{{ ob_home }}/www"
 ob_files: "{{ ob_home }}/files"
+# pending uploads live in OB_ASSETS, kept outside the web root
+ob_assets: "{{ ob_files }}/assets"
+ob_dirs:
+  - "{{ ob_files }}"
+  - "{{ ob_files }}/media"
+  - "{{ ob_files }}/media/uploads"
+  - "{{ ob_files }}/media/archive"
+  - "{{ ob_files }}/thumbnails"
+  - "{{ ob_files }}/cache"
+  - "{{ ob_assets }}"
+  - "{{ ob_assets }}/uploads"
 
 # database and the web admin account (the schema's built-in admin)
 ob_db_name: openbroadcaster

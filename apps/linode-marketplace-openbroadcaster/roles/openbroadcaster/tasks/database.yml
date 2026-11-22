@@ -1,0 +1,21 @@
+---
+# no_log: this step handles the database root password
+- name: Securing MariaDB
+  import_role:
+    name: securemysql
+  no_log: true
+
+- name: Creating the OpenBroadcaster database
+  community.mysql.mysql_db:
+    name: '{{ ob_db_name }}'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+
+- name: Creating the OpenBroadcaster database user
+  community.mysql.mysql_user:
+    name: '{{ ob_db_user }}'
+    password: '{{ ob_db_pass }}'
+    host: localhost
+    priv: '{{ ob_db_name }}.*:ALL'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present

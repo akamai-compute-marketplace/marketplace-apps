@@ -1,0 +1,22 @@
+<?php
+
+define('OB_DB_USER', '{{ ob_db_user }}'); // database user
+define('OB_DB_PASS', '{{ ob_db_pass }}'); // database password
+define('OB_DB_HOST', 'localhost'); // database hostname
+define('OB_DB_NAME', '{{ ob_db_name }}'); // database name
+
+define('OB_HASH_SALT', '{{ ob_hash_salt }}'); // random characters for password salt
+
+define('OB_MEDIA', '{{ ob_files }}/media');
+define('OB_MEDIA_UPLOADS', '{{ ob_files }}/media/uploads');
+define('OB_MEDIA_ARCHIVE', '{{ ob_files }}/media/archive');
+define('OB_THUMBNAILS', '{{ ob_files }}/thumbnails');
+define('OB_CACHE', '{{ ob_files }}/cache');
+define('OB_ASSETS', '{{ ob_assets }}'); // pending uploads, outside the web root
+
+define('OB_SITE', 'https://{{ _domain }}/'); // where do you access OB?
+
+define('OB_EMAIL_REPLY', 'noreply@{{ _domain }}'); // emails to users come from this address
+define('OB_EMAIL_FROM', 'OpenBroadcaster'); // emails to users come from this name
+
+define('OB_SENDFILE_HEADER', 'X-Accel-Redirect'); // nginx serves files through X-Accel-Redirect

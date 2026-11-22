@@ -7,6 +7,7 @@
       - mariadb-server
       - python3-mysqldb
       - php{{ php_version }}-fpm
+      - php{{ php_version }}-cli
       - php{{ php_version }}-mysql
       - php{{ php_version }}-mbstring
       - php{{ php_version }}-xml

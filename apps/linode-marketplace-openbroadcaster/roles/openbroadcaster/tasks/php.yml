@@ -1,0 +1,17 @@
+---
+- name: Writing the OpenBroadcaster PHP-FPM pool
+  template:
+    src: templates/openbroadcaster-fpm.conf.j2
+    dest: '/etc/php/{{ php_version }}/fpm/pool.d/openbroadcaster.conf'
+    mode: '0644'
+
+- name: Removing the default PHP-FPM pool
+  file:
+    path: '/etc/php/{{ php_version }}/fpm/pool.d/www.conf'
+    state: absent
+
+- name: Restarting PHP-FPM
+  systemd:
+    name: 'php{{ php_version }}-fpm'
+    state: restarted
+    enabled: true

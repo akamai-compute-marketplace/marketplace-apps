@@ -1,0 +1,34 @@
+---
+# OpenBroadcaster's INSTALL.md: mjs must be served as application/javascript
+- name: Serving .mjs files as JavaScript
+  replace:
+    path: /etc/nginx/mime.types
+    regexp: '^(\s*application/javascript\s+)js;$'
+    replace: '\1js mjs;'
+
+- name: Writing the nginx site for OpenBroadcaster
+  template:
+    src: templates/nginx-site.conf.j2
+    dest: '/etc/nginx/sites-available/{{ _domain }}'
+    mode: '0644'
+
+- name: Enabling the OpenBroadcaster site
+  file:
+    src: '/etc/nginx/sites-available/{{ _domain }}'
+    dest: '/etc/nginx/sites-enabled/{{ _domain }}'
+    state: link
+
+- name: Removing the default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Checking the nginx configuration
+  command: nginx -t
+  changed_when: false
+
+- name: Restarting nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: true
