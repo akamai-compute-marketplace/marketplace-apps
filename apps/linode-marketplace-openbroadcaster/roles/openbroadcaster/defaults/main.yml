@@ -1,0 +1,18 @@
+---
+# OpenBroadcaster version to install: a release tag or a full commit SHA
+ob_version: 3457e1e1ec6573ae08252b21c59feddd46d5d225
+ob_repo: https://github.com/openbroadcaster/observer.git
+
+# the system user that runs PHP-FPM, the CLI and the background service
+ob_user: openbroadcaster
+ob_home: /home/openbroadcaster
+ob_root: "{{ ob_home }}/www"
+ob_files: "{{ ob_home }}/files"
+
+# database and the web admin account (the schema's built-in admin)
+ob_db_name: openbroadcaster
+ob_db_user: openbroadcaster
+ob_admin_user: admin
+
+# PHP on Ubuntu 24.04
+php_version: '8.3'

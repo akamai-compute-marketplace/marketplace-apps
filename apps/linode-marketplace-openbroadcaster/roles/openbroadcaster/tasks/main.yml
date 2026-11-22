@@ -1,0 +1,3 @@
+---
+- name: Installing the packages
+  import_tasks: packages.yml

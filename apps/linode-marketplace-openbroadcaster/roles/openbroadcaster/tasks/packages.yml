@@ -1,0 +1,38 @@
+---
+# web stack
+- name: Installing nginx, MariaDB and PHP
+  apt:
+    pkg:
+      - nginx
+      - mariadb-server
+      - python3-mysqldb
+      - php{{ php_version }}-fpm
+      - php{{ php_version }}-mysql
+      - php{{ php_version }}-mbstring
+      - php{{ php_version }}-xml
+      - php{{ php_version }}-gd
+      - php{{ php_version }}-curl
+      - php-imagick
+    state: present
+
+# media tools listed in OpenBroadcaster's INSTALL.md
+- name: Installing the media tools
+  apt:
+    pkg:
+      - festival
+      - imagemagick
+      - ffmpeg
+      - libavcodec-extra
+      - libavfilter-extra
+      - vorbis-tools
+    state: present
+
+# needed for the install and for later OpenBroadcaster updates
+- name: Installing git, Composer and Node.js
+  apt:
+    pkg:
+      - git
+      - composer
+      - nodejs
+      - npm
+    state: present
