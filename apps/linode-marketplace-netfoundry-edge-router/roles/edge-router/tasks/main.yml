@@ -117,9 +117,9 @@
 - name: Register the Edge Router with one interface
   command:
     cmd: "/opt/netfoundry/router-registration {{ registration_key }}"
-  when: interfaces | length == 1 and registration_key != "paste key here"
+  when: interfaces | length == 1 and registration_key not in ['', 'none', 'paste key here', None]
 
 - name: Register the Edge Router with two interfaces
   command:
     cmd: "/opt/netfoundry/router-registration {{ registration_key }} -e {{ second_interface_ip }} -i {{ second_interface_ip }}"
-  when: interfaces | length == 2 and registration_key != "paste key here"
+  when: interfaces | length == 2 and registration_key not in ['', 'none', 'paste key here', None]
