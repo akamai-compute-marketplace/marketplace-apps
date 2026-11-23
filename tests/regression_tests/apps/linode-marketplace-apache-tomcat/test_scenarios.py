@@ -1,4 +1,3 @@
-import re
 import uuid
 
 import pytest
@@ -16,11 +15,11 @@ def test_apache_tomcat_up(remote_exec):
 
 
 def test_apache_tomcat_serves_default_page(remote_exec, http_session, base_url):
-    # Verifies that Tomcat serves its default JSP page over HTTPS.
+    # Verifies that Tomcat serves the bundled sample application at the root over HTTPS.
     service = ApacheTomcatService(remote_exec, http_session, base_url)
     response = service.get("/")
-    assert response.status_code == 200, f"default page returned {response.status_code}"
-    assert re.search(r"<h1>Apache Tomcat/\d+\.", response.text), "default page did not render the Tomcat version"
+    assert response.status_code == 200, f"root page returned {response.status_code}"
+    assert 'Sample "Hello, World" Application' in response.text, "root page did not render the sample application"
 
 
 def test_apache_tomcat_deploys_war(remote_exec, http_session, base_url):
