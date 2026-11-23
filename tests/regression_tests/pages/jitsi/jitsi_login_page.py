@@ -6,7 +6,7 @@ class JitsiLoginPage(BasePage):
     def __init__(self, page: Page):
         super().__init__(page)
         self.heading = self.page.get_by_role("heading", name="Jitsi Meet")
-        self.meeting_name_input = self.page.get_by_role("textbox", name="Meeting name input")
+        self.meeting_name_input = self.page.get_by_role("textbox", name="Enter room name")
         self.start_meeting_button = self.page.get_by_role("button", name="Start meeting")
 
     def start_meeting(self, room_name: str):
