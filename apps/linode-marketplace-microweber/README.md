@@ -10,7 +10,7 @@ At its core, Microweber is designed to support your journey toward online succes
 | :---     | :----   | :---        |
 | Microweber | Latest | Drag-and-drop CMS and e-commerce website builder |
 | Apache   | 2.4.58 | Web server |
-| PHP      | 8.3.6  | Server-side scripting language |
+| PHP      | 8.5    | Server-side scripting language |
 | MariaDB  | 10.11.14 | Open-source relational database management system |
 
 **Supported Distributions:**

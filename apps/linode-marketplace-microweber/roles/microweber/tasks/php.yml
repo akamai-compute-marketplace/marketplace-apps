@@ -1,27 +1,36 @@
 ---
+- name: Install packages.sury.org archive keyring
+  apt:
+    deb: https://packages.sury.org/debsuryorg-archive-keyring.deb
+
+- name: Add packages.sury.org PHP repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ {{ ansible_distribution_release }} main"
+    filename: php
+    state: present
+
 - name: Install PHP and Microweber-required extensions
   apt:
     name:
-      - php
-      - libapache2-mod-php
-      - php-cli
-      - php-common
-      - php-mysql
-      - php-xml
-      - php-curl
-      - php-gd
-      - php-intl
-      - php-mbstring
-      - php-zip
-      - php-bcmath
-      - php-opcache
-      - php-sqlite3
+      - php8.5
+      - libapache2-mod-php8.5
+      - php8.5-cli
+      - php8.5-common
+      - php8.5-mysql
+      - php8.5-xml
+      - php8.5-curl
+      - php8.5-gd
+      - php8.5-intl
+      - php8.5-mbstring
+      - php8.5-zip
+      - php8.5-bcmath
+      - php8.5-sqlite3
     state: present
     update_cache: true
 
 - name: Tune Apache PHP ini values
   lineinfile:
-    path: /etc/php/8.3/apache2/php.ini
+    path: /etc/php/8.5/apache2/php.ini
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
   loop:
