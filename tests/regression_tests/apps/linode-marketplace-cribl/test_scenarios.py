@@ -27,6 +27,7 @@ def test_cribl_login(context, base_url, app_credentials):
     login_page = CriblLoginPage(context)
     login_page.navigate(base_url)
     login_page.login(username, password)
+    login_page.dismiss_ai_data_notice_if_present()
 
     registration_page = CriblRegistrationPage(context)
     registration_page.register(email)
@@ -44,6 +45,7 @@ def test_cribl_create_pipeline(context, base_url, app_credentials):
     login_page = CriblLoginPage(context)
     login_page.navigate(base_url)
     login_page.login(username, password)
+    login_page.dismiss_ai_data_notice_if_present()
     expect(context, "Cribl Stream dashboard did not load after login.").to_have_title(
         "Cribl Stream", timeout=30000
     )
