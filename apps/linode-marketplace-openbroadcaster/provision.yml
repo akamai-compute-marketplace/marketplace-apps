@@ -1,0 +1,36 @@
+---
+# openbroadcaster
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  tasks:
+    # the OpenBroadcaster service user is created later, so the sudouser helper can't catch this name
+    - name: Checking the sudo username
+      fail:
+        msg: |
+          [FATAL] illegal username provided --> {{ username }}
+          This name is used by the OpenBroadcaster service user. Please redeploy the Marketplace app using a different sudo user.
+      when: username == 'openbroadcaster'
+
+    # generate creds
+    # no_log: these steps handle generated passwords
+    - name: Generating sudo user and password
+      import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+      no_log: true
+
+    - name: Generating mysql root password
+      import_tasks: ../linode_helpers/roles/securemysql/tasks/passgen.yml
+      no_log: true
+
+    - name: Generating the OpenBroadcaster secrets
+      no_log: true
+      blockinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        block: |
+          ob_db_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          ob_admin_pass: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}
+          ob_hash_salt: {{ lookup('password', '/dev/null length=45 chars=ascii_letters,digits') }}

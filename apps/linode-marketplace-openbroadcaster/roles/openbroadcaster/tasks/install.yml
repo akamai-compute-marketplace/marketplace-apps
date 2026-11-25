@@ -1,0 +1,89 @@
+---
+# full clone (about 32 MB): the git module ignores depth for a commit SHA
+- name: Downloading OpenBroadcaster
+  git:
+    repo: '{{ ob_repo }}'
+    dest: '{{ ob_root }}'
+    version: '{{ ob_version }}'
+  become: true
+  become_user: '{{ ob_user }}'
+
+- name: Installing the PHP dependencies
+  community.general.composer:
+    command: install
+    working_dir: '{{ ob_root }}'
+    no_dev: true
+  become: true
+  become_user: '{{ ob_user }}'
+
+# installs exactly the lock file (postinstall builds the frontend), then drops the dev-only packages;
+# index.php serves some packages from node_modules, so the rest stays
+- name: Installing and building the JavaScript dependencies
+  shell: npm ci && npm prune --omit=dev
+  args:
+    chdir: '{{ ob_root }}'
+    creates: '{{ ob_root }}/node_modules'
+  become: true
+  become_user: '{{ ob_user }}'
+
+- name: Creating the media, cache and upload folders
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ ob_user }}'
+    group: '{{ ob_user }}'
+    mode: '0750'
+  loop: '{{ ob_dirs }}'
+
+# only PHP-FPM and the CLI read it, both as the OpenBroadcaster user
+- name: Writing config.php
+  template:
+    src: templates/config.php.j2
+    dest: '{{ ob_root }}/config.php'
+    owner: '{{ ob_user }}'
+    group: '{{ ob_user }}'
+    mode: '0600'
+
+- name: Checking for the OpenBroadcaster tables
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_db: '{{ ob_db_name }}'
+    query: SHOW TABLES
+  register: ob_tables
+
+# only into an empty database, so the playbook can run again
+- name: Importing the database schema
+  community.mysql.mysql_db:
+    name: '{{ ob_db_name }}'
+    state: import
+    target: '{{ ob_root }}/db/dbclean.sql'
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  when: ob_tables.rowcount[0] == 0
+
+- name: Running the database updates
+  command:
+    cmd: '{{ ob_root }}/tools/cli/ob updates run all'
+  become: true
+  become_user: '{{ ob_user }}'
+
+# the command's result would print the password in the deploy log, so it's hidden
+- name: Setting the admin password
+  command:
+    argv:
+      - '{{ ob_root }}/tools/cli/ob'
+      - passwd
+      - '{{ ob_admin_user }}'
+      - '{{ ob_admin_pass }}'
+  become: true
+  become_user: '{{ ob_user }}'
+  no_log: true
+
+# the schema ships the admin as admin@example.com
+- name: Setting the admin email
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    login_db: '{{ ob_db_name }}'
+    query: UPDATE users SET email = %s WHERE username = %s
+    positional_args:
+      - '{{ soa_email_address }}'
+      - '{{ ob_admin_user }}'

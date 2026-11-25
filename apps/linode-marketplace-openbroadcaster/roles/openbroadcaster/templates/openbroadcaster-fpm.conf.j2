@@ -1,0 +1,14 @@
+[openbroadcaster]
+user = {{ ob_user }}
+group = {{ ob_user }}
+listen = /run/php/php{{ php_version }}-openbroadcaster-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+pm = dynamic
+pm.max_children = 5
+pm.start_servers = 2
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+
+php_admin_value[memory_limit] = 512M
+php_admin_value[post_max_size] = 1024M

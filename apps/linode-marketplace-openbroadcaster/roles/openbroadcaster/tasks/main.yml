@@ -1,0 +1,24 @@
+---
+- name: Installing the packages
+  import_tasks: packages.yml
+
+- name: Creating the OpenBroadcaster user
+  import_tasks: user.yml
+
+- name: Setting up the database
+  import_tasks: database.yml
+
+- name: Installing OpenBroadcaster
+  import_tasks: install.yml
+
+- name: Configuring PHP-FPM
+  import_tasks: php.yml
+
+- name: Configuring nginx
+  import_tasks: nginx.yml
+
+- name: Setting up the background service
+  import_tasks: service.yml
+
+- name: Setting up HTTPS
+  import_tasks: ssl.yml

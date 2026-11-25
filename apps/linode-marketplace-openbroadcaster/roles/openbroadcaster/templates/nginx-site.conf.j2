@@ -1,0 +1,54 @@
+server {
+  listen 80;
+{% if subdomain == "www" and default_dns is not defined %}
+  server_name {{ _domain }} www.{{ _domain }};
+{% else %}
+  server_name {{ _domain }};
+{% endif %}
+
+  root {{ ob_root }};
+  index index.php;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  # disallow access to files and directories starting with a period
+  location ~ /\. {
+    deny all;
+    access_log off;
+    log_not_found off;
+  }
+
+  # disallow access to the database schema, updates and dependency manifests
+  location ~ ^/(db|updates)/ {
+    deny all;
+  }
+  location ~ ^/(composer\.(json|lock)|package(-lock)?\.json)$ {
+    deny all;
+  }
+
+  # php file handling
+  location ~ \.php$ {
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/run/php/php{{ php_version }}-openbroadcaster-fpm.sock;
+    fastcgi_buffer_size 32k;
+    fastcgi_buffers 8 32k;
+    fastcgi_busy_buffers_size 64k;
+  }
+
+  # rewrite for API URLs
+  location ^~ /api/ {
+    try_files $uri $uri/ /api.php$is_args$args;
+  }
+
+  # allow access to files via X-Accel-Redirect
+  location {{ ob_files }}/ {
+    internal;
+    alias {{ ob_files }}/;
+  }
+
+  # allow larger data posts and file uploads
+  # this should have the same value as PHP's post_max_size
+  client_max_body_size 1024M;
+}

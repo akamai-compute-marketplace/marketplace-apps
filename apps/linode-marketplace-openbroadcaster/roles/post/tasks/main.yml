@@ -1,0 +1,49 @@
+---
+# Install Addons if requested
+- name: Installing the requested add-ons
+  import_role:
+    name: addons
+  when: add_ons != ['none']
+
+- name: Writing the login message
+  template:
+    src: templates/motd.j2
+    dest: /etc/motd
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+
+- name: Saving the login credentials
+  copy:
+    dest: '/home/{{ username }}/.credentials'
+    mode: '0600'
+    owner: '{{ username }}'
+    group: '{{ username }}'
+    content: |
+      Sudo Username: {{ username }}
+      Sudo Password: {{ password }}
+
+      MariaDB Root Password: {{ mysql_root_password }}
+      OpenBroadcaster DB Name: {{ ob_db_name }}
+      OpenBroadcaster DB User: {{ ob_db_user }}
+      OpenBroadcaster DB Password: {{ ob_db_pass }}
+
+      OpenBroadcaster URL: https://{{ _domain }}/
+      OpenBroadcaster Admin User: {{ ob_admin_user }}
+      OpenBroadcaster Admin Password: {{ ob_admin_pass }}
+
+- name: Removing the composer and npm caches
+  file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - '{{ ob_home }}/.cache'
+    - '{{ ob_home }}/.npm'
+
+# last, so the credentials exist even if this fails; any error fails the deploy
+- name: Checking the OpenBroadcaster install
+  command:
+    cmd: '{{ ob_root }}/tools/cli/ob check install'
+  become: true
+  become_user: '{{ ob_user }}'
+  changed_when: false

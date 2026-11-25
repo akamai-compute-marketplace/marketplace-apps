@@ -1,0 +1,23 @@
+---
+# PHP-FPM, the CLI and the background service all run as this user
+- name: Creating the OpenBroadcaster user
+  user:
+    name: '{{ ob_user }}'
+    home: '{{ ob_home }}'
+    shell: /usr/sbin/nologin
+    state: present
+
+- name: Setting the home directory permissions
+  file:
+    path: '{{ ob_home }}'
+    state: directory
+    owner: '{{ ob_user }}'
+    group: '{{ ob_user }}'
+    mode: '0750'
+
+# without this nginx can't read the site in the 750 home and every page is a 404
+- name: Letting nginx read the OpenBroadcaster files
+  user:
+    name: www-data
+    groups: '{{ ob_user }}'
+    append: true
