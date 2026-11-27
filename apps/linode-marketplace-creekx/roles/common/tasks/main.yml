@@ -1,0 +1,45 @@
+---
+# The steps every Akamai Marketplace app takes, from linode_helpers (as the Gitea app does).
+- name: Setting up hostname
+  ansible.builtin.import_role:
+    name: hostname
+
+- name: Write _domain to vars
+  ansible.builtin.lineinfile:
+    insertafter: EOF
+    path: group_vars/linode/vars
+    line: |
+      _domain: {{ _domain }}
+  when: _domain is defined
+
+- name: Create dns A record
+  ansible.builtin.import_role:
+    name: create_dns_record
+  when:
+    - token_password is defined
+    - default_dns is not defined
+
+- name: Set SSH public key
+  ansible.builtin.import_role:
+    name: sshkey
+
+- name: Disable root login
+  ansible.builtin.import_role:
+    name: securessh
+  when: disable_root is defined
+
+- name: Update system packages
+  ansible.builtin.import_role:
+    name: update_pkgs
+
+# The firewall on with SSH open; creekX's installer opens its own ports while it is active.
+- name: Enabling ufw
+  ansible.builtin.import_role:
+    name: ufw
+
+- name: Apply ufw rules
+  ansible.builtin.import_tasks: ufw_rules.yml
+
+- name: Enabling fail2ban
+  ansible.builtin.import_role:
+    name: fail2ban_install

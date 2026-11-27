@@ -1,0 +1,31 @@
+---
+# creekX itself, installed exactly as a customer installs it by hand:
+#   curl -fsSL https://creekx.io/get.sh | sudo bash -s -- --domain ... --email ...
+# get.sh downloads the release creekx.io serves now, checks it against its published
+# checksum, and runs its installer (install.sh, ADR-0018) with the options given here.
+- name: Download the creekX installer
+  ansible.builtin.get_url:
+    url: 'https://creekx.io/get.sh'
+    dest: /root/creekx-get.sh
+    mode: '0700'
+
+# With the server's own name (the domain given, or Akamai's free *.ip.linodeusercontent.com
+# one) creekX gets an https certificate, which going live from a browser needs. The owner's
+# password goes in on standard input, never on the command line.
+- name: Install creekX
+  ansible.builtin.shell: |
+    set -o pipefail
+    printf '%s\n' "$CREEKX_OWNER_PASSWORD" | bash /root/creekx-get.sh \
+      --domain "{{ _domain }}" --email "{{ soa_email_address }}" --password-stdin
+  args:
+    executable: /bin/bash
+    creates: /opt/creekx/current
+  environment:
+    CREEKX_OWNER_PASSWORD: '{{ creekx_owner_password }}'
+    DEBIAN_FRONTEND: noninteractive
+  no_log: true
+
+- name: Remove the installer download
+  ansible.builtin.file:
+    path: /root/creekx-get.sh
+    state: absent
