@@ -1,0 +1,18 @@
+---
+- name: Setting up environment
+  hosts: localhost
+  connection: local
+  any_errors_fatal: true
+  user: root
+  vars_files: [group_vars/linode/vars]
+  tasks:
+    - name: Generating sudo user and password
+      ansible.builtin.import_tasks: ../linode_helpers/roles/sudouser/tasks/main.yml
+
+    - name: Writing the creekX owner password to vars
+      ansible.builtin.lineinfile:
+        insertafter: EOF
+        path: group_vars/linode/vars
+        line: |
+          creekx_owner_password: {{ lookup('password', '/dev/null length=24 chars=ascii_letters,digits') }}
+      no_log: true
